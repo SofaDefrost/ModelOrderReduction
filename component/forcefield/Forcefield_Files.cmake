@@ -3,12 +3,17 @@ list(APPEND HEADER_FILES
 
     component/forcefield/HyperReducedTetrahedronFEMForceField.h
     component/forcefield/HyperReducedTetrahedronFEMForceField.inl
-
+    component/forcefield/HyperReducedTriangleFEMForceField.h
+    component/forcefield/HyperReducedTriangleFEMForceField.inl
+    component/forcefield/MappedMatrixForceFieldAndMass.h
+    component/forcefield/MappedMatrixForceFieldAndMass.inl
     )
 
 list(APPEND SOURCE_FILES
 
     component/forcefield/HyperReducedTetrahedronFEMForceField.cpp
+    component/forcefield/HyperReducedTriangleFEMForceField.cpp
+    component/forcefield/MappedMatrixForceFieldAndMass.cpp
 
     )
 
