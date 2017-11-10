@@ -59,7 +59,7 @@ def createScene(rootNode):
         #solverNode.createObject('SparsePARDISOSolver', name="ldlsolveur")
         solverNode.createObject('GenericConstraintCorrection', solverName='ldlsolveur')
             
-        solverNode.createObject('MappedMatrixForceField', template='Vec1d,Vec1d', object1='@./feuilleMOR/alpha', object2='@./feuilleMOR/alpha', mappedForceField='@./feuilleMOR/feuille/HyperReducedFF', mappedMass='@./feuilleMOR/feuille/diamondMass' , performECSW=performECSWBool, listActiveNodesPath=listActiveNodesFile ,printLog="1")
+        solverNode.createObject('MappedMatrixForceFieldAndMass', template='Vec1d,Vec1d', object1='@./feuilleMOR/alpha', object2='@./feuilleMOR/alpha', mappedForceField='@./feuilleMOR/feuille/HyperReducedFF', mappedMass='@./feuilleMOR/feuille/diamondMass' , performECSW=performECSWBool, listActiveNodesPath=listActiveNodesFile ,printLog="1")
 
                 
     #Feuille
