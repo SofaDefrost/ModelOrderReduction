@@ -32,8 +32,6 @@
 #include <sofa/helper/decompose.h>
 #include <sofa/helper/gl/template.h>
 #include <assert.h>
-#include <newmat/newmat.h>
-#include <newmat/newmatap.h>
 #include <fstream> // for reading the file
 #include <iostream>
 #include <vector>
@@ -1743,7 +1741,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
             {
                 std::stringstream gieFileNameSS;
                 gieFileNameSS << this->name << "_Gie.txt";
-                string gieFileName = gieFileNameSS.str();
+                std::string gieFileName = gieFileNameSS.str();
                 std::ofstream myfileGie (gieFileName);
                 msg_info(this) << "Storing " << gieFileName << " ...";
                 for (unsigned int k=0;k<d_nbTrainingSet.getValue()*d_nbModes.getValue();k++){
