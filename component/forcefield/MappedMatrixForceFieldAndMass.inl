@@ -45,7 +45,9 @@
 // verify timing
 #include <sofa/helper/system/thread/CTime.h>
 
+//  Sparse Matrix
 #include <Eigen/Sparse>
+
 namespace sofa
 {
 
@@ -54,7 +56,6 @@ namespace component
 
 namespace interactionforcefield
 {
-
 
 using sofa::component::linearsolver::DefaultMultiMatrixAccessor ;
 using sofa::core::behavior::BaseMechanicalState ;
@@ -301,8 +302,9 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     time = (double)timer->getTime();
 
+    std::cout << "\n" << std::endl;
     if(f_printLog.getValue())
-        sout << "entering addKToMatrix" << sendl;
+        sout << "ENTERING addKToMatrix" << sendl;
 
 
     sofa::core::behavior::MechanicalState<DataTypes1>* ms1 = this->getMState1();
@@ -317,21 +319,30 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     MultiMatrixAccessor::InteractionMatrixRef mat21 = matrix->getMatrix(mstate2, mstate1);
 
 
-    //////////////////////////////////////// NEW VERSION ////////////////////////////////////////
+    ///////////////////////////     STEP 1      ////////////////////////////////////
+    /* -------------------------------------------------------------------------- */
+    /*              compute jacobians using generic implementation                */
+    /* -------------------------------------------------------------------------- */
 
-    // STEP 1 compute jacobians using generic implementation
+
     this->accumulateJacobians(mparams);
     msg_info(this) <<" accumulate J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 
     time= (double)timer->getTime();
 
 
-    // STEP2 compute the stiffness K of the forcefield and put it in a rowsparseMatrix
-    // get the stiffness matrix from the mapped ForceField
-    // TODO: use the template of the FF for Real
+    ///////////////////////////     STEP 2      ////////////////////////////////////
+    /* -------------------------------------------------------------------------- */
+    /*  compute the stiffness K of the forcefield and put it in a rowsparseMatrix */
+    /*          get the stiffness matrix from the mapped ForceField               */
+    /* TODO: use the template of the FF for Real                                  */
+    /* -------------------------------------------------------------------------- */
+
+
+    ///////////////////////     GET K       ////////////////////////////////////////
     core::behavior::BaseMechanicalState* mstate = d_mappedForceField.get()->getContext()->getMechanicalState();
     CompressedRowSparseMatrix< Real1 >* K = new CompressedRowSparseMatrix< Real1 > ( );
-    // TODO:
+
     K->resizeBloc( 3*mstate->getSize() ,  3*mstate->getSize());
     K->clear();
     DefaultMultiMatrixAccessor* KAccessor;
@@ -339,21 +350,27 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     KAccessor->addMechanicalState(  d_mappedForceField.get()->getContext()->getMechanicalState() );
     KAccessor->setGlobalMatrix(K);
     KAccessor->setupMatrices();
+    //------------------------------------------------------------------------------
+
+
     msg_info(this)<<" time get K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
     time= (double)timer->getTime();
+
+
     d_mappedForceField.get()->addKToMatrix(mparams, KAccessor);
     //d_mappedForceField2.get()->addKToMatrix(mparams, KAccessor);
     if (d_mappedForceField2 != NULL)
     {
         d_mappedForceField2.get()->addKToMatrix(mparams, KAccessor);
     }
-    msg_info(this) << "Before check d_mappedMass";
+    //msg_info(this) << "Before check d_mappedMass";
     if (d_mappedMass != NULL)
     {
-            msg_info(this) << "There is a d_mappedMass";
         d_mappedMass.get()->addMToMatrix(mparams, KAccessor);
     }
-    msg_info(this) << "Out of the d_mappedMass business";
+    else{ msg_info(this) << "There is no d_mappedMass"; }
+    //msg_info(this) << "Out of the d_mappedMass business";
+
     msg_info(this)<<" time addKtoMatrix K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
     time= (double)timer->getTime();
 
@@ -362,7 +379,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         std::cout<<"matrix of the force-field system not found"<<std::endl;
         return;
     }
+
+
+    ///////////////////////     COMPRESS K       ///////////////////////////////////
     K->compress();
+    //------------------------------------------------------------------------------
+
 
     msg_info(this) << " time compress K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
     time= (double)timer->getTime();
@@ -374,7 +396,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     // we have the K matrix from the mappedForceField in compressed row sparse format
 
-    // STEP3: we now get the matrices J1 and J2
+
+    ///////////////////////////     STEP 3      ////////////////////////////////////
+    /* -------------------------------------------------------------------------- */
+    /*                  we now get the matrices J1 and J2                         */
+    /* -------------------------------------------------------------------------- */
+
     sofa::core::MultiMatrixDerivId c = sofa::core::MatrixDerivId::mappingJacobian();
     const MatrixDeriv1 &J1 = c[ms1].read()->getValue();
     MatrixDeriv1RowConstIterator rowItJ1= J1.begin();
@@ -382,29 +409,37 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     MatrixDeriv2RowConstIterator rowItJ2= J2.begin();
 
 
-    // STEP4: perform the multiplication with [J1t J2t] * K * [J1 J2]
-
     msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
+    msg_info(this)<<" nRow: "<< K->nRow << " nCol: " << K->nCol;
+
     time= (double)timer->getTime();
-    msg_info(this)<<" nRow "<< K->nRow << "nCol" << K->nCol;
-//    std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
-//    std::cout<<" nBlocRow "<< K->nBlocRow << std::endl;
-//    std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
-//    std::cout<<"nBlocCol" << K->nBlocCol <<std::endl;
-//    std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
-//    std::cout<<"rowIndex.size" << K->rowIndex.size() <<std::endl;
-//    std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
-//    std::cout<<"rowBegin.size" << K->rowBegin.size() <<std::endl;
-//    std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
-//    std::cout<<" rowIndex "<< K->rowIndex <<std::endl;
-//    std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
-//    std::cout<<" rowBegin" << K->rowBegin <<std::endl;
-    //    std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
-    //    std::cout<<" colsIndex "<< K->colsIndex <<std::endl;//<< "colsValue" << K->colsValue <<std::endl;
 
-    int ComputeWithEigen = 1;
+    //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
+    //std::cout<<" nBlocRow "<< K->nBlocRow << std::endl;
+    //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
+    //std::cout<<"nBlocCol" << K->nBlocCol <<std::endl;
+    //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
+    //std::cout<<"rowIndex.size" << K->rowIndex.size() <<std::endl;
+    //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
+    //std::cout<<"rowBegin.size" << K->rowBegin.size() <<std::endl;
+    //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
+    //std::cout<<" rowIndex "<< K->rowIndex <<std::endl;
+    //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
+    //std::cout<<" rowBegin" << K->rowBegin <<std::endl;
+    //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
+    //std::cout<<" colsIndex "<< K->colsIndex <<std::endl;//<< "colsValue" << K->colsValue <<std::endl;
 
-    if (ComputeWithEigen == 1)
+
+    ///////////////////////////     STEP 4      ////////////////////////////////////
+    /* -------------------------------------------------------------------------- */
+    /*          perform the multiplication with [J1t J2t] * K * [J1 J2]           */
+    /* -------------------------------------------------------------------------- */
+
+    int ComputeSolution = 1; // 0 : without any labriry
+                             // 1 : with Eigen
+                             // 2 : with SourceSparse
+
+    if (ComputeSolution == 1)
     {
         int nbColsJ1 = rowItJ1.row().size();
         Eigen::SparseMatrix<double,Eigen::ColMajor> Keig(K->nRow,K->nRow);
@@ -415,18 +450,11 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         double timeJKJeig= (double)timer->getTime();
         msg_info(this) << "listActiveNodes.size() " << listActiveNodes.size();
         int row;
-//        for (unsigned int it=0; it < listActiveNodes.size() ; it ++)
-//        {
 
-//            for (unsigned int i=0; i<3; i++)
-//            {
-
+        ///////////////////////     K EIGEN     //////////////////////////////////////////////////////////////////////////////
         for (unsigned int it_rows_k=0; it_rows_k < K->rowIndex.size() ; it_rows_k ++)
         {
-
             row = K->rowIndex[it_rows_k] ;
-            //                row = 3*listActiveNodes[it] + i;
-            //int row = K->rowIndex[it_rows_k] ;
             Range rowRange( K->rowBegin[it_rows_k], K->rowBegin[it_rows_k+1] );
             for( Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
             {
@@ -434,11 +462,14 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
                 const Real1& k = K->colsValue[xj]; // non-null element of the matrix
                 tripletList.push_back(Eigen::Triplet<double>(row,col,k));
             }
-            //            }
         }
         Keig.setFromTriplets(tripletList.begin(), tripletList.end());
+        //--------------------------------------------------------------------------------------------------------------------
+
         msg_info(this)<<" time set Keig : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
         timeJKJeig= (double)timer->getTime();
+
+        ///////////////////////     J1 EIGEN    //////////////////////////////////////////////////////////////////////////////
         for (MatrixDeriv1RowConstIterator rowIt = J1.begin(); rowIt !=  J1.end(); ++rowIt)
         {
             int rowIndex = rowIt.index();
@@ -453,13 +484,16 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             }
         }
         J1eig.setFromTriplets(tripletListJ1.begin(), tripletListJ1.end());
+        //--------------------------------------------------------------------------------------------------------------------
+
         msg_info(this)<<" time set J1eig : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
-
-        Eigen::SparseMatrix<double>  JtKJeigen(nbColsJ1,nbColsJ1);
-        //        Eigen::MatrixXd  JtKJeigen(15,15);
-
         timeJKJeig= (double)timer->getTime();
+
+        ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
+        Eigen::SparseMatrix<double>  JtKJeigen(nbColsJ1,nbColsJ1);
         JtKJeigen = J1eig.transpose()*Keig*J1eig;
+        //--------------------------------------------------------------------------------------------------------------------
+
         msg_info(this)<<" time compute JtKJeigen : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
 
         for (unsigned int i=0; i<nbColsJ1; i++)
@@ -467,10 +501,86 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             for (unsigned int j=0; j<nbColsJ1; j++)
             {
                 mat11.matrix->add(i, j, JtKJeigen.coeff(i,j));
-                //                mat11.matrix->add(i, j, JtKJeigen(i,j));
             }
         }
-        //std::cout << J1 << std::endl;
+    }
+    else if (ComputeSolution == 2) {
+
+//        cholmod_common Common, *cc ;
+//        cholmod_sparse *A ;
+//        cholmod_dense *X, *B, *Residual ;
+//        double rnorm, one [2] = {1,0}, minusone [2] = {-1,0} ;
+//        int mtype ;
+
+//        // start CHOLMOD
+//        cc = &Common ;
+//        cholmod_l_start (cc) ;
+
+//        // load A
+//        vector<triplet> Gentries{
+//            {0, 0, 0.01},
+//            {0, 1, -0.01},
+//            {0, 12, 1},
+//            {1, 0, -0.01},
+//            {1, 1, 0.012},
+//            {1, 2, -0.002},
+//            {2, 1, -0.002},
+//            {2, 2, 0.004},
+//            {2, 3, -0.002},
+//            {3, 2, -0.002},
+//            {3, 3, 0.004},
+//            {3, 4, -0.002},
+//            {4, 3, -0.002},
+//            {4, 4, 0.004},
+//            {4, 5, -0.002},
+//            {5, 4, -0.002},
+//            {5, 5, 0.002},
+//            {6, 6, 0.01},
+//            {6, 7, -0.01},
+//            {6, 13, 1},
+//            {7, 6, -0.01},
+//            {7, 7, 0.012},
+//            {7, 8, -0.002},
+//            {8, 7, -0.002},
+//            {8, 8, 0.004},
+//            {8, 9, -0.002},
+//            {9, 8, -0.002},
+//            {9, 9, 0.004},
+//            {9, 10, -0.002},
+//            {10, 9, -0.002},
+//            {10, 10, 0.004},
+//            {10, 11, -0.002},
+//            {11, 10, -0.002},
+//            {11, 11, 0.002},
+//            {11, 14, 1},
+//            {12, 0, -1},
+//            {13, 6, -1},
+//            {14, 11, -1}
+//        };
+
+//        vector<triplet> Bentries{
+//            {12, 0, -1},
+//            {13, 1, -1},
+//            {14, 2, -1}};
+//        A = (cholmod_sparse *) cholmod_l_read_triplet(Gentries, cc);
+//        A = (cholmod_sparse *) cholmod_l_read_matrix (stdin, 1, &mtype, cc) ;
+//        // B = ones (size (A,1),1)
+//        B = cholmod_l_ones (A->nrow, 1, A->xtype, cc) ;
+//        // X = A\B
+//        X = SuiteSparseQR <double> (A, B, cc) ;
+//        // rnorm = norm (B-A*X)
+//        Residual = cholmod_l_copy_dense (B, cc) ;
+//        cholmod_l_sdmult (A, 0, minusone, one, X, Residual, cc) ;
+//        rnorm = cholmod_l_norm_dense (Residual, 2, cc) ;
+//        printf ("2-norm of residual: %8.1e\n", rnorm) ;
+//        printf ("rank %ld\n", cc->SPQR_istat [4]) ;
+//        // free everything and finish CHOLMOD
+//        cholmod_l_free_dense (&Residual, cc) ;
+//        cholmod_l_free_sparse (&A, cc) ;
+//        cholmod_l_free_dense (&X, cc) ;
+//        cholmod_l_free_dense (&B, cc) ;
+//        cholmod_l_finish (cc) ;
+
 
     }
     else
@@ -662,6 +772,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         }
 
     }
+
     msg_info(this)<<" time compute J() * K * J: "<<( (double)timer->getTime() - time)*timeScale<<" ms";
     time= (double)timer->getTime();
 
@@ -672,7 +783,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
 
     if(f_printLog.getValue())
-        sout << "exit addKToMatrix" << sendl;
+        sout << "EXIT addKToMatrix\n" << sendl;
 
 
     const core::ExecParams* eparams = dynamic_cast<const core::ExecParams *>( mparams );

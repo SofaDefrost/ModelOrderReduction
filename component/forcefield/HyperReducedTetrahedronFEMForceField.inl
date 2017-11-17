@@ -2129,7 +2129,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::default
     Rot[0][1]=Rot[0][2]=0;
     Rot[1][0]=Rot[1][2]=0;
     Rot[2][0]=Rot[2][1]=0;
-    std::cout << "in ADDKtoMatrix" << std::endl;
+    //msg_info(this) << "in ADDKtoMatrix" ;
     if (sofa::component::linearsolver::CompressedRowSparseMatrix<defaulttype::Mat<3,3,double> > * crsmat = dynamic_cast<sofa::component::linearsolver::CompressedRowSparseMatrix<defaulttype::Mat<3,3,double> > * >(mat))
     {
         if (d_performECSW.getValue())
