@@ -153,6 +153,28 @@ void HyperReducedTriangleFEMForceField<DataTypes>::init()
             }
         }
     }
+    if (d_performECSW.getValue())
+    {
+        MatrixLoader<Eigen::VectorXd>* weightsMatLoader = new MatrixLoader<Eigen::VectorXd>();
+        weightsMatLoader->setFileName(d_weightsPath.getValue());
+        weightsMatLoader->load();
+        weightsMatLoader->getMatrix(weights);
+        delete weightsMatLoader;
+
+        MatrixLoader<Eigen::VectorXi>* RIDMatLoader = new MatrixLoader<Eigen::VectorXi>();
+        RIDMatLoader->setFileName(d_RIDPath.getValue());
+        RIDMatLoader->load();
+        RIDMatLoader->getMatrix(reducedIntegrationDomain);
+        delete RIDMatLoader;
+        m_RIDsize = reducedIntegrationDomain.rows();
+    }
+    else
+    {
+        m_RIDsize = _indexedElements->size();  // the reduced integration contains all the elements in this case.
+        reducedIntegrationDomain.resize(m_RIDsize);
+        for (unsigned int i = 0; i<m_RIDsize; i++)
+            reducedIntegrationDomain(i) = i;
+    }
 
 }
 
@@ -210,14 +232,17 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::Mechanic
         }
         if (d_prepareECSW.getValue())
         {
-            if (abs((this->getContext()->getTime()/this->getContext()->getDt())/d_periodSaveGIE.getValue() - d_nbTrainingSet.getValue()) < 0.01)
+            int numTest = this->getContext()->getTime()/this->getContext()->getDt();
+            if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
             {
+                numTest = numTest/d_periodSaveGIE.getValue();
+
                 std::stringstream gieFileNameSS;
                 gieFileNameSS << this->name << "_Gie.txt";
                 std::string gieFileName = gieFileNameSS.str();
-                std::ofstream myfileGie (gieFileName);
-                msg_info(this) << "Storing " << gieFileName << " ...";
-                for (unsigned int k=0;k<d_nbTrainingSet.getValue()*d_nbModes.getValue();k++){
+                std::ofstream myfileGie (gieFileName, std::fstream::app);
+                msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
+                for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
                     for (unsigned int l=0;l<_indexedElements->size();l++){
                         myfileGie << Gie[k][l] << " ";
                     }
@@ -227,32 +252,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::Mechanic
                 msg_info(this) << "-------------  Storing Done -------------";
             }
         }
-    }
-
-    if (d_performECSW.getValue())
-    {
-
-        MatrixLoader<Eigen::VectorXd>* weightsMatLoader = new MatrixLoader<Eigen::VectorXd>();
-        weightsMatLoader->setFileName(d_weightsPath.getValue());
-        weightsMatLoader->load();
-        weightsMatLoader->getMatrix(weights);
-        delete weightsMatLoader;
-
-        MatrixLoader<Eigen::VectorXi>* RIDMatLoader = new MatrixLoader<Eigen::VectorXi>();
-        RIDMatLoader->setFileName(d_RIDPath.getValue());
-        RIDMatLoader->load();
-        RIDMatLoader->getMatrix(reducedIntegrationDomain);
-        delete RIDMatLoader;
-
-        m_RIDsize = reducedIntegrationDomain.rows();
-
-    }
-    else
-    {
-        m_RIDsize = _indexedElements->size();  // the reduced integration contains all the elements in this case.
-        reducedIntegrationDomain.resize(m_RIDsize);
-        for (unsigned int i = 0; i<m_RIDsize; i++)
-            reducedIntegrationDomain(i) = i;
     }
     f.endEdit();
 }
@@ -678,7 +677,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord
     std::vector<double> GieUnit;
     if (d_prepareECSW.getValue())
     {
-        Gie.resize(d_nbTrainingSet.getValue()*d_nbModes.getValue());
         GieUnit.resize(d_nbModes.getValue());
     }
 
@@ -741,17 +739,15 @@ void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord
             for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
             {
                 GieUnit[modNum] = 0;
-                GieUnit[modNum] += R_2_0 * Coord(F[0], F[1], 0) * Coord(m_modes(3*a,modNum),m_modes(3*a+1,modNum),m_modes(3*a+2,modNum));
-                GieUnit[modNum] += R_2_0 * Coord(F[0], F[1], 0) * Coord(m_modes(3*b,modNum),m_modes(3*b+1,modNum),m_modes(3*b+2,modNum));
-                GieUnit[modNum] += R_2_0 * Coord(F[0], F[1], 0) * Coord(m_modes(3*c,modNum),m_modes(3*c+1,modNum),m_modes(3*c+2,modNum));
+                GieUnit[modNum] += (R_2_0 * Coord(F[0], F[1], 0)) * Coord(m_modes(3*a,modNum),m_modes(3*a+1,modNum),m_modes(3*a+2,modNum));
+                GieUnit[modNum] += (R_2_0 * Coord(F[2], F[3], 0)) * Coord(m_modes(3*b,modNum),m_modes(3*b+1,modNum),m_modes(3*b+2,modNum));
+                GieUnit[modNum] += (R_2_0 * Coord(F[4], F[5], 0)) * Coord(m_modes(3*c,modNum),m_modes(3*c+1,modNum),m_modes(3*c+2,modNum));
 
             }
             for (unsigned int i = 0 ; i < d_nbModes.getValue() ; i++)
             {
                 if ((d_nbModes.getValue()+1)*numTest <= d_nbTrainingSet.getValue()*d_nbModes.getValue())
                 {
-
-                    Gie[d_nbModes.getValue()*numTest+i].resize(_indexedElements->size());
                     Gie[d_nbModes.getValue()*numTest+i][elementIndex] = GieUnit[i];
                     b_ECSW[d_nbModes.getValue()*numTest+i] += GieUnit[i];
                 }
@@ -791,16 +787,18 @@ void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessLarge(VecCoord 
     unsigned int i(0);
     if (d_performECSW.getValue())
     {
+        int iECSW;
         it0=_indexedElements->begin();
         for( i = 0 ; i<m_RIDsize ;++i)
         {
-            it = it0 + reducedIntegrationDomain(i);
+            iECSW = reducedIntegrationDomain(i);
+            it = it0 + iECSW;
             Index a = (*it)[0];
             Index b = (*it)[1];
             Index c = (*it)[2];
 
             Transformation R_0_2;
-            R_0_2.transpose(_rotations[i]);
+            R_0_2.transpose(_rotations[iECSW]);
 
             Displacement X;
             Coord x_2;
@@ -818,10 +816,10 @@ void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessLarge(VecCoord 
             X[5] = x_2[1];
 
             Displacement F;
-            computeForce( F, X, _materialsStiffnesses[i], _strainDisplacements[i] );
-            v[a] += weights(i)*(_rotations[i] * Coord(-h*F[0], -h*F[1], 0))*kFactor;
-            v[b] += weights(i)*(_rotations[i] * Coord(-h*F[2], -h*F[3], 0))*kFactor;
-            v[c] += weights(i)*(_rotations[i] * Coord(-h*F[4], -h*F[5], 0))*kFactor;
+            computeForce( F, X, _materialsStiffnesses[iECSW], _strainDisplacements[iECSW] );
+            v[a] += weights(iECSW)*(_rotations[iECSW] * Coord(-h*F[0], -h*F[1], 0))*kFactor;
+            v[b] += weights(iECSW)*(_rotations[iECSW] * Coord(-h*F[2], -h*F[3], 0))*kFactor;
+            v[c] += weights(iECSW)*(_rotations[iECSW] * Coord(-h*F[4], -h*F[5], 0))*kFactor;
         }
     }
     else
@@ -877,9 +875,11 @@ void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::Visu
     glDisable(GL_LIGHTING);
 
     glBegin(GL_TRIANGLES);
-    typename VecElement::const_iterator it;
-    for(it = _indexedElements->begin() ; it != _indexedElements->end() ; ++it)
+    typename VecElement::const_iterator it, it0;
+    it0 = _indexedElements->begin();
+    for(unsigned i = 0 ; i<m_RIDsize ;++i)
     {
+        it = it0 + reducedIntegrationDomain(i);
         Index a = (*it)[0];
         Index b = (*it)[1];
         Index c = (*it)[2];
@@ -941,11 +941,13 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttyp
 {
     if (d_performECSW.getValue())
     {
+        int iECSW;
         for(unsigned i = 0 ; i<m_RIDsize ;++i)
         {
+            iECSW = reducedIntegrationDomain(i);
             StiffnessMatrix JKJt,RJKJtRt;
-            computeElementStiffnessMatrix(JKJt, RJKJtRt, _materialsStiffnesses[i], _strainDisplacements[i], _rotations[i]);
-            this->addToMatrix(mat,offset,(*_indexedElements)[i],weights(i)*RJKJtRt,-k);
+            computeElementStiffnessMatrix(JKJt, RJKJtRt, _materialsStiffnesses[iECSW], _strainDisplacements[iECSW], _rotations[iECSW]);
+            this->addToMatrix(mat,offset,(*_indexedElements)[iECSW],weights(iECSW)*RJKJtRt,-k);
 
         }
     }

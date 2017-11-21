@@ -938,7 +938,6 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
     std::vector<double> GieUnit;
     if (d_prepareECSW.getValue())
     {
-        Gie.resize(d_nbTrainingSet.getValue()*d_nbModes.getValue());
         GieUnit.resize(d_nbModes.getValue());
     }
     // Rotation matrix (deformed and displaced Tetrahedron/world)
@@ -1019,17 +1018,14 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
 
                     GieUnit[modNum] = 0;
                     for(int i=0; i<12; i+=3){
-                        //GieUnit[modNum] += rotations[elementIndex] * Deriv( F[i], F[i+1],  F[i+2] )*m_modes[index[i/3]][modNum];
-                        GieUnit[modNum] += rotations[elementIndex] * Deriv( F[i], F[i+1],  F[i+2] )*Deriv(m_modes(index[i/3],modNum),m_modes(index[i/3]+1,modNum),m_modes(index[i/3]+2,modNum));
+                        GieUnit[modNum] += (rotations[elementIndex] * Deriv( F[i], F[i+1],  F[i+2] ))*Deriv(3*m_modes(index[i/3],modNum),m_modes(3*index[i/3]+1,modNum),m_modes(3*index[i/3]+2,modNum));
                     }
 
                 }
                 for (unsigned int i = 0 ; i < d_nbModes.getValue() ; i++)
                 {
-                    if ((d_nbModes.getValue()+1)*numTest <= d_nbTrainingSet.getValue()*d_nbModes.getValue())
+                    if ( d_nbModes.getValue()*numTest < d_nbModes.getValue()*d_nbTrainingSet.getValue() )
                     {
-
-                        Gie[d_nbModes.getValue()*numTest+i].resize(_indexedElements->size());
                         Gie[d_nbModes.getValue()*numTest+i][elementIndex] = GieUnit[i];
                         b_ECSW[d_nbModes.getValue()*numTest+i] += GieUnit[i];
                     }
@@ -1737,14 +1733,16 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
         }
         if (d_prepareECSW.getValue())
         {
-            if (abs((this->getContext()->getTime()/this->getContext()->getDt())/d_periodSaveGIE.getValue() - d_nbTrainingSet.getValue()) < 0.01)
+            int numTest = this->getContext()->getTime()/this->getContext()->getDt();
+            if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
             {
+                numTest = numTest/d_periodSaveGIE.getValue();
                 std::stringstream gieFileNameSS;
                 gieFileNameSS << this->name << "_Gie.txt";
                 std::string gieFileName = gieFileNameSS.str();
-                std::ofstream myfileGie (gieFileName);
-                msg_info(this) << "Storing " << gieFileName << " ...";
-                for (unsigned int k=0;k<d_nbTrainingSet.getValue()*d_nbModes.getValue();k++){
+                std::ofstream myfileGie (gieFileName, std::fstream::app);
+                msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
+                for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
                     for (unsigned int l=0;l<_indexedElements->size();l++){
                         myfileGie << Gie[k][l] << " ";
                     }
@@ -2135,10 +2133,10 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::default
         if (d_performECSW.getValue())
         {
             it0=_indexedElements->begin();
-            for( i = 0 ; i<m_RIDsize ;++i)
+            for(int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
             {
-                it = it0 + reducedIntegrationDomain(i);
-                IT = reducedIntegrationDomain(i);
+                it = it0 + reducedIntegrationDomain(iECSW);
+                IT = reducedIntegrationDomain(iECSW);
                 if (method == SMALL) computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],Rot);
                 else computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],rotations[IT]);
 
