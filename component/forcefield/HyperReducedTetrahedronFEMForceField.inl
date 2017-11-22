@@ -1012,7 +1012,6 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
 
                 numTest = numTest/d_periodSaveGIE.getValue();
 
-                std::cout << "numtest : " << numTest << std::endl;
                 for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
                 {
 
@@ -1737,19 +1736,25 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
             if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
             {
                 numTest = numTest/d_periodSaveGIE.getValue();
-                std::stringstream gieFileNameSS;
-                gieFileNameSS << this->name << "_Gie.txt";
-                std::string gieFileName = gieFileNameSS.str();
-                std::ofstream myfileGie (gieFileName, std::fstream::app);
-                msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
-                for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
-                    for (unsigned int l=0;l<_indexedElements->size();l++){
-                        myfileGie << Gie[k][l] << " ";
+                if (numTest < d_nbTrainingSet.getValue()){
+                    std::stringstream gieFileNameSS;
+                    gieFileNameSS << this->name << "_Gie.txt";
+                    std::string gieFileName = gieFileNameSS.str();
+                    std::ofstream myfileGie (gieFileName, std::fstream::app);
+                    msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
+                    for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
+                        for (unsigned int l=0;l<_indexedElements->size();l++){
+                            myfileGie << Gie[k][l] << " ";
+                        }
+                        myfileGie << std::endl;
                     }
-                    myfileGie << std::endl;
+                    myfileGie.close();
+                    msg_info(this) << "Storing Done";
                 }
-                myfileGie.close();
-                msg_info(this) << "Storing Done";
+                else
+                {
+                    msg_info(this) << d_nbTrainingSet.getValue() << "were already stored. Learning phase completed.";
+                }
             }
         }
 

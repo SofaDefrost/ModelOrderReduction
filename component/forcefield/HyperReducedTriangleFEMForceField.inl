@@ -236,20 +236,25 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::Mechanic
             if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
             {
                 numTest = numTest/d_periodSaveGIE.getValue();
-
-                std::stringstream gieFileNameSS;
-                gieFileNameSS << this->name << "_Gie.txt";
-                std::string gieFileName = gieFileNameSS.str();
-                std::ofstream myfileGie (gieFileName, std::fstream::app);
-                msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
-                for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
-                    for (unsigned int l=0;l<_indexedElements->size();l++){
-                        myfileGie << Gie[k][l] << " ";
+                if (numTest < d_nbTrainingSet.getValue()){
+                    std::stringstream gieFileNameSS;
+                    gieFileNameSS << this->name << "_Gie.txt";
+                    std::string gieFileName = gieFileNameSS.str();
+                    std::ofstream myfileGie (gieFileName, std::fstream::app);
+                    msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
+                    for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
+                        for (unsigned int l=0;l<_indexedElements->size();l++){
+                            myfileGie << Gie[k][l] << " ";
+                        }
+                        myfileGie << std::endl;
                     }
-                    myfileGie << std::endl;
+                    myfileGie.close();
+                    msg_info(this) << "-------------  Storing Done -------------";
                 }
-                myfileGie.close();
-                msg_info(this) << "-------------  Storing Done -------------";
+                else
+                {
+                    msg_info(this) << d_nbTrainingSet.getValue() << "were already stored. Learning phase completed.";
+                }
             }
         }
     }
@@ -714,7 +719,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord
 
     // project forces to world frame
     R_2_0.transpose(R_0_2);
-
     if (d_performECSW.getValue()){
         f[a] += weights(elementIndex) * R_2_0 * Coord(F[0], F[1], 0);
         f[b] += weights(elementIndex) * R_2_0 * Coord(F[2], F[3], 0);
@@ -746,7 +750,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord
             }
             for (unsigned int i = 0 ; i < d_nbModes.getValue() ; i++)
             {
-                if ((d_nbModes.getValue()+1)*numTest <= d_nbTrainingSet.getValue()*d_nbModes.getValue())
+                if (d_nbModes.getValue()*numTest < d_nbTrainingSet.getValue()*d_nbModes.getValue())
                 {
                     Gie[d_nbModes.getValue()*numTest+i][elementIndex] = GieUnit[i];
                     b_ECSW[d_nbModes.getValue()*numTest+i] += GieUnit[i];
