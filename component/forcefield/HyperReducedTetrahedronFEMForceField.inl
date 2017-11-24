@@ -1026,7 +1026,6 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
                     if ( d_nbModes.getValue()*numTest < d_nbModes.getValue()*d_nbTrainingSet.getValue() )
                     {
                         Gie[d_nbModes.getValue()*numTest+i][elementIndex] = GieUnit[i];
-                        b_ECSW[d_nbModes.getValue()*numTest+i] += GieUnit[i];
                     }
                 }
             }
@@ -1493,13 +1492,9 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::init()
         delete matLoader;
         m_modes.conservativeResize(Eigen::NoChange,d_nbModes.getValue());
 
-
-        d_periodSaveGIE = 4;
         Gie.resize(d_nbTrainingSet.getValue()*d_nbModes.getValue());
-        b_ECSW.resize(d_nbTrainingSet.getValue()*d_nbModes.getValue());
         for (unsigned int i = 0; i < d_nbTrainingSet.getValue()*d_nbModes.getValue(); i++)
         {
-            b_ECSW[i] = 0;
             Gie[i].resize(_indexedElements->size());
             for (unsigned int j = 0; j < _indexedElements->size(); j++)
             {

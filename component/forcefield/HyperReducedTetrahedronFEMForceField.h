@@ -188,7 +188,6 @@ protected:
  // Reduced order model variables
     Eigen::MatrixXd m_modes;
     std::vector<std::vector<double> > Gie;
-    std::vector<double> b_ECSW;
     Eigen::VectorXd weights;
     Eigen::VectorXi reducedIntegrationDomain;
     unsigned int m_RIDsize;
