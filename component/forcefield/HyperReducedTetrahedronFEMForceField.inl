@@ -1017,7 +1017,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
 
                     GieUnit[modNum] = 0;
                     for(int i=0; i<12; i+=3){
-                        GieUnit[modNum] += (rotations[elementIndex] * Deriv( F[i], F[i+1],  F[i+2] ))*Deriv(3*m_modes(index[i/3],modNum),m_modes(3*index[i/3]+1,modNum),m_modes(3*index[i/3]+2,modNum));
+                        GieUnit[modNum] += (rotations[elementIndex] * Deriv( F[i], F[i+1],  F[i+2] ))*Deriv(m_modes(3*index[i/3],modNum),m_modes(3*index[i/3]+1,modNum),m_modes(3*index[i/3]+2,modNum));
                     }
 
                 }
