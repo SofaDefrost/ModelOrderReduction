@@ -47,6 +47,7 @@
 
 //  Sparse Matrix
 #include <Eigen/Sparse>
+#include "../loader/modules/MatrixLoader.h"
 
 namespace sofa
 {
@@ -59,6 +60,8 @@ namespace interactionforcefield
 
 using sofa::component::linearsolver::DefaultMultiMatrixAccessor ;
 using sofa::core::behavior::BaseMechanicalState ;
+using sofa::component::loader::MatrixLoader;
+
 
 
 template<class DataTypes1, class DataTypes2>
@@ -70,8 +73,17 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
                                    "link to an other forcefield defined at the same node than mappedForceField")),
       d_mappedMass(initLink("mappedMass",
                                    "link to a mass defined at the same node than mappedForceField")),
-      listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath","Path to the list of active nodes when performing the ECSW method")),
-      performECSW(initData(&performECSW,false,"performECSW","Use the reduced model with the ECSW method"))
+      performECSW(initData(&performECSW,false,"performECSW",
+                                    "Use the reduced model with the ECSW method")),
+      listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath",
+                                   "Path to the list of active nodes when performing the ECSW method")),
+      saveReducedMass(initData(&saveReducedMass,false,"saveReducedMass",
+                                    "Use the mass in the reduced space: Jt*M*J")),
+      usePrecomputedMass(initData(&usePrecomputedMass,"usePrecomputedMass",
+                                         "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
+      precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
+                                       "Path to the precomputed reduced Mass Matrix Jt*M*J"))
+
 
 {
 }
@@ -109,7 +121,17 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init()
 //            listActiveNodes.push_back(i);
 //        std::cout << "list of Active nodes : " << listActiveNodes << std::endl;
 //    }
+    if (usePrecomputedMass.getValue() == true)
+    {
+        Eigen::MatrixXd denseJtMJ;
+        MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
+        matLoader->setFileName(precomputedMassPath.getValue());
+        matLoader->load();
+        matLoader->getMatrix(denseJtMJ);
+        delete matLoader;
+        JtMJ = denseJtMJ.sparseView();
 
+    }
 
 }
 
@@ -350,6 +372,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     KAccessor->addMechanicalState(  d_mappedForceField.get()->getContext()->getMechanicalState() );
     KAccessor->setGlobalMatrix(K);
     KAccessor->setupMatrices();
+
+
     //------------------------------------------------------------------------------
 
 
@@ -363,14 +387,16 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     {
         d_mappedForceField2.get()->addKToMatrix(mparams, KAccessor);
     }
-    //msg_info(this) << "Before check d_mappedMass";
-    if (d_mappedMass != NULL)
-    {
-        d_mappedMass.get()->addMToMatrix(mparams, KAccessor);
-    }
-    else{ msg_info(this) << "There is no d_mappedMass"; }
-    //msg_info(this) << "Out of the d_mappedMass business";
 
+    if (usePrecomputedMass.getValue() == false)
+    {
+        if (d_mappedMass != NULL)
+        {
+            d_mappedMass.get()->addMToMatrix(mparams, KAccessor);
+        }
+        else
+        { msg_info(this) << "There is no d_mappedMass"; }
+    }
     msg_info(this)<<" time addKtoMatrix K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
     time= (double)timer->getTime();
 
@@ -464,6 +490,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             }
         }
         Keig.setFromTriplets(tripletList.begin(), tripletList.end());
+
         //--------------------------------------------------------------------------------------------------------------------
 
         msg_info(this)<<" time set Keig : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
@@ -492,10 +519,77 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
         Eigen::SparseMatrix<double>  JtKJeigen(nbColsJ1,nbColsJ1);
         JtKJeigen = J1eig.transpose()*Keig*J1eig;
+        if (usePrecomputedMass.getValue() == true)
+        {
+            msg_info(this) << "Adding reduced precomputed mass ...";
+            JtKJeigen = JtKJeigen + JtMJ;
+        }
         //--------------------------------------------------------------------------------------------------------------------
 
         msg_info(this)<<" time compute JtKJeigen : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
 
+        if (this->getContext()->getTime() == 0)
+        {
+            if (saveReducedMass.getValue() == true)
+            {
+                if (d_mappedMass != NULL)
+                {
+                    CompressedRowSparseMatrix< Real1 >* M = new CompressedRowSparseMatrix< Real1 > ( );
+                    M->resizeBloc( 3*mstate->getSize() ,  3*mstate->getSize());
+                    M->clear();
+                    DefaultMultiMatrixAccessor* MassAccessor;
+                    MassAccessor = new DefaultMultiMatrixAccessor;
+                    MassAccessor->addMechanicalState(  d_mappedMass.get()->getContext()->getMechanicalState() );
+                    MassAccessor->setGlobalMatrix(M);
+                    MassAccessor->setupMatrices();
+                    d_mappedMass.get()->addMToMatrix(mparams, MassAccessor);
+                    M->compress();
+
+                    std::vector< Eigen::Triplet<double> > tripletListM;
+                    tripletListM.reserve(M->colsValue.size());
+                    Eigen::SparseMatrix<double,Eigen::ColMajor> Meig(M->nRow,M->nRow);
+                    for (unsigned int it_rows_m=0; it_rows_m < M->rowIndex.size() ; it_rows_m ++)
+                    {
+                        row = M->rowIndex[it_rows_m] ;
+                        Range rowRange( M->rowBegin[it_rows_m], M->rowBegin[it_rows_m+1] );
+                        for( Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
+                        {
+                            int col = M->colsIndex[xj];     // block column
+                            const Real1& m = M->colsValue[xj]; // non-null element of the matrix
+                            tripletListM.push_back(Eigen::Triplet<double>(row,col,m));
+                        }
+                    }
+                    Meig.setFromTriplets(tripletListM.begin(), tripletListM.end());
+                    Eigen::SparseMatrix<double>  JtMJeigen(nbColsJ1,nbColsJ1);
+                    JtMJeigen = J1eig.transpose()*Meig*J1eig;
+                    msg_info(this) << JtMJeigen;
+                    std::string massName = d_mappedMass.get()->getName() + "_reduced.txt";
+                    msg_info(this) << "Storing " << massName << " ... ";
+                    std::ofstream file(massName);
+                    if (file.is_open())
+                    {
+                        file << nbColsJ1 << ' ' << nbColsJ1 << "\n";
+                        for (int i=0; i<nbColsJ1; i++)
+                        {
+                            for (int j=0; j<nbColsJ1; j++)
+                            {
+                                file << JtMJeigen.coeff(i,j) << ' ';
+                            }
+                            file << '\n';
+                        }
+                        file.close();
+
+                    }
+
+                }
+                else
+                {
+                    msg_warning(this) << "Cannot save reduced mass because mappedMass is NULL. Please fill the field mappedMass to save the mass.";
+                }
+            }
+        }
+
+        timeJKJeig= (double)timer->getTime();
         for (unsigned int i=0; i<nbColsJ1; i++)
         {
             for (unsigned int j=0; j<nbColsJ1; j++)
@@ -503,6 +597,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
                 mat11.matrix->add(i, j, JtKJeigen.coeff(i,j));
             }
         }
+        msg_info(this)<<" time copy JtKJeigen back to JtKJ in CompressedRowSparse : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
     }
     else if (ComputeSolution == 2) {
 

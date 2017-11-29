@@ -269,7 +269,11 @@ protected:
     sofa::helper::vector<unsigned int> listActiveNodes;
     Data< bool > performECSW;
     sofa::core::objectmodel::DataFileName listActiveNodesPath;
+    Data< bool > saveReducedMass;
+    Data< bool > usePrecomputedMass;
+    sofa::core::objectmodel::DataFileName precomputedMassPath;
 
+    Eigen::SparseMatrix<double> JtMJ;
 
 };
 
