@@ -37,15 +37,12 @@
 
 #include <sofa/core/topology/BaseMeshTopology.h>
 
-
-
 // add visitor implementation
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/core/ConstraintParams.h>
 #include <sofa/core/MultiVecId.h>
 #include <sofa/core/BaseMapping.h>
 #include <sofa/defaulttype/BaseMatrix.h>
-
 
 namespace sofa
 {
@@ -197,6 +194,8 @@ protected:
     SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, BaseForceField, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK > d_mappedForceField;
     SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, BaseForceField, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK > d_mappedForceField2;
     SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, BaseMass, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK > d_mappedMass;
+
+    Data<unsigned int> d_methodUsed;
 
     MappedMatrixForceFieldAndMass() ;
 

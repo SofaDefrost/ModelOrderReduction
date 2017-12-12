@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
 project(ModelOrderReduction)
 
-option(MODELORDERREDUCTION_WITH_DACCORD "Make use of the DaccordAPI to improve the GUI" OFF)
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
 set(MODELORDERREDUCTION_MAJOR_VERSION 1)
 set(MODELORDERREDUCTION_MINOR_VERSION 0)
 set(MODELORDERREDUCTION_VERSION ${MODELORDERREDUCTION_MAJOR_VERSION}.${MODELORDERREDUCTION_MINOR_VERSION})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+message("${CMAKE_CXX_FLAGS_RELEASE}")
+message("${CMAKE_CXX_FLAGS}")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -31,35 +32,11 @@ set(README_FILES
 
     )
 
-# include(cmake/environment.cmake)
-# include(cmake/utils.cmake)
-
 include(component/forcefield/Forcefield_Files.cmake)
 include(component/mapping/Mapping_Files.cmake)
 include(component/loader/Loader_Files.cmake)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
-
-include(component/forcefield/Forcefield_Links.cmake)
-include(component/mapping/Mapping_Links.cmake)
-include(component/loader/Loader_Links.cmake)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
-
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>")
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
-target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
-
-
-find_package(SofaFramework REQUIRED)
-
-if(MODELORDERREDUCTION_WITH_DACCORD)
-    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION -DSOFA_WITH_DACCORD")
-    target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction SofaGuiCommon)
-else()
-    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
-    target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction)
-endif()
 
 ## Install rules for the library and headers; CMake package configurations files
 sofa_create_package(ModelOrderReduction ${MODELORDERREDUCTION_VERSION} ${PROJECT_NAME} ModelOrderReduction)
@@ -67,3 +44,57 @@ sofa_create_package(ModelOrderReduction ${MODELORDERREDUCTION_VERSION} ${PROJECT
 # if(SOFA_BUILD_TESTS)
 #     add_subdirectory(ModelOrderReduction_test)
 # endif()
+
+
+####################################
+####     LINK SPARSE LIBRARY    ####
+####################################
+
+####     Link ViennaCL library  ####
+set(VIENNACL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/ViennaCL-1.7.1/")
+set(VIENNACL_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/ViennaCL-1.7.1/build/libviennacl/libviennacl.so")
+
+include_directories(${VIENNACL_LIBRARY_DIRECTORY})
+target_link_libraries(${PROJECT_NAME} ${VIENNACL_LIBRARY})
+####################################
+
+####     Link OpenCL library    ####
+set(OPENCL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/ViennaCL-1.7.1/CL")
+set(OPENCL_LIBRARY "/usr/lib/x86_64-linux-gnu/libOpenCL.so")
+
+include_directories(${OPENCL_LIBRARY_DIRECTORY})
+target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
+
+#find_package(OpenCL REQUIRED)
+#target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
+#===> cleaner but doesn't work, have to try it again
+
+####################################
+
+####     Link Eigen library     ####
+#set(EIGEN_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/eigen3")
+#include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_LIBRARY_DIRECTORY})
+
+
+####################################
+####     SET COMPILER OPTION    ####
+####################################
+
+####  Compiler option viennacl  ####
+option(ENABLE_OPENCL "Use the OpenCL backend" ON)
+option(ENABLE_CUDA "Use the CUDA backend" OFF)
+####################################
+
+# Targets using OpenCL
+if (ENABLE_OPENCL)
+
+    target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARIES})
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DVIENNACL_WITH_OPENCL")
+
+endif (ENABLE_OPENCL)
+
+##find_package(OpenMP)
+##if (OPENMP_FOUND)
+##    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+##endif()
+

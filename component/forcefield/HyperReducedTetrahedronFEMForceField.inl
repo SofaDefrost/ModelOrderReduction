@@ -2345,7 +2345,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::default
         }
 
     }
-    msg_info(this) << " HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
+    //msg_info(this) << " HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 }
 
 template<class DataTypes>
