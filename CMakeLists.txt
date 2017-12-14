@@ -38,13 +38,16 @@ include(component/loader/Loader_Files.cmake)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
+find_package(SofaFramework REQUIRED)
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
+target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction)
+
 ## Install rules for the library and headers; CMake package configurations files
 sofa_create_package(ModelOrderReduction ${MODELORDERREDUCTION_VERSION} ${PROJECT_NAME} ModelOrderReduction)
 
 # if(SOFA_BUILD_TESTS)
 #     add_subdirectory(ModelOrderReduction_test)
 # endif()
-
 
 ####################################
 ####     LINK SPARSE LIBRARY    ####

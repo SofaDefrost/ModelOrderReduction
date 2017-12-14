@@ -50,9 +50,9 @@
 
 //  Eigen Sparse Matrix
 #include <Eigen/Sparse>
-<<<<<<< Updated upstream
+
 #include "../loader/modules/MatrixLoader.h"
-=======
+
 #include <unsupported/Eigen/src/SparseExtra/MarketIO.h>
 #include <unsupported/Eigen/src/SparseExtra/MatrixMarketIterator.h>
 
@@ -76,7 +76,6 @@
 #include <viennacl/hyb_matrix.hpp>
 #include <viennacl/sliced_ell_matrix.hpp>
 #include <viennacl/linalg/prod.hpp>
->>>>>>> Stashed changes
 
 namespace sofa
 {
@@ -102,7 +101,6 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
                                    "link to an other forcefield defined at the same node than mappedForceField")),
       d_mappedMass(initLink("mappedMass",
                                    "link to a mass defined at the same node than mappedForceField")),
-<<<<<<< Updated upstream
       performECSW(initData(&performECSW,false,"performECSW",
                                     "Use the reduced model with the ECSW method")),
       listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath",
@@ -114,15 +112,9 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
       usePrecomputedMass(initData(&usePrecomputedMass,"usePrecomputedMass",
                                          "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
       precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
-                                       "Path to the precomputed reduced Mass Matrix Jt*M*J"))
-
-=======
+                                       "Path to the precomputed reduced Mass Matrix Jt*M*J")),
       d_methodUsed(initData(&d_methodUsed, (unsigned int)1, "nbSolution",
-                                    "1: with Eigen ; 2: with SourceSparse ; 3: with ViennaCL")),
-      listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath","Path to the list of active nodes when performing the ECSW method")),
-      performECSW(initData(&performECSW,false,"performECSW","Use the reduced model with the ECSW method"))
->>>>>>> Stashed changes
-
+                                    "1: with Eigen ; 2: with SourceSparse ; 3: with ViennaCL"))
 {
     ////Eigen::initParallel();
     //Eigen::setNbThreads(4);
@@ -373,7 +365,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     /*              compute jacobians using generic implementation                */
     /* -------------------------------------------------------------------------- */
 
-<<<<<<< Updated upstream
+
     if ((timeInvariantMapping.getValue() == false) || (this->getContext()->getTime() == 0))
     {
         this->accumulateJacobians(mparams);
@@ -383,12 +375,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     {
         msg_info(this) <<"Skipping Jacobian computation.";
     }
-=======
+
 
     this->accumulateJacobians(mparams);
     msg_info(this) <<"   time accumulate J : "<<( (double)timer->getTime() - time)*timeScale<<" ms" ; //(MAYBE OPTIMIZED)
 
->>>>>>> Stashed changes
+
     time= (double)timer->getTime();
 
 
@@ -436,14 +428,14 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         else
         { msg_info(this) << "There is no d_mappedMass"; }
     }
-<<<<<<< Updated upstream
+
     msg_info(this)<<" time addKtoMatrix K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-=======
+
     else{ msg_info(this) << "There is no d_mappedMass"; }
     //msg_info(this) << "Out of the d_mappedMass business";
 
     msg_info(this)<<"   time addKtoMatrix K : "<<( (double)timer->getTime() - time)*timeScale<<" ms" ; //(MAYBE OPTIMIZED)
->>>>>>> Stashed changes
+
     time= (double)timer->getTime();
 
     if (!K)
@@ -458,12 +450,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     //------------------------------------------------------------------------------
 
 
-<<<<<<< Updated upstream
+
     msg_info(this) << " time compress K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-=======
+
     msg_info(this) << "   time compress K : "<<( (double)timer->getTime() - time)*timeScale<<" ms" ; //(MAYBE OPTIMIZED)
     time= (double)timer->getTime();
->>>>>>> Stashed changes
+
 
 
     //std::cout<< "+++++++++++++++++++++++++++++++++++++"<<std::endl;
@@ -478,11 +470,11 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     /*                  we now get the matrices J1 and J2                         */
     /* -------------------------------------------------------------------------- */
 
-<<<<<<< Updated upstream
+
 
     msg_info(this)<<" nRow: "<< K->nRow << " nCol: " << K->nCol;
 
-=======
+
     sofa::core::MultiMatrixDerivId c = sofa::core::MatrixDerivId::mappingJacobian();
     const MatrixDeriv1 &J1 = c[ms1].read()->getValue();
     MatrixDeriv1RowConstIterator rowItJ1= J1.begin();
@@ -491,7 +483,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     //msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
     //msg_info(this)<<" nRow: "<< K->nRow << " nCol: " << K->nCol;
->>>>>>> Stashed changes
 
     //std::cout<<" ++++++++++++++++++++++++++++++++++++++++++++++++ " <<std::endl;
     //std::cout<<" nBlocRow "<< K->nBlocRow << std::endl;
@@ -516,17 +507,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     /* -------------------------------------------------------------------------- */
     if (d_methodUsed.getValue() == 1)
     {
-<<<<<<< Updated upstream
-        Eigen::SparseMatrix<double,Eigen::ColMajor> Keig(K->nRow,K->nRow);
-        std::vector< Eigen::Triplet<double> > tripletList;
-=======
         msg_info(this) << "ComputeSolution : " << d_methodUsed.getValue();
-
+        double timeJKJeig;
         int nbColsJ1 = rowItJ1.row().size();
         //Eigen::SparseMatrix<double,Eigen::ColMajor> Keig(K->nRow,K->nRow);
         Eigen::SparseMatrix<double,Eigen::RowMajor> Keig(K->nRow,K->nRow);
         std::vector< Eigen::Triplet<double> > tripletList, tripletListJ1;
->>>>>>> Stashed changes
         tripletList.reserve(K->colsValue.size());
 
         double startTime= (double)timer->getTime();
@@ -546,20 +532,15 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         }
         Keig.setFromTriplets(tripletList.begin(), tripletList.end());
 
-<<<<<<< Updated upstream
         //--------------------------------------------------------------------------------------------------------------------
-=======
         //msg_info(this)<<" time set Keig : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
         timeJKJeig= (double)timer->getTime();
->>>>>>> Stashed changes
 
         msg_info(this)<<" time set Keig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
         startTime= (double)timer->getTime();
         Eigen::SparseMatrix<double> J1eig;
-        int nbColsJ1;
         if ((timeInvariantMapping.getValue() == false) || (this->getContext()->getTime() == 0))
         {
-<<<<<<< Updated upstream
             time= (double)timer->getTime();
 
             sofa::core::MultiMatrixDerivId c = sofa::core::MatrixDerivId::mappingJacobian();
@@ -567,10 +548,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             MatrixDeriv1RowConstIterator rowItJ1= J1.begin();
             const MatrixDeriv2 &J2 = c[ms2].read()->getValue();
             MatrixDeriv2RowConstIterator rowItJ2= J2.begin();
-
-=======
-            int rowIndex = rowIt.index();
->>>>>>> Stashed changes
 
             msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 
@@ -582,22 +559,15 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             ///////////////////////     J1 EIGEN    //////////////////////////////////////////////////////////////////////////////
             for (MatrixDeriv1RowConstIterator rowIt = J1.begin(); rowIt !=  J1.end(); ++rowIt)
             {
-<<<<<<< Updated upstream
                 int rowIndex = rowIt.index();
-                int nbCols = rowIt.row().size();
+                //MatrixDeriv1ColConstIterator colIt;
 
                 for (MatrixDeriv1ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
                 {
-
                     int colIndex = colIt.index();
                     Deriv1 elemVal = colIt.val();
                     tripletListJ1.push_back(Eigen::Triplet<double>(rowIndex,colIndex,elemVal[0]));
                 }
-=======
-                int colIndex = colIt.index();
-                Deriv1 elemVal = colIt.val();
-                tripletListJ1.push_back(Eigen::Triplet<double>(rowIndex,colIndex,elemVal[0]));
->>>>>>> Stashed changes
             }
             J1eig.setFromTriplets(tripletListJ1.begin(), tripletListJ1.end());
         }
@@ -609,13 +579,10 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         }
         //--------------------------------------------------------------------------------------------------------------------
 
-<<<<<<< Updated upstream
         msg_info(this)<<" time getJ + set J1eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
         startTime= (double)timer->getTime();
-=======
         //msg_info(this)<<" time set J1eig : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms";
         timeJKJeig= (double)timer->getTime();
->>>>>>> Stashed changes
 
         ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
         if (timeInvariantMapping.getValue() == true)
@@ -642,7 +609,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         }
         //--------------------------------------------------------------------------------------------------------------------
 
-<<<<<<< Updated upstream
         msg_info(this)<<" time compute JtKJeigen : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
 
         if (this->getContext()->getTime() == 0)
@@ -697,9 +663,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
                         file.close();
 
                     }
-=======
         msg_info(this)<<"   time compute JtKJeigen : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms" ; //(MAYBE OPTIMIZED)
->>>>>>> Stashed changes
 
                 }
                 else
@@ -717,9 +681,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
                 mat11.matrix->add(i, j, JtKJeigen.coeff(i,j));
             }
         }
-<<<<<<< Updated upstream
         msg_info(this)<<" time copy JtKJeigen back to JtKJ in CompressedRowSparse : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
-=======
 
 
         //--------------------------------------------------------------------------------------------------------------------
@@ -778,7 +740,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 //        //Eigen::saveMarket(Keig,"matKeig");
 //        //Eigen::saveMarket(J1eig,"matJ1eig");
 
->>>>>>> Stashed changes
     }
     else if (d_methodUsed.getValue() == 2) {
 
@@ -1137,11 +1098,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     }
 
-<<<<<<< Updated upstream
     msg_info(this)<<" total time compute J() * K * J: "<<( (double)timer->getTime() - totime)*timeScale<<" ms";
-=======
     //msg_info(this)<<" time compute J() * K * J: "<<( (double)timer->getTime() - time)*timeScale<<" ms";
->>>>>>> Stashed changes
 
     //std::cout<<"matrix11"<<(*mat11.matrix)<<std::endl;
 
