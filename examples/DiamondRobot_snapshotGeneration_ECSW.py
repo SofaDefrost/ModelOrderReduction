@@ -83,12 +83,12 @@ def createScene(rootNode):
             feuille.createObject('MechanicalObject', name="tetras", template="Vec3d", showIndices="false", showIndicesScale="4e-5", rx="90", dz="35")
             feuille.createObject('ModelOrderReductionMapping', input='@../alpha', output='@./tetras',modesPath=modesRobot,listActiveNodesPath="ECSWdata_stored/listActiveNodes_Diamond.txt",performECSW="false",printLog="0")
             feuille.createObject('UniformMass', name="diamondMass",totalmass="0.5")
-            feuille.createObject('TetrahedronFEMForceField', youngModulus="450", poissonRatio="0.45")
+            feuille.createObject('HyperReducedTetrahedronFEMForceField', youngModulus="450", poissonRatio="0.45", name='DiamondWellConverged_HyperReducedFF_Quite_'+ str(nbModes), src="@meshInput", prepareECSW=prepareECSWBool, performECSW=performECSWBool, nbModes=str(nbModes), modesPath=modesRobot, RIDPath=RIDfile, weightsPath=weightsFile,nbTrainingSet="135", periodSaveGIE="10",printLog="0") 
             feuille.createObject('BoxROI', name="boxROI", box="-15 -15 -40  15 15 10", drawBoxes="true")
             feuille.createObject('PythonScriptController', classname="interface", filename="pythonControllers/shakeDiamondRobotNG.py")
             #                feuille.createObject('FixedConstraint', indices="@boxROI.indices")
             #feuille.createObject('WriteState', filename="output/DiamondQuiteECSWcheckMate.state", period='1',writeX="1", writeV="0")
-            solverNode.createObject('MappedMatrixForceFieldAndMass', template='Vec1d,Vec1d', object1='@./feuilleMOR/alpha', object2='@./feuilleMOR/alpha', mappedForceField='@./feuilleMOR/feuille/DiamondWellConverged_HyperElasticHyperReducedFF_Quite_'+ str(nbModes) ,  mappedMass='@./feuilleMOR/feuille/diamondMass', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile, timeInvariantMapping = 'true', saveReducedMass="false", usePrecomputedMass="true", precomputedMassPath='ECSWdata_stored/diamondMass_reduced34modes.txt', printLog="0")
+            solverNode.createObject('MappedMatrixForceFieldAndMass', template='Vec1d,Vec1d', object1='@./feuilleMOR/alpha', object2='@./feuilleMOR/alpha', mappedForceField='@./feuilleMOR/feuille/DiamondWellConverged_HyperReducedFF_Quite_'+ str(nbModes) ,  mappedMass='@./feuilleMOR/feuille/diamondMass', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile, timeInvariantMapping = 'true', saveReducedMass="false", usePrecomputedMass="false", precomputedMassPath='ECSWdata_stored/diamondMass_reduced34modes.txt', printLog="0")
             #feuille/controlledPoints
             controlledPoints = feuille.createChild('controlledPoints')
             controlledPoints.findData('printLog').value=1
