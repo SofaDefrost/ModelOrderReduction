@@ -3,9 +3,37 @@ robotParam:
     nameRobotMesh: siliconeV0.vtu
     nameRobotStl: surface.stl
     nbModes: 30 #Number of modes wanted
+    nbActuator: 4
+    increment : 5
+
+robotActuator: 
+    -  
+        type: CableConstraint
+        name: nord
+        pullPoint : "0 10 30"
+        range: 
+            maxPull : 40
+    -
+        type: CableConstraint
+        name: ouest
+        pullPoint: "-10 0 30"
+        range: 
+            maxPull : 40
+    - 
+        type: CableConstraint
+        name: sud
+        pullPoint: "0 -10 30"
+        range: 
+            maxPull : 40 
+    -
+        type: CableConstraint
+        name: est
+        pullPoint: "10 0 30"
+        range: 
+            maxPull : 40
 
 other:
-    verbose: True
+    verbose: False
 
 ####    First Step      ####
 #
