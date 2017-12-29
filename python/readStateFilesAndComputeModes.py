@@ -1,4 +1,4 @@
-## Usage: python readStateFilesAndComputeModes.py stateFilename modesFilename tol addRigidBodyModesBOOL
+## Usage: python readStateFilesAndComputeModes.py stateFilename initPositionFilename modesFilename tol addRigidBodyModesBOOL
 
 import math
 import numpy as np
@@ -6,7 +6,23 @@ import numpy as np
 from sys import argv
 
 
-script, stateFilename, modesFilename, tol, addRigidBodyModes = argv
+script, stateFilename, initPositionFilename, modesFilename, tol, addRigidBodyModes = argv
+
+finit = open(initPositionFilename,'r')
+print "Reading file %r:" % initPositionFilename
+for line in finit:
+  lineSplit = line.split();
+  print(lineSplit[0])
+  if (lineSplit[0] == "X0="):  
+      print "Reading rest position: "
+      lineFloat = map(float,lineSplit[1:])
+      restPos = []
+      restPos.append(lineFloat)
+      break
+finit.close()
+restPos = np.transpose(restPos)
+x, y = np.shape(restPos)
+print 'size restPos = ', x, ' ', y
 
 f = open(stateFilename,'r')
 #fout = open("snapshot.txt",'w')
@@ -19,7 +35,6 @@ snapshot = []
 snapshotV = []
 for line in f:
   lineSplit = line.split();
-  print(lineSplit[0])
   if (lineSplit[0] == "X="):  
     nbSnap = nbSnap + 1
     print "Reading snapshot number: ", nbSnap
@@ -36,10 +51,14 @@ snapshot = np.transpose(snapshot)
 nbDOFs, nbSnap = np.shape(snapshot)
 print 'sizes = ',nbDOFs, nbSnap
 
-snapshotDiff = np.zeros((nbDOFs,nbSnap-1))
-for i in range(1,nbSnap):
-    snapshotDiff[:,i-1] = snapshot[:,i] - snapshot[:,0]
-
+#snapshotDiff = np.zeros((nbDOFs,nbSnap-1))
+#for i in range(1,nbSnap):
+#    snapshotDiff[:,i-1] = snapshot[:,i] - snapshot[:,0]
+print restPos[:,0]
+snapshotDiff = np.zeros((nbDOFs,nbSnap))
+for i in range(0,nbSnap):
+    snapshotDiff[:,i] = snapshot[:,i] - restPos[:,0]
+    
 translationModes = np.zeros((nbDOFs,3))
 #translationModes = np.zeros((nbDOFs,2))
 for i in range(0,nbDOFs/3):

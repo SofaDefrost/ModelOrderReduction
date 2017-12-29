@@ -229,6 +229,11 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams
     typename Out::MatrixDeriv::RowConstIterator rowItEnd = in.end();
     msg_info(this) << "In apply JT constraint";
     unsigned int nbModes = m_modesEigen.cols();
+
+//    Eigen::SparseMatrix<double> constraintMat, res;
+//    std::vector< Eigen::Triplet<double> > tripletList;
+//    tripletList.reserve(in.size());
+
     for (typename Out::MatrixDeriv::RowConstIterator rowIt = in.begin(); rowIt != rowItEnd; ++rowIt)
     {        
         typename Out::MatrixDeriv::ColConstIterator colIt = rowIt.begin();
@@ -251,11 +256,29 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams
 
                 ++colIt;
             }
+
+
+//            while (colIt != colItEnd)
+//            {
+//                Deriv colitVal = colIt.index();
+//                tripletList.push_back(Eigen::Triplet<double>(rowIt.index() , 3 * (colIt.index()) , colitVal[0]));
+//                tripletList.push_back(Eigen::Triplet<double>(rowIt.index() , 3 * (colIt.index()) + 1 , colitVal[1]));
+//                tripletList.push_back(Eigen::Triplet<double>(rowIt.index() , 3 * (colIt.index()) + 2 , colitVal[2]));
+//                ++colIt;
+//            }
+
         }
         else
         {
             std::cout<<"Not implemented #################################"<<std::endl;
         }
+//        constraintMat.setFromTriplets(tripletList.begin(), tripletList.end());
+//        res = m_modesEigen.transpose().sparseView()*constraintMat;
+//        for (typename Out::MatrixDeriv::RowConstIterator rowIt = in.begin(); rowIt != rowItEnd; ++rowIt)
+//        {
+//            typename In::MatrixDeriv::RowIterator o = out.writeLine(rowIt.index());
+//            o.addCol(j,data);
+//        }
     }
 
     dOut.endEdit();

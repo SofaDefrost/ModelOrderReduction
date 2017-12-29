@@ -343,7 +343,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     time = (double)timer->getTime();
     totime = (double)timer->getTime();
-    std::cout << "\n" << std::endl;
     if(f_printLog.getValue())
         sout << "ENTERING addKToMatrix" << sendl;
 
