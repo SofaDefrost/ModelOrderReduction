@@ -178,6 +178,7 @@ public :
     Eigen::VectorXi reducedIntegrationDomainWithEdges;
 
     unsigned int m_RIDsize;
+    unsigned int m_RIDedgeSize;
 
     TetrahedronData<sofa::helper::vector<TetrahedronRestInformation> > m_tetrahedronInfo;
     EdgeData<sofa::helper::vector<EdgeInformation> > m_edgeInfo;

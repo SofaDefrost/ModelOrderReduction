@@ -312,17 +312,121 @@ template <class DataTypes> void HyperReducedTetrahedronHyperelasticityFEMForceFi
         for (unsigned int i = 0; i<m_RIDsize; i++)
             reducedIntegrationDomain(i) = i;
     }
+    msg_info(this) << "RID is: " << reducedIntegrationDomain ;
+    msg_info(this) << "d_performECSW is: " << d_performECSW.getValue() ;
+    msg_info(this) << "d_prepareECSW is: " << d_prepareECSW.getValue() ;
 
-    int nbTets = m_topology->getNbTetrahedra();
-    reducedIntegrationDomainWithEdges.resize(0);
-
-    for (int i = 0; i<nbTets; i++)
+    reducedIntegrationDomainWithEdges.resize(m_topology->getNbEdges());
+    int nbEdgesStored = 0;
+    for (int iECSW = 0; iECSW<m_RIDsize; iECSW++)
     {
+        i = reducedIntegrationDomain(iECSW);
         BaseMeshTopology::EdgesInTetrahedron te=m_topology->getEdgesInTetrahedron(i);
         msg_info(this) << "Tet num: " << i << " edges :" << te;
-        for (int j=0; j<)
+        bool alreadyIn0 = false;
+        bool alreadyIn1 = false;
+        bool alreadyIn2 = false;
+        bool alreadyIn3 = false;
+        bool alreadyIn4 = false;
+        bool alreadyIn5 = false;
+
+        for (int j=0; j<nbEdgesStored;j++)
+            if (te[0] == reducedIntegrationDomainWithEdges(j)){
+                alreadyIn0 = true;
+                break;
+            }
+        for (int j=0; j<nbEdgesStored;j++)
+            if (te[1] == reducedIntegrationDomainWithEdges(j)){
+                alreadyIn1 = true;
+                break;
+            }
+        for (int j=0; j<nbEdgesStored;j++)
+            if (te[2] == reducedIntegrationDomainWithEdges(j)){
+                alreadyIn2 = true;
+                break;
+            }
+        for (int j=0; j<nbEdgesStored;j++)
+            if (te[3] == reducedIntegrationDomainWithEdges(j)){
+                alreadyIn3 = true;
+                break;
+            }
+        for (int j=0; j<nbEdgesStored;j++)
+            if (te[4] == reducedIntegrationDomainWithEdges(j)){
+                alreadyIn4 = true;
+                break;
+            }
+        for (int j=0; j<nbEdgesStored;j++)
+            if (te[5] == reducedIntegrationDomainWithEdges(j)){
+                alreadyIn5 = true;
+                break;
+            }
+        if (!alreadyIn0)
+        {
+            reducedIntegrationDomainWithEdges(nbEdgesStored) = te[0];
+            nbEdgesStored = nbEdgesStored+1;
+
+        }
+        else
+        {
+            msg_info(this) << te[0] << "already in !!!!!! ";
+        }
+        if (!alreadyIn1)
+        {
+            reducedIntegrationDomainWithEdges(nbEdgesStored) = te[1];
+            nbEdgesStored = nbEdgesStored+1;
+
+        }
+        else
+        {
+            msg_info(this) << te[1] << "already in !!!!!! ";
+        }
+        if (!alreadyIn2)
+        {
+            reducedIntegrationDomainWithEdges(nbEdgesStored) = te[2];
+            nbEdgesStored = nbEdgesStored+1;
+
+        }
+        else
+        {
+            msg_info(this) << te[2] << "already in !!!!!! ";
+        }
+        if (!alreadyIn3)
+        {
+            reducedIntegrationDomainWithEdges(nbEdgesStored) = te[3];
+            nbEdgesStored = nbEdgesStored+1;
+
+        }
+        else
+        {
+            msg_info(this) << te[3] << "already in !!!!!! ";
+        }
+        if (!alreadyIn4)
+        {
+            reducedIntegrationDomainWithEdges(nbEdgesStored) = te[4];
+            nbEdgesStored = nbEdgesStored+1;
+
+        }
+        else
+        {
+            msg_info(this) << te[4] << "already in !!!!!! ";
+        }
+        if (!alreadyIn5)
+        {
+            reducedIntegrationDomainWithEdges(nbEdgesStored) = te[5];
+            nbEdgesStored = nbEdgesStored+1;
+
+        }
+        else
+        {
+            msg_info(this) << te[5] << "already in !!!!!! ";
+        }
+
 
     }
+    reducedIntegrationDomainWithEdges.conservativeResize(nbEdgesStored);
+    msg_info(this) << "reducedIntegrationDomainWithEdges: " << reducedIntegrationDomainWithEdges;
+
+    m_RIDedgeSize = nbEdgesStored;
 
 }
 
@@ -781,28 +885,55 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatri
     const vector< Edge> &edgeArray=m_topology->getEdges() ;
     helper::vector<EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
     EdgeInformation *einfo;
-    unsigned int i,j,N0, N1, l;
-        Index noeud0, noeud1;
+    unsigned int i,j,N0, N1, l, lECSW;
+    Index noeud0, noeud1;
 
-    for(l=0; l<nbEdges; l++ )
+    if (d_performECSW.getValue())
     {
-        einfo=&edgeInf[l];
-        noeud0=edgeArray[l][0];
-        noeud1=edgeArray[l][1];
-        N0 = offset+3*noeud0;
-        N1 = offset+3*noeud1;
-
-        for (i=0; i<3; i++)
+        for(lECSW=0; lECSW<m_RIDedgeSize; lECSW++ )
         {
-            for(j=0; j<3; j++)
+            l = reducedIntegrationDomainWithEdges(lECSW);
+            einfo=&edgeInf[l];
+            noeud0=edgeArray[l][0];
+            noeud1=edgeArray[l][1];
+            N0 = offset+3*noeud0;
+            N1 = offset+3*noeud1;
+
+            for (i=0; i<3; i++)
             {
-                mat->add(N0+i, N0+j,  einfo->DfDx[j][i]*k);
-                mat->add(N0+i, N1+j, - einfo->DfDx[j][i]*k);
-                mat->add(N1+i, N0+j, - einfo->DfDx[i][j]*k);
-                mat->add(N1+i, N1+j, + einfo->DfDx[i][j]*k);
+                for(j=0; j<3; j++)
+                {
+                    mat->add(N0+i, N0+j,  einfo->DfDx[j][i]*k);
+                    mat->add(N0+i, N1+j, - einfo->DfDx[j][i]*k);
+                    mat->add(N1+i, N0+j, - einfo->DfDx[i][j]*k);
+                    mat->add(N1+i, N1+j, + einfo->DfDx[i][j]*k);
+                }
             }
         }
     }
+    else
+    {
+        for(l=0; l<nbEdges; l++ )
+        {
+            einfo=&edgeInf[l];
+            noeud0=edgeArray[l][0];
+            noeud1=edgeArray[l][1];
+            N0 = offset+3*noeud0;
+            N1 = offset+3*noeud1;
+
+            for (i=0; i<3; i++)
+            {
+                for(j=0; j<3; j++)
+                {
+                    mat->add(N0+i, N0+j,  einfo->DfDx[j][i]*k);
+                    mat->add(N0+i, N1+j, - einfo->DfDx[j][i]*k);
+                    mat->add(N1+i, N0+j, - einfo->DfDx[i][j]*k);
+                    mat->add(N1+i, N1+j, + einfo->DfDx[i][j]*k);
+                }
+            }
+        }
+    }
+
     msg_info(this) <<" addKtoMatrix : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 
     m_edgeInfo.endEdit();
@@ -1019,8 +1150,13 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::draw(const 
 
 
     std::vector< Vector3 > points[4];
-    for(int i = 0 ; i<m_topology->getNbTetrahedra();++i)
+    int i;
+    for(int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
     {
+        i = reducedIntegrationDomain(iECSW);
+
+//    for(int i = 0 ; i<m_topology->getNbTetrahedra();++i)
+//    {
         const Tetrahedron t=m_topology->getTetrahedron(i);
 
         Index a = t[0];
