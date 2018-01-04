@@ -10,32 +10,33 @@ import numpy as np
 import code #   ???
 
 # from sys import argv
-# script, RIDfilename, connectivityFilename, nbOfMode = argv
-
-print "Executing readGieFileAndComputeRIDandWeights.py\n"
+# script, RIDfilename, connectivityFileName, nbOfMode = argv
 
 ################################################################################################
 ## Init variables from data in yaml config file
 
 #Load config file
-with open("../config.yml", 'r') as ymlfile:
+with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
   
-connectivityFilename =          cfg['connectivityFilename']
+connectivityFileName =          cfg['connectivityFileName']
 pathToWeightsAndRIDdir =        cfg['weightsAndRID']['pathTodir']
-RIDFileName =                   cfg['weightsAndRID']['RIDFileName']
-nbModes =                       cfg['robotParam']['nbModes']   
+RIDFileName =                   cfg['weightsAndRID']['RIDFileName']  
 listActiveNodesFileName =       cfg['listActiveNodesFileName']
 
 verbose = cfg['other']['verbose']
 
-print "readGieFileAndComputeRIDandWeights arguments :"
-print "     input pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
+print "###################################################"
+print "Executing readGieFileAndComputeRIDandWeights.py\n"
+print "Arguments :\n"
+print "     INPUT  :"
+print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
 print "         -RIDFileName                :",RIDFileName
-print "         -connectivityFilename       :",connectivityFilename
-print "         with nbModes of :",nbModes
-print "     output pathToWeightsAndRIDdir   :",pathToWeightsAndRIDdir
+print "         -connectivityFileName       :",connectivityFileName
+print "     OUTPUT :"
+print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
 print "         -listActiveNodesFileName    :",listActiveNodesFileName,"\n"
+print "###################################################"
 
 ################################################################################################
 
@@ -55,15 +56,15 @@ fRID.close()
 if verbose : print "Done reading file :",RIDFileName,'\n'
 
 
-fconnec = open(pathToWeightsAndRIDdir+connectivityFilename,'r')
-if verbose : print "Reading file :",connectivityFilename
+fconnec = open(pathToWeightsAndRIDdir+connectivityFileName,'r')
+if verbose : print "Reading file :",connectivityFileName
 connecList = []
 for line in fconnec:
     lineSplit = line.split();
     connecList.append(map(int,lineSplit))
 fconnec.close()
 #print connecList
-if verbose : print "Done reading file :",connectivityFilename,'\n'
+if verbose : print "Done reading file :",connectivityFileName,'\n'
 
 
 if verbose : print "Generating listActiveNodes\n"
@@ -94,5 +95,11 @@ fActiveNodes = open(pathToWeightsAndRIDdir+listActiveNodesFileName,'w')
 for item in listActiveNodes:
     fActiveNodes.write("%d\n" % item)
 fActiveNodes.close()
+
+if cfg['ECSWBool']['prepare'] == "true" and cfg['ECSWBool']['perform'] == "false":
+    cfg['ECSWBool']['prepare'] = "false"
+    cfg['ECSWBool']['perform'] = "true"
+    with open("config.yml", "w") as f:
+        yaml.dump(cfg, f)
 
 print "===> Success convertRIDinActiveNodes.py\n"

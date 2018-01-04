@@ -12,17 +12,15 @@ import code #   ???
 # from sys import argv
 # script, gieFilename, outputfilesName, tol = argv
 
-print "Executing readGieFileAndComputeRIDandWeights.py\n"
-
 ################################################################################################
 ## Init variables from data in yaml config file
 
 #Load config file
-with open("../config.yml", 'r') as ymlfile:
+with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
   
 
-gieFilename =                   "../"+cfg['gieFilename']
+gieFilename =                   cfg['gieFilename']
 pathToWeightsAndRIDdir =        cfg['weightsAndRID']['pathTodir']
 RIDFileName =                   cfg['weightsAndRID']['RIDFileName']
 weightsFileName =               cfg['weightsAndRID']['weightsFileName']
@@ -30,12 +28,18 @@ tol =                           cfg['weightsAndRID']['tolerance']
 
 verbose = cfg['other']['verbose']
 
-print "readGieFileAndComputeRIDandWeights arguments :"
-print "     input gieFilename            :",gieFilename
-print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
+print "###################################################"
+print "Executing readGieFileAndComputeRIDandWeights.py\n"
+print "Arguments :\n"
+print "     INPUT  :"
+print "     in gieFilename    :",gieFilename
+print "     with arguments    :"
+print "         -tolerance        :",tol,"\n"
+print "     OUTPUT :"
+print "     in pathToWeightsAndRIDdir :",pathToWeightsAndRIDdir
 print "         -RIDFileName                :",RIDFileName
-print "         -weightsFileName            :",weightsFileName
-print "         with a tolerance of",tol,"\n"
+print "         -weightsFileName            :",weightsFileName,"\n"
+print "###################################################"
 
 ################################################################################################
 
@@ -52,7 +56,7 @@ def etaTild(Gtilde, b):
 
 def selectECSW(G,b,tau):
     global verbose
-    display = 50
+    display = 30
     j = 0
     nbLines, numElem = np.shape(G)
     ECSWindex = set([])
@@ -60,7 +64,7 @@ def selectECSW(G,b,tau):
     valTarget = tau*np.linalg.norm(b);
 
     while (np.linalg.norm(G.dot(xi) - b) > tau*np.linalg.norm(b)):
-        if verbose and display == j: 
+        if display == j: 
             print 'Current Error: ', errDif(G,xi,b),' Target Error: ', valTarget
             j = 0
         j += 1

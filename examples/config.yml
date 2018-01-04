@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 robotParam:
     pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/Mesh/
     nameRobotMesh: siliconeV0.vtu
@@ -47,18 +48,34 @@ ECSWBool:
 #
 #
 
+=======
+ECSWBool: {perform: 'false', performMappedMatrix: 'false', prepare: 'true'}
+connectivityFileName: test.txt
+>>>>>>> e07ffe2... ADD bash script to generate reduced model
 gieFilename: DiamondWellConverged_HyperReducedFF_Quite_30_Gie.txt
-
-weightsAndRID:
-    pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/ECSWdata_stored/
-    RIDFileName: RID_blop.txt
-    weightsFileName: weights_blop.txt
-    tolerance: 0.05
-
-############################
-####    Fifth Step     ####
-#
-#
-
-connectivityFilename: test.txt
 listActiveNodesFileName: listActiveNodes.txt
+modes: {addRigidBodyModes: false, modesFileName: blop.txt, pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/modes_Options/,
+  tolerance: 0.001}
+other: {verbose: false}
+robotActuator:
+- name: nord
+  pullPoint: 0 10 30
+  range: {maxPull: 40}
+  type: CableConstraint
+- name: ouest
+  pullPoint: -10 0 30
+  range: {maxPull: 40}
+  type: CableConstraint
+- name: sud
+  pullPoint: 0 -10 30
+  range: {maxPull: 40}
+  type: CableConstraint
+- name: est
+  pullPoint: 10 0 30
+  range: {maxPull: 40}
+  type: CableConstraint
+robotParam: {increment: 5, nameRobotMesh: siliconeV0.vtu, nameRobotStl: surface.stl,
+  nbActuator: 4, nbModes: 30, pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/Mesh/}
+stateFile: {initState: true, nameStateFile: myStateFile, pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/State_Files/}
+weightsAndRID: {RIDFileName: RID_blop.txt, pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/ECSWdata_stored/,
+  tolerance: 0.05, weightsFileName: weights_blop.txt}

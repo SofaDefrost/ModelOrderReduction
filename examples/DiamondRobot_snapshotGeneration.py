@@ -4,8 +4,6 @@ import os
 import sys
 import yaml
 
-path = os.path.dirname(os.path.abspath(__file__))+'/Mesh/'
-
 ################################################################################################
 ## Init variables from data in yaml config file
 
@@ -20,17 +18,27 @@ robotPath =         cfg['robotParam']['pathTodir']
 nameRobotMesh =     cfg['robotParam']['nameRobotMesh']
 nameRobotStl =      cfg['robotParam']['nameRobotStl']
 
-print "DiamondRobot_snapshotGeneration arguments :"
+if initState :
+    stateFileName = stateFileName+"_init.state"
+else :
+    stateFileName = stateFileName+".state"
+print "###################################################\n"
+print "DiamondRobot_snapshotGeneration arguments :\n"
+print "     INPUT  :"
 print "     in robotPath      :",robotPath
 print "         -nameRobotStl   :",nameRobotStl
 print "         -nameRobotMesh  :",nameRobotMesh
+print "     with arguments    :"
+print "         -initState :",initState,"\n"
+print "     OUTPUT :"
 print "     in stateFilePath  :",stateFilePath
-print "         initState      :",initState
 print "         stateFileName  :",stateFileName,"\n"
+print "###################################################"
+
 
 ################################################################################################
 
-GREEN = "\033[1;32m "
+GREEN = "\033[1;32m"
 ENDL  = '\033[0m'
 print GREEN + "[INFO]" + ENDL + " [Scene]:" + " If the computation is slow, it might be because you did not add sparse and metis to sofa configuration."
 print GREEN + "[INFO]" + ENDL + " [Scene]:" + " (please refer to the README file for more informations)"
@@ -50,15 +58,6 @@ def createScene(rootNode):
         rootNode.createObject('BackgroundSetting')
         rootNode.createObject('FreeMotionMasterSolver')
         rootNode.createObject('GenericConstraintSolver', tolerance="1e-12", maxIterations="10000")
-
-    #Goal
-        #goal = rootNode.createChild('goal')
-        #goal.createObject('EulerImplicit', firstOrder='1')
-        #goal.createObject('CGLinearSolver', iterations='100',threshold="1e-5", tolerance="1e-5")
-        #goal.createObject('MechanicalObject', name='goalMO', position='0 0 125')
-        #goal.createObject('Sphere', radius='5', group='1')
-        #goal.createObject('UncoupledConstraintCorrection')
-
 
     #Feuille
         feuille = rootNode.createChild('feuille')
@@ -104,13 +103,14 @@ def createScene(rootNode):
 
         if initState :
             # writeX0 = True to take the first pose
-            feuille.createObject('WriteState', filename=stateFilePath+stateFileName+"_init.state", period='0.1',writeX="0", writeX0="1", writeV="0")
+            feuille.createObject('WriteState', filename=stateFilePath+stateFileName, period='0.1',writeX="0", writeX0="1", writeV="0")
         else : 
-            feuille.createObject('WriteState', filename=stateFilePath+stateFileName+".state", period='10',writeX="1", writeX0="", writeV="0") 
+            feuille.createObject('WriteState', filename=stateFilePath+stateFileName, period='10',writeX="1", writeX0="", writeV="0") 
 
     #Feuille/controlledPoints
         controlledPoints = feuille.createChild('controlledPoints')
         controlledPoints.createObject('MechanicalObject', name="actuatedPoints", template="Vec3d", position="0 0 125   0 97 45   -97 0 45   0 -97 45  97 0 45")
+<<<<<<< HEAD
         #controlledPoints.createObject('CableConstraint', name="nord", indices="1", pullPoint="0 10 30", valueType="force", value="4000")
         #controlledPoints.createObject('CableConstraint', name="ouest", indices="2", pullPoint="-10 0 30", valueType="force", value="4000")
         #controlledPoints.createObject('CableConstraint', name="sud", indices="3", pullPoint="0 -10 30", valueType="force", value="4000")
@@ -118,6 +118,18 @@ def createScene(rootNode):
         controlledPoints.createObject('CableConstraint', name="ouest", indices="2", pullPoint="-10 0 30", valueType="displacement", value="0")
         controlledPoints.createObject('CableConstraint', name="sud", indices="3", pullPoint="0 -10 30", valueType="displacement", value="0")
         controlledPoints.createObject('CableConstraint', name="est", indices="4", pullPoint="10 0 30")
+=======
+
+        for i in range(len(cfg['robotActuator'])) :
+            controlledPoints.createObject(cfg['robotActuator'][i]['type'],
+                name=cfg['robotActuator'][i]['name'],
+                indices=str(i+1),
+                pullPoint=cfg['robotActuator'][i]['pullPoint'],
+                valueType="displacement",
+                value="0")
+
+        # for actuator "est" why no value for valueTypev and value ???
+>>>>>>> e07ffe2... ADD bash script to generate reduced model
 
         controlledPoints.createObject('BarycentricMapping', mapForces="false", mapMasses="false")
 
@@ -130,16 +142,11 @@ def createScene(rootNode):
         #Goal Top/Arm
         goalTop = feuille.createChild('goalTop')
         goalTop.createObject('MechanicalObject', name='goalMO', position='0 0 125')
-        #goalTop.createObject('WriteState', filename="output/positionGoalCOARSEfull.state", period='1',writeX="1", writeV="0")
-        #goalTop.createObject('WriteState', filename="output/positionGoalFULL.state", period='1',writeX="1", writeV="0")
-        #goalTop.createObject('WriteState', filename="output/positionGoalFairlyFULL.state", period='1',writeX="1", writeV="0")
         goalTop.createObject('Sphere', radius='3', group='1')
         goalTop.createObject('BarycentricMapping')
 
         goalArm = feuille.createChild('goalArm')
         goalArm.createObject('MechanicalObject', name='goalMO', position='0 60 80   -60 0 80   0 -60 80   60 0 80')
-        #goalArm.createObject('WriteState', filename="output/positionArmsCOARSEfull.state", period='1',writeX="1", writeV="0")
-        #goalArm.createObject('WriteState', filename="output/positionArmsFairlyFULL.state", period='1',writeX="1", writeV="0")
         goalArm.createObject('Sphere', radius='3', group='1')
         goalArm.createObject('BarycentricMapping')
 
