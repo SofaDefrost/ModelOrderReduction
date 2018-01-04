@@ -13,13 +13,13 @@ import numpy as np
 #from sys import argv
 #script, stateFilename, initPositionFilename, modesFilename, tol, addRigidBodyModes = argv
 
-print "Executing readStateFilesAndComputeModes.py\n"
+print "\n"
 
 ################################################################################################
 ## Init variables from data in yaml config file
 
 #Load config file
-with open("../config.yml", 'r') as ymlfile:
+with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
 
 stateFilename =             cfg['stateFile']['pathTodir']+cfg['stateFile']['nameStateFile']+".state"
@@ -31,13 +31,20 @@ addRigidBodyModes =         cfg['modes']['addRigidBodyModes']
 
 verbose = cfg['other']['verbose']
 
-print "readStateFilesAndComputeModes arguments :"
+print "###################################################"
+print "Executing readStateFilesAndComputeModes.py\n" 
+print "Arguments :\n"
+print "     INPUT  :"
+print "     in stateFilename         :",stateFilename
+print "     in initPositionFilename  :",initPositionFilename
+print "     with arguments           :"
+print "         -tolerance               :",tol
+print "         -addRigidBodyModes       :",addRigidBodyModes,"\n"
+print "     OUTPUT :"
 print "     in modesFilePath         :",modesFilePath
-print "         -modesFileName           :",modesFileName
-print "     -stateFilename           :",stateFilename
-print "     -initPositionFilename    :",initPositionFilename
-print "     -tolerance               :",tol
-print "     -addRigidBodyModes       :",addRigidBodyModes,"\n"
+print "         -modesFileName           :",modesFileName,"\n"
+print "###################################################"
+
 ################################################################################################
 
 x0Found = False

@@ -5,8 +5,6 @@ import os
 import sys
 import yaml
 
-pathSceneFile = os.path.dirname(os.path.abspath(__file__))
-
 ################################################################################################
 ## Init variables from data in yaml config file
 
@@ -25,25 +23,32 @@ pathToWeightsAndRIDdir =        cfg['weightsAndRID']['pathTodir']
 RIDFileName =                   cfg['weightsAndRID']['RIDFileName']
 weightsFileName =               cfg['weightsAndRID']['weightsFileName']
 
-listActiveNodesFileName = "ECSWdata_stored/" + cfg['listActiveNodesFilename']
+listActiveNodesFileName = "ECSWdata_stored/" + cfg['listActiveNodesFileName']
 
 prepareECSWBool =               cfg['ECSWBool']['prepare']
 performECSWBool =               cfg['ECSWBool']['perform']
 performECSWBoolMappedMatrix =   cfg['ECSWBool']['performMappedMatrix']
 
-print "DiamondRobot_snapshotGeneration_PrepareECSW arguments :"
+print "###################################################\n"
+print "DiamondRobot_snapshotGeneration_PrepareECSW arguments :\n"
+print "     INPUT  :"
 print "     in robotPath                 :",robotPath
-print "         -nameRobotStl               :",nameRobotStl
-print "         -nameRobotMesh              :",nameRobotMesh
-print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
-print "         -RIDFileName                :",RIDFileName
-print "         -weightsFileName            :",weightsFileName
-print "     -nbModes                     :",nbModes
-print "     -modesRobot                  :",modesRobot
-print "     -listActiveNodesFileName     :",listActiveNodesFileName
-print "     -prepareECSWBool             :",prepareECSWBool
-print "     -performECSWBool             :",performECSWBool
-print "     -performECSWBoolMappedMatrix :",performECSWBoolMappedMatrix,"\n"
+print "         -nameRobotStl                :",nameRobotStl
+print "         -nameRobotMesh               :",nameRobotMesh
+print "     in modesRobot                :",modesRobot
+print "     with arguments    :"
+print "         -nbModes                     :",nbModes
+print "         -prepareECSWBool             :",prepareECSWBool
+print "         -performECSWBool             :",performECSWBool
+print "         -performECSWBoolMappedMatrix :",performECSWBoolMappedMatrix,"\n"
+print "     OUTPUT :"
+print "     in DiamondWellConverged_HyperReducedFF_Quite_"+ str(nbModes),"\n"
+print "###################################################"
+
+# print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
+# print "         -RIDFileName                :",RIDFileName
+# print "         -weightsFileName            :",weightsFileName
+# print "     -listActiveNodesFileName     :",listActiveNodesFileName
 
 ################################################################################################
 
@@ -106,8 +111,6 @@ def createScene(rootNode):
             performECSW=performECSWBool,
             nbModes=str(nbModes),
             modesPath=modesRobot,
-            RIDPath=pathToWeightsAndRIDdir+RIDFileName,
-            weightsPath=pathToWeightsAndRIDdir+weightsFileName,
             nbTrainingSet="135",
             periodSaveGIE="10",
             printLog="0") 

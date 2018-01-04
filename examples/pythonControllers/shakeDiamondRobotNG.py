@@ -13,6 +13,7 @@ with open("config.yml", 'r') as ymlfile:
 
 nbActuator = len(cfg['robotActuator'])
 increment = cfg['robotParam']['increment']
+
 verbose =cfg['other']['verbose']
 
 ################################################################################################
@@ -22,19 +23,17 @@ class interface(Sofa.PythonScriptController):
 
 
     def initGraph(self, node):
+
+        print "########################################\n"
+        print "shakeDiamondRobotNG arguments :\n"
+        print "     nbActuator      :",nbActuator
+        print "     increment       :",increment,"\n"
+        print "########################################"
+
         self.node = node
         self.nbActuator = nbActuator
         self.nbPossibility = 2**self.nbActuator
         self.listActuator = []
-
-        for i in range(nbActuator):
-            self.listActuator.append(node.getChild('controlledPoints').getObject(cfg['robotActuator'][i]['name']))
-    	
-        self.cableNord  = node.getChild('controlledPoints').getObject("nord")
-        self.cableSud   = node.getChild('controlledPoints').getObject("sud")
-        self.cableEst   = node.getChild('controlledPoints').getObject("est")
-        self.cableOuest = node.getChild('controlledPoints').getObject("ouest")
-        self.mechObject = node.getChild('controlledPoints').getObject("actuatedPoints")
         
     	self.time = 0.0
     	self.nbTimesSteps = 0
@@ -47,12 +46,13 @@ class interface(Sofa.PythonScriptController):
         self.phaseNum = [[0] * self.nbActuator for i in range(self.nbPossibility)]
         self.phaseNumClass = []
 
+        for i in range(nbActuator):
+            self.listActuator.append(node.getChild('controlledPoints').getObject(cfg['robotActuator'][i]['name']))
+
         for i in range(self.nbPossibility):
             binVal = "{0:b}".format(i)
             for j in range(len(binVal)):
                 self.phaseNum[i][j + self.nbActuator-len(binVal)] = int(binVal[j])
-
-        if verbose : print self.phaseNum
 
         for nb in range(self.nbActuator+1):
             for i in range(self.nbPossibility):
@@ -60,13 +60,20 @@ class interface(Sofa.PythonScriptController):
                     self.phaseNumClass.append(self.phaseNum[i])
 
         if verbose :
-            print len(self.phaseNumClass)            
-            print self.phaseNumClass
+            print "phaseNum             :\n",self.phaseNum
+            print "Lenght phaseNumClass :",len(self.phaseNumClass)            
+            print "phaseNumClass        :\n",self.phaseNumClass
 
     def onBeginAnimationStep(self,dt):
         self.numStep = self.numStep+1
         self.nbTimesSteps = self.nbTimesSteps + 0.1
         self.time = self.time + dt
+
+        if cfg['stateFile']['initState'] == True :
+            cfg['stateFile']['initState'] = False
+            with open("config.yml", "w") as f:
+                yaml.dump(cfg, f)
+
 	
     	if (self.i < self.nbPossibility):
             if verbose : 
@@ -102,7 +109,7 @@ class interface(Sofa.PythonScriptController):
                         self.i = self.i + 1
                         self.done = [0] * 4
                         self.cptBreath = 0
-                        print 'cptBreath Reset to 0 '
+                        print "Possibility n°",self.i #'cptBreath Reset to 0 '
                     else:
                         self.cptBreath = self.cptBreath + 1
                         print 'cptBreath -------------------------------->>>>>>>>>>>>>> ', self.cptBreath

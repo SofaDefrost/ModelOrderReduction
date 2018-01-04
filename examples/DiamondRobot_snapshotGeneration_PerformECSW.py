@@ -29,19 +29,23 @@ prepareECSWBool =               cfg['ECSWBool']['prepare']
 performECSWBool =               cfg['ECSWBool']['perform']
 performECSWBoolMappedMatrix =   cfg['ECSWBool']['performMappedMatrix']
 
-print "DiamondRobot_snapshotGeneration_PrepareECSW arguments :"
+print "###################################################\n"
+print "DiamondRobot_snapshotGeneration_PrepareECSW arguments :\n"
+print "     INPUT  :"
 print "     in robotPath                 :",robotPath
-print "         -nameRobotStl               :",nameRobotStl
-print "         -nameRobotMesh              :",nameRobotMesh
+print "         -nameRobotStl                :",nameRobotStl
+print "         -nameRobotMesh               :",nameRobotMesh
 print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
-print "         -RIDFileName                :",RIDFileName
-print "         -weightsFileName            :",weightsFileName
-print "     -nbModes                     :",nbModes
-print "     -modesRobot                  :",modesRobot
-print "     -listActiveNodesFileName     :",listActiveNodesFileName
-print "     -prepareECSWBool             :",prepareECSWBool
-print "     -performECSWBool             :",performECSWBool
-print "     -performECSWBoolMappedMatrix :",performECSWBoolMappedMatrix,"\n"
+print "         -RIDFileName                 :",RIDFileName
+print "         -weightsFileName             :",weightsFileName
+print "         -listActiveNodesFileName     :",listActiveNodesFileName
+print "     in modesRobot                :",modesRobot
+print "     with arguments    :"
+print "         -nbModes                     :",nbModes
+print "         -prepareECSWBool             :",prepareECSWBool
+print "         -performECSWBool             :",performECSWBool
+print "         -performECSWBoolMappedMatrix :",performECSWBoolMappedMatrix,"\n"
+print "###################################################"
 
 ################################################################################################
 
