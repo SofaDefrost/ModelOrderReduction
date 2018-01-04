@@ -110,15 +110,6 @@ def createScene(rootNode):
     #Feuille/controlledPoints
         controlledPoints = feuille.createChild('controlledPoints')
         controlledPoints.createObject('MechanicalObject', name="actuatedPoints", template="Vec3d", position="0 0 125   0 97 45   -97 0 45   0 -97 45  97 0 45")
-<<<<<<< HEAD
-        #controlledPoints.createObject('CableConstraint', name="nord", indices="1", pullPoint="0 10 30", valueType="force", value="4000")
-        #controlledPoints.createObject('CableConstraint', name="ouest", indices="2", pullPoint="-10 0 30", valueType="force", value="4000")
-        #controlledPoints.createObject('CableConstraint', name="sud", indices="3", pullPoint="0 -10 30", valueType="force", value="4000")
-        controlledPoints.createObject('CableConstraint', name="nord", indices="1", pullPoint="0 10 30", valueType="displacement", value="0")
-        controlledPoints.createObject('CableConstraint', name="ouest", indices="2", pullPoint="-10 0 30", valueType="displacement", value="0")
-        controlledPoints.createObject('CableConstraint', name="sud", indices="3", pullPoint="0 -10 30", valueType="displacement", value="0")
-        controlledPoints.createObject('CableConstraint', name="est", indices="4", pullPoint="10 0 30")
-=======
 
         for i in range(len(cfg['robotActuator'])) :
             controlledPoints.createObject(cfg['robotActuator'][i]['type'],
@@ -129,17 +120,16 @@ def createScene(rootNode):
                 value="0")
 
         # for actuator "est" why no value for valueTypev and value ???
->>>>>>> e07ffe2... ADD bash script to generate reduced model
 
         controlledPoints.createObject('BarycentricMapping', mapForces="false", mapMasses="false")
 
-        #Visu
+    #Visu
         visuNode = feuille.createChild("visuNode")
         visuNode.createObject("OglModel",filename=robotPath+nameRobotStl, template='ExtVec3f', color='0.7 0.7 0.7 0.6',rotation="90 0 0", translation="0 0 35")
         visuNode.createObject("BarycentricMapping")
 
 
-        #Goal Top/Arm
+    #Goal Top/Arm
         goalTop = feuille.createChild('goalTop')
         goalTop.createObject('MechanicalObject', name='goalMO', position='0 0 125')
         goalTop.createObject('Sphere', radius='3', group='1')

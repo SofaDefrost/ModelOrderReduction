@@ -1,57 +1,5 @@
-<<<<<<< HEAD
-robotParam:
-    pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/Mesh/
-    nameRobotMesh: siliconeV0.vtu
-    nameRobotStl: surface.stl
-    nbModes: 30 #Number of modes wanted
-
-other:
-    verbose: True
-
-####    First Step      ####
-#
-#   Launch SOFA scene and with the python script controller "shakeDiamondRobotNG" 
-#   (activate the different actuator covering all the actuating possibilities)
-#   and recover the different states of the fine meshed robot  
-
-stateFile:
-    pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/State_Files/
-    nameStateFile: myStateFile
-    initState: True
-
-############################
-####    Second Step     ####
-#
-#   Execute python script "readStateFilesAndComputeModes"
-#   which will from the previously generated states files 
-#   produced the mode file describing a "lvl 1" reduced model
-
-modes:
-    pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/modes_Options/
-    modesFileName: blop.txt
-    tolerance: 0.001
-    addRigidBodyModes: false
-
-############################
-####    Third Step      ####
-#
-#   Launch another SOFA scene using the previously generated modes
-#   and using the MOR component reduced it further
-
-ECSWBool:
-    prepare: 'false'
-    perform: 'true'
-    performMappedMatrix: 'false'
-
-############################
-####    Fourth Step     ####
-#
-#
-
-=======
 ECSWBool: {perform: 'false', performMappedMatrix: 'false', prepare: 'true'}
 connectivityFileName: test.txt
->>>>>>> e07ffe2... ADD bash script to generate reduced model
 gieFilename: DiamondWellConverged_HyperReducedFF_Quite_30_Gie.txt
 listActiveNodesFileName: listActiveNodes.txt
 modes: {addRigidBodyModes: false, modesFileName: blop.txt, pathTodir: /home/felix/SOFA/plugin/ModelOrderReduction/examples/modes_Options/,

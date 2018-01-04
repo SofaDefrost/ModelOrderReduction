@@ -2,45 +2,26 @@
 # -*- coding: utf-8 -*-
 import Sofa
 import math
+import yaml
 
+################################################################################################
+## Init variables from data in yaml config file
 
-class interface(Sofa.PythonScriptController):
+#Load config file
+with open("config.yml", 'r') as ymlfile:
+    cfg = yaml.load(ymlfile)
 
-<<<<<<< HEAD
-=======
 nbActuator = len(cfg['robotActuator'])
 increment = cfg['robotParam']['increment']
 
 verbose =cfg['other']['verbose']
->>>>>>> e07ffe2... ADD bash script to generate reduced model
 
-    def initGraph(self, node):
-        self.node = node
-
-	#self.mesh  = node.getChild('feuille').getObject("loader")
-	#print 'connnnnnnnnnnnnnnnnnnnnecccccctivity'
-	#connec = self.mesh.findData('tetrahedra').value
-	#print connec[0]
-	#print len(connec)
-	#fconnec = open('output/connectivity_Diamond.txt','w')
-	#for elem in connec:
-		#for point in elem:
-			#fconnec.write('%s ' % point)
-		#fconnec.write('\n')
-        #fconnec.close()
+################################################################################################
 
 
+class interface(Sofa.PythonScriptController):
 
-<<<<<<< HEAD
-	
-	self.cableNord  = node.getChild('controlledPoints').getObject("nord")
-        self.cableSud   = node.getChild('controlledPoints').getObject("sud")
-        self.cableEst   = node.getChild('controlledPoints').getObject("est")
-        self.cableOuest = node.getChild('controlledPoints').getObject("ouest")
 
-        self.mechObject = node.getChild('controlledPoints').getObject("actuatedPoints")
-
-=======
     def initGraph(self, node):
 
         print "########################################\n"
@@ -53,22 +34,18 @@ verbose =cfg['other']['verbose']
         self.nbActuator = nbActuator
         self.nbPossibility = 2**self.nbActuator
         self.listActuator = []
->>>>>>> e07ffe2... ADD bash script to generate reduced model
         
-	self.time = 0.0
-	self.nbTimesSteps = 0
-	
-
-<<<<<<< HEAD
-        self.phaseNum = [[0] * 4 for i in range(16)]
-        for i in range(16):
-            binVal = "{0:b}".format(i)
-            for j in range(len(binVal)):
-                self.phaseNum[i][j + 4-len(binVal)] = int(binVal[j])
+    	self.time = 0.0
+    	self.nbTimesSteps = 0
+        self.i = 0
+        self.done = [0] * self.nbActuator
+        self.breathTime = 0
+        self.cptBreath = 0
+        self.numStep = -1
+        
+        self.phaseNum = [[0] * self.nbActuator for i in range(self.nbPossibility)]
         self.phaseNumClass = []
-        for nb in range(5):
-            for i in range(16):
-=======
+
         for i in range(nbActuator):
             self.listActuator.append(node.getChild('controlledPoints').getObject(cfg['robotActuator'][i]['name']))
 
@@ -79,36 +56,16 @@ verbose =cfg['other']['verbose']
 
         for nb in range(self.nbActuator+1):
             for i in range(self.nbPossibility):
->>>>>>> e07ffe2... ADD bash script to generate reduced model
                 if sum(self.phaseNum[i]) == nb:
                     self.phaseNumClass.append(self.phaseNum[i])
-        print len(self.phaseNumClass)            
-        print self.phaseNumClass
-        
-        self.i = 0
-        
-        self.done = [0] * 4
-        self.breathTime = 0
-        self.cptBreath = 0
-        self.numStep = -1
 
-<<<<<<< HEAD
-										   
-=======
         if verbose :
             print "phaseNum             :\n",self.phaseNum
             print "Lenght phaseNumClass :",len(self.phaseNumClass)            
             print "phaseNumClass        :\n",self.phaseNumClass
->>>>>>> e07ffe2... ADD bash script to generate reduced model
 
     def onBeginAnimationStep(self,dt):
-        print 'onBeginAnimationStep %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
         self.numStep = self.numStep+1
-<<<<<<< HEAD
-	self.time = self.time + dt
-	self.nbTimesSteps = self.nbTimesSteps + 0.1
-	print 'time = ', self.time 
-=======
         self.nbTimesSteps = self.nbTimesSteps + 0.1
         self.time = self.time + dt
 
@@ -117,73 +74,35 @@ verbose =cfg['other']['verbose']
             with open("config.yml", "w") as f:
                 yaml.dump(cfg, f)
 
->>>>>>> e07ffe2... ADD bash script to generate reduced model
 	
-	if (self.i < 16):
-            print 'We are in phase: ', self.phaseNumClass[self.i], '++++++++++++++++++++++++++++++++'
-            increment = 5
-            maxPull = 40
+    	if (self.i < self.nbPossibility):
+            if verbose : 
+                print 'time = ', self.time 
+                print 'onBeginAnimationStep %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+                print 'We are in phase: ', self.phaseNumClass[self.i], '++++++++++++++++++++++++++++++++'
+                print "step:", self.numStep
 
-            inputvalueNord = self.cableNord.findData('value')
-            inputvalueSud = self.cableSud.findData('value')
-            inputvalueEst = self.cableEst.findData('value')
-            inputvalueOuest = self.cableOuest.findData('value')
-            
-            displacementNord = inputvalueNord.value[0][0]
-            displacementSud = inputvalueSud.value[0][0]
-            displacementEst = inputvalueEst.value[0][0]
-            displacementOuest = inputvalueOuest.value[0][0]
-            print "step:", self.numStep
+            listActualValues = []
+
+            for i in range(nbActuator): 
+                listActualValues.append(self.listActuator[i].findData('value').value[0][0])
+
             if (self.numStep - 2) % 10 == 0:
-                if (self.phaseNumClass[self.i][0] == 1):
-                    if (displacementNord < maxPull):
-                        displacementNord = displacementNord + increment
-                    else:
-                        self.done[0] = 1
-                else:
-                    if (displacementNord >= increment):
-                        displacementNord = displacementNord - increment
-                    else:
-                        self.done[0] = 1
-                        
-                if (self.phaseNumClass[self.i][1] == 1):
-                    if (displacementSud < maxPull):
-                        displacementSud = displacementSud + increment
-                    else:
-                        self.done[1] = 1
-                else:
-                    if (displacementSud >= increment):
-                        displacementSud = displacementSud - increment
-                    else:
-                        self.done[1] = 1
-                
-                if (self.phaseNumClass[self.i][2] == 1):
-                    if (displacementEst < maxPull):
-                        displacementEst = displacementEst + increment
-                    else:
-                        self.done[2] = 1
-                else:
-                    if (displacementEst >= increment):
-                        displacementEst = displacementEst - increment
-                    else:
-                        self.done[2] = 1
-                        
-                if (self.phaseNumClass[self.i][3] == 1):
-                    if (displacementOuest < maxPull):
-                        displacementOuest = displacementOuest + increment
-                    else:
-                        self.done[3] = 1
-                else:
-                    if (displacementOuest >= increment):
-                        displacementOuest = displacementOuest - increment
-                    else:
-                        self.done[3] = 1	
 
+                for i in range(nbActuator):
 
-                inputvalueNord.value = str(displacementNord)
-                inputvalueSud.value = str(displacementSud)
-                inputvalueEst.value = str(displacementEst)
-                inputvalueOuest.value = str(displacementOuest)
+                    if (self.phaseNumClass[self.i][i] == 1):
+                        if (listActualValues[i] < cfg['robotActuator'][i]['range']['maxPull']):
+                            listActualValues[i] = listActualValues[i] + increment
+                        else:
+                            self.done[i] = 1
+                    else:
+                        if (listActualValues[i] >= increment):
+                            listActualValues[i] = listActualValues[i] - increment
+                        else:
+                            self.done[i] = 1
+
+                    self.listActuator[i].findData('value').value = str(listActualValues[i])
                 
                 if ((self.done[0] == 1) and (self.done[1] == 1) and (self.done[2] == 1) and (self.done[3] == 1)):
                     if self.cptBreath == self.breathTime:
@@ -195,9 +114,10 @@ verbose =cfg['other']['verbose']
                         self.cptBreath = self.cptBreath + 1
                         print 'cptBreath -------------------------------->>>>>>>>>>>>>> ', self.cptBreath
 
-            print 'displacementNord ', displacementNord
-            print 'displacementSud ', displacementSud	
-            print 'displacementEst ', displacementEst	
-            print 'displacementOuest ', displacementOuest                                    
+            
+            if verbose :
+                for i in range(nbActuator):
+                    print listActualValues[i]
+
         else:
             print 'SAMPLING DONE !!!'
