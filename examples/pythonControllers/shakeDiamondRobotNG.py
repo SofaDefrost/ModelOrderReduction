@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import Sofa
+import time, sys
 import math
 import yaml
 
@@ -17,6 +18,26 @@ increment = cfg['robotParam']['increment']
 verbose =cfg['other']['verbose']
 
 ################################################################################################
+
+def update_progress(progress):
+    barLength = 40 # Modify this to change the length of the progress bar
+    status = "Shake Model"
+    if isinstance(progress, int):
+        progress = float(progress)
+    if not isinstance(progress, float):
+        progress = 0
+        status = "error: progress var must be float\r\n"
+    if progress < 0:
+        progress = 0
+        status = "Halt...\r\n"
+    if progress > 1:
+        progress = 1
+    block = int(round(barLength*progress))
+    text = "\r[{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
+    if progress == 1 :
+        text =  text+"\n"
+    sys.stdout.write(text)
+    sys.stdout.flush()
 
 
 class interface(Sofa.PythonScriptController):
@@ -109,7 +130,7 @@ class interface(Sofa.PythonScriptController):
                         self.i = self.i + 1
                         self.done = [0] * 4
                         self.cptBreath = 0
-                        print "Possibility n°",self.i #'cptBreath Reset to 0 '
+                        if not verbose : update_progress(round(float(self.i ) / self.nbPossibility , 2) )
                     else:
                         self.cptBreath = self.cptBreath + 1
                         print 'cptBreath -------------------------------->>>>>>>>>>>>>> ', self.cptBreath
@@ -118,6 +139,5 @@ class interface(Sofa.PythonScriptController):
             if verbose :
                 for i in range(nbActuator):
                     print listActualValues[i]
-
-        else:
-            print 'SAMPLING DONE !!!'
+        # else:
+        #     print 'SAMPLING DONE !!!'

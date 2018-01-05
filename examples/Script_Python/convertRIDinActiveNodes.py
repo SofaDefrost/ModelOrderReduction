@@ -27,7 +27,7 @@ listActiveNodesFileName =       cfg['listActiveNodesFileName']
 verbose = cfg['other']['verbose']
 
 print "###################################################"
-print "Executing readGieFileAndComputeRIDandWeights.py\n"
+print "Executing convertRIDinActiveNodes.py\n"
 print "Arguments :\n"
 print "     INPUT  :"
 print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
@@ -87,9 +87,6 @@ for i in RIDlist:
 
 listActiveNodes.sort()
 
-print "listActiveNodes :"
-print listActiveNodes
-
 if verbose : print "Filling file :",listActiveNodesFileName,"\n"
 fActiveNodes = open(pathToWeightsAndRIDdir+listActiveNodesFileName,'w')
 for item in listActiveNodes:
@@ -102,4 +99,7 @@ if cfg['ECSWBool']['prepare'] == "true" and cfg['ECSWBool']['perform'] == "false
     with open("config.yml", "w") as f:
         yaml.dump(cfg, f)
 
-print "===> Success convertRIDinActiveNodes.py\n"
+if verbose :
+    print "listActiveNodes :"
+    print listActiveNodes
+    print "===> Success convertRIDinActiveNodes.py\n"

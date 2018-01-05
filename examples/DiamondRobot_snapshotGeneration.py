@@ -32,7 +32,7 @@ print "     with arguments    :"
 print "         -initState :",initState,"\n"
 print "     OUTPUT :"
 print "     in stateFilePath  :",stateFilePath
-print "         stateFileName  :",stateFileName,"\n"
+print "         stateFileName   :",stateFileName,"\n"
 print "###################################################"
 
 

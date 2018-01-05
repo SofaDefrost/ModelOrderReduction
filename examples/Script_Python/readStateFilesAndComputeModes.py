@@ -127,10 +127,10 @@ if x0Found :
         np.savetxt(modesFilePath+modesFileName, modesTot, header=str(nbDOFs)+' '+str(nbModes+3), comments='', fmt='%10.5f')
     else:
         np.savetxt(modesFilePath+modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
-    
-    print "Number of modes to reach tolerance: ", nbModes
-    print "===> Success readStateFilesAndComputeModes.py\n"
-    #print(s)
+    if verbose :
+        print "Number of modes to reach tolerance: ", nbModes
+        print "===> Success readStateFilesAndComputeModes.py\n"
+        #print(s)
 
     f.close()
 else: print "XO NOT FOUND"

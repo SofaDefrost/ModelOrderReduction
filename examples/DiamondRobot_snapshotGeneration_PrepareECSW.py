@@ -3,6 +3,7 @@ import Sofa
 
 import os
 import sys
+import numpy as np
 import yaml
 
 ################################################################################################
@@ -24,6 +25,7 @@ RIDFileName =                   cfg['weightsAndRID']['RIDFileName']
 weightsFileName =               cfg['weightsAndRID']['weightsFileName']
 
 listActiveNodesFileName = "ECSWdata_stored/" + cfg['listActiveNodesFileName']
+connectivityFileName =  cfg['connectivityFileName']
 
 prepareECSWBool =               cfg['ECSWBool']['prepare']
 performECSWBool =               cfg['ECSWBool']['perform']
@@ -42,7 +44,8 @@ print "         -prepareECSWBool             :",prepareECSWBool
 print "         -performECSWBool             :",performECSWBool
 print "         -performECSWBoolMappedMatrix :",performECSWBoolMappedMatrix,"\n"
 print "     OUTPUT :"
-print "     in DiamondWellConverged_HyperReducedFF_Quite_"+ str(nbModes),"\n"
+print "     in DiamondWellConverged_HyperReducedFF_Quite_"+ str(nbModes)
+print "     in "+pathToWeightsAndRIDdir+connectivityFileName,"\n"
 print "###################################################"
 
 # print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
@@ -55,6 +58,17 @@ print "###################################################"
 modesPositionStr = '0'
 for i in range(1,nbModes):
     modesPositionStr = modesPositionStr + ' 0'
+
+class saveNodesInfo(Sofa.PythonScriptController):
+
+    def initGraph(self, node):
+        
+        self.node = node
+
+        tetrahedra = self.node.getObject('loader').findData("tetrahedra").value
+        np.savetxt(pathToWeightsAndRIDdir+connectivityFileName, tetrahedra,fmt='%i')
+        print "Saved tetrahedra in", pathToWeightsAndRIDdir+connectivityFileName
+
     
 def createScene(rootNode):
 
@@ -134,7 +148,7 @@ def createScene(rootNode):
             printLog="0")
 
     #Save Nodes Info
-        feuille.createObject('PythonScriptController', classname="saveNodesInfo", filename="pythonControllers/saveNodesInfo.py")
+        feuille.createObject('PythonScriptController', classname="saveNodesInfo")
         
     #Feuille/controlledPoints
 

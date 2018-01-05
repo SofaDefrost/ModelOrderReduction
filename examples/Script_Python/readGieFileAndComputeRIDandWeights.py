@@ -3,7 +3,7 @@
 ##               arg1 = gieFilename             ->  Path to GIE File
 ##               arg2 = outputfilesName         ->  Name Output File
 ##               arg3 = tol                     ->  Tolerance (typically between 0.1 and 0.01)
-
+import time, sys
 import yaml
 import math
 import numpy as np
@@ -48,6 +48,27 @@ lineCount = 0
 gie = []
 keepIndex = []
 
+def update_progress(progress):
+    barLength = 40 # Modify this to change the length of the progress bar
+    status = "Compute Weight&RID"
+    if isinstance(progress, int):
+        progress = float(progress)
+    if not isinstance(progress, float):
+        progress = 0
+        status = "error: progress var must be float\r\n"
+    if progress < 0:
+        progress = 0
+        status = "Halt...\r\n"
+    if progress > 1:
+        progress = 1
+    block = int(round(barLength*progress))
+    text = "\r[{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
+    if progress == 1 :
+        text =  text+"\n"
+    sys.stdout.write(text)
+    sys.stdout.flush()
+
+
 def errDif(G, xi, b):
     return np.linalg.norm(G.dot(xi) - b)
 
@@ -56,18 +77,21 @@ def etaTild(Gtilde, b):
 
 def selectECSW(G,b,tau):
     global verbose
-    display = 30
-    j = 0
+
     nbLines, numElem = np.shape(G)
     ECSWindex = set([])
     xi = np.zeros((numElem,1))
     valTarget = tau*np.linalg.norm(b);
+    currentValue = errDif(G,xi,b)
+    marge = currentValue - valTarget
 
-    while (np.linalg.norm(G.dot(xi) - b) > tau*np.linalg.norm(b)):
-        if display == j: 
-            print 'Current Error: ', errDif(G,xi,b),' Target Error: ', valTarget
-            j = 0
-        j += 1
+    while (currentValue > valTarget):
+
+        if verbose : 
+            print 'Current Error: ', currentValue,' Target Error: ', valTarget
+        else :
+            update_progress( round( ( 100 - ((currentValue - valTarget)*100) / marge) / 100 , 4) )
+
         vecDiff = b - G.dot(xi)
         GT = np.transpose(G)
         mu = GT.dot(vecDiff)
@@ -117,7 +141,12 @@ def selectECSW(G,b,tau):
 
         xi[list(ECSWindex)] = etaTilde
 
-    print "Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget
+        currentValue = errDif(G,xi,b)
+
+    if verbose :
+        print "Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget
+    else :    
+        update_progress( 1 )
 
     return (ECSWindex,xi)
 
@@ -167,4 +196,4 @@ nbElements = xi.size
 np.savetxt(pathToWeightsAndRIDdir+RIDFileName,ECSWindex, header=str(sizeRID)+' 1', comments='', fmt='%d')
 np.savetxt(pathToWeightsAndRIDdir+weightsFileName,xi, header=str(nbElements)+' 1', comments='',fmt='%10.5f')
 
-print "===> Success readGieFileAndComputeRIDandWeights.py\n"
+if verbose: print "===> Success readGieFileAndComputeRIDandWeights.py\n"
