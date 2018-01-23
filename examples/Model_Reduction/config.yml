@@ -1,0 +1,31 @@
+### Diamond
+# sceneConfigFile: 1_INPUT/Configuration_Files/config_Diamond_Scene.yml
+
+#### Starfish
+# sceneConfigFile: 1_INPUT/Configuration_Files/config_Starfish_ECSW_Scene.yml
+# sceneConfigFile: 1_INPUT/Configuration_Files/config_Starfish_Snapshot_Scene.yml
+
+### Finger
+# sceneConfigFile: 1_INPUT/Configuration_Files/config_finger.yml
+
+
+morConfigFile: 1_INPUT/Configuration_Files/morConfigFile.yml
+
+other:
+  verbose: true
+
+
+#MOR config
+# -Diamond:
+#actuatorParam: {breathTime: 0, increment: 5, modulo: 10}
+#HyperReducedFEMForceField: {youngModulus: 450, poissonRatio: 0.45, nbTrainingSet: 200}
+#
+# -StarFish:
+#actuatorParam: {breathTime: 2, increment: 200, modulo: 1}
+#
+#HyperReducedFEMForceField: {method: large, youngModulus: 70, poissonRatio: 0.05, nbTrainingSet: 93, periodSaveGIE: 50}
+#MappedMatrixForceFieldAndMass: {mappedForceField2: '@./modelMOR/model/modelSubTopo/HyperReducedTriangleFEMForceField'}
+#
+# -Finger:
+#actuatorParam: {breathTime: 0, increment: 2000, modulo: 1}
+

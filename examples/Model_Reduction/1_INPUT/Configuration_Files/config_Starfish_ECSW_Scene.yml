@@ -1,0 +1,67 @@
+rootNode:
+
+    requiredPlugin: {SofaPython , SoftRobots, ModelOrderReduction}
+    visualStyle: showVisualModels showBehaviorModels hideCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe    
+    sceneParam:
+        
+        gravity: 0 0 -9810
+
+    collision: 
+
+        bool: true
+        friction: mu=0.7
+
+solverNode: 
+
+    GenericConstraintCorrection:
+        solverName: SparseLDLSolver
+
+## note : don't put name inside Param -> will not find the component anymore
+modelNode:
+
+    pathTodir: 1_INPUT/Mesh_Model/
+    nameModelMesh: full_quadriped_SMALL.vtk
+    nameModelVisu: quadriped_collision.stl
+    nameModelCol: quadriped_collision.stl
+    actuatorConfigFile: 1_INPUT/Configuration_Files/config_Starfish_Actuator.yml
+
+    totalmass: 0.200
+
+    BoxROIpts: 0 0 -0.1 150 -100 0.1
+    SubTopo : True
+    BoxROI: 
+
+        TriangleSetTopologyContainer:
+
+            position: '@loader.position' 
+            triangles: '@BoxROI.trianglesInROI'
+
+        HyperReducedTriangleFEMForceField:
+
+            method: large
+            poissonRatio: 0.49
+            youngModulus: 5000
+            poissonRatio: 0.49
+            prepareECSW: false
+            performECSW: true
+            nbModes : 40
+            modesPath: 2_OUPUT/2_Modes_Options/blop.txt
+            RIDPath: 2_OUPUT/3_Reduced_Model/RID_subTopo.txt
+            weightsPath: 2_OUPUT/3_Reduced_Model/weights_subTopo.txt
+            nbTrainingSet: 93
+            periodSaveGIE: 50
+            printLog: 1
+
+    ForceField :
+
+        TetrahedronFEMForceField:
+            method: large
+            youngModulus: 70
+            poissonRatio: 0.05
+            drawAsEdges: 1
+
+    linearSolver: ../SparseLDLSolver
+    
+    pythonControllers: 
+    -   filename : 1_INPUT/Python_Controllers/shakeModel.py
+        classname : interface
