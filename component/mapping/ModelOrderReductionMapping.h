@@ -55,7 +55,6 @@ namespace mapping
  *  This maps vec1d MechanicalObjects to vec3d MechanicalObjects.
  *  Inputs:
  *      modesPath: Path to the text file containing the precomputed modes
- *      performECSW: a boolean that says if Hyperreduction is being performed (for computation optimisation)
  *      RIDpath: In case perfromECSW is true, path to the text file containing the reduced integration domain indices.
  *  The size of the "position" attribute will fix the number of modes used for the mapping
  */
@@ -117,9 +116,7 @@ public:
 
 protected:
     ModelOrderReductionMapping()
-        : d_performECSW(initData(&d_performECSW,false,"performECSW","Use the reduced model with the ECSW method"))
-        , d_modesPath(initData(&d_modesPath,"modesPath","Path to the file containing the modes. REQUIRED"))
-        , d_listActiveNodesPath(initData(&d_listActiveNodesPath,"listActiveNodesPath","Path to the Reduced Integration domain when performing the ECSW method"))
+        : d_modesPath(initData(&d_modesPath,"modesPath","Path to the file containing the modes. REQUIRED"))
     {
         m_Js.resize( 1 );
         m_Js[0] = &m_J;
@@ -171,9 +168,7 @@ public:
 
     const js_type* getJs();
 
-    Data< bool > d_performECSW;
     sofa::core::objectmodel::DataFileName d_modesPath;
-    sofa::core::objectmodel::DataFileName d_listActiveNodesPath;
 
 };
 

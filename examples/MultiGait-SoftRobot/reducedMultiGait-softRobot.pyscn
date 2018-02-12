@@ -61,6 +61,7 @@ def createScene(rootNode):
                 solverNode.createObject('EulerImplicit', name='odesolver',firstOrder="false", rayleighStiffness='0.1', rayleighMass='0.1', printLog="0",verbose="0")
                 solverNode.createObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrix3d")
                 solverNode.createObject('GenericConstraintCorrection', solverName='preconditioner')
+                solverNode.createObject('MappedMatrixForceFieldAndMass', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', mappedForceField='@./reducedModel/model/Append_HyperReducedFF_QuadrupedWellConverged_'+str(nbModes)+'modes', mappedForceField2='@./reducedModel/model/modelSubTopo/Append_subTopoFEM', mappedMass='@./reducedModel/model/quadrupedMass', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping = 'true', saveReducedMass="false", usePrecomputedMass="false", precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', printLog='0')
 
 
                 ##########################################
@@ -75,7 +76,7 @@ def createScene(rootNode):
                 model.createObject('MeshVTKLoader', name='loader', filename=pathMesh+'full_quadriped_fine.vtk')
                 model.createObject('Mesh',src = '@loader')
                 model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0',printLog="0")
-                model.createObject('ModelOrderReductionMapping', input='@../alpha', output='@./tetras',modesPath=modesRobot, listActiveNodesPath="ECSWdata_stored/listActiveNodes_Diamond.txt",performECSW="false", printLog='0', mapMatrices = '0')
+                model.createObject('ModelOrderReductionMapping', input='@../alpha', output='@./tetras',modesPath=modesRobot, printLog='0', mapMatrices = '0')
                 model.createObject('UniformMass',name='quadrupedMass', totalmass='0.035', printLog='0')
                 model.createObject('HyperReducedTetrahedronFEMForceField', template='Vec3d', name='Append_HyperReducedFF_QuadrupedWellConverged_'+str(nbModes)+'modes', method='large', poissonRatio='0.05',  youngModulus='70', drawAsEdges="0", prepareECSW=prepareECSWBool, performECSW=performECSWBoolBody, nbModes=str(nbModes), modesPath=modesRobot, RIDPath=RIDFile, weightsPath=weightsFile, nbTrainingSet="93", periodSaveGIE="50",printLog="0")		  
                 model.createObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes='true') 
@@ -89,7 +90,6 @@ def createScene(rootNode):
                 modelSubTopo.createObject('TriangleSetTopologyContainer', position='@membraneROISubTopo.pointsInROI', triangles="@membraneROISubTopo.trianglesInROI", name='container')
                 modelSubTopo.createObject('HyperReducedTriangleFEMForceField', template='Vec3d', name='Append_subTopoFEM', method='large', poissonRatio='0.49',  youngModulus='5000', prepareECSW=prepareECSWBool, performECSW=performECSWBoolMembrane, nbModes=str(nbModes), modesPath=modesRobot, RIDPath=RIDMembraneFile, weightsPath=weightsMembraneFile, nbTrainingSet="93", periodSaveGIE="50",printLog="0")
                 
-                solverNode.createObject('MappedMatrixForceFieldAndMass', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', mappedForceField='@./reducedModel/model/Append_HyperReducedFF_QuadrupedWellConverged_'+str(nbModes)+'modes', mappedForceField2='@./reducedModel/model/modelSubTopo/Append_subTopoFEM', mappedMass='@./reducedModel/model/quadrupedMass', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping = 'true', saveReducedMass="false", usePrecomputedMass="false", precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', printLog='0')
 
                 ##########################################
                 # Constraint                             #
