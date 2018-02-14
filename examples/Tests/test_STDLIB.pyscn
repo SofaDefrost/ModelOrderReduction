@@ -1,0 +1,114 @@
+# -*- coding: utf-8 -*-
+
+#	STLIB IMPORT
+from stlib.scene import MainHeader
+from stlib.solver import DefaultSolver
+from stlib.physics.deformable import ElasticMaterialObject
+from stlib.physics.constraints import FixedBox
+from stlib.animation import AnimationManager , animate
+
+
+# SOFTROBOTS IMPORT
+from softrobots.actuators import PullingCable
+
+phaseTest = [1,0,0,1]
+
+increment = 5
+breathTime = 20
+tmp = [0,0,0,0]
+maxPull = [40,40,40,40]
+
+actuatorsParam = [
+		{'withName' : 'nord',
+		 'withCableGeometry' : [[0, 97, 45]],
+		 'withAPullPointLocation' : [0, 10, 30]
+		},
+		{'withName' : 'ouest',
+		 'withCableGeometry' : [[-97, 0, 45]],
+		 'withAPullPointLocation' : [-10, 0, 30]
+		},
+		{'withName' : 'sud',
+		 'withCableGeometry' : [[0, -97, 45]],
+		 'withAPullPointLocation' : [0, -10, 30]
+		},
+		{'withName' : 'est',
+		 'withCableGeometry' : [[97, 0, 45]],
+		 'withAPullPointLocation' : [10, 0, 30]
+		}
+	]
+
+meshPath = 'Model_Reduction/1_INPUT/Mesh_Model/'
+
+def myAnimate(target, factor, phaseTest, actuatorNb):
+	global tmp, maxPull
+
+	if breathTime == tmp[actuatorNb]:
+		print "PLOP"
+		actualValue = target.getObject('CableConstraint').findData('value').value[0][0]
+		actuatorMaxPull = maxPull[actuatorNb]	
+		print(	"For Actuator : ", 		target.name,
+				"with actualValue :", 	actualValue,
+				"a maxPull of :", 		maxPull,
+				"& increment :", 		increment)
+
+		if phaseTest[actuatorNb] == 1:
+			if (actualValue < actuatorMaxPull):
+				print "		increment ++"
+				actualValue = actualValue + increment
+			else:
+				print "Done for :",target.name
+		else:
+			if (actualValue >= increment):
+				print "		increment --"
+				actualValue = actualValue - increment
+			else:
+				print "Done for :",target.name
+
+		print "Updated Value :",actualValue
+		target.getObject('CableConstraint').findData('value').value = actualValue
+		tmp[actuatorNb] = 0
+
+	else:
+		tmp[actuatorNb] += 1
+
+def createScene(rootNode):
+
+	rootNode = MainHeader(rootNode, plugins=["SofaPython","SoftRobots","ModelOrderReduction"], gravity=[0.0,0.0,-9.810])
+	print rootNode.dt
+	# solverNode = rootNode.createChild('solverNode')
+	# DefaultSolver(solverNode)
+
+	modelNode = ElasticMaterialObject(
+		attachedTo=rootNode,
+		fromVolumeMesh=meshPath+'siliconeV0.vtu',
+		withName='modelNode',
+        withRotation=[90, 0.0, 0.0],
+        withTranslation=[0.0, 0.0, 35],
+		withSurfaceMesh=meshPath+'surface.stl',
+		withTotalMass=0.5)
+	
+	modelNode.createObject('GenericConstraintCorrection', solverName='Solver')
+    
+	FixedBox(
+		atPositions=[-15, -15, -40,  15, 15, 10],
+		applyTo=modelNode,
+		withVisualization=True) 	
+
+	AnimationManager(modelNode)
+
+	for i in range(len(actuatorsParam)):
+		cable = PullingCable(
+					attachedTo=modelNode,
+					withName=actuatorsParam[i]['withName'],
+					withCableGeometry=actuatorsParam[i]['withCableGeometry'],
+					withAPullPointLocation=actuatorsParam[i]['withAPullPointLocation'],
+					withValueAs="displacement")
+		timeExe = rootNode.dt*((maxPull[i]/increment)+1)*breathTime
+		print "timeExe :",timeExe
+
+		animate(myAnimate, {
+							"target" : cable ,
+							"phaseTest" : phaseTest, 
+							"actuatorNb" : i}, timeExe)
+
+	return rootNode 
