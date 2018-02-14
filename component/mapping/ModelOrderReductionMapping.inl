@@ -84,15 +84,6 @@ void ModelOrderReductionMapping<TIn, TOut>::init()
 
     Inherit::init();
 
-    if (d_performECSW.getValue())
-    {
-
-        MatrixLoader<Eigen::MatrixXi>* matLoader = new MatrixLoader<Eigen::MatrixXi>();
-        matLoader->setFileName(d_listActiveNodesPath.getValue());
-        matLoader->load();
-        matLoader->getMatrix(m_listActiveNodes);
-        delete matLoader;
-    }
     msg_info(this) <<"out init";
 }
 
@@ -157,25 +148,12 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::MechanicalParams
     sofa::helper::system::thread::CTime *timer;
     timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
     time = (double)timer->getTime();
-    sofa::helper::AdvancedTimer::stepBegin("applyJt in OliviersMapping");
+    sofa::helper::AdvancedTimer::stepBegin("applyJt in ModelOrderReductionMapping");
     Eigen::VectorXd inEig;
     inEig.resize(3*in.size());
-//    std::cout<<"in.size()"<< in.size() <<std::endl;
-//    std::cout<<"listActiveNodes.size()"<< listActiveNodes.size() <<std::endl;
     Eigen::VectorXd outEig;
     outEig.resize(out.size());
-//    for(unsigned int i=0; i<in.size(); i++)
-//    {
-//        inEig(3*i) = 0;
-//        inEig(3*i+1) = 0;
-//        inEig(3*i+2) = 0;
-//    }
-//    for(unsigned int i=0; i<listActiveNodes.size(); i++)
-//    {
-//        inEig(3*listActiveNodes[i]) = in[listActiveNodes[i]][0];
-//        inEig(3*listActiveNodes[i]+1) = in[listActiveNodes[i]][1];
-//        inEig(3*listActiveNodes[i]+2) = in[listActiveNodes[i]][2];
-//    }
+
 
     for(unsigned int i=0; i<in.size(); i++)
     {
@@ -190,30 +168,8 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::MechanicalParams
     {
         out[j][0] += outEig(j);
     }
-    //std::cout << "in ::::::::::::::::::::::" << in << std::endl;
-//    if (performECSW.getValue())
-//    {
-//        for(unsigned int i=0; i<listActiveNodes.size(); i++)
-//        {
-//            Deriv vec = in[listActiveNodes[i]];
-//            for(unsigned int j=0; j<out.size(); j++)
-//            {
-//                out[j][0] += modes[listActiveNodes[i]][j]*vec;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        for(unsigned int i=0; i<in.size(); i++)
-//        {
-//            Deriv vec = in[i];
-//            for(unsigned int j=0; j<out.size(); j++)
-//            {
-//                out[j][0] += modes[i][j]*vec;
-//            }
-//        }
-//    }
-    sofa::helper::AdvancedTimer::stepEnd("applyJt in OliviersMapping");
+
+    sofa::helper::AdvancedTimer::stepEnd("applyJt in ModelOrderReductionMapping");
     msg_info(this)<<" applyJT : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 }
 

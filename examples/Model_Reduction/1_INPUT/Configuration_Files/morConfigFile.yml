@@ -1,0 +1,15 @@
+ECSWBool: {perform: false, performMappedMatrix: false, prepare: true}
+HyperReducedFEMForceField: {method: large, nbTrainingSet: 93, periodSaveGIE: 50, poissonRatio: 0.05,
+  youngModulus: 70}
+MappedMatrixForceFieldAndMass: {mappedForceField2: '@./modelMOR/model/modelSubTopo/HyperReducedTriangleFEMForceField'}
+actuatorParam: {breathTime: 2, increment: 200, modulo: 1}
+connectivityFileName: test.txt
+gieFilename: DiamondWellConverged_HyperReducedFF_Quite_30_Gie.txt
+gieFilename_subTopo: HyperReducedTriangleFEMForceField_Gie.txt
+listActiveNodesFileName: listActiveNodesUnion.txt
+modes: {addRigidBodyModes: false, modesFileName: blop.txt, pathTodir: 2_OUTPUT/2_Modes_Options/,
+  tolerance: 0.001}
+nbModes: 30
+stateFile: {initState: true, nameStateFile: test, pathTodir: 2_OUTPUT/1_State_Files/}
+weightsAndRID: {RIDFileName: RID_blop.txt, pathTodir: 2_OUTPUT/3_Reduced_Model/, tolerance: 0.05,
+  weightsFileName: weights_blop.txt}

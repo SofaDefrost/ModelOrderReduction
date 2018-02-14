@@ -1,0 +1,60 @@
+actuatorType: SurfacePressureConstraint
+mappingType: BarycentricMapping
+
+modelActuator:
+
+-   name: centerCavity 
+    range: 
+        maxPull: 3500
+        increment : 350
+    meshLoader: /home/felix/Desktop/ROM_data/examples/Mesh/quadriped_Center-cavityREMESHEDlighter.stl
+    actuator: 
+        value: '0.000'
+        triangles: '@topo.triangles'
+        visualization: '0'
+        showVisuScale: '0.0002'
+        valueType: 'volumeGrowth'
+
+-   name: rearLeftCavity 
+    range: 
+        maxPull: 2000
+    meshLoader: /home/felix/Desktop/ROM_data/examples/Mesh/quadriped_Rear-Left-cavity_collis.stl
+    actuator: 
+        value: '0.000'
+        triangles: '@topo.triangles'
+        visualization: '0'
+        showVisuScale: '0.0002'
+        valueType: 'volumeGrowth'
+
+-   name: rearRightCavity 
+    range:
+        maxPull: 2000
+    meshLoader: /home/felix/Desktop/ROM_data/examples/Mesh/quadriped_Rear-Right-cavity_collis.stl
+    actuator: 
+        value: '0.000'
+        triangles: '@topo.triangles'
+        visualization: '0'
+        showVisuScale: '0.0002'
+        valueType: 'volumeGrowth'
+
+-   name: frontLeftCavity 
+    range: 
+        maxPull: 2000
+    meshLoader: /home/felix/Desktop/ROM_data/examples/Mesh/quadriped_Front-Left-cavity_collis.stl
+    actuator: 
+        value: '0.000'
+        triangles: '@topo.triangles'
+        visualization: '0'
+        showVisuScale: '0.0002'
+        valueType: 'volumeGrowth'
+
+-   name: frontRightCavity 
+    range: 
+        maxPull: 2000
+    meshLoader: /home/felix/Desktop/ROM_data/examples/Mesh/quadriped_Front-Right-cavity_collis.stl
+    actuator: 
+        value: '0.000'
+        triangles: '@topo.triangles'
+        visualization: '0'
+        showVisuScale: '0.0002'
+        valueType: 'volumeGrowth'
