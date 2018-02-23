@@ -42,6 +42,9 @@ find_package(SofaFramework REQUIRED)
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
 target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction)
 
+# Config files and install rules for pythons scripts
+sofa_set_python_directory(${PROJECT_NAME} "python")
+
 ## Install rules for the library and headers; CMake package configurations files
 sofa_create_package(ModelOrderReduction ${MODELORDERREDUCTION_VERSION} ${PROJECT_NAME} ModelOrderReduction)
 
@@ -63,7 +66,7 @@ target_link_libraries(${PROJECT_NAME} ${VIENNACL_LIBRARY})
 
 ####     Link OpenCL library    ####
 set(OPENCL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/ViennaCL-1.7.1/CL")
-set(OPENCL_LIBRARY "/usr/lib/x86_64-linux-gnu/libOpenCL.so")
+set(OPENCL_LIBRARY "/usr/local/cuda-9.0/lib64/libOpenCL.so")
 
 include_directories(${OPENCL_LIBRARY_DIRECTORY})
 target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
