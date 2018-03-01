@@ -35,32 +35,32 @@ meshPath = '/home/felix/SOFA/plugin/ModelOrderReduction/examples/Model_Reduction
 
 def createScene(rootNode):
 
-	rootNode = MainHeader(rootNode, plugins=["SofaPython","SoftRobots"], gravity=[0.0,0.0,-9810])
+	rootNode = MainHeader(rootNode, plugins=["SofaPython","SoftRobots","ModelOrderReduction"], gravity=[0.0,0.0,-9810])
 
 	modelNode = ElasticMaterialObject(
 		attachedTo=rootNode,
-		fromVolumeMesh=meshPath+'siliconeV0.vtu',
-		withName='modelNode',
-        withRotation=[90, 0.0, 0.0],
-        withTranslation=[0.0, 0.0, 35],
-		withTotalMass=0.5,
+		volumeMeshFileName=meshPath+'siliconeV0.vtu',
+		name='modelNode',
+        rotation=[90, 0.0, 0.0],
+        translation=[0.0, 0.0, 35],
+		totalMass=0.5,
 		withConstrain=False,
-		withPoissonRatio=0.45,
-		withYoungModulus=450)
+		poissonRatio=0.45,
+		youngModulus=450)
 	
 	modelNode.createObject('GenericConstraintCorrection', solverName='Solver')
     
 	FixedBox(
 		atPositions=[-15, -15, -40,  15, 15, 10],
 		applyTo=modelNode,
-		withVisualization=True) 	
+		doVisualization=True) 		
 
 	for i in range(len(actuatorsParam)):
 		cable = PullingCable(
 					attachedTo=modelNode,
-					withName=actuatorsParam[i]['withName'],
-					withCableGeometry=actuatorsParam[i]['withCableGeometry'],
-					withAPullPointLocation=actuatorsParam[i]['withAPullPointLocation'],
-					withValueAs="displacement")
+					name=actuatorsParam[i]['withName'],
+					cableGeometry=actuatorsParam[i]['withCableGeometry'],
+					pullPointLocation=actuatorsParam[i]['withAPullPointLocation'],
+					valueType="displacement")
 
 	return rootNode 

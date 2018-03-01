@@ -11,5 +11,5 @@ Functions:
 .. autofunction:: stlib.animation.DefaultShaking
 
 """
-__all__=["defaultShaking"]
+__all__=["shakingAnimations"]
 from shakingAnimations import DefaultShaking

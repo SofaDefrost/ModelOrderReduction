@@ -1,8 +1,6 @@
 ECSWBool: {perform: false, performMappedMatrix: false, prepare: true}
-HyperReducedFEMForceField: {method: large, nbTrainingSet: 93, periodSaveGIE: 50, poissonRatio: 0.05,
-  youngModulus: 70}
-MappedMatrixForceFieldAndMass: {mappedForceField2: '@./modelMOR/model/modelSubTopo/HyperReducedTriangleFEMForceField'}
-actuatorParam: {breathTime: 2, increment: 200, modulo: 1}
+actuatorParam: {breathTime: 0, increment: 5, modulo: 10}
+HyperReducedFEMForceField: {youngModulus: 450, poissonRatio: 0.45, nbTrainingSet: 200}
 connectivityFileName: test.txt
 gieFilename: DiamondWellConverged_HyperReducedFF_Quite_30_Gie.txt
 gieFilename_subTopo: HyperReducedTriangleFEMForceField_Gie.txt

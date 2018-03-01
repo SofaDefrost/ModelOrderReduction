@@ -1,30 +1,11 @@
-#!/usr/bin/python
-# coding: utf8 
-#############################################################################
-# This file is part of Sofa Framework
-#
-# This script is showing how you can use the launcher.py API to start
-# multiple runSofa instance and gather the results. 
-# 
-# You need the cheetha template engine to use this
-# http://www.cheetahtemplate.org/learn.html
-#
-# Contributors:
-#       - damien.marchal@univ-lille.1
-#####################################################################
+# -*- coding: utf-8 -*-
+
 import sys 
 import math              
 from launcher import *                 
 
-# #   STLIB IMPORT
-# from stlib.wrapper import Wrapper
-
-# # MOR IMPORT
-# from mor.wrapper import MORWrapper
+# MOR IMPORT
 from modelOrderReductionScript import ModelOrderReductionScript
-
-# ### We import our original scene 
-# import originalScene 
 
 ####################      USER PARAM       ##########################
 
@@ -47,40 +28,17 @@ pathToWeightsAndRIDdir = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/T
 verbose = True
 dt = 1
 
-
-actuatorsParam = [
-        {'withName' : 'nord',
-         'withCableGeometry' : [[0, 97, 45]],
-         'withAPullPointLocation' : [0, 10, 30]
-        },
-        {'withName' : 'ouest',
-         'withCableGeometry' : [[-97, 0, 45]],
-         'withAPullPointLocation' : [-10, 0, 30]
-        },
-        {'withName' : 'sud',
-         'withCableGeometry' : [[0, -97, 45]],
-         'withAPullPointLocation' : [0, -10, 30]
-        },
-        {'withName' : 'est',
-         'withCableGeometry' : [[97, 0, 45]],
-         'withAPullPointLocation' : [10, 0, 30]
-        }
-    ]
-
-
 ####################   SHAKING VARIABLES  ###########################
 nbPossibility = 2**nbActuator
 phaseNum = [[0] * nbActuator for i in range(nbPossibility)]
 phaseNumClass = []
 
-###############################################################################
-#                                                                             #
-#      We modify the original scene to do the first step of MOR :             #
-#   we add animation to each actuators we want for our model                  #
-#   add a writeState componant to save the shaking resulting states           #
-#                                                                             #
-###############################################################################
+####################    PYTHON SCRIPT INIT  #########################
 
+morScript = ModelOrderReductionScript(  stateFilePath = stateFilePath,
+                                        modesFilePath = modesFilePath,
+                                        pathToWeightsAndRIDdir = pathToWeightsAndRIDdir,
+                                        verbose = verbose )
 
 ####################  INIT SCENE SEQUENCES  #########################
 nbIterations = [0]*nbActuator
@@ -99,32 +57,47 @@ for nb in range(nbActuator+1):
 
 listSofaScene = []
 for i in range(nbPossibility):
-    listSofaScene.append({"PHASE": phaseNumClass[i], 
-                          "INCREMENT" : increment, 
-                          "MAXPULL" : maxPull, 
-                          "BREATHTIME" : breathTime,
-                          "DT" : dt,
-                          "ACTUATORPARAM" : actuatorsParam,
-                          "nbIterations":nbIterations[0] })
+    listSofaScene.append({
+                            "TOANIMATE": toAnimate,
+                            "PHASE": phaseNumClass[i],
+                            "INCREMENT" : increment,
+                            "MAXPULL" : maxPull,
+                            "BREATHTIME" : breathTime,
+                            "DT" : dt,
+                            "nbIterations":nbIterations[0]
+        })
 
-####################    PYTHON SCRIPT       #########################
+####################    SOFA LAUNCHER       ##########################
+#                                                                    #
+#                           PHASE 1                                  #
+#                                                                    #
+#      We modify the original scene to do the first step of MOR :    #
+#   we add animation to each actuators we want for our model         #
+#   add a writeState componant to save the shaking resulting states  #
+#                                                                    #
+######################################################################
+print ("List of phase :",phaseNumClass)
+print ("Number of Iteration per phase :",nbIterations[0])
+print ("##############")
 
-morScript = ModelOrderReductionScript(  stateFilePath = stateFilePath,
-                                        modesFilePath = modesFilePath,
-                                        pathToWeightsAndRIDdir = pathToWeightsAndRIDdir,
-                                        verbose = verbose )
 
-print "List of phase :",phaseNumClass
-print "Number of Iteration :",nbIterations[0]
-print "##############"
-
-
-filenames = ["test_Cheetah.pyscn"]
+filenames = ["phase1_snapshots.py"]
 filesandtemplates = []
 for filename in filenames:                
     filesandtemplates.append( (open(filename).read(), filename) )
      
-results = startSofa([listSofaScene[15]], filesandtemplates, launcher=ParallelLauncher(4))
+results = startSofa(listSofaScene, filesandtemplates, launcher=ParallelLauncher(4))
+
+
+####################    PYTHON SCRIPT       ##########################
+#                                                                    #
+#                           PHASE 2                                  #
+#                                                                    #
+#      With the previous result we combine all the generated         #
+#       state files into one to be able to extract from it           #
+#                       the different mode                           #
+#                                                                    #
+######################################################################
 
 for res in results:
     print("Results: ")
@@ -138,7 +111,43 @@ for res in results:
         currentStateFile.close()
     stateFile.close()
 
-
 morScript.readStateFilesAndComputeModes(stateFileName = stateFileName,
                                         modesFileName = modesFileName,
                                         tol = 0.001)
+
+####################    SOFA LAUNCHER       ##########################
+#                                                                    #
+#                           PHASE 3                                  #
+#                                                                    #
+#      We launch again a set of sofa scene with the sofa launcher    #
+#      with the same previous arguments but with a different scene   #
+#      This scene take the previous one and add the model order      #
+#      reduction component:                                          #
+#            - HyperReducedFEMForceField                             #
+#            - MappedMatrixForceFieldAndMass                         #
+#            - ModelOrderReductionMapping                            #
+#       and produce an Hyper Reduced description of the model        #
+#                                                                    #
+######################################################################
+
+# filenames = ["phase2_prepareECSW.py"]
+# filesandtemplates = []
+# for filename in filenames:                
+#     filesandtemplates.append( (open(filename).read(), filename) )
+     
+# results = startSofa(listSofaScene, filesandtemplates, launcher=ParallelLauncher(4))
+
+
+####################    PYTHON SCRIPT       ##########################
+#                                                                    #
+#                           PHASE 4                                  #
+#                                                                    #
+#      Final step : we gather again all the results of the           #
+#      previous scenes into one and then compute the RID and Weigts  #
+#      with it. Additionnally we also compute the Active Nodes       #
+#                                                                    #
+######################################################################
+
+
+# morScript.readGieFileAndComputeRIDandWeights()
+# morScript.convertRIDinActiveNodes()

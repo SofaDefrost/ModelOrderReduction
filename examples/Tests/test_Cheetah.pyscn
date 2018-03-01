@@ -23,28 +23,7 @@ breathTime = $BREATHTIME
 increment = $INCREMENT
 phase = $PHASE
 timeExe = $nbIterations * dt
-stateFileName = "stateFile"
-for i in range(len(phase)):
-	stateFileName = stateFileName #+ str(phase[i])
-
-actuatorsParam = [
-		{'withName' : 'nord',
-		 'withCableGeometry' : [[0, 97, 45]],
-		 'withAPullPointLocation' : [0, 10, 30]
-		},
-		{'withName' : 'ouest',
-		 'withCableGeometry' : [[-97, 0, 45]],
-		 'withAPullPointLocation' : [-10, 0, 30]
-		},
-		{'withName' : 'sud',
-		 'withCableGeometry' : [[0, -97, 45]],
-		 'withAPullPointLocation' : [0, -10, 30]
-		},
-		{'withName' : 'est',
-		 'withCableGeometry' : [[97, 0, 45]],
-		 'withAPullPointLocation' : [10, 0, 30]
-		}
-	]
+actuatorsParam = $ACTUATORPARAM
 
 meshPath = '/home/felix/SOFA/plugin/ModelOrderReduction/examples/Model_Reduction/1_INPUT/Mesh_Model/'
 
@@ -57,6 +36,7 @@ class SingletonTmp(object):
 		self.tmp = list(breathTime)
 
 mySingleton = SingletonTmp(breathTime)
+stateFileName = "stateFile"
 
 def createScene(rootNode):
 
@@ -64,14 +44,14 @@ def createScene(rootNode):
 
 	modelNode = ElasticMaterialObject(
 		attachedTo=rootNode,
-		fromVolumeMesh=meshPath+'siliconeV0.vtu',
-		withName='modelNode',
-        withRotation=[90, 0.0, 0.0],
-        withTranslation=[0.0, 0.0, 35],
-		withTotalMass=0.5,
+		volumeMeshFileName=meshPath+'siliconeV0.vtu',
+		name='modelNode',
+        rotation=[90, 0.0, 0.0],
+        translation=[0.0, 0.0, 35],
+		totalMass=0.5,
 		withConstrain=False,
-		withPoissonRatio=0.45,
-		withYoungModulus=450)
+		poissonRatio=0.45,
+		youngModulus=450)
 	
 	modelNode.createObject('GenericConstraintCorrection', solverName='Solver')
 	modelNode.createObject('WriteState', filename=stateFileName+".state", period='0.1',writeX="1", writeX0="", writeV="0") 
@@ -79,17 +59,17 @@ def createScene(rootNode):
 	FixedBox(
 		atPositions=[-15, -15, -40,  15, 15, 10],
 		applyTo=modelNode,
-		withVisualization=True) 	
+		doVisualization=True) 	
 
 	AnimationManager(modelNode)
 
 	for i in range(len(actuatorsParam)):
 		cable = PullingCable(
 					attachedTo=modelNode,
-					withName=actuatorsParam[i]['withName'],
-					withCableGeometry=actuatorsParam[i]['withCableGeometry'],
-					withAPullPointLocation=actuatorsParam[i]['withAPullPointLocation'],
-					withValueAs="displacement")
+					name=actuatorsParam[i]['withName'],
+					cableGeometry=actuatorsParam[i]['withCableGeometry'],
+					pullPointLocation=actuatorsParam[i]['withAPullPointLocation'],
+					valueType="displacement")
 
 		animate(DefaultShaking, {
 							"target" : cable ,

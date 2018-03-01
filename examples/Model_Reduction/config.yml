@@ -1,5 +1,5 @@
 ### Diamond
-# sceneConfigFile: 1_INPUT/Configuration_Files/config_Diamond_Scene.yml
+sceneConfigFile: 1_INPUT/Configuration_Files/config_Diamond_Scene.yml
 
 #### Starfish
 # sceneConfigFile: 1_INPUT/Configuration_Files/config_Starfish_ECSW_Scene.yml
