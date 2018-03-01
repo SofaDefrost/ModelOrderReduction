@@ -84,7 +84,7 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
       usePrecomputedMass(initData(&usePrecomputedMass,"usePrecomputedMass",
                                          "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
       precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
-                                       "Path to the precomputed reduced Mass Matrix Jt*M*J"))
+                                       "Path to the precomputed reduced Mass Matrix Jt*M*J. usePrecomputedMass has to be set to true."))
 
 
 {
