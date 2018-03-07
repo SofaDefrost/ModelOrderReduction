@@ -81,7 +81,7 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
                                     "Are the mapping matrices constant with time? If yes, set to true to avoid useless recomputations.")),
       saveReducedMass(initData(&saveReducedMass,false,"saveReducedMass",
                                     "Use the mass in the reduced space: Jt*M*J")),
-      usePrecomputedMass(initData(&usePrecomputedMass,"usePrecomputedMass",
+      usePrecomputedMass(initData(&usePrecomputedMass,false,"usePrecomputedMass",
                                          "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
       precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
                                        "Path to the precomputed reduced Mass Matrix Jt*M*J. usePrecomputedMass has to be set to true."))
@@ -177,7 +177,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double,Eigen::ColMajor>& Keig)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double,Eigen::ColMajor>& Keig)
 {
     Keig.resize(K->nRow,K->nRow);
     std::vector< Eigen::Triplet<double> > tripletList;
@@ -204,7 +204,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenForma
 
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1ToEigenFormat(const MatrixDeriv1 J, Eigen::SparseMatrix<double>& Jeig)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1ToEigenFormat(const MatrixDeriv1 &J, Eigen::SparseMatrix<double>& Jeig)
 {
     int nbRowsJ = Jeig.rows();
     int nbColsJ = Jeig.cols();
@@ -226,7 +226,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2ToEigenFormat(const MatrixDeriv2 J, Eigen::SparseMatrix<double>& Jeig)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2ToEigenFormat(const MatrixDeriv2 &J, Eigen::SparseMatrix<double>& Jeig)
 {
     int nbRowsJ = Jeig.rows();
     int nbColsJ = Jeig.cols();
@@ -249,7 +249,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2
 
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const MechanicalParams* mparams,
-                                                                  const MultiMatrixAccessor* matrix)
+                                                                         const MultiMatrixAccessor* matrix)
 {
 
     sofa::helper::system::thread::CTime *timer;
@@ -268,11 +268,15 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     sofa::core::behavior::BaseMechanicalState*  bms1 = this->getMechModel1();
     sofa::core::behavior::BaseMechanicalState*  bms2 = this->getMechModel2();
-
+    msg_info(this) << "Same object or not?";
     if (bms1 == bms2)
+    {
         msg_info(this) << "Same object ++++++++++++++++++++++++++++++++++++++++++++++++++";
+    }
     else
+    {
         msg_info(this) << "Not same object ++++++++++++++++++++++++++++++++++++++++++++++++++";
+    }
 
 
     MultiMatrixAccessor::MatrixRef mat11 = matrix->getMatrix(mstate1);
@@ -373,289 +377,26 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     /*          perform the multiplication with [J1t J2t] * K * [J1 J2]           */
     /* -------------------------------------------------------------------------- */
 
-    int ComputeSolution = 1; // 0 : without any labriry
-                             // 1 : with Eigen
-                             // 2 : with SourceSparse
+    double startTime= (double)timer->getTime();
+    msg_info(this) << "listActiveNodes.size() " << listActiveNodes.size();
+    Eigen::SparseMatrix<double,Eigen::ColMajor> Keig;
+    copyKToEigenFormat(K,Keig);
+    msg_info(this) << Keig.size();
 
-    if (ComputeSolution == 1)
+    //--------------------------------------------------------------------------------------------------------------------
+
+    msg_info(this)<<" time set Keig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
+    startTime= (double)timer->getTime();
+
+    ///////////////////////    COPY J1 AND J2 IN EIGEN FORMAT //////////////////////////////////////
+
+    Eigen::SparseMatrix<double> J1eig;
+    Eigen::SparseMatrix<double> J2eig;
+    unsigned int nbColsJ1 = 0, nbColsJ2 = 0;
+    if ((timeInvariantMapping.getValue() == false) || (this->getContext()->getTime() == 0))
     {
+        time= (double)timer->getTime();
 
-        double startTime= (double)timer->getTime();
-        msg_info(this) << "listActiveNodes.size() " << listActiveNodes.size();
-        Eigen::SparseMatrix<double,Eigen::ColMajor> Keig;
-        convertKToEigenFormat(K,Keig);
-        msg_info(this) << Keig.size();
-
-        //--------------------------------------------------------------------------------------------------------------------
-
-        msg_info(this)<<" time set Keig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
-        startTime= (double)timer->getTime();
-
-        ///////////////////////    COPY J1 AND J2 IN EIGEN FORMAT //////////////////////////////////////
-
-        Eigen::SparseMatrix<double> J1eig;
-        Eigen::SparseMatrix<double> J2eig;
-        int nbColsJ1, nbColsJ2;
-        if ((timeInvariantMapping.getValue() == false) || (this->getContext()->getTime() == 0))
-        {
-            time= (double)timer->getTime();
-
-            sofa::core::MultiMatrixDerivId c = sofa::core::MatrixDerivId::mappingJacobian();
-            const MatrixDeriv1 &J1 = c[ms1].read()->getValue();
-            MatrixDeriv1RowConstIterator rowItJ1= J1.begin();
-            const MatrixDeriv2 &J2 = c[ms2].read()->getValue();
-            MatrixDeriv2RowConstIterator rowItJ2= J2.begin();
-
-
-            msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-
-
-
-            J1eig.resize(K->nRow, J1.begin().row().size());
-            J2eig.resize(K->nRow, J2.begin().row().size());
-            copyMappingJacobian1ToEigenFormat(J1, J1eig);
-            copyMappingJacobian2ToEigenFormat(J2, J2eig);
-
-
-        }
-        msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
-
-        if ((timeInvariantMapping.getValue() == true) && (this->getContext()->getTime() == 0))
-        {
-            constantJ1.resize(J1eig.rows(), J1eig.cols());
-            constantJ1.reserve(Eigen::VectorXi::Constant(K->nRow,nbColsJ1));
-            constantJ1 = J1eig;
-        }
-
-        msg_info(this)<<" time getJ +sdfg set J1eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
-        startTime= (double)timer->getTime();
-
-        ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
-        if (timeInvariantMapping.getValue() == true)
-        {
-            nbColsJ1 = constantJ1.cols();
-        }
-        else
-        {
-            msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
-
-            nbColsJ1 = J1eig.cols();
-            nbColsJ2 = J2eig.cols();
-            msg_info(this)<<"nbColsJ1 " << nbColsJ1;
-        }
-        msg_info(this)<<"nbColsJ1 " << nbColsJ1;
-        Eigen::SparseMatrix<double>  J1tKJ1eigen(nbColsJ1,nbColsJ1);
-        msg_info(this)<<"TOTO ";
-        if (timeInvariantMapping.getValue() == true)
-        {
-            J1tKJ1eigen = constantJ1.transpose()*Keig*constantJ1;
-        }
-        else
-        {
-            J1tKJ1eigen = J1eig.transpose()*Keig*J1eig;
-        }
-        msg_info(this)<<"TATA ";
-        //msg_info(this)<< J1eig;
-        msg_info(this)<<J1tKJ1eigen;
-
-        if (usePrecomputedMass.getValue() == true)
-        {
-            msg_info(this) << "Adding reduced precomputed mass ...";
-            J1tKJ1eigen = J1tKJ1eigen + JtMJ;
-        }
-
-        Eigen::SparseMatrix<double>  J2tKJ2eigen(nbColsJ2,nbColsJ2);
-        Eigen::SparseMatrix<double>  J1tKJ2eigen(nbColsJ1,nbColsJ2);
-        Eigen::SparseMatrix<double>  J2tKJ1eigen(nbColsJ2,nbColsJ1);
-        msg_info(this)<<"TUTU ";
-        if (bms1 != bms2)
-        {
-            J2tKJ2eigen = J2eig.transpose()*Keig*J2eig;
-            J1tKJ2eigen = J1eig.transpose()*Keig*J2eig;
-            J2tKJ1eigen = J2eig.transpose()*Keig*J1eig;
-        }
-        msg_info(this)<<"TITI ";
-
-        //--------------------------------------------------------------------------------------------------------------------
-
-        msg_info(this)<<" time compute J1tKJ1eigen : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
-        int row;
-        if (this->getContext()->getTime() == 0)
-        {
-            if (saveReducedMass.getValue() == true)
-            {
-                if (d_mappedMass != NULL)
-                {
-                    CompressedRowSparseMatrix< Real1 >* M = new CompressedRowSparseMatrix< Real1 > ( );
-                    M->resizeBloc( 3*mstate->getSize() ,  3*mstate->getSize());
-                    M->clear();
-                    DefaultMultiMatrixAccessor* MassAccessor;
-                    MassAccessor = new DefaultMultiMatrixAccessor;
-                    MassAccessor->addMechanicalState(  d_mappedMass.get()->getContext()->getMechanicalState() );
-                    MassAccessor->setGlobalMatrix(M);
-                    MassAccessor->setupMatrices();
-                    d_mappedMass.get()->addMToMatrix(mparams, MassAccessor);
-                    M->compress();
-
-                    std::vector< Eigen::Triplet<double> > tripletListM;
-                    tripletListM.reserve(M->colsValue.size());
-                    Eigen::SparseMatrix<double,Eigen::ColMajor> Meig(M->nRow,M->nRow);
-                    for (unsigned int it_rows_m=0; it_rows_m < M->rowIndex.size() ; it_rows_m ++)
-                    {
-                        row = M->rowIndex[it_rows_m] ;
-                        Range rowRange( M->rowBegin[it_rows_m], M->rowBegin[it_rows_m+1] );
-                        for( Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
-                        {
-                            int col = M->colsIndex[xj];     // block column
-                            const Real1& m = M->colsValue[xj]; // non-null element of the matrix
-                            tripletListM.push_back(Eigen::Triplet<double>(row,col,m));
-                        }
-                    }
-                    Meig.setFromTriplets(tripletListM.begin(), tripletListM.end());
-                    Eigen::SparseMatrix<double>  JtMJeigen(nbColsJ1,nbColsJ1);
-                    JtMJeigen = J1eig.transpose()*Meig*J1eig;
-                    msg_info(this) << JtMJeigen;
-                    std::string massName = d_mappedMass.get()->getName() + "_reduced.txt";
-                    msg_info(this) << "Storing " << massName << " ... ";
-                    std::ofstream file(massName);
-                    if (file.is_open())
-                    {
-                        file << nbColsJ1 << ' ' << nbColsJ1 << "\n";
-                        for (int i=0; i<nbColsJ1; i++)
-                        {
-                            for (int j=0; j<nbColsJ1; j++)
-                            {
-                                file << JtMJeigen.coeff(i,j) << ' ';
-                            }
-                            file << '\n';
-                        }
-                        file.close();
-
-                    }
-
-                }
-                else
-                {
-                    msg_warning(this) << "Cannot save reduced mass because mappedMass is NULL. Please fill the field mappedMass to save the mass.";
-                }
-            }
-        }
-
-        startTime= (double)timer->getTime();
-        for (unsigned int i=0; i<nbColsJ1; i++)
-        {
-            for (unsigned int j=0; j<nbColsJ1; j++)
-            {
-                mat11.matrix->add(i, j, J1tKJ1eigen.coeff(i,j));
-            }
-        }
-        if (bms1 != bms2)
-        {
-            for (unsigned int i=0; i<nbColsJ2; i++)
-            {
-                for (unsigned int j=0; j<nbColsJ2; j++)
-                {
-                    mat22.matrix->add(i, j, J2tKJ2eigen.coeff(i,j));
-                }
-            }
-            for (unsigned int i=0; i<nbColsJ1; i++)
-            {
-                for (unsigned int j=0; j<nbColsJ2; j++)
-                {
-                    mat12.matrix->add(i, j, J1tKJ2eigen.coeff(i,j));
-                }
-            }
-            for (unsigned int i=0; i<nbColsJ2; i++)
-            {
-                for (unsigned int j=0; j<nbColsJ1; j++)
-                {
-                    mat21.matrix->add(i, j, J2tKJ1eigen.coeff(i,j));
-                }
-            }
-        }
-        msg_info(this)<<" time copy J1tKJ1eigen back to JtKJ in CompressedRowSparse : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
-    }
-    else if (ComputeSolution == 2) {
-
-//        cholmod_common Common, *cc ;
-//        cholmod_sparse *A ;
-//        cholmod_dense *X, *B, *Residual ;
-//        double rnorm, one [2] = {1,0}, minusone [2] = {-1,0} ;
-//        int mtype ;
-
-//        // start CHOLMOD
-//        cc = &Common ;
-//        cholmod_l_start (cc) ;
-
-//        // load A
-//        vector<triplet> Gentries{
-//            {0, 0, 0.01},
-//            {0, 1, -0.01},
-//            {0, 12, 1},
-//            {1, 0, -0.01},
-//            {1, 1, 0.012},
-//            {1, 2, -0.002},
-//            {2, 1, -0.002},
-//            {2, 2, 0.004},
-//            {2, 3, -0.002},
-//            {3, 2, -0.002},
-//            {3, 3, 0.004},
-//            {3, 4, -0.002},
-//            {4, 3, -0.002},
-//            {4, 4, 0.004},
-//            {4, 5, -0.002},
-//            {5, 4, -0.002},
-//            {5, 5, 0.002},
-//            {6, 6, 0.01},
-//            {6, 7, -0.01},
-//            {6, 13, 1},
-//            {7, 6, -0.01},
-//            {7, 7, 0.012},
-//            {7, 8, -0.002},
-//            {8, 7, -0.002},
-//            {8, 8, 0.004},
-//            {8, 9, -0.002},
-//            {9, 8, -0.002},
-//            {9, 9, 0.004},
-//            {9, 10, -0.002},
-//            {10, 9, -0.002},
-//            {10, 10, 0.004},
-//            {10, 11, -0.002},
-//            {11, 10, -0.002},
-//            {11, 11, 0.002},
-//            {11, 14, 1},
-//            {12, 0, -1},
-//            {13, 6, -1},
-//            {14, 11, -1}
-//        };
-
-//        vector<triplet> Bentries{
-//            {12, 0, -1},
-//            {13, 1, -1},
-//            {14, 2, -1}};
-//        A = (cholmod_sparse *) cholmod_l_read_triplet(Gentries, cc);
-//        A = (cholmod_sparse *) cholmod_l_read_matrix (stdin, 1, &mtype, cc) ;
-//        // B = ones (size (A,1),1)
-//        B = cholmod_l_ones (A->nrow, 1, A->xtype, cc) ;
-//        // X = A\B
-//        X = SuiteSparseQR <double> (A, B, cc) ;
-//        // rnorm = norm (B-A*X)
-//        Residual = cholmod_l_copy_dense (B, cc) ;
-//        cholmod_l_sdmult (A, 0, minusone, one, X, Residual, cc) ;
-//        rnorm = cholmod_l_norm_dense (Residual, 2, cc) ;
-//        printf ("2-norm of residual: %8.1e\n", rnorm) ;
-//        printf ("rank %ld\n", cc->SPQR_istat [4]) ;
-//        // free everything and finish CHOLMOD
-//        cholmod_l_free_dense (&Residual, cc) ;
-//        cholmod_l_free_sparse (&A, cc) ;
-//        cholmod_l_free_dense (&X, cc) ;
-//        cholmod_l_free_dense (&B, cc) ;
-//        cholmod_l_finish (cc) ;
-
-
-    }
-    else
-    {
         sofa::core::MultiMatrixDerivId c = sofa::core::MatrixDerivId::mappingJacobian();
         const MatrixDeriv1 &J1 = c[ms1].read()->getValue();
         MatrixDeriv1RowConstIterator rowItJ1= J1.begin();
@@ -665,193 +406,174 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
         msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 
+        J1eig.resize(K->nRow, J1.begin().row().size());
+        copyMappingJacobian1ToEigenFormat(J1, J1eig);
 
-        for (unsigned int it_rows_k=0; it_rows_k < K->rowIndex.size() ; it_rows_k ++)
+        if (bms1 != bms2)
         {
-
-            Index row = K->rowIndex[it_rows_k] ;
-            //        std::cout << "row is " << row << " of " << K->rowIndex[K->rowIndex.size()-1] << " ****************************** " << std::endl;
-            // look if the row corresponds to rows in J1 and/or in J2
-            // we know that rows of J1 and J2 are sorted in ascending order
-            bool j1 = false;
-            bool j2 = false;
-            rowItJ1 = J1.readLine(row);
-            if(rowItJ1 != J1.end())
-                j1=true; // matrix J1 contains line number "row"
-            rowItJ2 = J2.readLine(row);
-            if(rowItJ2 != J2.end())
-                j2=true; // matrix J2 contains line number "row"
-            // if no correspondance with J1 nor J2 go to the following row
-            if (!j1 && !j2)
-                continue;
-
-            // row of matrix J corresponds to columns of matrix J transpose
-            MatrixDeriv1RowConstIterator colItJ1t= J1.begin();
-            MatrixDeriv2RowConstIterator colItJ2t= J2.begin();
-
-
-            Range rowRange( K->rowBegin[it_rows_k], K->rowBegin[it_rows_k+1] );
-            for( Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
-            {
-                Index col = K->colsIndex[xj];     // block column
-                //            std::cout << "col " << col << " of " << K->colsIndex[rowRange.end()-1]<< std::endl;
-                // we look if this column exists in J1t or J2t
-                // rmq !! use of  function readLine: log(n) coplexity !!
-                bool j1t = false;
-                bool j2t = false;
-                colItJ1t = J1.readLine(col); // reading the line of J1 corresponds to the col of J1t
-                //std::cout << "colItJ1t" << colItJ1t.begin()<< " " <<colItJ1t.end() << std::endl;
-                if(colItJ1t != J1.end())
-                    j1t=true; // matrix J1t contains the column  number "col"
-                colItJ2t = J2.readLine(col); // reading the line of J2 corresponds to the col of J1t
-                if(colItJ2t != J2.end())
-                    j2t=true; // matrix J2t contains the column number "col"
-                // if no correspondance with Jt1 nor J2t go to the following col
-                if (!j1t && !j2t)
-                    continue;
-
-
-                const Real1& k = K->colsValue[xj]; // non-null element of the matrix
-
-                unsigned int line=0;
-                unsigned int column=0;
-
-                // compute the multiplication with the corresponding block value of J k Jt
-                if (j1)
-                {
-                    for (MatrixDeriv1ColConstIterator colItJ1 = rowItJ1.begin(), colItJ1End = rowItJ1.end(); colItJ1 != colItJ1End; ++colItJ1)
-                    {
-                        unsigned int dofJ1 = colItJ1.index();
-                        Deriv1 j1_d = colItJ1.val();
-
-
-                        if(j1t)
-                        {
-                            line = mat11.offset + DerivSize1 * dofJ1;
-
-                            for (MatrixDeriv1ColConstIterator rowItJ1t = colItJ1t.begin(), rowItJ1End = colItJ1t.end(); rowItJ1t != rowItJ1End; ++rowItJ1t)
-                            {
-                                unsigned int dofJ1t = rowItJ1t.index();
-                                Deriv1 j1t_d = rowItJ1t.val();
-
-                                column = mat11.offset + DerivSize1 * dofJ1t;
-                                //               std::cout << "About to add in row offset " << line << " and col offset " << column << std::endl;
-                                for (unsigned int i=0; i<DerivSize1; i++)
-                                {
-                                    if(j1_d[i]==(Real1)0.0)
-                                        continue;
-
-                                    for (unsigned int j=0; j<DerivSize1; j++)
-                                    {
-                                        if(j1t_d[j]==(Real1)0.0)
-                                            continue;
-                                        //std::cout << "About to add offset" << line << "and col " << column  << " deriv1size: " << DerivSize1 << std::endl;
-                                        mat11.matrix->add(line +i, column + j, j1_d[i]*k*j1t_d[j] );
-                                    }
-
-                                }
-                            }
-                        }
-
-                        if(bms1== bms2)
-                            continue;
-
-
-                        if(j2t)
-                        {
-                            line = mat12.offRow + DerivSize1 * dofJ1;
-                            for (MatrixDeriv2ColConstIterator rowItJ2t = colItJ2t.begin(), rowItJ2End = colItJ2t.end(); rowItJ2t != rowItJ2End; ++rowItJ2t)
-                            {
-                                unsigned int dofJ2t = rowItJ2t.index();
-                                Deriv2 j2t_d = rowItJ2t.val();
-                                column = mat12.offCol + DerivSize2 * dofJ2t;
-
-                                for (unsigned int i=0; i<DerivSize1; i++)
-                                {
-                                    if(j1_d[i]==(Real1)0.0)
-                                        continue;
-
-                                    for (unsigned int j=0; j<DerivSize2; j++)
-                                    {
-                                        if(j2t_d[j]==(Real2)0.0)
-                                            continue;
-                                        mat12.matrix->add(line + i, column + j, j1_d[i]*k*j2t_d[j] );
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                }
-                if(bms1== bms2)
-                    continue;
-
-                if (j2)
-                {
-
-                    for (MatrixDeriv2ColConstIterator colItJ2 = rowItJ2.begin(), colItJ2End = rowItJ2.end(); colItJ2 != colItJ2End; ++colItJ2)
-                    {
-                        unsigned int dofJ2 = colItJ2.index();
-                        Deriv2 j2_d = colItJ2.val();
-
-                        if(j1t)
-                        {
-                            line = mat21.offRow + DerivSize2 * dofJ2;
-                            for (MatrixDeriv1ColConstIterator rowItJ1t = colItJ1t.begin(), rowItJ1End = colItJ1t.end(); rowItJ1t != rowItJ1End; ++rowItJ1t)
-                            {
-                                unsigned int dofJ1t = rowItJ1t.index();
-                                Deriv1 j1t_d = rowItJ1t.val();
-                                column = mat21.offCol + DerivSize1 * dofJ1t;
-
-                                for (unsigned int i=0; i<DerivSize2; i++)
-                                {
-                                    if(j2_d[i]==(Real2)0.0)
-                                        continue;
-
-                                    for (unsigned int j=0; j<DerivSize1; j++)
-                                    {
-                                        if(j1t_d[j]==(Real1)0.0)
-                                            continue;
-                                        mat21.matrix->add(line + i, column + j, j2_d[i]*k*j1t_d[j] );
-                                    }
-
-                                }
-                            }
-                        }
-
-
-                        if(j2t)
-                        {
-                            line = mat22.offset + DerivSize2 * dofJ2 ;
-                            for (MatrixDeriv2ColConstIterator rowItJ2t = colItJ2t.begin(), rowItJ2End = colItJ2t.end(); rowItJ2t != rowItJ2End; ++rowItJ2t)
-                            {
-                                unsigned int dofJ2t = rowItJ2t.index();
-                                Deriv2 j2t_d = rowItJ2t.val();
-                                column = mat22.offset + DerivSize2 * dofJ2t;
-
-                                for (unsigned int i=0; i<DerivSize2; i++)
-                                {
-                                    if(j2_d[i]==(Real2)0.0)
-                                        continue;
-
-                                    for (unsigned int j=0; j<DerivSize2; j++)
-                                    {
-                                        if(j2t_d[j]==(Real2)0.0)
-                                            continue;
-                                        mat22.matrix->add(line + i, column + j, j2_d[i]*k*j2t_d[j] );
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-
-
-                }
-            }
+            J2eig.resize(K->nRow, J2.begin().row().size());
+            copyMappingJacobian2ToEigenFormat(J2, J2eig);
+            msg_info(this) << "J2eig: " << J2eig;
         }
+        msg_info(this) << "J1eig: " << J1eig;
+
 
     }
+
+    if ((timeInvariantMapping.getValue() == true) && (this->getContext()->getTime() == 0))
+    {
+        constantJ1.resize(J1eig.rows(), J1eig.cols());
+        constantJ1.reserve(Eigen::VectorXi::Constant(K->nRow,nbColsJ1));
+        constantJ1 = J1eig;
+    }
+
+    msg_info(this)<<" time getJ + set J1eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
+    startTime= (double)timer->getTime();
+
+    ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
+    if (timeInvariantMapping.getValue() == true)
+    {
+        nbColsJ1 = constantJ1.cols();
+    }
+    else
+    {
+        msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
+
+        nbColsJ1 = J1eig.cols();
+        if (bms1 != bms2)
+        {
+            nbColsJ2 = J2eig.cols();
+        }
+    }
+    msg_info(this)<<"nbColsJ1 " << nbColsJ1;
+    Eigen::SparseMatrix<double>  J1tKJ1eigen(nbColsJ1,nbColsJ1);
+    msg_info(this)<<"TOTO ";
+    if (timeInvariantMapping.getValue() == true)
+    {
+        J1tKJ1eigen = constantJ1.transpose()*Keig*constantJ1;
+    }
+    else
+    {
+        J1tKJ1eigen = J1eig.transpose()*Keig*J1eig;
+    }
+    //msg_info(this)<<J1tKJ1eigen;
+
+    if (usePrecomputedMass.getValue() == true)
+    {
+        msg_info(this) << "Adding reduced precomputed mass ...";
+        J1tKJ1eigen = J1tKJ1eigen + JtMJ;
+    }
+    Eigen::SparseMatrix<double>  J2tKJ2eigen(nbColsJ2,nbColsJ2);
+    Eigen::SparseMatrix<double>  J1tKJ2eigen(nbColsJ1,nbColsJ2);
+    Eigen::SparseMatrix<double>  J2tKJ1eigen(nbColsJ2,nbColsJ1);
+
+    if (bms1 != bms2)
+    {
+        J2tKJ2eigen = J2eig.transpose()*Keig*J2eig;
+        J1tKJ2eigen = J1eig.transpose()*Keig*J2eig;
+        J2tKJ1eigen = J2eig.transpose()*Keig*J1eig;
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------
+
+    msg_info(this)<<" time compute J1tKJ1eigen : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
+    int row;
+    if (this->getContext()->getTime() == 0)
+    {
+        if (saveReducedMass.getValue() == true)
+        {
+            if (d_mappedMass != NULL)
+            {
+                CompressedRowSparseMatrix< Real1 >* M = new CompressedRowSparseMatrix< Real1 > ( );
+                M->resizeBloc( 3*mstate->getSize() ,  3*mstate->getSize());
+                M->clear();
+                DefaultMultiMatrixAccessor* MassAccessor;
+                MassAccessor = new DefaultMultiMatrixAccessor;
+                MassAccessor->addMechanicalState(  d_mappedMass.get()->getContext()->getMechanicalState() );
+                MassAccessor->setGlobalMatrix(M);
+                MassAccessor->setupMatrices();
+                d_mappedMass.get()->addMToMatrix(mparams, MassAccessor);
+                M->compress();
+
+                std::vector< Eigen::Triplet<double> > tripletListM;
+                tripletListM.reserve(M->colsValue.size());
+                Eigen::SparseMatrix<double,Eigen::ColMajor> Meig(M->nRow,M->nRow);
+                for (unsigned int it_rows_m=0; it_rows_m < M->rowIndex.size() ; it_rows_m ++)
+                {
+                    row = M->rowIndex[it_rows_m] ;
+                    Range rowRange( M->rowBegin[it_rows_m], M->rowBegin[it_rows_m+1] );
+                    for( Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
+                    {
+                        int col = M->colsIndex[xj];     // block column
+                        const Real1& m = M->colsValue[xj]; // non-null element of the matrix
+                        tripletListM.push_back(Eigen::Triplet<double>(row,col,m));
+                    }
+                }
+                Meig.setFromTriplets(tripletListM.begin(), tripletListM.end());
+                Eigen::SparseMatrix<double>  JtMJeigen(nbColsJ1,nbColsJ1);
+                JtMJeigen = J1eig.transpose()*Meig*J1eig;
+                msg_info(this) << JtMJeigen;
+                std::string massName = d_mappedMass.get()->getName() + "_reduced.txt";
+                msg_info(this) << "Storing " << massName << " ... ";
+                std::ofstream file(massName);
+                if (file.is_open())
+                {
+                    file << nbColsJ1 << ' ' << nbColsJ1 << "\n";
+                    for (unsigned int i=0; i<nbColsJ1; i++)
+                    {
+                        for (unsigned int j=0; j<nbColsJ1; j++)
+                        {
+                            file << JtMJeigen.coeff(i,j) << ' ';
+                        }
+                        file << '\n';
+                    }
+                    file.close();
+
+                }
+
+            }
+            else
+            {
+                msg_warning(this) << "Cannot save reduced mass because mappedMass is NULL. Please fill the field mappedMass to save the mass.";
+            }
+        }
+    }
+
+    startTime= (double)timer->getTime();
+    for (unsigned int i=0; i<nbColsJ1; i++)
+    {
+        for (unsigned int j=0; j<nbColsJ1; j++)
+        {
+            mat11.matrix->add(i, j, J1tKJ1eigen.coeff(i,j));
+        }
+    }
+    if (bms1 != bms2)
+    {
+        for (unsigned int i=0; i<nbColsJ2; i++)
+        {
+            for (unsigned int j=0; j<nbColsJ2; j++)
+            {
+                mat22.matrix->add(i, j, J2tKJ2eigen.coeff(i,j));
+            }
+        }
+        for (unsigned int i=0; i<nbColsJ1; i++)
+        {
+            for (unsigned int j=0; j<nbColsJ2; j++)
+            {
+                mat12.matrix->add(i, j, J1tKJ2eigen.coeff(i,j));
+            }
+        }
+        for (unsigned int i=0; i<nbColsJ2; i++)
+        {
+            for (unsigned int j=0; j<nbColsJ1; j++)
+            {
+                mat21.matrix->add(i, j, J2tKJ1eigen.coeff(i,j));
+            }
+        }
+    }
+    msg_info(this)<<" time copy JtKJeigen back to JtKJ in CompressedRowSparse : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
+
+
 
     msg_info(this)<<" total time compute J() * K * J: "<<( (double)timer->getTime() - totime)*timeScale<<" ms";
 
