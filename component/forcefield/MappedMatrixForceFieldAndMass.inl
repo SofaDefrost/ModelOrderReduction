@@ -204,7 +204,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenForma
 
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertMappingJacobian1ToEigenFormat(const MatrixDeriv1& J, Eigen::SparseMatrix<double>& Jeig)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1ToEigenFormat(const MatrixDeriv1 J, Eigen::SparseMatrix<double>& Jeig)
 {
     int nbRowsJ = Jeig.rows();
     int nbColsJ = Jeig.cols();
@@ -226,9 +226,10 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertMappingJacobi
 }
 
 template<class DataTypes1, class DataTypes2>
-Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertMappingJacobian2ToEigenFormat(const MatrixDeriv2& J, unsigned int nbRowsJ, unsigned int nbColsJ)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2ToEigenFormat(const MatrixDeriv2 J, Eigen::SparseMatrix<double>& Jeig)
 {
-    Eigen::SparseMatrix<double> Jeig;
+    int nbRowsJ = Jeig.rows();
+    int nbColsJ = Jeig.cols();
     std::vector< Eigen::Triplet<double> > tripletListJ;
 
     for (MatrixDeriv2RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
@@ -241,11 +242,8 @@ Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2
             tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,colIndex,elemVal[0]));
         }
     }
-    Jeig.resize(nbRowsJ,nbColsJ);
     Jeig.reserve(Eigen::VectorXi::Constant(nbRowsJ,nbColsJ));
     Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
-
-    return Jeig;
 }
 
 
@@ -415,11 +413,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
             J1eig.resize(K->nRow, J1.begin().row().size());
             J2eig.resize(K->nRow, J2.begin().row().size());
-            convertMappingJacobian1ToEigenFormat(J1, J1eig);
-            msg_info(this) << "J1eig cols() out of convertFunction: " << J1eig.cols();
-            //msg_info(this)<< J1eig;
-            J2eig = convertMappingJacobian2ToEigenFormat(J2, K->nRow, J2.begin().row().size());
-            msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
+            copyMappingJacobian1ToEigenFormat(J1, J1eig);
+            copyMappingJacobian2ToEigenFormat(J2, J2eig);
 
 
         }
@@ -431,8 +426,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             constantJ1.reserve(Eigen::VectorXi::Constant(K->nRow,nbColsJ1));
             constantJ1 = J1eig;
         }
-        //--------------------------------------------------------------------------------------------------------------------
-        msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
 
         msg_info(this)<<" time getJ +sdfg set J1eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
         startTime= (double)timer->getTime();
