@@ -12,4 +12,4 @@ Functions:
 
 """
 __all__=["shakingAnimations"]
-from shakingAnimations import DefaultShaking
+from shakingAnimations import defaultShaking

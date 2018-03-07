@@ -6,20 +6,35 @@ Files containing all the developped shaking animation
 function to help produced a reduced model
 
 """
-def DefaultShaking( target, 
+def upDateValue(phaseTest,actualValue,actuatorMaxPull,actuatorIncrement):
+
+	if phaseTest == 1:
+		if actualValue < actuatorMaxPull:
+			print "INCREMENT ++"
+			return actualValue + actuatorIncrement
+		else:
+			print "Done"
+			return actualValue
+	else:
+		if actualValue >= actuatorIncrement:
+			print "INCREMENT --"
+			return actualValue - actuatorIncrement
+		else:
+			print "Done"
+			return actualValue
+
+def defaultShaking( target,
 					phaseTest,
 					actuatorNb,
 					actuatorMaxPull,
 					actuatorBreathTime,
 					actuatorIncrement,
-					breathTimeCounter, **param):
+					breathTimeCounter):
 	"""
 	Object with an elastic deformation law.
 
 	Args:
-	    target (Sofa.node): 	Filepath to a volumetric mesh (VTK,VTU, GMESH)
-
-	    factor (float):  		...
+	    target (Sofa.node): 	Sofa node in wich we are working
 
 	    phaseTest (list[int]):  activation of actuator sequence (ie: [1,0,0,1])
 
@@ -27,27 +42,30 @@ def DefaultShaking( target,
 
 	"""
 	if actuatorBreathTime == breathTimeCounter.tmp[actuatorNb]:
-		actualValue = target.getObject('CableConstraint').findData('value').value[0][0]	
-		print(	"For Actuator : ", 		target.name,
-				"with actualValue :", 	actualValue,
-				"a maxPull of :", 		actuatorMaxPull,
-				"& INCREMENT :", 		actuatorIncrement)
+		print("For Actuator : "+str(target.name))
+		actualValue = None
+		myObjName = None
+		for obj in target.getObjects():
+			if obj.getClassName() ==  'CableConstraint':
+				myObjName = obj.name
+			elif obj.getClassName() ==  'SurfacePressureConstraint':
+				myObjName = obj.name
 
-		if phaseTest[actuatorNb] == 1:
-			if actualValue < actuatorMaxPull:
-				print "		INCREMENT ++"
-				actualValue = actualValue + actuatorIncrement
-			else:
-				print "Done for :",target.name
+		if myObjName:
+			actualValue = target.getObject(myObjName).findData('value').value[0][0]
+
+			# print (	"with actualValue :", 	actualValue,
+			# 		"a maxPull of :", 		actuatorMaxPull,
+			# 		"& INCREMENT :", 		actuatorIncrement)
+
+			actualValue = upDateValue(phaseTest[actuatorNb],actualValue,actuatorMaxPull,actuatorIncrement)
+
+			print ("Updated Value :"+str(actualValue)+'\n')
+
+			target.getObject(myObjName).findData('value').value = actualValue
 		else:
-			if actualValue >= actuatorIncrement:
-				print "		INCREMENT --"
-				actualValue = actualValue - actuatorIncrement
-			else:
-				print "Done for :",target.name
+			print 'Err'	
 
-		print "Updated Value :",actualValue
-		target.getObject('CableConstraint').findData('value').value = actualValue
 		breathTimeCounter.tmp[actuatorNb] = 0
 
 	else:

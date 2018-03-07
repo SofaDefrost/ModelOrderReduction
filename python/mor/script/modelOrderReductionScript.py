@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import time, sys
-import yaml
 import math
 import numpy as np
 import code #   ???
@@ -39,335 +38,326 @@ def errDif(G, xi, b):
 def etaTild(Gtilde, b):
     return np.linalg.solve( np.transpose(Gtilde).dot(Gtilde) , np.transpose(Gtilde).dot(b) )
 
-def selectECSW(G,b,tau):
-    global verbose
+def selectECSW(G,b,tau,verbose):
     nbLines, numElem = np.shape(G)
     ECSWindex = set([])
     xi = np.zeros((numElem,1))
     valTarget = tau*np.linalg.norm(b);
     currentValue = errDif(G,xi,b)
     marge = currentValue - valTarget
+
+    while (currentValue > valTarget):
+
+        if verbose : 
+            print 'Current Error: ', currentValue,' Target Error: ', valTarget
+        else :
+            update_progress( round( ( 100 - ((currentValue - valTarget)*100) / marge) / 100 , 4) )
+
+        vecDiff = b - G.dot(xi)
+        GT = np.transpose(G)
+        mu = GT.dot(vecDiff)
+        index = int(np.argmax(mu))
+        ECSWindex = ECSWindex.union([index])
+
+        Gtilde = G[:,list(ECSWindex)]
+        etaTilde = etaTild(Gtilde,b)
+
+        while ( not(all(etaTilde>0) ) ):
+
+            ECSWindexNegative = []
+            etaTildeNegative = []
+            NonZero = []
+            ind = 0
+
+            #if verbose : print 'Hohohohohohohohoho !!!'
+
+            negIndex = (etaTilde-xi[list(ECSWindex)])<0
+            negIndex = list(negIndex.flatten())
+
+            for i in negIndex:
+
+                if (i):
+                    ECSWindexNegative.append(list(ECSWindex)[ind])
+                    etaTildeNegative.append(etaTilde[ind])
+
+                ind = ind + 1
+
+            vec1 = -xi[ECSWindexNegative] 
+            vec2 = (etaTildeNegative-xi[ECSWindexNegative])
+            maxFeasibleStep = np.amin(vec1/vec2);
+            xi[list(ECSWindex)] = xi[list(ECSWindex)] + maxFeasibleStep*(etaTilde - xi[list(ECSWindex)]);
+            zeroIndex = np.absolute(xi)<1.0e-12;
+            ECSWindex = set(range(numElem))
+
+            ind = 0
+            for i in zeroIndex:
+
+                if (not i): NonZero.append(list(ECSWindex)[ind])
+                ind = ind + 1
+
+            ECSWindex = set(NonZero)
+
+            Gtilde = G[:,list(ECSWindex)]
+            etaTilde = etaTild(Gtilde,b)
+
+        xi[list(ECSWindex)] = etaTilde
+
+        currentValue = errDif(G,xi,b)
+
+    if verbose :
+        print "Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget
+    else :    
+        update_progress( 1 )
+
+    return (ECSWindex,xi)
+
 #########################################################
 
 class ModelOrderReductionScript():
-	def __init__(self, modesFilePath, stateFilePath, verbose):
 
-		self.modesFilePath = modesFilePath
-		self.stateFilePath = stateFilePath
+    def __init__(self, modesFilePath, stateFilePath, pathToWeightsAndRIDdir, verbose):
 
-		self.verbose = verbose
+        self.modesFilePath = modesFilePath
+        self.stateFilePath = stateFilePath
+        self.pathToWeightsAndRIDdir = pathToWeightsAndRIDdir
 
-	def readStateFilesAndComputeModes(stateFilename, tol, modesFileName):
+        self.verbose = verbose
 
-		initPositionFilename = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/1_State_Files/test_init.state"
-		print "###################################################"
-		print "Executing readStateFilesAndComputeModes.py\n" 
-		print "Arguments :\n"
-		print "     INPUT  :"
-		print "     in stateFilePath         :",self.stateFilePath
-		print "			-stateFilename 			 :",stateFilename
-		print "     in initPositionFilename  :",initPositionFilename
-		print "     with arguments           :"
-		print "         -tolerance               :",tol,"\n"
-		print "     OUTPUT :"
-		print "     in modesFilePath         :",self.modesFilePath
-		print "         -modesFileName           :",modesFileName,"\n"
-		print "###################################################"
+    def readStateFilesAndComputeModes(self, stateFileName, tol, modesFileName):
 
-		x0Found = False
+        initPositionFilename = self.stateFilePath+"test_init.state" #'init_myDiamondQuiteFine.state' # 'init_myDiamondFairlyFine.state' # "test_init.state"
+        print "###################################################"
+        print "Executing readStateFilesAndComputeModes.py\n" 
+        print "Arguments :\n"
+        print "     INPUT  :"
+        print "     in stateFilePath         :",self.stateFilePath
+        print "			-stateFileName 			 :",stateFileName
+        print "     in initPositionFilename  :",initPositionFilename
+        print "     with arguments           :"
+        print "         -tolerance               :",tol,"\n"
+        print "     OUTPUT :"
+        print "     in modesFilePath         :",self.modesFilePath
+        print "         -modesFileName           :",modesFileName,"\n"
+        print "###################################################"
+        start_time = time.time()
+        x0Found = False
 
-		#Find Init Pos
-		finit = open(initPositionFilename,'r')
-		if self.verbose : print "Reading file %r:" % initPositionFilename
-		for line in finit:
-		    lineSplit = line.split();
-		    if (lineSplit[0] == "X0="): 
-		        lineFloat = map(float,lineSplit[1:])
-		        restPos = []
-		        restPos.append(lineFloat)
-		        restPos = np.transpose(restPos)
-		        x, y = np.shape(restPos)
-		        if self.verbose : print "    X0 FOUND : size restPos = ", x, ' ', y
-		        x0Found = True
-		        break
-		finit.close()
-		if self.verbose : print "Done reading file %r:" % initPositionFilename,'\n'
+        #Find Init Pos
+        finit = open(initPositionFilename,'r')
+        if self.verbose : print "Reading file %r:" % initPositionFilename
+        for line in finit:
+            lineSplit = line.split();
+            if (lineSplit[0] == "X0="): 
+                lineFloat = map(float,lineSplit[1:])
+                restPos = []
+                restPos.append(lineFloat)
+                restPos = np.transpose(restPos)
+                x, y = np.shape(restPos)
+                if self.verbose : print "    X0 FOUND : size restPos = ", x, ' ', y
+                x0Found = True
+                break
+        finit.close()
+        if self.verbose : print "Done reading file %r:" % initPositionFilename,'\n'
 
-		#Compute Modes
-		if x0Found :
-		    f = open(self.stateFilePath+stateFilename,'r')
-		    addRigidBodyModes = int(addRigidBodyModes)
-		    nbSnap = 0
-		    nbLine = 0
-		    snapshot = []
-		    snapshotV = []
+        #Compute Modes
+        if x0Found :
+            f = open(self.stateFilePath+stateFileName,'r')
+            nbSnap = 0
+            nbLine = 0
+            snapshot = []
+            snapshotV = []
 
-		    if self.verbose : print "Reading file %r:" % self.stateFilePath+stateFilename
-		    for line in f:
-		        nbLine = nbLine + 1
-		        lineSplit = line.split();
-		        if (lineSplit[0] == "X="):  
-		            lineFloat = map(float,lineSplit[1:])
-		            snapshot.append(lineFloat);
-		        if (lineSplit[0] == "V="):  
-		            lineFloat = map(float,lineSplit[1:])
-		            snapshotV.append(lineFloat);
+            if self.verbose : print "Reading file %r:" % self.stateFilePath+stateFileName
+            for line in f:
+                nbLine = nbLine + 1
+                lineSplit = line.split();
+                if (lineSplit[0] == "X="):  
+                    lineFloat = map(float,lineSplit[1:])
+                    snapshot.append(lineFloat);
+                if (lineSplit[0] == "V="):  
+                    lineFloat = map(float,lineSplit[1:])
+                    snapshotV.append(lineFloat);
 
-		    snapshot = np.transpose(snapshot)
-		    nbDOFs, nbSnap = np.shape(snapshot)
-		    snapshotDiff = np.zeros((nbDOFs,nbSnap))
-		    translationModes = np.zeros((nbDOFs,3))
+            snapshot = np.transpose(snapshot)
+            nbDOFs, nbSnap = np.shape(snapshot)
+            snapshotDiff = np.zeros((nbDOFs,nbSnap))
+            translationModes = np.zeros((nbDOFs,3))
 
-		    if self.verbose : 
-		        print "    Read",nbLine,"line and found",nbSnap,"snapshot with",nbDOFs,"of DOF"
-		        print "Done reading file %r:" % self.stateFilePath+stateFilename,'\n'
+            if self.verbose : 
+                print "    Read",nbLine,"line and found",nbSnap,"snapshot with",nbDOFs,"of DOF"
+                print "Done reading file %r:" % self.stateFilePath+stateFileName,'\n'
 
-		    for i in range(0,nbSnap):
-		        snapshotDiff[:,i] = snapshot[:,i] - restPos[:,0]
-		      
-		    for i in range(0,nbDOFs/3):
-		        translationModes[3*i][0] = 1/math.sqrt(nbDOFs/3)
-		        translationModes[3*i+1][1] = 1/math.sqrt(nbDOFs/3)
-		        translationModes[3*i+2][2] = 1/math.sqrt(nbDOFs/3)
-		    if (addRigidBodyModes == 1):
-		        for i in range(3):
-		            for j in range(nbSnap-1):    
-		                snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[i]]))*translationModes[:,[i]]
+            start_time = time.time()
 
-		    U, s, V = np.linalg.svd(snapshotDiff, full_matrices=False)
-		    sSquare = [i**2 for i in s]
-		    sumSVD = np.sum(sSquare)
+            for i in range(0,nbSnap):
+                snapshotDiff[:,i] = snapshot[:,i] - restPos[:,0]
+                          
+            for i in range(0,nbDOFs/3):
+                translationModes[3*i][0] = 1/math.sqrt(nbDOFs/3)
+                translationModes[3*i+1][1] = 1/math.sqrt(nbDOFs/3)
+                translationModes[3*i+2][2] = 1/math.sqrt(nbDOFs/3)
 
-		    i = 0
-		    if self.verbose : 
-		        print "Determining number of Modes with a Tolerance of",tol
-		        #print "    np.sqrt(np.sum(sSquare[i:])/sumSVD) : "
-		    while (np.sqrt(np.sum(sSquare[i:])/sumSVD) > tol or i==0):
-		        i = i+1
-		        #print "            ",np.sqrt(np.sum(sSquare[i:])/sumSVD)
+            U, s, V = np.linalg.svd(snapshotDiff, full_matrices=False) # 99% time execution
+            sSquare = [i**2 for i in s]
+            sumSVD = np.sum(sSquare)
 
+            i = 0
+            if self.verbose : 
+                print "Determining number of Modes with a Tolerance of",tol
 
-		    nbModes = i
-		    if (addRigidBodyModes == True):    
-		        print "Concatenating translation modes !!!!!!!!!!!!"
-		        modesTot = np.concatenate((translationModes, U[:,0:nbModes]), axis=1)
-		        np.savetxt(self.modesFilePath+modesFileName, modesTot, header=str(nbDOFs)+' '+str(nbModes+3), comments='', fmt='%10.5f')
-		    else:
-		        np.savetxt(self.modesFilePath+modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
-		    if self.verbose :
-		        print "Number of modes to reach tolerance: ", nbModes
-		        print "===> Success readStateFilesAndComputeModes.py\n"
-		        #print(s)
+            while (np.sqrt(np.sum(sSquare[i:])/sumSVD) > tol or i==0):
+                i = i+1
 
-		    f.close()
-		else: print "XO NOT FOUND"
+            nbModes = i
 
-	def readGieFileAndComputeRIDandWeights():
-		print "###################################################"
-		print "Executing readGieFileAndComputeRIDandWeights.py\n"
-		print "Arguments :\n"
-		print "     INPUT  :"
-		print "     in gieFilename    :",gieFilename
-		print "     with arguments    :"
-		print "         -tolerance        :",tol,"\n"
-		print "     OUTPUT :"
-		print "     in pathToWeightsAndRIDdir :",pathToWeightsAndRIDdir
-		print "         -RIDFileName                :",RIDFileName
-		print "         -weightsFileName            :",weightsFileName,"\n"
-		print "###################################################"
+            np.savetxt(self.modesFilePath+modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
 
-		################################################################################################
+            if self.verbose :
+                print "Number of modes to reach tolerance: ", nbModes
+                print "===> Success readStateFilesAndComputeModes.py\n"
 
-		fgie = open(gieFilename,'r')
-		lineCount = 0
-		gie = []
-		keepIndex = []
+            f.close()
 
-		    while (currentValue > valTarget):
+            return nbModes
 
-		        if verbose : 
-		            print 'Current Error: ', currentValue,' Target Error: ', valTarget
-		        else :
-		            update_progress( round( ( 100 - ((currentValue - valTarget)*100) / marge) / 100 , 4) )
+        else: 
+            print "XO NOT FOUND"
+            return -1
 
-		        vecDiff = b - G.dot(xi)
-		        GT = np.transpose(G)
-		        mu = GT.dot(vecDiff)
-		        index = int(np.argmax(mu))
-		        ECSWindex = ECSWindex.union([index])
+    def readGieFileAndComputeRIDandWeights(self, gieFilename, RIDFileName, weightsFileName, tol):
 
-		        Gtilde = G[:,list(ECSWindex)]
-		        etaTilde = etaTild(Gtilde,b)
+        print "###################################################"
+        print "Executing readGieFileAndComputeRIDandWeights.py\n"
+        print "Arguments :\n"
+        print "     INPUT  :"
+        print "     in gieFilename    :",gieFilename
+        print "     with arguments    :"
+        print "         -tolerance        :",tol,"\n"
+        print "     OUTPUT :"
+        print "     in pathToWeightsAndRIDdir :",self.pathToWeightsAndRIDdir
+        print "         -RIDFileName                :",RIDFileName
+        print "         -weightsFileName            :",weightsFileName,"\n"
+        print "###################################################"
 
-		        while ( not(all(etaTilde>0) ) ):
+        ################################################################################################
 
-		            ECSWindexNegative = []
-		            etaTildeNegative = []
-		            NonZero = []
-		            ind = 0
+        fgie = open(gieFilename,'r')
+        lineCount = 0
+        gie = []
+        keepIndex = []
 
-		            #if verbose : print 'Hohohohohohohohoho !!!'
+        #Read all the file & store it in GIE
+        if self.verbose : print "Reading file : %r" %gieFilename
+        for line in fgie:
+            lineSplit = line.split();
+            lineFloat = map(float,lineSplit)
+            gie.append(lineFloat);
+            lineCount = lineCount +1
+        fgie.close()
 
-		            negIndex = (etaTilde-xi[list(ECSWindex)])<0
-		            negIndex = list(negIndex.flatten())
+        if self.verbose : 
+            print "     File read until line", lineCount
+            print "Done reading file %r:" % gieFilename,'\n'
 
-		            for i in negIndex:
+        gie = np.array(gie)
+        nbLines , nbElements = np.shape(gie)
 
-		                if (i):
-		                    ECSWindexNegative.append(list(ECSWindex)[ind])
-		                    etaTildeNegative.append(etaTilde[ind])
+        #Clean GIE
+        for i in range(nbLines):
+            if any(gie[i,:] != 0):
+                keepIndex.append(i)
 
-		                ind = ind + 1
+        #Creat bECSW from GIE
+        gie = gie[keepIndex,:]
+        bECSW = np.sum(gie,axis=1)
+        bECSW = bECSW[np.newaxis]
+        bECSW = np.transpose(bECSW)
 
-		            vec1 = -xi[ECSWindexNegative] 
-		            vec2 = (etaTildeNegative-xi[ECSWindexNegative])
-		            maxFeasibleStep = np.amin(vec1/vec2);
-		            xi[list(ECSWindex)] = xi[list(ECSWindex)] + maxFeasibleStep*(etaTilde - xi[list(ECSWindex)]);
-		            zeroIndex = np.absolute(xi)<1.0e-12;
-		            ECSWindex = set(range(numElem))
+        ####################################
+        if self.verbose : 
+            print "INFO pre-process"
+            print "     size GIE (nbLine,nbElements) :   ", '('+str(nbLines)+', '+str(nbElements)+')'
+            print "     size cleaned GIE :               ", np.shape(gie)
+            print "     size bECSW :                     ", np.shape(bECSW),'\n'
+        ####################################
 
-		            ind = 0
-		            for i in zeroIndex:
+        #Compute RID & Weight
+        ECSWindex,xi = selectECSW(gie,bECSW,tol,self.verbose)
+        ECSWindex = np.array(sorted(list(ECSWindex)))
+        sizeRID = ECSWindex.size
+        nbElements = xi.size
 
-		                if (not i): NonZero.append(list(ECSWindex)[ind])
-		                ind = ind + 1
+        #Store results in files 
+        np.savetxt(self.pathToWeightsAndRIDdir+RIDFileName,ECSWindex, header=str(sizeRID)+' 1', comments='', fmt='%d')
+        np.savetxt(self.pathToWeightsAndRIDdir+weightsFileName,xi, header=str(nbElements)+' 1', comments='',fmt='%10.5f')
 
-		            ECSWindex = set(NonZero)
+        if self.verbose: print "===> Success readGieFileAndComputeRIDandWeights.py\n"
 
-		            Gtilde = G[:,list(ECSWindex)]
-		            etaTilde = etaTild(Gtilde,b)
+    def convertRIDinActiveNodes(self, RIDFileName,connectivityFileName,listActiveNodesFileName):
 
-		        xi[list(ECSWindex)] = etaTilde
+        print "###################################################"
+        print "Executing convertRIDinActiveNodes.py\n"
+        print "Arguments :\n"
+        print "     INPUT  :"
+        print "     in pathToWeightsAndRIDdir    :",self.pathToWeightsAndRIDdir
+        print "         -RIDFileName                :",RIDFileName
+        print "         -connectivityFileName       :",connectivityFileName
+        print "     OUTPUT :"
+        print "     in pathToWeightsAndRIDdir    :",self.pathToWeightsAndRIDdir
+        print "         -listActiveNodesFileName    :",listActiveNodesFileName,"\n"
+        print "###################################################"
 
-		        currentValue = errDif(G,xi,b)
+        ##############################################################################
 
-		    if verbose :
-		        print "Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget
-		    else :    
-		        update_progress( 1 )
-
-		    return (ECSWindex,xi)
-
-
-		#Read all the file & store it in GIE
-		if verbose : print "Reading file : %r" %gieFilename
-		for line in fgie:
-		    lineSplit = line.split();
-		    lineFloat = map(float,lineSplit)
-		    gie.append(lineFloat);
-		    lineCount = lineCount +1
-		fgie.close()
-
-		if verbose : 
-		    print "     File read until line", lineCount
-		    print "Done reading file %r:" % gieFilename,'\n'
-
-		gie = np.array(gie)
-		nbLines , nbElements = np.shape(gie)
-
-		#Clean GIE
-		for i in range(nbLines):
-		    if any(gie[i,:] != 0):
-		        keepIndex.append(i)
-
-		#Creat bECSW from GIE
-		gie = gie[keepIndex,:]
-		bECSW = np.sum(gie,axis=1)
-		bECSW = bECSW[np.newaxis]
-		bECSW = np.transpose(bECSW)
-
-		####################################
-		if verbose : 
-		    print "INFO pre-process"
-		    print "     size GIE (nbLine,nbElements) :   ", '('+str(nbLines)+', '+str(nbElements)+')'
-		    print "     size cleaned GIE :               ", np.shape(gie)
-		    print "     size bECSW :                     ", np.shape(bECSW),'\n'
-		####################################
-
-		#Compute RID & Weight
-		ECSWindex,xi = selectECSW(gie,bECSW,tol)
-		ECSWindex = np.array(sorted(list(ECSWindex)))
-		sizeRID = ECSWindex.size
-		nbElements = xi.size
-
-		#Store results in files 
-		np.savetxt(pathToWeightsAndRIDdir+RIDFileName,ECSWindex, header=str(sizeRID)+' 1', comments='', fmt='%d')
-		np.savetxt(pathToWeightsAndRIDdir+weightsFileName,xi, header=str(nbElements)+' 1', comments='',fmt='%10.5f')
-
-		if verbose: print "===> Success readGieFileAndComputeRIDandWeights.py\n"
-
-	def convertRIDinActiveNodes():
-
-		print "###################################################"
-		print "Executing convertRIDinActiveNodes.py\n"
-		print "Arguments :\n"
-		print "     INPUT  :"
-		print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
-		print "         -RIDFileName                :",RIDFileName
-		print "         -connectivityFileName       :",connectivityFileName
-		print "     OUTPUT :"
-		print "     in pathToWeightsAndRIDdir    :",pathToWeightsAndRIDdir
-		print "         -listActiveNodesFileName    :",listActiveNodesFileName,"\n"
-		print "###################################################"
-
-		##############################################################################
-
-		fRID = open(pathToWeightsAndRIDdir+RIDFileName,'r')
-		if verbose : print "Reading file :",RIDFileName
-		RIDlist = []
-		for line in fRID:
-		    lineSplit = line.split();
-		    RIDlist.append(int(lineSplit[0]))
-		fRID.close()
-		#print RIDlist
-		if verbose : print "Done reading file :",RIDFileName,'\n'
+        fRID = open(self.pathToWeightsAndRIDdir+RIDFileName,'r')
+        if self.verbose : print "Reading file :",RIDFileName
+        RIDlist = []
+        for line in fRID:
+            lineSplit = line.split();
+            RIDlist.append(int(lineSplit[0]))
+        fRID.close()
+        #print RIDlist
+        if self.verbose : print "Done reading file :",RIDFileName,'\n'
 
 
-		fconnec = open(pathToWeightsAndRIDdir+connectivityFileName,'r')
-		if verbose : print "Reading file :",connectivityFileName
-		connecList = []
-		for line in fconnec:
-		    lineSplit = line.split();
-		    connecList.append(map(int,lineSplit))
-		fconnec.close()
-		#print connecList
-		if verbose : print "Done reading file :",connectivityFileName,'\n'
+        fconnec = open(self.pathToWeightsAndRIDdir+connectivityFileName,'r')
+        if self.verbose : print "Reading file :",connectivityFileName
+        connecList = []
+        for line in fconnec:
+            lineSplit = line.split();
+            connecList.append(map(int,lineSplit))
+        fconnec.close()
+        #print connecList
+        if self.verbose : print "Done reading file :",connectivityFileName,'\n'
 
 
-		if verbose : print "Generating listActiveNodes\n"
-		dimension = len(lineSplit)
-		listActiveNodes = []
-		for i in RIDlist:
-		    #if verbose :
-		        # print "#######################"
-		        # print "elem number: ", i
-		        # for coordIndex in range(dimension):
-		        #     print connecList[i][coordIndex]
-		    lenStart = len(listActiveNodes)
-		    for coordIndex in range(dimension):
-		        if connecList[i][coordIndex] not in listActiveNodes:
-		                listActiveNodes.append(connecList[i][coordIndex])
-		    lenEnd = len(listActiveNodes)
-		    #if (lenEnd - lenStart < dimension and verbose):
-		        #print 'some nodes were already in the list !!! '
+        if self.verbose : print "Generating listActiveNodes\n"
+        dimension = len(lineSplit)
+        listActiveNodes = []
+        for i in RIDlist:
+            #if self.verbose :
+                # print "#######################"
+                # print "elem number: ", i
+                # for coordIndex in range(dimension):
+                #     print connecList[i][coordIndex]
+            lenStart = len(listActiveNodes)
+            for coordIndex in range(dimension):
+                if connecList[i][coordIndex] not in listActiveNodes:
+                        listActiveNodes.append(connecList[i][coordIndex])
+            lenEnd = len(listActiveNodes)
+            #if (lenEnd - lenStart < dimension and self.verbose):
+                #print 'some nodes were already in the list !!! '
 
 
-		listActiveNodes.sort()
+        listActiveNodes.sort()
 
-		if verbose : print "Filling file :",listActiveNodesFileName,"\n"
-		fActiveNodes = open(pathToWeightsAndRIDdir+listActiveNodesFileName,'w')
-		for item in listActiveNodes:
-		    fActiveNodes.write("%d\n" % item)
-		fActiveNodes.close()
+        if self.verbose : print "Filling file :",listActiveNodesFileName,"\n"
+        fActiveNodes = open(self.pathToWeightsAndRIDdir+listActiveNodesFileName,'w')
+        for item in listActiveNodes:
+            fActiveNodes.write("%d\n" % item)
+        fActiveNodes.close()
 
-		if morConfigFile['ECSWBool']['prepare'] and not morConfigFile['ECSWBool']['perform']:
-		    morConfigFile['ECSWBool']['prepare'] = False
-		    morConfigFile['ECSWBool']['perform'] = True
-		    with open(cfg['morConfigFile'], "w") as f:
-		        yaml.dump(morConfigFile, f)
-
-		if verbose :
-		    print "listActiveNodes :"
-		    print listActiveNodes
-		    print "===> Success convertRIDinActiveNodes.py\n"
-
+        if self.verbose :
+            print "listActiveNodes :"
+            print listActiveNodes
+            print "===> Success convertRIDinActiveNodes.py\n"
