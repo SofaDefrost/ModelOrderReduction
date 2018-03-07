@@ -176,11 +176,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(
 
 }
 template<class DataTypes1, class DataTypes2>
-Eigen::SparseMatrix<double,Eigen::ColMajor>* MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double,Eigen::ColMajor> Keig)
 {
     msg_info(this) << "K->nRow in convertKToEigenFormat " << K->nRow;
-    Eigen::SparseMatrix<double,Eigen::ColMajor> Keig(K->nRow,K->nRow);
-    msg_info(this) << "Keig.size();" << Keig.size();
+    Keig.resize(K->nRow,K->nRow);
+    msg_info(this) << "Keig.rows();" << Keig.rows();
+    msg_info(this) << "Keig.rows();" << Keig.cols();
     std::vector< Eigen::Triplet<double> > tripletList;
     tripletList.reserve(K->colsValue.size());
 
@@ -199,9 +200,6 @@ Eigen::SparseMatrix<double,Eigen::ColMajor>* MappedMatrixForceFieldAndMass<DataT
         }
     }
     Keig.setFromTriplets(tripletList.begin(), tripletList.end());
-    msg_info(this) << "Keig.size();" << Keig.size();
-    return &Keig;
-
 }
 
 
@@ -237,6 +235,9 @@ Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2
 
     Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
     std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
+    msg_info(this) << "Jeig.rows();" << Jeig.rows();
+    msg_info(this) << "Jeig.rows();" << Jeig.cols();
+
     return Jeig;
 }
 
@@ -244,7 +245,7 @@ template<class DataTypes1, class DataTypes2>
 Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertMappingJacobian2ToEigenFormat(const MatrixDeriv2& J, unsigned int nbRowsJ, unsigned int nbColsJ)
 {
     Eigen::SparseMatrix<double> Jeig;
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
+    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
     msg_info(this) << J.size();
     //msg_info(this) << J.cols().size();
     std::vector< Eigen::Triplet<double> > tripletListJ;
@@ -261,15 +262,18 @@ Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2
         }
     }
 
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
+    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
     Jeig.resize(nbRowsJ,nbColsJ);
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
+    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
 
     Jeig.reserve(Eigen::VectorXi::Constant(nbRowsJ,nbColsJ));
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
+    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
 
     Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
+    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
+    msg_info(this) << "Jeig.rows();" << Jeig.rows();
+    msg_info(this) << "Jeig.rows();" << Jeig.cols();
+
     return Jeig;
 }
 
@@ -291,6 +295,11 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     sofa::core::behavior::MechanicalState<DataTypes1>* ms1 = this->getMState1();
     sofa::core::behavior::MechanicalState<DataTypes2>* ms2 = this->getMState2();
+
+    if (DataTypes1 == DataTypes2)
+        msg_info(this) << "Same object ++++++++++++++++++++++++++++++++++++++++++++++++++";
+    else
+        msg_info(this) << "Not same object ++++++++++++++++++++++++++++++++++++++++++++++++++";
 
     sofa::core::behavior::BaseMechanicalState*  bms1 = this->getMechModel1();
     sofa::core::behavior::BaseMechanicalState*  bms2 = this->getMechModel2();
@@ -402,7 +411,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
         double startTime= (double)timer->getTime();
         msg_info(this) << "listActiveNodes.size() " << listActiveNodes.size();
-        Eigen::SparseMatrix<double,Eigen::ColMajor> Keig = *convertKToEigenFormat(K);
+        Eigen::SparseMatrix<double,Eigen::ColMajor> Keig;
+        convertKToEigenFormat(K,Keig);
         msg_info(this) << Keig.size();
 
         //--------------------------------------------------------------------------------------------------------------------

@@ -253,7 +253,7 @@ protected:
 
 
     void accumulateJacobians(const MechanicalParams* mparams);
-    Eigen::SparseMatrix<double,Eigen::ColMajor> *convertKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K);
+    void convertKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double, Eigen::ColMajor> Keig);
     Eigen::SparseMatrix<double> convertMappingJacobian1ToEigenFormat(const MatrixDeriv1 &J, unsigned int nbRowsJ, unsigned int nbColsJ);
     Eigen::SparseMatrix<double> convertMappingJacobian2ToEigenFormat(const MatrixDeriv2 &J, unsigned int nbRowsJ, unsigned int nbColsJ);
 
