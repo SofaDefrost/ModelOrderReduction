@@ -31,11 +31,14 @@ actuatorsParam = [
         }
     ]
 
-meshPath = '/home/felix/SOFA/plugin/ModelOrderReduction/examples/Model_Reduction/1_INPUT/Mesh_Model/'
+meshPath = '/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/1_INPUT/Mesh_Model/'
 
 def createScene(rootNode):
 
-	rootNode = MainHeader(rootNode, plugins=["SofaPython","SoftRobots","ModelOrderReduction"], gravity=[0.0,0.0,-9810])
+	rootNode = MainHeader(	rootNode, 
+							plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
+							dt=1,
+							gravity=[0.0,0.0,-9810])
 
 	modelNode = ElasticMaterialObject(
 		attachedTo=rootNode,
@@ -45,11 +48,13 @@ def createScene(rootNode):
         translation=[0.0, 0.0, 35],
 		totalMass=0.5,
 		withConstrain=False,
+		# surfaceMeshFileName=meshPath+'surface.stl',
 		poissonRatio=0.45,
 		youngModulus=450)
 	
 	modelNode.createObject('GenericConstraintCorrection', solverName='Solver')
-    
+	# modelNode.createObject('WriteState', filename="init_myDiamondQuiteFine.vtu.state", period='0.1',writeX="0", writeX0="1", writeV="0") 
+
 	FixedBox(
 		atPositions=[-15, -15, -40,  15, 15, 10],
 		applyTo=modelNode,

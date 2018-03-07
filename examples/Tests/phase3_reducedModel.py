@@ -6,57 +6,63 @@ from stlib.scene.wrapper import Wrapper
 import sys
 import numpy as np
 
-import phase1_snapshots
+import originalScene 
 
 ####################				PARAM 			  #########################
 
 #### Run manually
-# modesFilePath = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/2_Modes_Options/"
-# modesFileName = "test_modes.txt"
-# nbrOfNode = 28
-# phase = [1,1,1,1]
+modesFilePath = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/2_Modes_Options/"
+modesFileName = "test_modes.txt"
+pathToWeightsAndRIDdir = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/3_Reduced_Model/"
+RIDFileName = 'test_RID.txt'
+weightsFileName = 'test_weight.txt' 
+connectivityFileName = 'conectivity.txt'
+nbrOfNode = 28
 ##################
 
 #### with launcher
-modesFilePath = "$MODESFILEPATH"
-modesFileName = "$MODESFILENAME"
-
-phase = $PHASE
-nbrOfModes = $NBROFMODES
-periodSavedGIE = $PERIODSAVEDGIE
-nbTrainingSet = $NBTRAININGSET
+# modesFilePath = "$MODESFILEPATH"
+# modesFileName = "$MODESFILENAME"
+# nbrOfNode = $NBROFNODE
 ##################
+print 'modesFilePath',modesFilePath
+print 'modesFileName',modesFileName
 
 paramForcefield = {
- 	'name' : 'HyperReducedFEMForceField',
+	'name' : 'myHyperForceField',
 	'prepareECSW' : True,
 	'modesPath': modesFilePath+modesFileName,
-	'periodSavedGIE' : periodSavedGIE[0],
-	'nbModes' : nbrOfModes,
-	'nbTrainingSet' : nbTrainingSet} 
+	'poissonRatio': 0.45,
+	'youngModulus': 450,
+	'nbTrainingSet' : 200,
+	'performECSW': True,
+	'RIDPath': pathToWeightsAndRIDdir+RIDFileName,
+	'weightsPath': pathToWeightsAndRIDdir+weightsFileName}
 
 paramMappedMatrixMapping = {
 	'template': 'Vec1d,Vec1d',
 	'object1': '@./MechanicalObject',
 	'object2': '@./MechanicalObject',
-	'mappedForceField':'@./modelNode/HyperReducedFEMForceField',
-	'mappedMass': '@./modelNode/UniformMass', # to change -> if name != Err
-	'performECSW': False}
+	'mappedForceField':'@./modelNode/myHyperForceField',
+	'mappedMass': '@./modelNode/UniformMass',
+	'performECSW': True,
+	'listActiveNodesPath': pathToWeightsAndRIDdir+connectivityFileName}
 
 paramMORMapping = {
 	'input': '@../MechanicalObject',
-    'output': '@./MechanicalObject',  # to change -> if name != Err
+    'output': '@./MechanicalObject',
     'modesPath': modesFilePath+modesFileName}
 
 paramWrapper = {
 	"/modelNode/TetrahedronFEMForceField" : {
+						'componentType': 'HyperReducedTetrahedronFEMForceField',
 						'paramForcefield': paramForcefield,
 						'paramMORMapping': paramMORMapping,
 						'paramMappedMatrixMapping': paramMappedMatrixMapping}			
 	}
 
 modesPositionStr = '0'
-for i in range(1,nbrOfModes):
+for i in range(1,nbrOfNode):
     modesPositionStr = modesPositionStr + ' 0'
 
 ###############################################################################
@@ -66,9 +72,7 @@ def MORNameExistance (name,kwargs):
         if kwargs['name'] == name : 
         	return True
 
-componentType = []*len(paramWrapper)
 solverParam = [[]]*len(paramWrapper)
-containers = []*len(paramWrapper)
 def MORreplace(node,type,newParam,initialParam):
 	global solverParam
 	
@@ -81,35 +85,21 @@ def MORreplace(node,type,newParam,initialParam):
 		# print ('path : '+path)
 		# print ('currenPath : '+currentPath)
 		if currentPath == path :
-			name = ''.join(tabReduced[-1:])
-			# print ('name : '+name)
-
-			# 	Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMass
+			# print type
 			if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
+				# print initialParam['name'],type,'+1'
 				if 'name' in initialParam:
 					solverParam[counter].append(initialParam['name'])
 				else: 
 					solverParam[counter].append(type)
-			
-			# 	Find loader to be able to save elements allowing to build the connectivity file
-			if str(type).find('Loader') != -1:
-				if 'name' in initialParam:
-					containers.append(initialParam['name'])
-				else: 
-					containers.append(type)
-			
-			#	Change the initial Forcefield by the HyperReduced one with the new argument and save 
+			name = ''.join(tabReduced[-1:])
+			# print ('name : '+name)
 			if MORNameExistance(name,initialParam) or type == name:
-				newParam[key]['paramForcefield']['poissonRatio'] = initialParam['poissonRatio']
-				newParam[key]['paramForcefield']['youngModulus'] = initialParam['youngModulus']
-
-				if name == 'TetrahedronFEMForceField':
-					componentType.append('tetrahedra')
-					return 'HyperReducedTetrahedronFEMForceField', newParam[key]['paramForcefield']
-				elif name == 'TriangleFEMForceField':
-					componentType.append('triangles')
-					return 'HyperReducedTriangleFEMForceField', newParam[key]['paramForcefield']
-
+				# node = MORInsert(node,key,newParam)
+				if 'paramForcefield' in newParam[key]:
+					return newParam[key]['componentType'], newParam[key]['paramForcefield']
+				else :
+					return newParam[key]['componentType'], initialParam
 		counter+=1
 
 	return None
@@ -141,22 +131,17 @@ def searchObjectAndDestroy(node,mySolver,newParam):
 						child.removeObject(obj)
 						child.getParents()[0].addObject(obj)
 
-				# print 'Create new child modelMOR and move node in it'
+				print 'Create new child modelMOR and move node in it'
 
 				if 'paramMappedMatrixMapping' in newParam[key]:
 					modelMOR.createObject('MappedMatrixForceFieldAndMass', **newParam[key]['paramMappedMatrixMapping'] )
-					# print 'Create MappedMatrixForceFieldAndMass in modelMOR'
+					print 'Create MappedMatrixForceFieldAndMass in modelMOR'
 
 				if 'paramMORMapping' in newParam[key]:		
 					child.createObject('ModelOrderReductionMapping', **newParam[key]['paramMORMapping'])
-					# print "Create ModelOrderReductionMapping in node"
+					print "Create ModelOrderReductionMapping in node"
 				
 				tmpFind+=1
-
-				if phase == [1]*len(phase):
-					elements = child.getObject(containers[counter]).findData(componentType[counter]).value
-					np.savetxt('saved_elements.txt', elements,fmt='%i')
-					print "Saved elements"
 
 			counter+=1	
 
@@ -169,9 +154,5 @@ def searchObjectAndDestroy(node,mySolver,newParam):
 
 def createScene(rootNode):
 
-	phase1_snapshots.createScene(Wrapper(rootNode, MORreplace, paramWrapper)) 
-	# print ('Solver to move : 	'+str(solverParam))
-	# print ('Containers : 		'+str(containers))
-	# print ('ComponentType : 	'+str(componentType))
-
+	originalScene.createScene(Wrapper(rootNode, MORreplace, paramWrapper)) 
 	searchObjectAndDestroy(rootNode,solverParam,paramWrapper)

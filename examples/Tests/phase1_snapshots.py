@@ -5,48 +5,46 @@ from stlib.animation import AnimationManager , animate
 from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT
-from mor.animation import DefaultShaking
+from mor.animation import defaultShaking
 
 # Because sofa launcher create a template of our scene, we need to indicate the path to our original scene
 import sys
-sys.path.insert(0,'/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests')
 
+originalScene = '$ORIGINALSCENE'
 import originalScene 
 
 
 #### Run manually
-# A list of what you want to animate in your scene and with which parameters
-toAnimate = ["nord","ouest","sud","est"]
+# # A list of what you want to animate in your scene and with which parameters
+# toAnimate = ["nord","ouest","sud","est"]
 
-nbActuator = len(toAnimate)
-dt = 1
-increment = [5]*nbActuator
-breathTime = [20]*nbActuator
-maxPull = [40]*nbActuator
-nbIterations = [0]*nbActuator
+# nbActuator = len(toAnimate)
+# increment = [5]*nbActuator
+# breathTime = [10]*nbActuator
+# maxPull = [40]*nbActuator
+# nbIterations = [0]*nbActuator
 
-for i in range(nbActuator):
-    nbIterations[i] = ((maxPull[i]/increment[i])-1)*breathTime[i]+ (maxPull[i]/increment[i])-1
+# for i in range(nbActuator):
+#     nbIterations[i] = ((maxPull[i]/increment[i])-1)*breathTime[i]+ (maxPull[i]/increment[i]-1)
 
-timeExe = nbIterations[0] * dt
-phase = [1,1,1,1]
+# phase = [1,1,1,1]
 ##################
 
 
 #### with launcher
-# toAnimate= $TOANIMATE
-# dt = $DT
-# maxPull = $MAXPULL
-# breathTime = $BREATHTIME
-# increment = $INCREMENT
-# phase = $PHASE
-# nbIterations = $nbIterations
-# timeExe = nbIterations * dt
+toAnimate= $TOANIMATE
+maxPull = $MAXPULL
+breathTime = $BREATHTIME
+increment = $INCREMENT
+phase = $PHASE
+nbIterations = $nbIterations
+periodSavedGIE = $PERIODSAVEDGIE
 ##################
 
-print "Scene Phase :",phase
-print "timeExe :",timeExe
 
+timeExe = 0.0
+dt = 0.0
+print "Scene Phase :",phase
 ###############################################################################
 
 class SingletonTmp(object):
@@ -61,7 +59,7 @@ def searchChildAndAnimate(node,toAnimate):
 	for child in node.getChildren():
 		if child.name in toAnimate and tmpFind < len(toAnimate):
 			print ('Animate : '+child.name)
-			animate(DefaultShaking, {
+			animate(defaultShaking, {
 								"target" : child ,
 								"phaseTest" : phase, 
 								"actuatorNb" : tmpFind,
@@ -72,15 +70,20 @@ def searchChildAndAnimate(node,toAnimate):
 			tmpFind+=1
 		if tmpFind >= len(toAnimate):
 			myParent = child.getParents()[0]
-			myParent.createObject('WriteState', filename="stateFile.state", period='0.1',writeX="1", writeX0="", writeV="0") 
+			myParent.createObject('WriteState', filename="stateFile.state", period=periodSavedGIE[0]*dt,writeX="1", writeX0="", writeV="0") 
 			return None
 		else:
 			searchChildAndAnimate(child,toAnimate)
 
 
 def createScene(rootNode):
+	global timeExe, dt
 
 	originalScene.createScene(rootNode)
+	dt = rootNode.dt
+	timeExe = nbIterations * dt 
+	# timeExe = nbIterations[0] * rootNode.dt
+	print "timeExe :",timeExe
 
 	if isinstance(rootNode, Wrapper):
 		AnimationManager(rootNode.node)

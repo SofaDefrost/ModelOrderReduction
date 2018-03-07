@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
-
+import time
 import sys 
 import math              
 from launcher import *                 
 
+sys.path.append('/home/felix/SOFA/plugin/ModelOrderReduction/python') # to change
+
 # MOR IMPORT
-from modelOrderReductionScript import ModelOrderReductionScript
+from mor.script import ModelOrderReductionScript
+
+total_time = time.time()
 
 ####################      USER PARAM       ##########################
-
+originalScene = "originalScene"
 # A list of what you want to animate in your scene and with which parameters
 toAnimate = ["nord","ouest","sud","est"]
 
@@ -23,15 +27,29 @@ stateFileName = "fullStates.state"
 modesFilePath = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/2_Modes_Options/"
 modesFileName = "test_modes.txt"
 pathToWeightsAndRIDdir = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/3_Reduced_Model/"
+gieFileName = 'fullGIE.txt'
+
+RIDFileName = 'test_RID.txt'
+weightsFileName = 'test_weight.txt' 
+
+savedElementsFileName = 'saved_elements.txt'
+connectivityFileName = 'conectivity.txt'
+
+# The different Tolerance & Nbr of Nodes wanted
+tolModes = 0.001
+tolGIE =  0.05
 
 # Optionnal parameters
 verbose = True
-dt = 1
 
 ####################   SHAKING VARIABLES  ###########################
 nbPossibility = 2**nbActuator
 phaseNum = [[0] * nbActuator for i in range(nbPossibility)]
 phaseNumClass = []
+
+
+periodSavedGIE = [x+1 for x in breathTime]
+nbTrainingSet = (breathTime[0]/increment[0]) * nbPossibility
 
 ####################    PYTHON SCRIPT INIT  #########################
 
@@ -43,7 +61,7 @@ morScript = ModelOrderReductionScript(  stateFilePath = stateFilePath,
 ####################  INIT SCENE SEQUENCES  #########################
 nbIterations = [0]*nbActuator
 for i in range(nbActuator):
-    nbIterations[i] = ((maxPull[i]/increment[i])-1)*breathTime[i]+ (maxPull[i]/increment[i])
+    nbIterations[i] = (maxPull[i]/increment[i])*breathTime[i] + (maxPull[i]/increment[i]) + 1
 
 for i in range(nbPossibility):
     binVal = "{0:b}".format(i)
@@ -57,13 +75,13 @@ for nb in range(nbActuator+1):
 
 listSofaScene = []
 for i in range(nbPossibility):
-    listSofaScene.append({
+    listSofaScene.append({  "ORIGINALSCENE": originalScene,
                             "TOANIMATE": toAnimate,
                             "PHASE": phaseNumClass[i],
                             "INCREMENT" : increment,
                             "MAXPULL" : maxPull,
                             "BREATHTIME" : breathTime,
-                            "DT" : dt,
+                            'PERIODSAVEDGIE' : periodSavedGIE,
                             "nbIterations":nbIterations[0]
         })
 
@@ -76,19 +94,33 @@ for i in range(nbPossibility):
 #   add a writeState componant to save the shaking resulting states  #
 #                                                                    #
 ######################################################################
-print ("List of phase :",phaseNumClass)
-print ("Number of Iteration per phase :",nbIterations[0])
-print ("##############")
+start_time = time.time()
+
+if verbose :
+    print ("List of phase :",phaseNumClass)
+    print ("Number of Iteration per phase :",nbIterations[0])
+    print ("##############")
 
 
-filenames = ["phase1_snapshots.py"]
+filenames = ["phase1_snapshots.py",originalScene+'.py']
 filesandtemplates = []
 for filename in filenames:                
     filesandtemplates.append( (open(filename).read(), filename) )
-     
+
+
 results = startSofa(listSofaScene, filesandtemplates, launcher=ParallelLauncher(4))
 
+if verbose:
+    for res in results:
+        print("Results: ")
+        print("    directory: "+res["directory"])
+        print("        scene: "+res["scene"])
+        print("     duration: "+str(res["duration"])+" sec")  
 
+
+
+print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
 #                           PHASE 2                                  #
@@ -100,10 +132,6 @@ results = startSofa(listSofaScene, filesandtemplates, launcher=ParallelLauncher(
 ######################################################################
 
 for res in results:
-    print("Results: ")
-    print("    directory: "+res["directory"])
-    print("        scene: "+res["scene"])
-    print("     duration: "+str(res["duration"])+" sec")  
 
     with open(stateFilePath+stateFileName, "a") as stateFile:
         currentStateFile = open(res["directory"]+"/stateFile.state", "r") 
@@ -111,10 +139,17 @@ for res in results:
         currentStateFile.close()
     stateFile.close()
 
-morScript.readStateFilesAndComputeModes(stateFileName = stateFileName,
-                                        modesFileName = modesFileName,
-                                        tol = 0.001)
+potentialNbrOfModes = morScript.readStateFilesAndComputeModes(  stateFileName = stateFileName,
+                                                                modesFileName = modesFileName,
+                                                                tol = tolModes)
 
+if potentialNbrOfModes == -1:
+    raise ValueError("problem of execution of readStateFilesAndComputeModes")
+
+
+
+print("PHASE 2 --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
 #                           PHASE 3                                  #
@@ -130,14 +165,40 @@ morScript.readStateFilesAndComputeModes(stateFileName = stateFileName,
 #                                                                    #
 ######################################################################
 
-# filenames = ["phase2_prepareECSW.py"]
-# filesandtemplates = []
-# for filename in filenames:                
-#     filesandtemplates.append( (open(filename).read(), filename) )
+for i in range(nbPossibility):
+    listSofaScene[i]['MODESFILEPATH'] = modesFilePath
+    listSofaScene[i]['MODESFILENAME'] = modesFileName
+    listSofaScene[i]['NBROFMODES'] = potentialNbrOfModes
+    listSofaScene[i]['NBTRAININGSET'] = nbTrainingSet
+
+filenames = ["phase2_prepareECSW.py","phase1_snapshots.py",originalScene+'.py']
+filesandtemplates = []
+for filename in filenames:                
+    filesandtemplates.append( (open(filename).read(), filename) )
      
-# results = startSofa(listSofaScene, filesandtemplates, launcher=ParallelLauncher(4))
+results = startSofa(listSofaScene[1:], filesandtemplates, launcher=ParallelLauncher(4))
+
+if verbose:
+    for res in results:
+        print("Results: ")
+        print("    directory: "+res["directory"])
+        print("        scene: "+res["scene"])
+        print("     duration: "+str(res["duration"])+" sec")
+
+try: 
+    with open(pathToWeightsAndRIDdir+savedElementsFileName, "a") as savedElementsFile:
+        currentStateFile = open(results[-1]["directory"]+'/saved_elements.txt', "r") 
+        savedElementsFile.write(currentStateFile.read())
+        currentStateFile.close()
+    savedElementsFile.close()  
+except:
+    print "Unexpected error:", sys.exc_info()[0]
+    raise
 
 
+
+print("PHASE 3 --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
 #                           PHASE 4                                  #
@@ -148,6 +209,17 @@ morScript.readStateFilesAndComputeModes(stateFileName = stateFileName,
 #                                                                    #
 ######################################################################
 
+for res in results:
 
-# morScript.readGieFileAndComputeRIDandWeights()
-# morScript.convertRIDinActiveNodes()
+    with open(pathToWeightsAndRIDdir+gieFileName, "a") as stateFile:
+        currentStateFile = open(res["directory"]+"/HyperReducedFEMForceField_Gie.txt", "r") 
+        stateFile.write(currentStateFile.read())
+        currentStateFile.close()
+    stateFile.close()
+
+morScript.readGieFileAndComputeRIDandWeights(pathToWeightsAndRIDdir+gieFileName,RIDFileName,weightsFileName,tolGIE)
+morScript.convertRIDinActiveNodes(RIDFileName,savedElementsFileName,connectivityFileName)
+
+print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
+
+print("TOTAL TIME --- %s seconds ---" % (time.time() - total_time))
