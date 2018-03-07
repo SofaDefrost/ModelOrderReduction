@@ -175,13 +175,11 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(
     MechanicalAccumulateJacobian(&cparams, core::MatrixDerivId::mappingJacobian()).execute(gnode);
 
 }
+
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double,Eigen::ColMajor> Keig)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double,Eigen::ColMajor>& Keig)
 {
-    msg_info(this) << "K->nRow in convertKToEigenFormat " << K->nRow;
     Keig.resize(K->nRow,K->nRow);
-    msg_info(this) << "Keig.rows();" << Keig.rows();
-    msg_info(this) << "Keig.rows();" << Keig.cols();
     std::vector< Eigen::Triplet<double> > tripletList;
     tripletList.reserve(K->colsValue.size());
 
@@ -206,12 +204,10 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertKToEigenForma
 
 
 template<class DataTypes1, class DataTypes2>
-Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertMappingJacobian1ToEigenFormat(const MatrixDeriv1& J, unsigned int nbRowsJ, unsigned int nbColsJ)
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertMappingJacobian1ToEigenFormat(const MatrixDeriv1& J, Eigen::SparseMatrix<double>& Jeig)
 {
-    Eigen::SparseMatrix<double> Jeig;
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
-    msg_info(this) << J.size();
-    //msg_info(this) << J.cols().size();
+    int nbRowsJ = Jeig.rows();
+    int nbColsJ = Jeig.cols();
     std::vector< Eigen::Triplet<double> > tripletListJ;
 
     for (MatrixDeriv1RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
@@ -219,35 +215,20 @@ Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2
         int rowIndex = rowIt.index();
         for (MatrixDeriv1ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
         {
-
             int colIndex = colIt.index();
             Deriv1 elemVal = colIt.val();
             tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,colIndex,elemVal[0]));
         }
     }
-
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
-    Jeig.resize(nbRowsJ,nbColsJ);
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
-
     Jeig.reserve(Eigen::VectorXi::Constant(nbRowsJ,nbColsJ));
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
-
     Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
-    std::cout << "nbRowJ in my shitty function1: " << nbRowsJ << std::endl ;
-    msg_info(this) << "Jeig.rows();" << Jeig.rows();
-    msg_info(this) << "Jeig.rows();" << Jeig.cols();
 
-    return Jeig;
 }
 
 template<class DataTypes1, class DataTypes2>
 Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::convertMappingJacobian2ToEigenFormat(const MatrixDeriv2& J, unsigned int nbRowsJ, unsigned int nbColsJ)
 {
     Eigen::SparseMatrix<double> Jeig;
-    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
-    msg_info(this) << J.size();
-    //msg_info(this) << J.cols().size();
     std::vector< Eigen::Triplet<double> > tripletListJ;
 
     for (MatrixDeriv2RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
@@ -255,24 +236,14 @@ Eigen::SparseMatrix<double> MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2
         int rowIndex = rowIt.index();
         for (MatrixDeriv2ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
         {
-
             int colIndex = colIt.index();
             Deriv2 elemVal = colIt.val();
             tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,colIndex,elemVal[0]));
         }
     }
-
-    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
     Jeig.resize(nbRowsJ,nbColsJ);
-    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
-
     Jeig.reserve(Eigen::VectorXi::Constant(nbRowsJ,nbColsJ));
-    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
-
     Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
-    std::cout << "nbRowJ in my shitty function2: " << nbRowsJ << std::endl ;
-    msg_info(this) << "Jeig.rows();" << Jeig.rows();
-    msg_info(this) << "Jeig.rows();" << Jeig.cols();
 
     return Jeig;
 }
@@ -296,13 +267,15 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     sofa::core::behavior::MechanicalState<DataTypes1>* ms1 = this->getMState1();
     sofa::core::behavior::MechanicalState<DataTypes2>* ms2 = this->getMState2();
 
-    if (DataTypes1 == DataTypes2)
+
+    sofa::core::behavior::BaseMechanicalState*  bms1 = this->getMechModel1();
+    sofa::core::behavior::BaseMechanicalState*  bms2 = this->getMechModel2();
+
+    if (bms1 == bms2)
         msg_info(this) << "Same object ++++++++++++++++++++++++++++++++++++++++++++++++++";
     else
         msg_info(this) << "Not same object ++++++++++++++++++++++++++++++++++++++++++++++++++";
 
-    sofa::core::behavior::BaseMechanicalState*  bms1 = this->getMechModel1();
-    sofa::core::behavior::BaseMechanicalState*  bms2 = this->getMechModel2();
 
     MultiMatrixAccessor::MatrixRef mat11 = matrix->getMatrix(mstate1);
     MultiMatrixAccessor::MatrixRef mat22 = matrix->getMatrix(mstate2);
@@ -422,7 +395,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
         ///////////////////////    COPY J1 AND J2 IN EIGEN FORMAT //////////////////////////////////////
 
-        Eigen::SparseMatrix<double> J1eig,J2eig;
+        Eigen::SparseMatrix<double> J1eig;
+        Eigen::SparseMatrix<double> J2eig;
         int nbColsJ1, nbColsJ2;
         if ((timeInvariantMapping.getValue() == false) || (this->getContext()->getTime() == 0))
         {
@@ -439,12 +413,18 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
 
 
-            Eigen::SparseMatrix<double> J1eig = convertMappingJacobian1ToEigenFormat(J1, K->nRow, J1.begin().row().size());
-            Eigen::SparseMatrix<double> J2eig = convertMappingJacobian2ToEigenFormat(J2, K->nRow, J2.begin().row().size());
+            J1eig.resize(K->nRow, J1.begin().row().size());
+            J2eig.resize(K->nRow, J2.begin().row().size());
+            convertMappingJacobian1ToEigenFormat(J1, J1eig);
+            msg_info(this) << "J1eig cols() out of convertFunction: " << J1eig.cols();
+            //msg_info(this)<< J1eig;
+            J2eig = convertMappingJacobian2ToEigenFormat(J2, K->nRow, J2.begin().row().size());
+            msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
 
-            msg_info(this) << "J1eig.size()" << J1eig.size();
 
         }
+        msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
+
         if ((timeInvariantMapping.getValue() == true) && (this->getContext()->getTime() == 0))
         {
             constantJ1.resize(J1eig.rows(), J1eig.cols());
@@ -452,8 +432,9 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             constantJ1 = J1eig;
         }
         //--------------------------------------------------------------------------------------------------------------------
+        msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
 
-        msg_info(this)<<" time getJ + set J1eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
+        msg_info(this)<<" time getJ +sdfg set J1eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
         startTime= (double)timer->getTime();
 
         ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
@@ -463,8 +444,13 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         }
         else
         {
+            msg_info(this) << "J1eig cols() out out of convertFunction: " << J1eig.cols();
+
             nbColsJ1 = J1eig.cols();
+            nbColsJ2 = J2eig.cols();
+            msg_info(this)<<"nbColsJ1 " << nbColsJ1;
         }
+        msg_info(this)<<"nbColsJ1 " << nbColsJ1;
         Eigen::SparseMatrix<double>  J1tKJ1eigen(nbColsJ1,nbColsJ1);
         msg_info(this)<<"TOTO ";
         if (timeInvariantMapping.getValue() == true)
@@ -476,6 +462,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
             J1tKJ1eigen = J1eig.transpose()*Keig*J1eig;
         }
         msg_info(this)<<"TATA ";
+        //msg_info(this)<< J1eig;
+        msg_info(this)<<J1tKJ1eigen;
 
         if (usePrecomputedMass.getValue() == true)
         {
@@ -487,10 +475,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         Eigen::SparseMatrix<double>  J1tKJ2eigen(nbColsJ1,nbColsJ2);
         Eigen::SparseMatrix<double>  J2tKJ1eigen(nbColsJ2,nbColsJ1);
         msg_info(this)<<"TUTU ";
-
-        J2tKJ2eigen = J2eig.transpose()*Keig*J2eig;
-        J1tKJ2eigen = J1eig.transpose()*Keig*J2eig;
-        J2tKJ1eigen = J2eig.transpose()*Keig*J1eig;
+        if (bms1 != bms2)
+        {
+            J2tKJ2eigen = J2eig.transpose()*Keig*J2eig;
+            J1tKJ2eigen = J1eig.transpose()*Keig*J2eig;
+            J2tKJ1eigen = J2eig.transpose()*Keig*J1eig;
+        }
         msg_info(this)<<"TITI ";
 
         //--------------------------------------------------------------------------------------------------------------------
@@ -566,25 +556,28 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
                 mat11.matrix->add(i, j, J1tKJ1eigen.coeff(i,j));
             }
         }
-        for (unsigned int i=0; i<nbColsJ2; i++)
+        if (bms1 != bms2)
         {
-            for (unsigned int j=0; j<nbColsJ2; j++)
+            for (unsigned int i=0; i<nbColsJ2; i++)
             {
-                mat22.matrix->add(i, j, J2tKJ2eigen.coeff(i,j));
+                for (unsigned int j=0; j<nbColsJ2; j++)
+                {
+                    mat22.matrix->add(i, j, J2tKJ2eigen.coeff(i,j));
+                }
             }
-        }
-        for (unsigned int i=0; i<nbColsJ1; i++)
-        {
-            for (unsigned int j=0; j<nbColsJ2; j++)
+            for (unsigned int i=0; i<nbColsJ1; i++)
             {
-                mat12.matrix->add(i, j, J1tKJ2eigen.coeff(i,j));
+                for (unsigned int j=0; j<nbColsJ2; j++)
+                {
+                    mat12.matrix->add(i, j, J1tKJ2eigen.coeff(i,j));
+                }
             }
-        }
-        for (unsigned int i=0; i<nbColsJ2; i++)
-        {
-            for (unsigned int j=0; j<nbColsJ1; j++)
+            for (unsigned int i=0; i<nbColsJ2; i++)
             {
-                mat21.matrix->add(i, j, J2tKJ1eigen.coeff(i,j));
+                for (unsigned int j=0; j<nbColsJ1; j++)
+                {
+                    mat21.matrix->add(i, j, J2tKJ1eigen.coeff(i,j));
+                }
             }
         }
         msg_info(this)<<" time copy J1tKJ1eigen back to JtKJ in CompressedRowSparse : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
