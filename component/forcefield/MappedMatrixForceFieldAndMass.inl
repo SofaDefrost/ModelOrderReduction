@@ -206,6 +206,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyKToEigenFormat(C
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1ToEigenFormat(const MatrixDeriv1 &J, Eigen::SparseMatrix<double>& Jeig)
 {
+    msg_info(this) << "Start of J1 copy ";
     int nbRowsJ = Jeig.rows();
     int nbColsJ = Jeig.cols();
     std::vector< Eigen::Triplet<double> > tripletListJ;
@@ -218,6 +219,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1
             int colIndex = colIt.index();
             Deriv1 elemVal = colIt.val();
             tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,colIndex,elemVal[0]));
+            msg_info(this) << "J1: " << elemVal[0];
         }
     }
     Jeig.reserve(Eigen::VectorXi::Constant(nbRowsJ,nbColsJ));
@@ -228,6 +230,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2ToEigenFormat(const MatrixDeriv2 &J, Eigen::SparseMatrix<double>& Jeig)
 {
+    msg_info(this) << "Start of J2 copy ";
     int nbRowsJ = Jeig.rows();
     int nbColsJ = Jeig.cols();
     std::vector< Eigen::Triplet<double> > tripletListJ;
@@ -240,6 +243,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2
             int colIndex = colIt.index();
             Deriv2 elemVal = colIt.val();
             tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,colIndex,elemVal[0]));
+            msg_info(this) << "J2: " << elemVal[0];
         }
     }
     Jeig.reserve(Eigen::VectorXi::Constant(nbRowsJ,nbColsJ));
@@ -402,7 +406,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         MatrixDeriv1RowConstIterator rowItJ1= J1.begin();
         const MatrixDeriv2 &J2 = c[ms2].read()->getValue();
         MatrixDeriv2RowConstIterator rowItJ2= J2.begin();
-
+        msg_info(this)<<"Just got J1. Size=" << J1.size();
+        msg_info(this)<<"Just got J2. Size=" << J2.size();
 
         msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 
