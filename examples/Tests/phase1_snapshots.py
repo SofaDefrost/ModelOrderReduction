@@ -9,9 +9,19 @@ from mor.animation import defaultShaking
 
 # Because sofa launcher create a template of our scene, we need to indicate the path to our original scene
 import sys
+import os
+import ntpath
+import importlib
 
 originalScene = '$ORIGINALSCENE'
-import originalScene 
+
+sys.path.insert(0,os.path.dirname(os.path.abspath(originalScene)))
+
+filename, file_extension = os.path.splitext(originalScene)
+importScene = str(ntpath.basename(filename))
+
+originalScene = importlib.import_module(importScene)
+# print importScene
 
 
 #### Run manually
@@ -23,9 +33,10 @@ import originalScene
 # breathTime = [10]*nbActuator
 # maxPull = [40]*nbActuator
 # nbIterations = [0]*nbActuator
+# periodSavedGIE = [x+1 for x in breathTime]
 
 # for i in range(nbActuator):
-#     nbIterations[i] = ((maxPull[i]/increment[i])-1)*breathTime[i]+ (maxPull[i]/increment[i]-1)
+#     nbIterations[i] = ((maxPull[i]/increment[i])*breathTime[i]) + (maxPull[i]/increment[i])
 
 # phase = [1,1,1,1]
 ##################

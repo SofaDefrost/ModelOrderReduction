@@ -25,8 +25,9 @@ nbrOfNode = 28
 # modesFileName = "$MODESFILENAME"
 # nbrOfNode = $NBROFNODE
 ##################
-print 'modesFilePath',modesFilePath
-print 'modesFileName',modesFileName
+
+# print 'modesFilePath',modesFilePath
+# print 'modesFileName',modesFileName
 
 paramForcefield = {
 	'name' : 'myHyperForceField',

@@ -40,7 +40,7 @@ tolModes = 0.001
 tolGIE =  0.05
 
 # Optionnal parameters
-verbose = True
+verbose = False
 
 ####################   SHAKING VARIABLES  ###########################
 nbPossibility = 2**nbActuator
@@ -49,7 +49,7 @@ phaseNumClass = []
 
 
 periodSavedGIE = [x+1 for x in breathTime]
-nbTrainingSet = (breathTime[0]/increment[0]) * nbPossibility
+nbTrainingSet = (maxPull[0]/increment[0]) * nbPossibility
 
 ####################    PYTHON SCRIPT INIT  #########################
 
@@ -61,7 +61,7 @@ morScript = ModelOrderReductionScript(  stateFilePath = stateFilePath,
 ####################  INIT SCENE SEQUENCES  #########################
 nbIterations = [0]*nbActuator
 for i in range(nbActuator):
-    nbIterations[i] = (maxPull[i]/increment[i])*breathTime[i] + (maxPull[i]/increment[i]) + 1
+    nbIterations[i] = (maxPull[i]/increment[i])*breathTime[i] + (maxPull[i]/increment[i]) 
 
 for i in range(nbPossibility):
     binVal = "{0:b}".format(i)
@@ -84,6 +84,10 @@ for i in range(nbPossibility):
                             'PERIODSAVEDGIE' : periodSavedGIE,
                             "nbIterations":nbIterations[0]
         })
+
+print ('periodSavedGIE : '+str(periodSavedGIE[0]))
+print ('nbTrainingSet : '+str(nbTrainingSet))
+print ('nbIterations : '+str(nbIterations[0]))
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
@@ -148,7 +152,7 @@ if potentialNbrOfModes == -1:
 
 
 
-print("PHASE 2 --- %s seconds ---" % (time.time() - start_time))
+# print("PHASE 2 --- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #

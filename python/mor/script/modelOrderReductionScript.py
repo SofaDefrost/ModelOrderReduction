@@ -13,7 +13,7 @@ def distance3D(vec1,vec2):
    return norm
 
 def update_progress(progress):
-    barLength = 40 # Modify this to change the length of the progress bar
+    barLength = 50 # Modify this to change the length of the progress bar
     status = "Compute Weight&RID"
     if isinstance(progress, int):
         progress = float(progress)
@@ -125,7 +125,7 @@ class ModelOrderReductionScript():
 
     def readStateFilesAndComputeModes(self, stateFileName, tol, modesFileName):
 
-        initPositionFilename = self.stateFilePath+"test_init.state" #'init_myDiamondQuiteFine.state' # 'init_myDiamondFairlyFine.state' # "test_init.state"
+        initPositionFilename = self.stateFilePath+"test_init.state" # 'init_myDiamondFairlyFine.state' #  'init_myDiamondQuiteFine.state' # 
         print "###################################################"
         print "Executing readStateFilesAndComputeModes.py\n" 
         print "Arguments :\n"

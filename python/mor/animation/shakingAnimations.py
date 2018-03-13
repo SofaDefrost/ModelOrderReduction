@@ -29,7 +29,8 @@ def defaultShaking( target,
 					actuatorMaxPull,
 					actuatorBreathTime,
 					actuatorIncrement,
-					breathTimeCounter):
+					breathTimeCounter,
+                                        **param):
 	"""
 	Object with an elastic deformation law.
 

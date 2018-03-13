@@ -686,55 +686,55 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         //--------------------------------------------------------------------------------------------------------------------
 
 
-        timeJKJeig= (double)timer->getTime();
-        using namespace boost::numeric;
+//        timeJKJeig= (double)timer->getTime();
+//        using namespace boost::numeric;
 
-        typedef double      ScalarType;
+//        typedef double      ScalarType;
 
-        viennacl::compressed_matrix<ScalarType> vcl_compressed_K(K->nRow,K->nRow);
-        viennacl::compressed_matrix<ScalarType> vcl_compressed_J1(K->nRow,nbColsJ1);
-        viennacl::compressed_matrix<ScalarType> vcl_compressed_KJ(K->nRow,nbColsJ1);
-        viennacl::compressed_matrix<ScalarType> vcl_compressed_J1t(nbColsJ1,K->nRow);
-        viennacl::compressed_matrix<ScalarType> vcl_compressed_JtKJ(nbColsJ1,nbColsJ1);
+//        viennacl::compressed_matrix<ScalarType> vcl_compressed_K(K->nRow,K->nRow);
+//        viennacl::compressed_matrix<ScalarType> vcl_compressed_J1(K->nRow,nbColsJ1);
+//        viennacl::compressed_matrix<ScalarType> vcl_compressed_KJ(K->nRow,nbColsJ1);
+//        viennacl::compressed_matrix<ScalarType> vcl_compressed_J1t(nbColsJ1,K->nRow);
+//        viennacl::compressed_matrix<ScalarType> vcl_compressed_JtKJ(nbColsJ1,nbColsJ1);
 
-        Eigen::SparseMatrix<double> J1eigT(nbColsJ1,K->nRow);
-        //J1eigT.reserve(Eigen::VectorXi::Constant(nbColsJ1,K->nRow));
+//        Eigen::SparseMatrix<double> J1eigT(nbColsJ1,K->nRow);
+//        //J1eigT.reserve(Eigen::VectorXi::Constant(nbColsJ1,K->nRow));
 
-        //msg_info(this)<<" step 0 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
-        //timeJKJeig= (double)timer->getTime();
-        J1eigT = J1eig.transpose();
-        //msg_info(this)<<" step 1 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
-        //timeJKJeig= (double)timer->getTime();
-        viennacl::copy(Keig, vcl_compressed_K);
-        //msg_info(this)<<" step 2 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
-        //timeJKJeig= (double)timer->getTime();
-        viennacl::copy(J1eig, vcl_compressed_J1);
-        //msg_info(this)<<" step 3 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
-        //timeJKJeig= (double)timer->getTime();
-        viennacl::copy(J1eigT, vcl_compressed_J1t);
-        //msg_info(this)<<" step 4 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
+//        //msg_info(this)<<" step 0 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
+//        //timeJKJeig= (double)timer->getTime();
+//        J1eigT = J1eig.transpose();
+//        //msg_info(this)<<" step 1 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
+//        //timeJKJeig= (double)timer->getTime();
+//        viennacl::copy(Keig, vcl_compressed_K);
+//        //msg_info(this)<<" step 2 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
+//        //timeJKJeig= (double)timer->getTime();
+//        viennacl::copy(J1eig, vcl_compressed_J1);
+//        //msg_info(this)<<" step 3 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
+//        //timeJKJeig= (double)timer->getTime();
+//        viennacl::copy(J1eigT, vcl_compressed_J1t);
+//        //msg_info(this)<<" step 4 : "<< ((double)timer->getTime() - timeJKJeig)*timeScale << " ms";
 
-        viennacl::backend::finish();
+//        viennacl::backend::finish();
 
-        timeJKJeig= (double)timer->getTime();
+//        timeJKJeig= (double)timer->getTime();
 
-        ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
+//        ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
 
-        vcl_compressed_J1 = viennacl::linalg::prod( vcl_compressed_K , vcl_compressed_J1);
-        vcl_compressed_JtKJ = viennacl::linalg::prod( vcl_compressed_J1t , vcl_compressed_J1);
+//        vcl_compressed_J1 = viennacl::linalg::prod( vcl_compressed_K , vcl_compressed_J1);
+//        vcl_compressed_JtKJ = viennacl::linalg::prod( vcl_compressed_J1t , vcl_compressed_J1);
 
-        //--------------------------------------------------------------------------------------------------------------------
+//        //--------------------------------------------------------------------------------------------------------------------
 
-        viennacl::backend::finish();
+//        viennacl::backend::finish();
 
-        msg_info(this)<<"   time compute JtKJ_cl : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms" ; //(MAYBE OPTIMIZED)
+//        msg_info(this)<<"   time compute JtKJ_cl : "<<( (double)timer->getTime() - timeJKJeig)*timeScale<<" ms" ; //(MAYBE OPTIMIZED)
 
-        Eigen::SparseMatrix<ScalarType,Eigen::RowMajor> eigJtKJ_test(nbColsJ1,nbColsJ1);
-        viennacl::copy(vcl_compressed_JtKJ,eigJtKJ_test);
-        if(!JtKJeigen.isApprox(eigJtKJ_test))
-        {
-            std::cout << "              ====> DIFFERENT MATRIX -- FAILURE !!"  << std::endl;
-        }
+//        Eigen::SparseMatrix<ScalarType,Eigen::RowMajor> eigJtKJ_test(nbColsJ1,nbColsJ1);
+//        viennacl::copy(vcl_compressed_JtKJ,eigJtKJ_test);
+//        if(!JtKJeigen.isApprox(eigJtKJ_test))
+//        {
+//            std::cout << "              ====> DIFFERENT MATRIX -- FAILURE !!"  << std::endl;
+//        }
 
 //        //Eigen::saveMarket(Keig,"matKeig");
 //        //Eigen::saveMarket(J1eig,"matJ1eig");
