@@ -211,7 +211,6 @@ protected:
                              const CompressedRowSparseMatrix<Mat<N, K, Real1> >& B,
                              CompressedRowSparseMatrix<Mat<M, K, Real1> >& R) ;
 
-    void testBuildJacobian(const MechanicalParams* mparams);
     /**
      * \brief Compressed sparse row matrices transposed product
      * \param A : Left hand side matrix
