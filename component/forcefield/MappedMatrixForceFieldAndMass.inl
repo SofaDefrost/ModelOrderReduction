@@ -210,7 +210,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1
     msg_info(this) << "Start of J1 copy ";
     int nbRowsJ = Jeig.rows();
     int nbColsJ = Jeig.cols();
-    int maxColIndex = 0;
+    int maxRowIndex = 0, maxColIndex = 0;
     msg_info(this) << "nbRowsJ J1 : " << nbRowsJ;
     msg_info(this) << "nbColsJ J1 : " << nbColsJ;
     std::vector< Eigen::Triplet<double> > tripletListJ;
@@ -218,6 +218,9 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1
     for (MatrixDeriv1RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
     {
         int rowIndex = rowIt.index();
+        if (rowIndex>maxRowIndex)
+            maxRowIndex = rowIndex;
+
         for (MatrixDeriv1ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
         {
             int colIndex = colIt.index();
@@ -232,7 +235,10 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1
             //msg_info(this) << "J1: " << elemVal;
         }
     }
+    msg_info(this) << "End of J1 copy. minRowIndex = " << J.begin().index();
+    msg_info(this) << "End of J1 copy. maxRowIndex = " << maxRowIndex;
     msg_info(this) << "End of J1 copy. MaxColIndex = " << maxColIndex;
+
     Jeig.resize(nbRowsJ,DerivSize1*(maxColIndex+1));
     Jeig.reserve(J.size());
     msg_info(this) << "End of J1 reserve copy ";
@@ -248,7 +254,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2
     msg_info(this) << "Start of J2 copy ";
     int nbRowsJ = Jeig.rows();
     int nbColsJ = Jeig.cols();
-    int maxColIndex = 0;
+    int maxRowIndex = 0, maxColIndex = 0;
     msg_info(this) << "nbRowsJ J2 : " << nbRowsJ;
     msg_info(this) << "nbColsJ J2 : " << nbColsJ;
     std::vector< Eigen::Triplet<double> > tripletListJ;
@@ -256,6 +262,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2
     for (MatrixDeriv2RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
     {
         int rowIndex = rowIt.index();
+        if (rowIndex>maxRowIndex)
+            maxRowIndex = rowIndex;
         for (MatrixDeriv2ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
         {
             int colIndex = colIt.index();
@@ -270,6 +278,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2
             //msg_info(this) << "J2: " << elemVal;
         }
     }
+    msg_info(this) << "End of J2 copy. minRowIndex = " << J.begin().index();
+    msg_info(this) << "End of J2 copy. maxRowIndex = " << maxRowIndex;
     msg_info(this) << "End of J2 copy. MaxColIndex = " << maxColIndex;
     Jeig.resize(nbRowsJ,DerivSize2*(maxColIndex+1));
     Jeig.reserve(J.size());
@@ -600,7 +610,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     for (int k=0; k<J1tKJ1eigen.outerSize(); ++k)
       for (Eigen::SparseMatrix<double>::InnerIterator it(J1tKJ1eigen,k); it; ++it)
       {
-              mat11.matrix->add(it.row(), it.col(), it.value());
+              mat11.matrix->add(mat11.offset + it.row(),mat11.offset + it.col(), it.value());
       }
     msg_info(this)<<" time copy J1tKJ1eigen back to J1tKJ1 in CompressedRowSparse in the clever way: "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
 
@@ -611,7 +621,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         {
             for (unsigned int j=0; j<nbColsJ2; j++)
             {
-                mat22.matrix->add(i, j, J2tKJ2eigen.coeff(i,j));
+                mat22.matrix->add(mat22.offset + i,mat22.offset + j, J2tKJ2eigen.coeff(i,j));
             }
         }
         msg_info(this)<<" time copy J2tKJ2eigen back to J2tKJ2 in CompressedRowSparse : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
@@ -621,7 +631,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         {
             for (unsigned int j=0; j<nbColsJ2; j++)
             {
-                mat12.matrix->add(i, j, J1tKJ2eigen.coeff(i,j));
+                mat12.matrix->add(mat12.offRow + i, mat12.offCol +j, J1tKJ2eigen.coeff(i,j));
             }
         }
         msg_info(this)<<" time copy J1tKJ2eigen back to J1tKJ2 in CompressedRowSparse : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
@@ -631,7 +641,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
         {
             for (unsigned int j=0; j<nbColsJ1; j++)
             {
-                mat21.matrix->add(i, j, J2tKJ1eigen.coeff(i,j));
+                mat21.matrix->add(mat21.offRow + i, mat21.offCol + j, J2tKJ1eigen.coeff(i,j));
             }
         }
         msg_info(this)<<" time copy J2tKJ1eigen back to J2tKJ1 in CompressedRowSparse : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
