@@ -68,11 +68,11 @@ template<class DataTypes1, class DataTypes2>
 MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAndMass()
     :
       d_mappedForceField(initLink("mappedForceField",
-                                  "link to the forcefield that is mapped under the subsetMultiMapping")),
+                                  "link to the forcefield that is mapped")),
       d_mappedForceField2(initLink("mappedForceField2",
-                                   "link to an other forcefield defined at the same node than mappedForceField")),
+                                   "link to a second forcefield that is mapped too (not mandatory)")),
       d_mappedMass(initLink("mappedMass",
-                                   "link to a mass defined at the same node than mappedForceField")),
+                                   "link to a mass defined typically at the same node than mappedForceField")),
       performECSW(initData(&performECSW,false,"performECSW",
                                     "Use the reduced model with the ECSW method")),
       listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath",
@@ -176,8 +176,8 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(
 
 }
 
-template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double,Eigen::ColMajor>& Keig)
+template<class T>
+void copyKToEigenFormat(CompressedRowSparseMatrix< T >* K, Eigen::SparseMatrix<double,Eigen::ColMajor>& Keig)
 {
     Keig.resize(K->nRow,K->nRow);
     Keig.reserve(K->colsValue.size());
@@ -188,80 +188,51 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyKToEigenFormat(C
     for (unsigned int it_rows_k=0; it_rows_k < K->rowIndex.size() ; it_rows_k ++)
     {
         row = K->rowIndex[it_rows_k] ;
-        Range rowRange( K->rowBegin[it_rows_k], K->rowBegin[it_rows_k+1] );
-        for( Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
+        typename CompressedRowSparseMatrix<T>::Range rowRange( K->rowBegin[it_rows_k], K->rowBegin[it_rows_k+1] );
+        for(sofa::defaulttype::BaseVector::Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
         {
             int col = K->colsIndex[xj];     // block column
-            const Real1& k = K->colsValue[xj]; // non-null element of the matrix
+            const T& k = K->colsValue[xj]; // non-null element of the matrix
             tripletList.push_back(Eigen::Triplet<double>(row,col,k));
         }
     }
     Keig.setFromTriplets(tripletList.begin(), tripletList.end());
 }
 
-
-
-
-template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian1ToEigenFormat(const MatrixDeriv1 &J, Eigen::SparseMatrix<double>& Jeig)
+template<class InputFormat>
+void copyMappingJacobianToEigenFormat(const typename InputFormat::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
 {
+    typedef typename InputFormat::MatrixDeriv::RowConstIterator RowConstIterator;
+    typedef typename InputFormat::MatrixDeriv::ColConstIterator ColConstIterator;
+    typedef typename InputFormat::Deriv Deriv;
+    int DerivSize = InputFormat::Deriv::total_size;
     int nbRowsJ = Jeig.rows();
     int maxRowIndex = 0, maxColIndex = 0;
     std::vector< Eigen::Triplet<double> > tripletListJ;
 
-    for (MatrixDeriv1RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
+    for (RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
     {
         int rowIndex = rowIt.index();
         if (rowIndex>maxRowIndex)
             maxRowIndex = rowIndex;
-
-        for (MatrixDeriv1ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
+        for (ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
         {
             int colIndex = colIt.index();
-            Deriv1 elemVal = colIt.val();
-            for (int i=0;i<DerivSize1;i++)
+            Deriv elemVal = colIt.val();
+            for (int i=0;i<DerivSize;i++)
             {
-                tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,DerivSize1*colIndex + i,elemVal[i]));
+                tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,DerivSize*colIndex + i,elemVal[i]));
                 if (colIndex>maxColIndex)
                         maxColIndex = colIndex;
             }
         }
     }
-    Jeig.resize(nbRowsJ,DerivSize1*(maxColIndex+1));
-    Jeig.reserve(J.size());
-    Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
-
-
-}
-
-template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::copyMappingJacobian2ToEigenFormat(const MatrixDeriv2 &J, Eigen::SparseMatrix<double>& Jeig)
-{
-    int nbRowsJ = Jeig.rows();
-    int maxRowIndex = 0, maxColIndex = 0;
-    std::vector< Eigen::Triplet<double> > tripletListJ;
-
-    for (MatrixDeriv2RowConstIterator rowIt = J.begin(); rowIt !=  J.end(); ++rowIt)
-    {
-        int rowIndex = rowIt.index();
-        if (rowIndex>maxRowIndex)
-            maxRowIndex = rowIndex;
-        for (MatrixDeriv2ColConstIterator colIt = rowIt.begin(); colIt !=  rowIt.end(); ++colIt)
-        {
-            int colIndex = colIt.index();
-            Deriv2 elemVal = colIt.val();
-            for (int i=0;i<DerivSize2;i++)
-            {
-                tripletListJ.push_back(Eigen::Triplet<double>(rowIndex,DerivSize2*colIndex + i,elemVal[i]));
-                if (colIndex>maxColIndex)
-                        maxColIndex = colIndex;
-            }
-        }
-    }
-    Jeig.resize(nbRowsJ,DerivSize2*(maxColIndex+1));
+    Jeig.resize(nbRowsJ,DerivSize*(maxColIndex+1));
     Jeig.reserve(J.size());
     Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
 }
+
+
 
 
 template<class DataTypes1, class DataTypes2>
@@ -408,13 +379,13 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
         msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
         J1eig.resize(K->nRow, J1.begin().row().size()*DerivSize1);
-        copyMappingJacobian1ToEigenFormat(J1, J1eig);
+        copyMappingJacobianToEigenFormat<DataTypes1>(J1, J1eig);
 
         if (bms1 != bms2)
         {
             double startTime2= (double)timer->getTime();
             J2eig.resize(K->nRow, J2.begin().row().size()*DerivSize2);
-            copyMappingJacobian2ToEigenFormat(J2, J2eig);
+            copyMappingJacobianToEigenFormat<DataTypes2>(J2, J2eig);
             msg_info(this)<<" time set J2eig alone : "<<( (double)timer->getTime() - startTime2)*timeScale<<" ms";
         }
 
