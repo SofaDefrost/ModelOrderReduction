@@ -6,7 +6,9 @@ Content of the library
 .. autosummary::
     :toctree: _autosummary
 
-    stlib.animation
+    mor.animation
+    mor.script
+    mor.wrapper
 
 
 Indices and tables
@@ -18,4 +20,4 @@ Indices and tables
 
 """
 
-__all__=["animation","script"]
+__all__=["animation","script","wrapper"]

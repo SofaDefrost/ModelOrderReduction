@@ -1,0 +1,46 @@
+
+    ## Visualization
+    if surfaceMeshFileName:
+	    visu = myReducedModel.createChild('Visual')
+
+	    visu.createObject(	createObject('OglModel', 
+	    					filename=surfaceMeshFileName,
+                            template='ExtVec3f',
+                            color=surfaceColor,
+                            rotation=rotation,
+                            translation=translation)
+
+	    visu.createObject('BarycentricMapping')
+
+    return myReducedModel
+
+
+#   STLIB IMPORT
+from stlib.scene import MainHeader
+def createScene(rootNode):
+    from stlib.scene import MainHeader
+
+    MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
+                        dt=1,
+                        gravity=[0.0,0.0,-9810])
+
+    MyReducedModel(rootNode,
+                    name="Reduced_diamond_blue", 
+                    rotation=[0.0, 0.0, 0.0],
+                    translation=[-200, 0.0, 0.0],
+                    surfaceColor=[0.0, 0.0, 1, 0.5],
+                    visual=True)
+
+    MyReducedModel(rootNode,
+                    name="Reduced_diamond_white",
+                    rotation=[0.0, 0.0, 0.0],
+                    translation=[0.0, 0.0, 0.0],
+                    surfaceColor=[0.5, 0.5, 0.5, 0.5],
+                    visual=True)
+
+    MyReducedModel(rootNode,
+                    name="Reduced_diamond_red",
+                    rotation=[0.0, 0.0, 0.0],
+                    translation=[200, 0.0, 0.0],
+                    surfaceColor=[1, 0.0, 0.0, 0.5],
+                    visual=True)

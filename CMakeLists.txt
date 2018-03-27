@@ -16,27 +16,29 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(HEADER_FILES
 
-    initModelOrderReduction.h
+    src/component/initModelOrderReduction.h
 
 	)
 
 set(SOURCE_FILES
 
-    initModelOrderReduction.cpp
+    src/component/initModelOrderReduction.cpp
 
 	)
 
 set(README_FILES
 
-    ModelOrderReduction.txt
+    README.md
 
     )
 
-include(component/forcefield/Forcefield_Files.cmake)
-include(component/mapping/Mapping_Files.cmake)
-include(component/loader/Loader_Files.cmake)
+include(src/component/forcefield/Forcefield_Files.cmake)
+include(src/component/mapping/Mapping_Files.cmake)
+include(src/component/loader/Loader_Files.cmake)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
 
 find_package(SofaFramework REQUIRED)
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
@@ -49,7 +51,7 @@ sofa_set_python_directory(${PROJECT_NAME} "python")
 sofa_create_package(ModelOrderReduction ${MODELORDERREDUCTION_VERSION} ${PROJECT_NAME} ModelOrderReduction)
 
 # if(SOFA_BUILD_TESTS)
-#     add_subdirectory(ModelOrderReduction_test)
+#     add_subdirectory(src/component/ModelOrderReduction_test)
 # endif()
 
 ####################################
@@ -57,15 +59,15 @@ sofa_create_package(ModelOrderReduction ${MODELORDERREDUCTION_VERSION} ${PROJECT
 ####################################
 
 ####     Link ViennaCL library  ####
-set(VIENNACL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/ViennaCL-1.7.1/")
-set(VIENNACL_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/ViennaCL-1.7.1/build/libviennacl/libviennacl.so")
+set(VIENNACL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/")
+set(VIENNACL_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/build/libviennacl/libviennacl.so")
 
 include_directories(${VIENNACL_LIBRARY_DIRECTORY})
 target_link_libraries(${PROJECT_NAME} ${VIENNACL_LIBRARY})
 ####################################
 
 ####     Link OpenCL library    ####
-set(OPENCL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/ViennaCL-1.7.1/CL")
+set(OPENCL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/CL")
 set(OPENCL_LIBRARY "/usr/local/cuda-9.0/lib64/libOpenCL.so")
 
 include_directories(${OPENCL_LIBRARY_DIRECTORY})
@@ -78,7 +80,7 @@ target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
 ####################################
 
 ####     Link Eigen library     ####
-#set(EIGEN_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/eigen3")
+#set(EIGEN_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/eigen3")
 #include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_LIBRARY_DIRECTORY})
 
 

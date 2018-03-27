@@ -6,9 +6,9 @@ Functions:
 **********
 .. autosummary::
 
-    stlib.animation.defaultShaking
+    mor.animation.defaultShaking
 
-.. autofunction:: stlib.animation.DefaultShaking
+.. autofunction:: mor.animation.DefaultShaking
 
 """
 __all__=["shakingAnimations"]

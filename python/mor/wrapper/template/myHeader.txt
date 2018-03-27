@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+import Sofa
+
+def MyReducedModel(
+                  attachedTo=None,
+                  name="MyReducedModel",
+                  rotation=[0.0, 0.0, 0.0],
+                  translation=[0.0, 0.0, 0.0],
+                  surfaceMeshFileName=False,
+                  surfaceColor=[1.0, 1.0, 1.0],
+                  poissonRatio=None,
+                  youngModulus=None,
+                  totalMass=None):
+    """
+    Object with an elastic deformation law.
+
+    Args:
+
+        attachedTo (Sofa.Node): Where the node is created;
+
+        name (str) : name of the Sofa.Node it will 
+
+        surfaceMeshFileName (str): Filepath to a surface mesh (STL, OBJ). 
+                                   If missing there is no visual properties to this object.
+
+        surfaceColor (vec3f):  The default color used for the rendering of the object.
+
+        rotation (vec3f):   Apply a 3D rotation to the object in Euler angles.
+
+        translation (vec3f):   Apply a 3D translation to the object.
+
+        poissonRatio (float):  The poisson parameter.
+
+        youngModulus (float):  The young modulus.
+
+        totalMass (float):   The mass is distributed according to the geometry of the object.
+    """
+

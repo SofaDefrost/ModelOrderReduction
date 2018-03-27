@@ -6,10 +6,12 @@ Functions:
 **********
 .. autosummary::
 
-    stlib.animation.defaultShaking
+    mor.script.MORUtilityFunctions
+    mor.script.ReduceModel
 
-.. autofunction:: stlib.animation.DefaultShaking
+.. autofunction:: mor.script.MORUtilityFunctions
+.. autofunction:: mor.script.ReduceModel
 
 """
-__all__=["modelOrderReductionScript"]
-from modelOrderReductionScript import ModelOrderReductionScript
+__all__=["morUtilityFunctions","reduceModel"]
+from reduceModel import ReduceModel
