@@ -147,8 +147,8 @@ public:
     typedef typename DataTypes2::Real     Real2;
     typedef typename DataTypes2::MatrixDeriv MatrixDeriv2;
     typedef Data<MatrixDeriv2>  DataMatrixDeriv2;
-    typedef typename DataTypes2::MatrixDeriv::RowIterator MatrixDeriv2RowIterator;
-    typedef typename DataTypes2::MatrixDeriv::ColIterator MatrixDeriv2ColIterator;
+    //typedef typename DataTypes2::MatrixDeriv::RowIterator MatrixDeriv2RowIterator;
+    //typedef typename DataTypes2::MatrixDeriv::ColIterator MatrixDeriv2ColIterator;
     typedef typename DataTypes2::MatrixDeriv::RowConstIterator MatrixDeriv2RowConstIterator;
     typedef typename DataTypes2::MatrixDeriv::ColConstIterator MatrixDeriv2ColConstIterator;
     static const unsigned int DerivSize2 = Deriv2::total_size;
@@ -250,7 +250,7 @@ public:
 
 protected:
 
-
+    void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id);
     void accumulateJacobians(const MechanicalParams* mparams);
     //void copyKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double, Eigen::ColMajor> &Keig);
     void copyMappingJacobian1ToEigenFormat(const MatrixDeriv1 &J, Eigen::SparseMatrix<double> &Jeig);

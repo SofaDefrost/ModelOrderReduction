@@ -73,8 +73,6 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
                                    "link to a second forcefield that is mapped too (not mandatory)")),
       d_mappedMass(initLink("mappedMass",
                                    "link to a mass defined typically at the same node than mappedForceField")),
-      performECSW(initData(&performECSW,false,"performECSW",
-                                    "Use the reduced model with the ECSW method")),
       listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath",
                                    "Path to the list of active nodes when performing the ECSW method")),
       timeInvariantMapping(initData(&timeInvariantMapping,false,"timeInvariantMapping",
@@ -138,6 +136,16 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init()
 }
 
 template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id)
+{
+    sofa::helper::vector<unsigned int> list;
+    std::cout << "mstate->getSize()" << mstate->getSize() << std::endl;
+    for (unsigned int i=0; i<mstate->getSize(); i++)
+        list.push_back(i);
+    mstate->buildIdentityBlocksInJacobian(list, Id);
+}
+
+template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(const MechanicalParams* mparams)
 {
 
@@ -147,31 +155,13 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(
     core::ConstraintParams cparams = core::ConstraintParams(*eparams);
 
     core::behavior::BaseMechanicalState* mstate = d_mappedForceField.get()->getContext()->getMechanicalState();
-
-
-    sofa::helper::vector<unsigned int> list;
-    if (!performECSW.getValue())
-    {
-        std::cout << "mstate->getSize()" << mstate->getSize() << std::endl;
-        for (unsigned int i=0; i<mstate->getSize(); i++)
-            list.push_back(i);
-    }
-
-
     sofa::core::MatrixDerivId Id= sofa::core::MatrixDerivId::mappingJacobian();
-
     core::objectmodel::BaseContext* context = this->getContext();
     simulation::Node* gnode = dynamic_cast<simulation::Node*>(context);
     simulation::MechanicalResetConstraintVisitor(eparams).execute(gnode);
 
-    if (performECSW.getValue())
-    {
-        mstate->buildIdentityBlocksInJacobian(listActiveNodes, Id);
-    }
-    else
-    {
-        mstate->buildIdentityBlocksInJacobian(list, Id);
-    }
+    buildIdentityBlocksInJacobian(mstate,Id);
+
     MechanicalAccumulateJacobian(&cparams, core::MatrixDerivId::mappingJacobian()).execute(gnode);
 
 }
@@ -180,7 +170,7 @@ template<class T>
 void copyKToEigenFormat(CompressedRowSparseMatrix< T >* K, Eigen::SparseMatrix<double,Eigen::ColMajor>& Keig)
 {
     Keig.resize(K->nRow,K->nRow);
-    Keig.reserve(K->colsValue.size());
+    //Keig.reserve(K->colsValue.size());
     std::vector< Eigen::Triplet<double> > tripletList;
     tripletList.reserve(K->colsValue.size());
 
@@ -355,7 +345,9 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     double startTime= (double)timer->getTime();
     Eigen::SparseMatrix<double,Eigen::ColMajor> Keig;
     copyKToEigenFormat(K,Keig);
-    msg_info(this) << Keig.size();
+    msg_info(this) << "Keig size:" << Keig.size();
+    msg_info(this) << "Keig rows:" << Keig.rows();
+    msg_info(this) << "Keig cols:" << Keig.cols();
 
     //--------------------------------------------------------------------------------------------------------------------
 
