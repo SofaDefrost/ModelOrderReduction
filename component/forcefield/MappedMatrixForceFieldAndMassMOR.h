@@ -28,9 +28,15 @@ protected:
 
 public:
     Data< bool > performECSW;
+    sofa::helper::vector<unsigned int> listActiveNodes;
+    sofa::core::objectmodel::DataFileName listActiveNodesPath;
+
+public:
+
+    virtual void init();
 
 protected:
-    void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id);
+    virtual void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id);
 
 
 };

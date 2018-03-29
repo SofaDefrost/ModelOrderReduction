@@ -26,6 +26,9 @@
 #define SOFA_COMPONENT_FORCEFIELD_MAPPEDMATRIXFORCEFIELDANDMASSMOR_INL
 
 #include <ModelOrderReduction/component/forcefield/MappedMatrixForceFieldAndMassMOR.h>
+#include "../loader/modules/MatrixLoader.h"
+
+#include <fstream>
 
 
 namespace sofa
@@ -42,20 +45,46 @@ template<typename DataTypes1, typename DataTypes2>
 MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::MappedMatrixForceFieldAndMassMOR()
     :
       performECSW(initData(&performECSW,false,"performECSW",
-                                    "Use the reduced model with the ECSW method"))
+                                    "Use the reduced model with the ECSW method")),
+      listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath",
+                                   "Path to the list of active nodes when performing the ECSW method"))
+
 
 {
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id)
+void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::init()
+{
+    MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init();
+
+    listActiveNodes.resize(0);
+    if (performECSW.getValue())
+    {
+        std::ifstream listActiveNodesFile(listActiveNodesPath.getValue(), std::ios::in);
+        //nbLine = 0;
+        std::string lineValues;  // déclaration d'une chaîne qui contiendra la ligne lue
+        while (getline(listActiveNodesFile, lineValues))
+        {
+            listActiveNodes.push_back(std::stoi(lineValues));
+            //nbLine++;
+        }
+        listActiveNodesFile.close();
+        msg_info(this) << "list of Active nodes : " << listActiveNodes ;
+    }
+}
+
+template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id)
 {
     if (performECSW.getValue())
     {
+        msg_info(this) << "In buildIdentityBlocksInJacobianMOR, performECSW is true";
         mstate->buildIdentityBlocksInJacobian(listActiveNodes, Id);
     }
     else
     {
+        msg_info(this) << "In buildIdentityBlocksInJacobianMOR, performECSW is false";
         sofa::helper::vector<unsigned int> list;
         std::cout << "mstate->getSize()" << mstate->getSize() << std::endl;
         for (unsigned int i=0; i<mstate->getSize(); i++)
@@ -63,6 +92,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::buildIdentityBlocksI
         mstate->buildIdentityBlocksInJacobian(list, Id);
     }
 }
+//template<class DataTypes1, class DataTypes2>
+//void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addKToMatrix(const MechanicalParams* mparams,
+//                                                                         const MultiMatrixAccessor* matrix)
+//{
+//    MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(mparams,matrix);
+//}
 
 }
 }

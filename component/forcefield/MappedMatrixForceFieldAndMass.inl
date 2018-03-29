@@ -73,8 +73,6 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
                                    "link to a second forcefield that is mapped too (not mandatory)")),
       d_mappedMass(initLink("mappedMass",
                                    "link to a mass defined typically at the same node than mappedForceField")),
-      listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath",
-                                   "Path to the list of active nodes when performing the ECSW method")),
       timeInvariantMapping(initData(&timeInvariantMapping,false,"timeInvariantMapping",
                                     "Are the mapping matrices constant with time? If yes, set to true to avoid useless recomputations.")),
       saveReducedMass(initData(&saveReducedMass,false,"saveReducedMass",
@@ -100,27 +98,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init()
         return;
     }
 
-    listActiveNodes.resize(0);
-    if (performECSW.getValue())
-    {
-        std::ifstream listActiveNodesFile(listActiveNodesPath.getValue(), std::ios::in);
-        //nbLine = 0;
-        std::string lineValues;  // déclaration d'une chaîne qui contiendra la ligne lue
-        while (getline(listActiveNodesFile, lineValues))
-        {
-            listActiveNodes.push_back(std::stoi(lineValues));
-            //nbLine++;
-        }
-        listActiveNodesFile.close();
-        std::cout << "list of Active nodes : " << listActiveNodes << std::endl;
-    }
-//    else
-//    {
-//        core::behavior::BaseMechanicalState* mstate = d_mappedForceField.get()->getContext()->getMechanicalState();
-//        for (unsigned int i=0; i<mstate->getSize(); i++)
-//            listActiveNodes.push_back(i);
-//        std::cout << "list of Active nodes : " << listActiveNodes << std::endl;
-//    }
+
     if (usePrecomputedMass.getValue() == true)
     {
         Eigen::MatrixXd denseJtMJ;
@@ -138,6 +116,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init()
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id)
 {
+    msg_info(this) << "In buildIdentityBlocksInJacobianPasMOR, performECSW is false du coup";
     sofa::helper::vector<unsigned int> list;
     std::cout << "mstate->getSize()" << mstate->getSize() << std::endl;
     for (unsigned int i=0; i<mstate->getSize(); i++)

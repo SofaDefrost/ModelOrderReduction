@@ -32,14 +32,11 @@
 #include <sofa/core/MechanicalParams.h>
 #include <SofaBaseLinearSolver/CompressedRowSparseMatrix.h>
 #include <SofaBaseLinearSolver/DefaultMultiMatrixAccessor.h>
-#include <SofaRigid/RigidMapping.h>
-#include <SofaMiscMapping/SubsetMultiMapping.h>
+#include <SofaMiscMapping/config.h>
 
 #include <sofa/core/topology/BaseMeshTopology.h>
 
 
-
-// add visitor implementation
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/core/ConstraintParams.h>
 #include <sofa/core/MultiVecId.h>
@@ -103,8 +100,6 @@ protected:
 
 
 
-
-
 using sofa::component::linearsolver::CompressedRowSparseMatrix ;
 using sofa::core::behavior::MixedInteractionForceField ;
 using sofa::core::behavior::BaseForceField ;
@@ -112,8 +107,6 @@ using sofa::core::behavior::BaseMass ;
 using sofa::core::behavior::MultiMatrixAccessor ;
 using sofa::defaulttype::BaseMatrix ;
 using sofa::core::MechanicalParams ;
-using sofa::defaulttype::Mat ;
-
 
 template<typename TDataTypes1, typename TDataTypes2>
 class MappedMatrixForceFieldAndMass : public MixedInteractionForceField<TDataTypes1, TDataTypes2>
@@ -131,8 +124,6 @@ public:
     typedef typename DataTypes1::Real     Real1;
     typedef typename DataTypes1::MatrixDeriv MatrixDeriv1;
     typedef Data<MatrixDeriv1>  DataMatrixDeriv1;
-    typedef typename DataTypes1::MatrixDeriv::RowIterator MatrixDeriv1RowIterator;
-    typedef typename DataTypes1::MatrixDeriv::ColIterator MatrixDeriv1ColIterator;
     typedef typename DataTypes1::MatrixDeriv::RowConstIterator MatrixDeriv1RowConstIterator;
     typedef typename DataTypes1::MatrixDeriv::ColConstIterator MatrixDeriv1ColConstIterator;
     static const unsigned int DerivSize1 = Deriv1::total_size;
@@ -147,8 +138,6 @@ public:
     typedef typename DataTypes2::Real     Real2;
     typedef typename DataTypes2::MatrixDeriv MatrixDeriv2;
     typedef Data<MatrixDeriv2>  DataMatrixDeriv2;
-    //typedef typename DataTypes2::MatrixDeriv::RowIterator MatrixDeriv2RowIterator;
-    //typedef typename DataTypes2::MatrixDeriv::ColIterator MatrixDeriv2ColIterator;
     typedef typename DataTypes2::MatrixDeriv::RowConstIterator MatrixDeriv2RowConstIterator;
     typedef typename DataTypes2::MatrixDeriv::ColConstIterator MatrixDeriv2ColConstIterator;
     static const unsigned int DerivSize2 = Deriv2::total_size;
@@ -158,39 +147,9 @@ public:
     typedef Data<VecCoord2>    DataVecCoord2;
     typedef Data<VecDeriv2>    DataVecDeriv2;
 
-    typedef Mat<6, 3, Real1> _6_3_Matrix_Type;
-    typedef Mat<6, 6, Real2> _6_6_Matrix_Type;
-    typedef Mat<3, 6, Real2> _3_6_Matrix_Type;
-    typedef Mat<3, 3, Real1> _3_3_Matrix_Type;
-
     typedef sofa::defaulttype::BaseVector::Index  Index;
 
     typedef typename CompressedRowSparseMatrix<Real1>::Range  Range;
-    typedef typename CompressedRowSparseMatrix<Real1>::ColBlockConstIterator _1_1_ColBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<Real1>::RowBlockConstIterator _1_1_RowBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<Real1>::BlockConstAccessor _1_1_BlockConstAccessor;
-    typedef typename CompressedRowSparseMatrix<Real1>::BlockAccessor _1_1_BlockAccessor;
-
-
-    typedef typename CompressedRowSparseMatrix<_6_6_Matrix_Type>::ColBlockConstIterator _6_6_ColBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<_6_3_Matrix_Type>::ColBlockConstIterator _6_3_ColBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<_3_3_Matrix_Type>::ColBlockConstIterator _3_3_ColBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<_3_6_Matrix_Type>::ColBlockConstIterator _3_6_ColBlockConstIterator;
-
-    typedef typename CompressedRowSparseMatrix<_6_6_Matrix_Type>::RowBlockConstIterator _6_6_RowBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<_6_3_Matrix_Type>::RowBlockConstIterator _6_3_RowBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<_3_3_Matrix_Type>::RowBlockConstIterator _3_3_RowBlockConstIterator;
-    typedef typename CompressedRowSparseMatrix<_3_6_Matrix_Type>::RowBlockConstIterator _3_6_RowBlockConstIterator;
-
-    typedef typename CompressedRowSparseMatrix<_6_6_Matrix_Type>::BlockConstAccessor _6_6_BlockConstAccessor;
-    typedef typename CompressedRowSparseMatrix<_6_3_Matrix_Type>::BlockConstAccessor _6_3_BlockConstAccessor;
-    typedef typename CompressedRowSparseMatrix<_3_3_Matrix_Type>::BlockConstAccessor _3_3_BlockConstAccessor;
-    typedef typename CompressedRowSparseMatrix<_3_6_Matrix_Type>::BlockConstAccessor _3_6_BlockConstAccessor;
-
-    typedef typename CompressedRowSparseMatrix<_6_6_Matrix_Type>::BlockAccessor _6_6_BlockAccessor;
-    typedef typename CompressedRowSparseMatrix<_6_3_Matrix_Type>::BlockAccessor _6_3_BlockAccessor;
-    typedef typename CompressedRowSparseMatrix<_3_3_Matrix_Type>::BlockAccessor _3_3_BlockAccessor;
-    typedef typename CompressedRowSparseMatrix<_3_6_Matrix_Type>::BlockAccessor _3_6_BlockAccessor;
 
 
 protected:
@@ -200,27 +159,6 @@ protected:
 
     MappedMatrixForceFieldAndMass() ;
 
-    /**
-     * \brief Compressed sparse row matrices product
-     * \param A : Left hand side matrix
-     * \param B : Right hand side matrix
-     * \return A times B
-     */
-    template<unsigned int M, unsigned int N, unsigned int K>
-    static void multMatrices(const CompressedRowSparseMatrix<Mat<M, N, Real1> >& A,
-                             const CompressedRowSparseMatrix<Mat<N, K, Real1> >& B,
-                             CompressedRowSparseMatrix<Mat<M, K, Real1> >& R) ;
-
-    /**
-     * \brief Compressed sparse row matrices transposed product
-     * \param A : Left hand side matrix
-     * \param B : Right hand side matrix
-     * \return A^t times B
-     */
-    template<unsigned int M, unsigned int N, unsigned int K>
-    static void multMatricesT(const CompressedRowSparseMatrix<Mat<M, N, Real1> >& At,
-                              const CompressedRowSparseMatrix<Mat<M, K, Real1> >& B,
-                              CompressedRowSparseMatrix<Mat<N, K, Real1> >& R) ;
 public:
 
     virtual void init();
@@ -250,11 +188,8 @@ public:
 
 protected:
 
-    void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id);
+    virtual void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id);
     void accumulateJacobians(const MechanicalParams* mparams);
-    //void copyKToEigenFormat(CompressedRowSparseMatrix< Real1 >* K, Eigen::SparseMatrix<double, Eigen::ColMajor> &Keig);
-    void copyMappingJacobian1ToEigenFormat(const MatrixDeriv1 &J, Eigen::SparseMatrix<double> &Jeig);
-    void copyMappingJacobian2ToEigenFormat(const MatrixDeriv2 &J, Eigen::SparseMatrix<double> &Jeig);
 
 
     ////////////////////////// Inherited attributes ////////////////////////////
@@ -268,9 +203,6 @@ protected:
     using MixedInteractionForceField<TDataTypes1, TDataTypes2>::getContext ;
     ////////////////////////////////////////////////////////////////////////////
 
-    sofa::helper::vector<unsigned int> listActiveNodes;
-    Data< bool > performECSW;
-    sofa::core::objectmodel::DataFileName listActiveNodesPath;
     Data< bool > timeInvariantMapping;
     Data< bool > saveReducedMass;
     Data< bool > usePrecomputedMass;
