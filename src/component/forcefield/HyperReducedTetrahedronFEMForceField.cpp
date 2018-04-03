@@ -27,7 +27,7 @@
 #include <sofa/defaulttype/Vec3Types.h>
 #include <sofa/core/ObjectFactory.h>
 #include <assert.h>
-#include "../../initModelOrderReduction.h"
+#include "../initModelOrderReduction.h"
 
 namespace sofa
 {

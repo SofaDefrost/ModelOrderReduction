@@ -31,7 +31,7 @@
 #include <iostream> //for debugging
 #include <vector>
 #include <sofa/defaulttype/Vec3Types.h>
-#include "../loader/modules/MatrixLoader.h"
+#include "../loader/MatrixLoader.h"
 
 //#include "config.h"
 

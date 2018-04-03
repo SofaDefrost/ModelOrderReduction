@@ -35,7 +35,7 @@
 #include <string>
 #include <algorithm>
 #include <sofa/helper/logging/Messaging.h>
-#include "../loader/modules/MatrixLoader.h"
+#include "../loader/MatrixLoader.h"
 
 // verify timing
 #include <sofa/helper/system/thread/CTime.h>

@@ -3,12 +3,12 @@
     if surfaceMeshFileName:
 	    visu = myReducedModel.createChild('Visual')
 
-	    visu.createObject(	createObject('OglModel', 
-	    					filename=surfaceMeshFileName,
+	    visu.createObject(	'OglModel', 
+	    					filename=path+'/mesh/'+surfaceMeshFileName,
                             template='ExtVec3f',
                             color=surfaceColor,
-                            rotation=rotation,
-                            translation=translation)
+                            rotation= addTripletList(rotation,arg1),
+                            translation = addTripletList(translation,arg2))
 
 	    visu.createObject('BarycentricMapping')
 
@@ -18,29 +18,39 @@
 #   STLIB IMPORT
 from stlib.scene import MainHeader
 def createScene(rootNode):
-    from stlib.scene import MainHeader
+    surfaceMeshFileName = ''
 
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
                         dt=1,
                         gravity=[0.0,0.0,-9810])
 
-    MyReducedModel(rootNode,
-                    name="Reduced_diamond_blue", 
-                    rotation=[0.0, 0.0, 0.0],
-                    translation=[-200, 0.0, 0.0],
-                    surfaceColor=[0.0, 0.0, 1, 0.5],
-                    visual=True)
+    translate = 50
+    rotationBlue = 60.0
+    rotationWhite = 80
+    rotationRed = 70
 
-    MyReducedModel(rootNode,
-                    name="Reduced_diamond_white",
-                    rotation=[0.0, 0.0, 0.0],
-                    translation=[0.0, 0.0, 0.0],
-                    surfaceColor=[0.5, 0.5, 0.5, 0.5],
-                    visual=True)
+    for i in range(5):
 
-    MyReducedModel(rootNode,
-                    name="Reduced_diamond_red",
-                    rotation=[0.0, 0.0, 0.0],
-                    translation=[200, 0.0, 0.0],
-                    surfaceColor=[1, 0.0, 0.0, 0.5],
-                    visual=True)
+        MyReducedModel(rootNode,
+                        name="MyReducedModel_blue", 
+                        rotation=[rotationBlue*i, 0.0, 0.0],
+                        translation=[i*translate, 0.0, 0.0],
+                        surfaceColor=[0.0, 0.0, 1, 0.5],
+                        surfaceMeshFileName=surfaceMeshFileName)
+    for i in range(5):
+
+        MyReducedModel(rootNode,
+                        name="MyReducedModel_white", 
+                        rotation=[0.0, rotationWhite*i, 0.0],
+                        translation=[i*translate, translate, -translate],
+                        surfaceColor=[0.5, 0.5, 0.5, 0.5],
+                        surfaceMeshFileName=surfaceMeshFileName)
+
+    for i in range(5):
+
+        MyReducedModel(rootNode,
+                        name="MyReducedModel_red", 
+                        rotation=[0.0, 0.0, i*rotationRed],
+                        translation=[i*translate, 2*translate, -2*translate],
+                        surfaceColor=[1, 0.0, 0.0, 0.5],
+                        surfaceMeshFileName=surfaceMeshFileName)

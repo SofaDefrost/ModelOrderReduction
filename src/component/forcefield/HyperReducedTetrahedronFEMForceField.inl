@@ -42,7 +42,7 @@
 #include <sofa/simulation/AnimateBeginEvent.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
-#include "../loader/modules/MatrixLoader.h"
+#include "../loader/MatrixLoader.h"
 
 // verify timing
 #include <sofa/helper/system/thread/CTime.h>

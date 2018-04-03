@@ -51,7 +51,7 @@
 //  Eigen Sparse Matrix
 #include <Eigen/Sparse>
 
-#include "../loader/modules/MatrixLoader.h"
+#include "../loader/MatrixLoader.h"
 
 #include <unsupported/Eigen/src/SparseExtra/MarketIO.h>
 #include <unsupported/Eigen/src/SparseExtra/MatrixMarketIterator.h>

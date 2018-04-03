@@ -46,7 +46,7 @@
 #include <iterator>
 
 #include <sofa/helper/system/thread/CTime.h>
-#include "../loader/modules/MatrixLoader.h"
+#include "../loader/MatrixLoader.h"
 
 
 namespace sofa

@@ -12,7 +12,7 @@
 #######################################################################
 ####################       IMPORT 	     	###########################
 import sys
-sys.path.append('/home/felix/SOFA/plugin/ModelOrderReduction/python')
+sys.path.append('/home/felix/SOFA/plugin/ModelOrderReduction/python') # TO CHANGE
 
 from mor.script import morUtilityFunctions
 from mor.script import ReduceModel
@@ -20,8 +20,8 @@ from mor.script import ReduceModel
 
 #######################################################################
 ####################       PARAMETERS     	###########################
-"Select Directory"
-# Output Dir and original scene name & path
+
+# Select Output Dir and original scene name & path
 originalScene = morUtilityFunctions.openFileName('Select the SOFA scene you want to reduce')
 meshDir = morUtilityFunctions.openDirName('Select the directory containing the mesh of your scene')
 # originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/quadruped_snapshotGeneration.py'
@@ -32,25 +32,25 @@ outputDir = morUtilityFunctions.openDirName('Select the directory tha will conta
 animationParam = {}
 
 ### DIAMOND ROBOT PARAM
-# nodesToReduce = ['/modelNode']
-# animationParam["toAnimate"] = ["nord","ouest","sud","est"]
+nodesToReduce = ['/modelNode']
+animationParam["toAnimate"] = ["nord","ouest","sud","est"]
 
-# nbActuator = len(animationParam["toAnimate"])
-# animationParam["increment"] = [5]*nbActuator
-# animationParam["breathTime"] = [10]*nbActuator
-# animationParam["maxPull"] = [40]*nbActuator
-# addRigidBodyModes = False
+nbActuator = len(animationParam["toAnimate"])
+animationParam["increment"] = [5]*nbActuator
+animationParam["breathTime"] = [10]*nbActuator
+animationParam["maxPull"] = [40]*nbActuator
+addRigidBodyModes = False
 
 
 ### STARFISH ROBOT PARAM
-nodesToReduce =[('/model','/model/modelSubTopo')]
-animationParam["toAnimate"] = ["centerCavity","rearLeftCavity","rearRightCavity","frontLeftCavity","frontRightCavity"]
+# nodesToReduce =[('/model','/model/modelSubTopo')]
+# animationParam["toAnimate"] = ["centerCavity","rearLeftCavity","rearRightCavity","frontLeftCavity","frontRightCavity"]
 
-nbActuator = len(animationParam["toAnimate"])
-animationParam["increment"] = [350,200,200,200,200]
-animationParam["breathTime"] = [2]*nbActuator
-animationParam["maxPull"] = [x*10 for x in animationParam["increment"]]
-addRigidBodyModes = True
+# nbActuator = len(animationParam["toAnimate"])
+# animationParam["increment"] = [350,200,200,200,200]
+# animationParam["breathTime"] = [2]*nbActuator
+# animationParam["maxPull"] = [x*10 for x in animationParam["increment"]]
+# addRigidBodyModes = True
 
 
 # Tolerance
@@ -60,6 +60,7 @@ tolGIE =  0.05
 # Optionnal
 verbose = False
 
+packageName = 'diamond_test'
 
 #######################################################################
 ####################      INITIALIZATION     ##########################
@@ -69,6 +70,7 @@ reduceMyModel = ReduceModel(	originalScene,
 					            tolModes,tolGIE,
 					            outputDir,
 					            meshDir,
+					            packageName,
 					            verbose,
 					            addRigidBodyModes)
 
