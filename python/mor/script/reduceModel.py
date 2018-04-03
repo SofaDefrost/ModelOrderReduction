@@ -7,11 +7,14 @@ import math
 from launcher import *
 import errno
 import shutil
+import fileinput
 
 # MOR IMPORT
 from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
+pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/reducedModel/'
+# print('pathToReducedModel : '+pathToReducedModel)
 
 class ReduceModel():
 
@@ -23,6 +26,7 @@ class ReduceModel():
                  tolGIE,
                  outputDir,
                  meshDir,
+                 packageName = None,
                  verbose = False,
                  addRigidBodyModes = False):
 
@@ -30,6 +34,12 @@ class ReduceModel():
         self.originalScene = originalScene
 
         self.nodesToReduce = nodesToReduce
+
+        if packageName :
+            self.packageName = 'reduced_'+packageName
+
+            if os.path.isdir(pathToReducedModel+self.packageName):
+                raise Exception('A Package named %s already exist !\nPlease choose another name for this new package' % packageName)
 
         # A list of what you want to animate in your scene and with which parameters
         self.toAnimate = animationParam['toAnimate']
@@ -200,18 +210,6 @@ class ReduceModel():
 
         copy(results[0]["directory"]+"/debug_scene.py", self.debugDir)
 
-        # with open(self.dataDir+self.stateFileName, "r+") as fullStateFile:
-        #     counter = 1
-        #     for line in fullStateFile:
-        #         if line.find('T=') != -1:
-        #             line = 'T= '+str(self.periodSaveGIE[0]*counter)
-        #             print(str(counter)+' : '+str(line))
-        #             fullStateFile.write(line)
-        #             counter += 1
-
-        # fullStateFile.close()
-
-        import fileinput
         counter = 1
         for line in fileinput.input(self.debugDir+self.stateFileName, inplace=True):
             if line.find('T=') != -1:
@@ -369,7 +367,7 @@ class ReduceModel():
 
 
         self.paramWrapper = []
-        dataFolder = self.dataDir.split('/')[-2]+'/'
+        dataFolder = '/'+self.dataDir.split('/')[-2]+'/'
 
         for item in self.nodesToReduce :
 
@@ -434,11 +432,48 @@ class ReduceModel():
         finalScene["PARAMWRAPPER"] = self.paramWrapper
         finalScene['NBROFMODES'] = self.nbrOfModes
         finalScene["nbIterations"] = 1
+        finalScene["TOANIMATE"] = self.toAnimate
+        finalScene["PACKAGENAME"] = self.packageName
 
         results = startSofa([finalScene], filesandtemplates, launcher=ParallelLauncher(4))
         # print(results[0]["scene"])
-        shutil.move(results[0]["scene"], self.outputDir)
+        shutil.move(results[0]['directory']+'/'+self.packageName+'.py', self.outputDir)
         copy(self.meshDir, self.outputDir+'/mesh/')
+
+        createPackage = True
+        if createPackage :
+
+            copy(self.outputDir, pathToReducedModel+self.packageName+'/')
+
+            try:
+                with open(path+'myInit.txt', "r") as myfile:
+                    myInit = myfile.read()
+
+                    myInit = myInit.replace('MyReducedModel',self.packageName[0].upper()+self.packageName[1:])
+                    myInit = myInit.replace('myReducedModel',self.packageName)
+
+                    with open(pathToReducedModel+self.packageName+'/__init__.py', "a") as logFile:
+                        logFile.write(myInit)
+                        logFile.close()
+
+                    myfile.close()
+                    # print(myInit)
+
+                for line in fileinput.input(pathToReducedModel+'__init__.py', inplace=True):
+                    if line.find('__all__') != -1:
+                        if line.find('[]') != -1:
+                            line = line[:-2]+"'"+self.packageName+"']"'\n'
+
+                        else:
+                            line = line[:-2]+",'"+self.packageName+"']"'\n'
+                        print("%s" % line),
+
+                    else : print(line),
+
+
+            except:
+                print "Unexpected error:", sys.exc_info()[0]
+                raise
 
         print('The reduction is now finished !')
         print("TOTAL TIME --- %s seconds ---" % (time.time() - self.init_time))

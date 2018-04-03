@@ -11,5 +11,5 @@ Functions:
 .. autofunction:: mor.wrapper.MORWrapper
 
 """
-__all__=["morWrapper","saveReducedModelWrapper"]
+__all__=["morWrapper","saveReducedModelWrapper","writeScene"]
 from morWrapper import MORWrapper

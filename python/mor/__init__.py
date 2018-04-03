@@ -20,4 +20,4 @@ Indices and tables
 
 """
 
-__all__=["animation","script","wrapper"]
+__all__=["animation","script","wrapper","reducedModel"]
