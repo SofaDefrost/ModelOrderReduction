@@ -105,6 +105,7 @@ using sofa::core::behavior::MixedInteractionForceField ;
 using sofa::core::behavior::BaseForceField ;
 using sofa::core::behavior::BaseMass ;
 using sofa::core::behavior::MultiMatrixAccessor ;
+using sofa::component::linearsolver::DefaultMultiMatrixAccessor ;
 using sofa::defaulttype::BaseMatrix ;
 using sofa::core::MechanicalParams ;
 
@@ -189,8 +190,14 @@ public:
 protected:
 
     virtual void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id);
+    virtual void accumulateJacobiansOptimized(const MechanicalParams* mparams);
+    virtual void addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor);
+    virtual void addPrecomputedMassToSystem(const MechanicalParams* mparams,const unsigned int mstateSize,const Eigen::SparseMatrix<double> &Jeig, Eigen::SparseMatrix<double>& JtKJeig);
     void accumulateJacobians(const MechanicalParams* mparams);
-
+    //template<typename InputFormat>
+    //void copyMappingJacobianToEigenFormat(const typename InputFormat::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig);
+    virtual void optimizeAndCopyMappingJacobianToEigenFormat1(const typename DataTypes1::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig);
+    virtual void optimizeAndCopyMappingJacobianToEigenFormat2(const typename DataTypes2::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig);
 
     ////////////////////////// Inherited attributes ////////////////////////////
     /// https://gcc.gnu.org/onlinedocs/gcc/Name-lookup.html
@@ -203,13 +210,11 @@ protected:
     using MixedInteractionForceField<TDataTypes1, TDataTypes2>::getContext ;
     ////////////////////////////////////////////////////////////////////////////
 
-    Data< bool > timeInvariantMapping;
-    Data< bool > saveReducedMass;
-    Data< bool > usePrecomputedMass;
-    sofa::core::objectmodel::DataFileName precomputedMassPath;
+//    Data< bool > saveReducedMass;
+//    Data< bool > usePrecomputedMass;
+//    sofa::core::objectmodel::DataFileName precomputedMassPath;
 
-    Eigen::SparseMatrix<double> constantJ1;
-    Eigen::SparseMatrix<double> JtMJ;
+//    Eigen::SparseMatrix<double> JtMJ;
 
 };
 

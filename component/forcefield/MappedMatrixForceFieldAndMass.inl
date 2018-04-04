@@ -72,15 +72,13 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
       d_mappedForceField2(initLink("mappedForceField2",
                                    "link to a second forcefield that is mapped too (not mandatory)")),
       d_mappedMass(initLink("mappedMass",
-                                   "link to a mass defined typically at the same node than mappedForceField")),
-      timeInvariantMapping(initData(&timeInvariantMapping,false,"timeInvariantMapping",
-                                    "Are the mapping matrices constant with time? If yes, set to true to avoid useless recomputations.")),
-      saveReducedMass(initData(&saveReducedMass,false,"saveReducedMass",
-                                    "Save the mass in the reduced space: Jt*M*J. Only make sense if timeInvariantMapping is set to true.")),
-      usePrecomputedMass(initData(&usePrecomputedMass,false,"usePrecomputedMass",
-                                         "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
-      precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
-                                       "Path to the precomputed reduced Mass Matrix Jt*M*J. usePrecomputedMass has to be set to true."))
+                                   "link to a mass defined typically at the same node than mappedForceField"))//,
+//      saveReducedMass(initData(&saveReducedMass,false,"saveReducedMass",
+//                                    "Save the mass in the reduced space: Jt*M*J. Only make sense if timeInvariantMapping is set to true.")),
+//      usePrecomputedMass(initData(&usePrecomputedMass,false,"usePrecomputedMass",
+//                                         "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
+//      precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
+//                                       "Path to the precomputed reduced Mass Matrix Jt*M*J. usePrecomputedMass has to be set to true."))
 
 
 {
@@ -99,17 +97,17 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init()
     }
 
 
-    if (usePrecomputedMass.getValue() == true)
-    {
-        Eigen::MatrixXd denseJtMJ;
-        MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
-        matLoader->setFileName(precomputedMassPath.getValue());
-        matLoader->load();
-        matLoader->getMatrix(denseJtMJ);
-        delete matLoader;
-        JtMJ = denseJtMJ.sparseView();
+//    if (usePrecomputedMass.getValue() == true)
+//    {
+//        Eigen::MatrixXd denseJtMJ;
+//        MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
+//        matLoader->setFileName(precomputedMassPath.getValue());
+//        matLoader->load();
+//        matLoader->getMatrix(denseJtMJ);
+//        delete matLoader;
+//        JtMJ = denseJtMJ.sparseView();
 
-    }
+//    }
 
 }
 
@@ -122,6 +120,12 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::buildIdentityBlocksI
     for (unsigned int i=0; i<mstate->getSize(); i++)
         list.push_back(i);
     mstate->buildIdentityBlocksInJacobian(list, Id);
+}
+
+template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobiansOptimized(const MechanicalParams* mparams)
+{
+    this->accumulateJacobians(mparams);
 }
 
 template<class DataTypes1, class DataTypes2>
@@ -169,7 +173,7 @@ void copyKToEigenFormat(CompressedRowSparseMatrix< T >* K, Eigen::SparseMatrix<d
 }
 
 template<class InputFormat>
-void copyMappingJacobianToEigenFormat(const typename InputFormat::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
+static void copyMappingJacobianToEigenFormat(const typename InputFormat::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
 {
     typedef typename InputFormat::MatrixDeriv::RowConstIterator RowConstIterator;
     typedef typename InputFormat::MatrixDeriv::ColConstIterator ColConstIterator;
@@ -199,6 +203,41 @@ void copyMappingJacobianToEigenFormat(const typename InputFormat::MatrixDeriv& J
     Jeig.resize(nbRowsJ,DerivSize*(maxColIndex+1));
     Jeig.reserve(J.size());
     Jeig.setFromTriplets(tripletListJ.begin(), tripletListJ.end());
+}
+
+template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::optimizeAndCopyMappingJacobianToEigenFormat1(const typename DataTypes1::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
+{
+    copyMappingJacobianToEigenFormat<DataTypes1>(J, Jeig);
+}
+
+template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::optimizeAndCopyMappingJacobianToEigenFormat2(const typename DataTypes2::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
+{
+    copyMappingJacobianToEigenFormat<DataTypes2>(J, Jeig);
+}
+
+template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor)
+{
+    if (d_mappedMass != NULL)
+    {
+        d_mappedMass.get()->addMToMatrix(mparams, KAccessor);
+    }
+    else
+    {
+        msg_info(this) << "There is no d_mappedMass";
+    }
+}
+
+
+template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addPrecomputedMassToSystem(const MechanicalParams* mparams, const unsigned int mstateSize,const Eigen::SparseMatrix<double> &Jeig, Eigen::SparseMatrix<double> &JtKJeig)
+{
+    SOFA_UNUSED(mparams);
+    SOFA_UNUSED(mstateSize);
+    SOFA_UNUSED(Jeig);
+    SOFA_UNUSED(JtKJeig);
 }
 
 
@@ -234,17 +273,10 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     /* -------------------------------------------------------------------------- */
     /*              compute jacobians using generic implementation                */
     /* -------------------------------------------------------------------------- */
-
-    if ((timeInvariantMapping.getValue() == false) || (this->getContext()->getTime() == 0))
-    {
-        this->accumulateJacobians(mparams);
-        msg_info(this) <<" accumulate J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-    }
-    else
-    {
-        msg_info(this) <<"Skipping Jacobian computation.";
-    }
     time= (double)timer->getTime();
+    accumulateJacobiansOptimized(mparams);
+    msg_info(this) <<" accumulate J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
+
 
 
     ///////////////////////////     STEP 2      ////////////////////////////////////
@@ -280,16 +312,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     {
         d_mappedForceField2.get()->addKToMatrix(mparams, KAccessor);
     }
-
-    if (usePrecomputedMass.getValue() == false)
-    {
-        if (d_mappedMass != NULL)
-        {
-            d_mappedMass.get()->addMToMatrix(mparams, KAccessor);
-        }
-        else
-        { msg_info(this) << "There is no d_mappedMass"; }
-    }
+    addMassToSystem(mparams,KAccessor);
     msg_info(this)<<" time addKtoMatrix K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
     time= (double)timer->getTime();
 
@@ -334,73 +357,38 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     startTime= (double)timer->getTime();
 
     ///////////////////////    COPY J1 AND J2 IN EIGEN FORMAT //////////////////////////////////////
+    sofa::core::MultiMatrixDerivId c = sofa::core::MatrixDerivId::mappingJacobian();
+    const MatrixDeriv1 &J1 = c[ms1].read()->getValue();
+    const MatrixDeriv2 &J2 = c[ms2].read()->getValue();
 
     Eigen::SparseMatrix<double> J1eig;
     Eigen::SparseMatrix<double> J2eig;
+    J1eig.resize(K->nRow, J1.begin().row().size()*DerivSize1);
     unsigned int nbColsJ1 = 0, nbColsJ2 = 0;
-    if ((timeInvariantMapping.getValue() == false) || (this->getContext()->getTime() == 0))
+
+    optimizeAndCopyMappingJacobianToEigenFormat1(J1, J1eig);
+    if (bms1 != bms2)
     {
-        time= (double)timer->getTime();
-
-        sofa::core::MultiMatrixDerivId c = sofa::core::MatrixDerivId::mappingJacobian();
-        const MatrixDeriv1 &J1 = c[ms1].read()->getValue();
-        MatrixDeriv1RowConstIterator rowItJ1= J1.begin();
-        const MatrixDeriv2 &J2 = c[ms2].read()->getValue();
-        MatrixDeriv2RowConstIterator rowItJ2= J2.begin();
-
-        msg_info(this)<<" time get J : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-        J1eig.resize(K->nRow, J1.begin().row().size()*DerivSize1);
-        copyMappingJacobianToEigenFormat<DataTypes1>(J1, J1eig);
-
-        if (bms1 != bms2)
-        {
-            double startTime2= (double)timer->getTime();
-            J2eig.resize(K->nRow, J2.begin().row().size()*DerivSize2);
-            copyMappingJacobianToEigenFormat<DataTypes2>(J2, J2eig);
-            msg_info(this)<<" time set J2eig alone : "<<( (double)timer->getTime() - startTime2)*timeScale<<" ms";
-        }
-
-
-    }
-
-    if ((timeInvariantMapping.getValue() == true) && (this->getContext()->getTime() == 0))
-    {
-        constantJ1.resize(J1eig.rows(), J1eig.cols());
-        constantJ1.reserve(Eigen::VectorXi::Constant(K->nRow,nbColsJ1));
-        constantJ1 = J1eig;
+        double startTime2= (double)timer->getTime();
+        J2eig.resize(K->nRow, J2.begin().row().size()*DerivSize2);
+        optimizeAndCopyMappingJacobianToEigenFormat2(J2, J2eig);
+        msg_info(this)<<" time set J2eig alone : "<<( (double)timer->getTime() - startTime2)*timeScale<<" ms";
     }
 
     msg_info(this)<<" time getJ + set J1eig (and potentially J2eig) : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
     startTime= (double)timer->getTime();
 
     ///////////////////////     J1t * K * J1    //////////////////////////////////////////////////////////////////////////
-    if (timeInvariantMapping.getValue() == true)
+    nbColsJ1 = J1eig.cols();
+    if (bms1 != bms2)
     {
-        nbColsJ1 = constantJ1.cols();
-    }
-    else
-    {
-        nbColsJ1 = J1eig.cols();
-        if (bms1 != bms2)
-        {
-            nbColsJ2 = J2eig.cols();
-        }
+        nbColsJ2 = J2eig.cols();
     }
     Eigen::SparseMatrix<double>  J1tKJ1eigen(nbColsJ1,nbColsJ1);
-    if (timeInvariantMapping.getValue() == true)
-    {
-        J1tKJ1eigen = constantJ1.transpose()*Keig*constantJ1;
-    }
-    else
-    {
-        J1tKJ1eigen = J1eig.transpose()*Keig*J1eig;
-    }
 
-    if (usePrecomputedMass.getValue() == true)
-    {
-        msg_info(this) << "Adding reduced precomputed mass ...";
-        J1tKJ1eigen = J1tKJ1eigen + JtMJ;
-    }
+    J1tKJ1eigen = J1eig.transpose()*Keig*J1eig;
+
+
     msg_info(this)<<" time compute J1tKJ1eigen alone : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
 
     Eigen::SparseMatrix<double>  J2tKJ2eigen(nbColsJ2,nbColsJ2);
@@ -420,69 +408,9 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     //--------------------------------------------------------------------------------------------------------------------
 
     msg_info(this)<<" time compute all JtKJeigen with J1eig and J2eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
-    int row;
-    if (this->getContext()->getTime() == 0)
-    {
-        if (saveReducedMass.getValue() == true)
-        {
-            if (d_mappedMass != NULL)
-            {
-                CompressedRowSparseMatrix< Real1 >* M = new CompressedRowSparseMatrix< Real1 > ( );
-                M->resizeBloc( 3*mstate->getSize() ,  3*mstate->getSize());
-                M->clear();
-                DefaultMultiMatrixAccessor* MassAccessor;
-                MassAccessor = new DefaultMultiMatrixAccessor;
-                MassAccessor->addMechanicalState(  d_mappedMass.get()->getContext()->getMechanicalState() );
-                MassAccessor->setGlobalMatrix(M);
-                MassAccessor->setupMatrices();
-                d_mappedMass.get()->addMToMatrix(mparams, MassAccessor);
-                M->compress();
-
-                std::vector< Eigen::Triplet<double> > tripletListM;
-                tripletListM.reserve(M->colsValue.size());
-                Eigen::SparseMatrix<double,Eigen::ColMajor> Meig(M->nRow,M->nRow);
-                for (unsigned int it_rows_m=0; it_rows_m < M->rowIndex.size() ; it_rows_m ++)
-                {
-                    row = M->rowIndex[it_rows_m] ;
-                    Range rowRange( M->rowBegin[it_rows_m], M->rowBegin[it_rows_m+1] );
-                    for( Index xj = rowRange.begin() ; xj < rowRange.end() ; xj++ )  // for each non-null block
-                    {
-                        int col = M->colsIndex[xj];     // block column
-                        const Real1& m = M->colsValue[xj]; // non-null element of the matrix
-                        tripletListM.push_back(Eigen::Triplet<double>(row,col,m));
-                    }
-                }
-                Meig.setFromTriplets(tripletListM.begin(), tripletListM.end());
-                Eigen::SparseMatrix<double>  JtMJeigen(nbColsJ1,nbColsJ1);
-                JtMJeigen = J1eig.transpose()*Meig*J1eig;
-                msg_info(this) << JtMJeigen;
-                std::string massName = d_mappedMass.get()->getName() + "_reduced.txt";
-                msg_info(this) << "Storing " << massName << " ... ";
-                std::ofstream file(massName);
-                if (file.is_open())
-                {
-                    file << nbColsJ1 << ' ' << nbColsJ1 << "\n";
-                    for (unsigned int i=0; i<nbColsJ1; i++)
-                    {
-                        for (unsigned int j=0; j<nbColsJ1; j++)
-                        {
-                            file << JtMJeigen.coeff(i,j) << ' ';
-                        }
-                        file << '\n';
-                    }
-                    file.close();
-
-                }
-
-            }
-            else
-            {
-                msg_warning(this) << "Cannot save reduced mass because mappedMass is NULL. Please fill the field mappedMass to save the mass.";
-            }
-        }
-    }
-
-
+    //int row;
+    unsigned int mstateSize = mstate->getSize();
+    addPrecomputedMassToSystem(mparams,mstateSize,J1eig,J1tKJ1eigen);
     int offset,offrow, offcol;
     startTime= (double)timer->getTime();
     offset = mat11.offset;
