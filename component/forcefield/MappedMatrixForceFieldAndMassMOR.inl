@@ -42,6 +42,7 @@ namespace component
 namespace interactionforcefield
 {
 
+using sofa::component::loader::MatrixLoader;
 
 template<typename DataTypes1, typename DataTypes2>
 MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::MappedMatrixForceFieldAndMassMOR()

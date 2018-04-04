@@ -47,7 +47,6 @@
 
 //  Sparse Matrix
 #include <Eigen/Sparse>
-#include "../loader/modules/MatrixLoader.h"
 
 namespace sofa
 {
@@ -60,7 +59,6 @@ namespace interactionforcefield
 
 using sofa::component::linearsolver::DefaultMultiMatrixAccessor ;
 using sofa::core::behavior::BaseMechanicalState ;
-using sofa::component::loader::MatrixLoader;
 
 
 
