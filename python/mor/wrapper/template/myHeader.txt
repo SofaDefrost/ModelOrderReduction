@@ -1,87 +1,23 @@
 # -*- coding: utf-8 -*-
-import Sofa
 import os
-from math import cos,sin,pi
+import Sofa
+from numpy import add,subtract
+from stlib.numerics import *
 
 path = os.path.dirname(os.path.abspath(__file__))
 
-def addTripletList(newTriplet,oldTriplet):
-    # print('oldTriplet : ',oldTriplet)
-    if any(isinstance(el, list) for el in oldTriplet):
-        # print('List : ',newTriplet)
-        triplet = []
-        for pts in oldTriplet:
-            triplet.append( [newTriplet[i]+pts[i] for i in range(len(newTriplet))] )
-            # print('triplet : ',oldTriplet)
-        return triplet
+def TRSinOrigin(positions,modelPosition,translation,rotation):
+    posOrigin = subtract(positions , modelPosition)
+    if any(isinstance(el, list) for el in positions):
+        posOriginTRS = positionsTRS(posOrigin,translation,rotation)
     else:
-        triplet = []
-        for i in range(len(oldTriplet)/3):
-            triplet.append(oldTriplet[i*3] + newTriplet[0])
-            triplet.append(oldTriplet[i*3+1] + newTriplet[1])
-            triplet.append(oldTriplet[i*3+2] + newTriplet[2])
-        return triplet
-
-def subTripletList(newTriplet,oldTriplet):
-    if any(isinstance(el, list) for el in oldTriplet):
-        triplet = []
-        for pts in oldTriplet:
-            triplet.append( [pts[i]-newTriplet[i] for i in range(len(newTriplet))] )
-        return triplet
-    else:
-        triplet = []
-        for i in range(len(oldTriplet)/3):
-            triplet.append(oldTriplet[i*3] - newTriplet[0])
-            triplet.append(oldTriplet[i*3+1] - newTriplet[1])
-            triplet.append(oldTriplet[i*3+2] - newTriplet[2])
-        return triplet
-
-def doRotation(myX,myY,myZ,thetaX,thetaY,thetaZ):
-
-    x = myX
-    y = myY
-    z = myZ
+        posOriginTRS = pointTRS(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
+    return add(posOriginTRS,modelPosition).tolist()
     
-    # X rotation
-    Y =  y*cos(thetaX) - z*sin(thetaX)
-    Z =  y*sin(thetaX) + z*cos(thetaX)
-    # Y rotation
-    tmp = x
-    X =  x*cos(thetaY) + Z*sin(thetaY) 
-    Z =  Z*cos(thetaY) - tmp*sin(thetaY) 
-    # Z rotation
-    tmp = X
-    X =  X*cos(thetaZ) - Y*sin(thetaZ) 
-    Y =  tmp*sin(thetaZ) + Y*cos(thetaZ) 
-
-    return X , Y , Z 
-
-
-def rotate(rotation,boxRoiPts):
-    # convert rad
-    thetaX = rotation[0] * pi / 180
-    thetaY = rotation[1] * pi / 180
-    thetaZ = rotation[2] * pi / 180
-
-    if any(isinstance(el, list) for el in boxRoiPts):
-        # print('List : ',newTriplet)
-        triplet = []
-        for pts in boxRoiPts:
-
-            pts[0] , pts[1] , pts[2] = doRotation(pts[0],pts[1],pts[2],thetaX,thetaY,thetaZ)
-
-            # print('rotate boxRoiPts :'+str(boxRoiPts))
-            return boxRoiPts
-
-    else:
-        for i in range(len(boxRoiPts)/3):
-
-            boxRoiPts[i*3],boxRoiPts[i*3+1],boxRoiPts[i*3+2] = doRotation(  boxRoiPts[i*3],
-                                                                            boxRoiPts[i*3+1],
-                                                                            boxRoiPts[i*3+2],
-                                                                            thetaX,thetaY,thetaZ)
-
-        return boxRoiPts
+def newBox(positions,modelPosition,translation,rotation,offset):
+    pos = TRSinOrigin(positions,modelPosition,translation,rotation)
+    offset =positionsTRS([offset],eulerRotation=rotation)[0]
+    return add(pos,offset).tolist()
 
 def MyReducedModel(
                   attachedTo=None,

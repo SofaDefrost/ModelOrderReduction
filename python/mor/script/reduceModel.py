@@ -2,15 +2,13 @@
 import time
 import os
 import sys 
-from sys import argv
 import math
 from launcher import *
 import errno
-import shutil
 import fileinput
 
 # MOR IMPORT
-from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
+from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes, copy
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/reducedModel/'
@@ -27,6 +25,7 @@ class ReduceModel():
                  outputDir,
                  meshDir,
                  packageName = None,
+                 addToLib = False,
                  verbose = False,
                  addRigidBodyModes = False):
 
@@ -35,11 +34,13 @@ class ReduceModel():
 
         self.nodesToReduce = nodesToReduce
 
+        self.addToLib = addToLib
+
         if packageName :
             self.packageName = 'reduced_'+packageName
 
-            if os.path.isdir(pathToReducedModel+self.packageName):
-                raise Exception('A Package named %s already exist !\nPlease choose another name for this new package' % packageName)
+            if os.path.isdir(pathToReducedModel+self.packageName) and addToLib:
+                raise Exception('A Package named %s already exist in the MOR lib !\nPlease choose another name for this new package' % packageName)
 
         # A list of what you want to animate in your scene and with which parameters
         self.toAnimate = animationParam['toAnimate']
@@ -440,8 +441,7 @@ class ReduceModel():
         shutil.move(results[0]['directory']+'/'+self.packageName+'.py', self.outputDir)
         copy(self.meshDir, self.outputDir+'/mesh/')
 
-        createPackage = True
-        if createPackage :
+        if self.addToLib :
 
             copy(self.outputDir, pathToReducedModel+self.packageName+'/')
 
@@ -477,14 +477,3 @@ class ReduceModel():
 
         print('The reduction is now finished !')
         print("TOTAL TIME --- %s seconds ---" % (time.time() - self.init_time))
-
- 
-def copy(src, dest):
-    try:
-        shutil.copytree(src, dest)
-    except OSError as e:
-        # If the error was caused because the source wasn't a directory
-        if e.errno == errno.ENOTDIR:
-            shutil.copy(src, dest)
-        else:
-            print('Directory not copied. Error: %s' % e)

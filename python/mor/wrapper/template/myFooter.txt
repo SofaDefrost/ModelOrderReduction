@@ -7,8 +7,8 @@
 	    					filename=path+'/mesh/'+surfaceMeshFileName,
                             template='ExtVec3f',
                             color=surfaceColor,
-                            rotation= addTripletList(rotation,arg1),
-                            translation = addTripletList(translation,arg2))
+                            rotation= add(rotation,arg1),
+                            translation = add(translation,arg2))
 
 	    visu.createObject('BarycentricMapping')
 
@@ -24,12 +24,12 @@ def createScene(rootNode):
                         dt=1,
                         gravity=[0.0,0.0,-9810])
 
-    translate = 50
+    translate = 300
     rotationBlue = 60.0
     rotationWhite = 80
     rotationRed = 70
 
-    for i in range(5):
+    for i in range(3):
 
         MyReducedModel(rootNode,
                         name="MyReducedModel_blue", 
@@ -37,7 +37,7 @@ def createScene(rootNode):
                         translation=[i*translate, 0.0, 0.0],
                         surfaceColor=[0.0, 0.0, 1, 0.5],
                         surfaceMeshFileName=surfaceMeshFileName)
-    for i in range(5):
+    for i in range(3):
 
         MyReducedModel(rootNode,
                         name="MyReducedModel_white", 
@@ -46,7 +46,7 @@ def createScene(rootNode):
                         surfaceColor=[0.5, 0.5, 0.5, 0.5],
                         surfaceMeshFileName=surfaceMeshFileName)
 
-    for i in range(5):
+    for i in range(3):
 
         MyReducedModel(rootNode,
                         name="MyReducedModel_red", 

@@ -64,17 +64,33 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                                 arg['translation'] = [0.0,0.0,0.0]
                             if 'rotation' not in arg:
                                 arg['rotation'] = [0.0,0.0,0.0]
-                            if modelTranslation :
-                                myArgs = buildArgStr(arg,modelTranslation)
-                            else:
-                                myArgs = buildArgStr(arg)
+                            myArgs = buildArgStr(arg)
+                            # if modelTranslation :
+                            #     myArgs = buildArgStr(arg,modelTranslation)
+                            # else:
+                            #     myArgs = buildArgStr(arg)
                             if childName == nodeName :
                                 modelTranslation = arg['translation']
                                 modelRotation = arg['rotation']
                             # print(myArgs)
                         elif type == 'BoxROI':
                             tmp = [float(x) for x in arg['box'].split(' ')]
-                            myArgs = ", name= '"+arg['name']+"' , box=addTripletList(translation,rotate(rotation,"+str(tmp)+") )"
+                            # myArgs = ", name= '"+arg['name']+"' , box=np.add(translation,rotate(rotation,"+str(tmp)+") )"
+                            if "box" in arg:
+                                newPoints = []
+                                # print('BOX : '+str(tmp))
+                                for i in range(len(tmp)/3):
+                                    newPoints.append([tmp[i*3],tmp[i*3+1],tmp[i*3+2]])
+                                depth = abs(newPoints[0][2] - newPoints[1][2])
+                                tr = (newPoints[0][2] + newPoints[1][2])/2
+                                newPoints[1][2] = newPoints[0][2] = 0
+                                newPoints.append([newPoints[1][0],0,0])
+                                newPoints[2] , newPoints[1] = newPoints[1] , newPoints[2]
+                                myArgs= ", name= '"+arg['name']+"' , orientedBox= newBox("+str(newPoints)+" , "+str(modelTranslation)+",translation,rotation,"+str([0,0,tr])+")+"+str([depth])+",drawBoxes=True"
+                            # elif "orientedBox" in arg :      
+                            #     myArgs= ", orientedBox= add("+str(translation)+" , PositionsTRS(subtract("+str(arg['orientedBox'])+" , "+str(translation)+"),translation,rotation))"
+                            else:
+                                raise Exception('Wrong BoxROI arguments :'+str(arg))
                             # print('BOXROI ARG: ',myArgs)
                         else :
                             # print(childName)
@@ -133,20 +149,20 @@ def buildArgStr(arg,translation=None):
             if translation: 
                 if key == 'position' or key == 'pullPoint':
                     # print('translation ',translation)
-                    myArgs += ", "+key+" = addTripletList("+str(translation)+" , addTripletList(translation,rotate(rotation, subTripletList ("+str(translation)+" , "+str(val)+"))))"
-                if key == 'translation':
-                    myArgs += ", "+key+" = addTripletList(translation,"+str(val)+")"
-                elif key == 'rotation':
-                    myArgs += ", "+key+" = addTripletList(rotation,"+str(val)+")"
+                    myArgs += ", "+key+" = TRSinOrigin("+str(val)+" , "+str(translation)+",translation,rotation)"
+                # elif key == 'translation':
+                #     myArgs += ", "+key+" = np.add(translation,"+str(val)+")"
+                # elif key == 'rotation':
+                #     myArgs += ", "+key+" = np.add(rotation,"+str(val)+")"
                 else:
                     myArgs += ", "+key+" = "+str(val)
             else:
                 if key == 'translation':
-                    myArgs += ", "+key+" = addTripletList(translation,"+str(val)+")"
+                    myArgs += ", "+key+" = add(translation,"+str(val)+")"
                 elif key == 'rotation':
-                    myArgs += ", "+key+" = addTripletList(rotation,"+str(val)+")"
+                    myArgs += ", "+key+" = add(rotation,"+str(val)+")"
                 elif key == 'pullPoint':
-                    myArgs += ", "+key+" = addTripletList(translation,rotate(rotation,"+str(val)+"))"
+                    myArgs += ", "+key+" = add(translation,rotate(rotation,"+str(val)+"))"
                 else:
                     myArgs += ", "+key+" = "+str(val)
 

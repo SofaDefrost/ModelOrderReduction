@@ -1,45 +1,46 @@
 import Sofa
+import os
 
 #   STLIB IMPORT
 from stlib.scene import MainHeader
+from stlib.scene import ContactHeader
+from stlib.physics.rigid import Floor
 
 # MOR IMPORT
 from mor.reducedModel.reduced_diamond import Reduced_diamond
+from mor.reducedModel.reduced_starfish import Reduced_starfish
+
+path = os.path.dirname(os.path.abspath(__file__))
 
 def createScene(rootNode):
-    surfaceMeshFileName = 'surface.stl'
+    surfaceMeshFileNameDiamond = 'surface.stl'
+    surfaceMeshFileNameStrafish = 'quadriped_collision.stl'
 
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
                         dt=1,
-                        gravity=[0.0,0.0,-9810])
+                        gravity=[0.0,-9810,0.0])
 
-    translate = 200
-    rotationBlue = 60.0
-    rotationWhite = 80
-    rotationRed = 70
+    ContactHeader(rootNode,
+        alarmDistance=5,
+        contactDistance=1,
+        frictionCoef=0.7)
 
-    for i in range(5):
+    Floor(rootNode,
+        name = "Plane",
+        color = [1.0, 0.0, 1.0],
+        isAStaticObject = True,
+        uniformScale = 10)
 
-        Reduced_diamond(rootNode,
-                        name="Reduced_diamond_blue", 
-                        rotation=[rotationBlue*i, 0.0, 0.0],
-                        translation=[i*translate, 0.0, 0.0],
-                        surfaceColor=[0.0, 0.0, 1, 0.5],
-                        surfaceMeshFileName=surfaceMeshFileName)
-    for i in range(5):
+    Reduced_diamond(rootNode,
+                    name="Reduced_diamond_white",
+                    rotation=[-90, 0.0, 0.0],
+                    translation=[0, 50.0, 0.0],
+                    surfaceColor=[0.5, 0.5, 0.5, 0.5],
+                    surfaceMeshFileName=surfaceMeshFileNameDiamond)
 
-        Reduced_diamond(rootNode,
-                        name="Reduced_diamond_white", 
-                        rotation=[0.0, rotationWhite*i, 0.0],
-                        translation=[i*translate, translate, -translate],
-                        surfaceColor=[0.5, 0.5, 0.5, 0.5],
-                        surfaceMeshFileName=surfaceMeshFileName)
-
-    for i in range(5):
-
-        Reduced_diamond(rootNode,
-                        name="Reduced_diamond_red", 
-                        rotation=[0.0, 0.0, i*rotationRed],
-                        translation=[i*translate, 2*translate, -2*translate],
-                        surfaceColor=[1, 0.0, 0.0, 0.5],
-                        surfaceMeshFileName=surfaceMeshFileName)
+    Reduced_starfish(rootNode,
+                    name="Reduced_starfish_red",
+                    rotation=[0, 90.0, 120.0],
+                    translation=[300, 400.0, 100.0],
+                    surfaceColor=[1, 0.0, 0.0, 0.5],
+                    surfaceMeshFileName=surfaceMeshFileNameStrafish)

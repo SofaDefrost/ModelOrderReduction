@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-__all__=['reduced_diamond']
+__all__=['reduced_diamond','reduced_starfish']

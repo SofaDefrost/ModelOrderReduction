@@ -11,8 +11,10 @@
 
 #######################################################################
 ####################       IMPORT 	     	###########################
+import os
 import sys
-sys.path.append('/home/felix/SOFA/plugin/ModelOrderReduction/python') # TO CHANGE
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(path+'/../python') # TO CHANGE
 
 from mor.script import morUtilityFunctions
 from mor.script import ReduceModel
@@ -60,7 +62,8 @@ tolGIE =  0.05
 # Optionnal
 verbose = False
 
-packageName = 'diamond_test'
+packageName = 'test'
+addToLib = False
 
 #######################################################################
 ####################      INITIALIZATION     ##########################
@@ -71,6 +74,7 @@ reduceMyModel = ReduceModel(	originalScene,
 					            outputDir,
 					            meshDir,
 					            packageName,
+				            	addToLib,
 					            verbose,
 					            addRigidBodyModes)
 

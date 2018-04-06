@@ -8,7 +8,7 @@ import os
 import ntpath
 import importlib
 
-originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/originalScene.py'
+originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py'
 
 sys.path.insert(0,os.path.dirname(os.path.abspath(originalScene)))
 filename, file_extension = os.path.splitext(originalScene)
@@ -16,7 +16,7 @@ importScene = str(ntpath.basename(filename))
 originalScene = importlib.import_module(importScene)
 
 # paramWrapper = [('/modelNode', {'paramForcefield': {'performECSW': True, 'RIDPath': 'data/RID_modelNode.txt', 'modesPath': 'data/test_modes.txt', 'weightsPath': 'data/weight_modelNode.txt'}, 'paramMORMapping': {'input': '@../MechanicalObject', 'modesPath': 'data/test_modes.txt'}, 'paramMappedMatrixMapping': {'object1': '@./MechanicalObject', 'object2': '@./MechanicalObject', 'listActiveNodesPath': 'data/conectivity_modelNode.txt', 'performECSW': True, 'template': 'Vec1d,Vec1d'}})]
-paramWrapper = [('/modelNode', {'paramForcefield': {'periodSaveGIE': 11, 'prepareECSW': True, 'modesPath': '/home/felix/SOFA/plugin/ModelOrderReduction/tools/final_tests/data/test_modes.txt', 'nbTrainingSet': 128}, 'paramMORMapping': {'input': '@../MechanicalObject', 'modesPath': '/home/felix/SOFA/plugin/ModelOrderReduction/tools/final_tests/data/test_modes.txt'}, 'paramMappedMatrixMapping': {'object1': '@./MechanicalObject', 'object2': '@./MechanicalObject', 'performECSW': False, 'template': 'Vec1d,Vec1d'}})]
+paramWrapper = [('/modelNode', {'paramForcefield': {'periodSaveGIE': 11, 'prepareECSW': True, 'modesPath': '/home/felix/SOFA/plugin/ModelOrderReduction/tools/diamond/data/test_modes.txt', 'nbTrainingSet': 128}, 'paramMORMapping': {'input': '@../MechanicalObject', 'modesPath': '/home/felix/SOFA/plugin/ModelOrderReduction/tools/diamond/data/test_modes.txt'}, 'paramMappedMatrixMapping': {'object1': '@./MechanicalObject', 'object2': '@./MechanicalObject', 'performECSW': False, 'template': 'Vec1d,Vec1d'}})]
 
 solverToDelete = {}
 nodeToKeep = []

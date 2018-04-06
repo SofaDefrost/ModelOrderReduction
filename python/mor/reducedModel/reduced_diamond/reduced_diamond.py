@@ -1,134 +1,23 @@
 # -*- coding: utf-8 -*-
-import Sofa
 import os
-from math import cos,sin,pi
+import Sofa
+from numpy import add,subtract
+from stlib.numerics import *
 
 path = os.path.dirname(os.path.abspath(__file__))
 
-def addTripletList(newTriplet,oldTriplet):
-    # print('oldTriplet : ',oldTriplet)
-    if any(isinstance(el, list) for el in oldTriplet):
-        # print('List : ',newTriplet)
-        triplet = []
-        for pts in oldTriplet:
-            triplet.append( [newTriplet[i]+pts[i] for i in range(len(newTriplet))] )
-            # print('triplet : ',oldTriplet)
-        return triplet
+def TRSinOrigin(positions,modelPosition,translation,rotation):
+    posOrigin = subtract(positions , modelPosition)
+    if any(isinstance(el, list) for el in positions):
+        posOriginTRS = positionsTRS(posOrigin,translation,rotation)
     else:
-        # print('PTS : ',newTriplet)
-        triplet = [newTriplet[i]+oldTriplet[i] for i in range(len(newTriplet))] 
-        # print('triplet : ',oldTriplet)
-        return triplet
-
-def subTripletList(newTriplet,oldTriplet):
-    if any(isinstance(el, list) for el in oldTriplet):
-        triplet = []
-        for pts in oldTriplet:
-            triplet.append( [pts[i]-newTriplet[i] for i in range(len(newTriplet))] )
-        return triplet
-    else:
-        triplet = [oldTriplet[i]-newTriplet[i] for i in range(len(newTriplet))] 
-        return triplet
-
-def rotate(rotation,boxRoiPts):
-    # convert rad
-    thetaX = rotation[0] * pi / 180
-    thetaY = rotation[1] * pi / 180
-    thetaZ = rotation[2] * pi / 180
-
-    if any(isinstance(el, list) for el in boxRoiPts):
-        # print('List : ',newTriplet)
-        triplet = []
-        for pts in boxRoiPts:
-
-            x = pts[0]
-            y = pts[1]
-            z = pts[2]
-            
-            # X rotation
-            Y =  y*cos(thetaX) - z*sin(thetaX)
-            Z =  y*sin(thetaX) + z*cos(thetaX)
-            # Y rotation
-            tmp = x
-            X =  x*cos(thetaY) + Z*sin(thetaY) 
-            Z =  Z*cos(thetaY) - tmp*sin(thetaY) 
-            # Z rotation
-            tmp = X
-            X =  X*cos(thetaZ) - Y*sin(thetaZ) 
-            Y =  tmp*sin(thetaZ) + Y*cos(thetaZ) 
-
-
-            pts[0] = X
-            pts[1] = Y
-            pts[2] = Z
-
-            # print('rotate boxRoiPts :'+str(boxRoiPts))
-            return boxRoiPts
-
-
-    else:
-
-
-        x = boxRoiPts[0]
-        y = boxRoiPts[1]
-        z = boxRoiPts[2]
-        
-        # X rotation
-        Y =  y*cos(thetaX) - z*sin(thetaX)
-        Z =  y*sin(thetaX) + z*cos(thetaX)
-        # Y rotation
-        tmp = x
-        X =  x*cos(thetaY) + Z*sin(thetaY) 
-        Z =  Z*cos(thetaY) - tmp*sin(thetaY) 
-        # Z rotation
-        tmp = X
-        X =  X*cos(thetaZ) - Y*sin(thetaZ) 
-        Y =  tmp*sin(thetaZ) + Y*cos(thetaZ) 
-
-
-        boxRoiPts[0] = X
-        boxRoiPts[1] = Y
-        boxRoiPts[2] = Z
-
-        # print('rotate boxRoiPts :'+str(boxRoiPts))
-        return boxRoiPts
-
-# for i in range(len(pts)/3):
-
-#     x = boxRoiPts[i*3]
-#     y = boxRoiPts[i*3+1]
-#     z = boxRoiPts[i*3+2]
+        posOriginTRS = pointTRS(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
+    return add(posOriginTRS,modelPosition).tolist()
     
-#     # X rotation
-#     Y =  y*cos(thetaX) - z*sin(thetaX)
-#     Z =  y*sin(thetaX) + z*cos(thetaX)
-#     # Y rotation
-#     tmp = x
-#     X =  x*cos(thetaY) + Z*sin(thetaY) 
-#     Z =  Z*cos(thetaY) - tmp*sin(thetaY) 
-#     # Z rotation
-#     tmp = X
-#     X =  X*cos(thetaZ) - Y*sin(thetaZ) 
-#     Y =  tmp*sin(thetaZ) + Y*cos(thetaZ) 
-
-
-#     boxRoiPts[i*3] = X
-#     boxRoiPts[i*3+1] = Y
-#     boxRoiPts[i*3+2] = Z
-
-# # print('rotate boxRoiPts :'+str(boxRoiPts))
-# return boxRoiPts
-
-def translate(translation,boxRoiPts):
-    print(translation)
-    print(boxRoiPts)
-    for i in range(len(boxRoiPts)/3):
-        boxRoiPts[i*3] += translation[0]
-        boxRoiPts[i*3+1] += translation[1]
-        boxRoiPts[i*3+2] += translation[2]
-
-    print('translate boxRoiPts :'+str(boxRoiPts))
-    return boxRoiPts
+def newBox(positions,modelPosition,translation,rotation,offset):
+    pos = TRSinOrigin(positions,modelPosition,translation,rotation)
+    offset =positionsTRS([offset],eulerRotation=rotation)[0]
+    return add(pos,offset).tolist()
 
 def Reduced_diamond(
                   attachedTo=None,
@@ -174,7 +63,7 @@ def Reduced_diamond(
 
 
     modelNode = modelNode_MOR.createChild('modelNode')
-    modelNode.createObject('MeshVTKLoader' , rotation = addTripletList(rotation,[90, 0.0, 0.0]), translation = addTripletList(translation,[0.0, 0.0, 35]), name = 'MeshLoader', filename = path + '/mesh/siliconeV0.vtu')
+    modelNode.createObject('MeshVTKLoader' , rotation = add(rotation,[90, 0.0, 0.0]), translation = add(translation,[0.0, 0.0, 35]), name = 'MeshLoader', filename = path + '/mesh/siliconeV0.vtu')
     modelNode.createObject('TetrahedronSetTopologyContainer' , src = '@MeshLoader', name = 'container')
     modelNode.createObject('MechanicalObject' , template = 'Vec3d')
     modelNode.createObject('UniformMass' , totalmass = '0.5')
@@ -183,26 +72,26 @@ def Reduced_diamond(
 
 
     nord = modelNode.createChild('nord')
-    nord.createObject('MechanicalObject' , position = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [[0, 97, 45]])))), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    nord.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [0, 10, 30])))), value = '0.0')
+    nord.createObject('MechanicalObject' , position = TRSinOrigin([[0, 97, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    nord.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([0, 10, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
     nord.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
 
     ouest = modelNode.createChild('ouest')
-    ouest.createObject('MechanicalObject' , position = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [[-97, 0, 45]])))), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    ouest.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [-10, 0, 30])))), value = '0.0')
+    ouest.createObject('MechanicalObject' , position = TRSinOrigin([[-97, 0, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    ouest.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([-10, 0, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
     ouest.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
 
     sud = modelNode.createChild('sud')
-    sud.createObject('MechanicalObject' , position = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [[0, -97, 45]])))), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    sud.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [0, -10, 30])))), value = '0.0')
+    sud.createObject('MechanicalObject' , position = TRSinOrigin([[0, -97, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    sud.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([0, -10, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
     sud.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
 
     est = modelNode.createChild('est')
-    est.createObject('MechanicalObject' , position = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [[97, 0, 45]])))), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    est.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = addTripletList([0.0, 0.0, 35] , addTripletList(translation,rotate(rotation, subTripletList ([0.0, 0.0, 35] , [10, 0, 30])))), value = '0.0')
+    est.createObject('MechanicalObject' , position = TRSinOrigin([[97, 0, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    est.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([10, 0, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
     est.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
     ## Visualization
@@ -213,8 +102,8 @@ def Reduced_diamond(
 	    					filename=path+'/mesh/'+surfaceMeshFileName,
                             template='ExtVec3f',
                             color=surfaceColor,
-                            rotation= addTripletList(rotation,[90, 0.0, 0.0]),
-                            translation = addTripletList(translation,[0.0, 0.0, 35]))
+                            rotation= add(rotation,[90, 0.0, 0.0]),
+                            translation = add(translation,[0.0, 0.0, 35]))
 
 	    visu.createObject('BarycentricMapping')
 
@@ -224,34 +113,39 @@ def Reduced_diamond(
 #   STLIB IMPORT
 from stlib.scene import MainHeader
 def createScene(rootNode):
-    surfaceMeshFileName = ''
+    surfaceMeshFileName = 'surface.stl'
 
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
                         dt=1,
                         gravity=[0.0,0.0,-9810])
 
-    for i in range(5):
+    translate = 300
+    rotationBlue = 60.0
+    rotationWhite = 80
+    rotationRed = 70
+
+    for i in range(3):
 
         Reduced_diamond(rootNode,
                         name="Reduced_diamond_blue", 
-                        rotation=[60.0*i, 0.0, 0.0],
-                        translation=[i*200, 0.0, 0.0],
+                        rotation=[rotationBlue*i, 0.0, 0.0],
+                        translation=[i*translate, 0.0, 0.0],
                         surfaceColor=[0.0, 0.0, 1, 0.5],
                         surfaceMeshFileName=surfaceMeshFileName)
-    for i in range(5):
+    for i in range(3):
 
         Reduced_diamond(rootNode,
                         name="Reduced_diamond_white", 
-                        rotation=[0.0, 80.0*i, 0.0],
-                        translation=[i*200, 200.0, -200.0],
+                        rotation=[0.0, rotationWhite*i, 0.0],
+                        translation=[i*translate, translate, -translate],
                         surfaceColor=[0.5, 0.5, 0.5, 0.5],
                         surfaceMeshFileName=surfaceMeshFileName)
 
-    for i in range(5):
+    for i in range(3):
 
         Reduced_diamond(rootNode,
                         name="Reduced_diamond_red", 
-                        rotation=[0.0, 0.0, i*70.0],
-                        translation=[i*200, 400.0, -400.0],
+                        rotation=[0.0, 0.0, i*rotationRed],
+                        translation=[i*translate, 2*translate, -2*translate],
                         surfaceColor=[1, 0.0, 0.0, 0.5],
                         surfaceMeshFileName=surfaceMeshFileName)
