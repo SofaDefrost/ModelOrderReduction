@@ -244,7 +244,8 @@ class ReduceModel():
         self.nbrOfModes = readStateFilesAndComputeModes(stateFilePath = self.debugDir+self.stateFileName,
                                                         modesFileName = self.dataDir+self.modesFileName,
                                                         tol = self.tolModes,
-                                                        addRigidBodyModes = self.addRigidBodyModes)
+                                                        addRigidBodyModes = self.addRigidBodyModes,
+                                                        verbose= self.verbose)
 
         if self.nbrOfModes == -1:
             raise ValueError("problem of execution of readStateFilesAndComputeModes")
@@ -329,11 +330,13 @@ class ReduceModel():
             readGieFileAndComputeRIDandWeights( self.debugDir+fileName,
                                                 self.dataDir+self.RIDFilesNames[index],
                                                 self.dataDir+self.weightsFilesNames[index],
-                                                self.tolGIE)
+                                                self.tolGIE,
+                                                verbose= self.verbose)
 
             self.activesNodesLists.append(  convertRIDinActiveNodes(self.dataDir+self.RIDFilesNames[index],
                                                                     self.debugDir+self.savedElementsFilesNames[index],
-                                                                    self.dataDir+self.connectivityFilesNames[index]) )
+                                                                    self.dataDir+self.connectivityFilesNames[index],
+                                                                    verbose= self.verbose))
 
 
         print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))

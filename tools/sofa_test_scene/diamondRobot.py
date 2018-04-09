@@ -13,39 +13,49 @@ from stlib.physics.constraints import FixedBox
 from softrobots.actuators import PullingCable
 
 actuatorsParam = [
-        {'withName' : 'nord',
-         'withCableGeometry' : [[0, 97, 45]],
-         'withAPullPointLocation' : [0, 10, 30]
-        },
-        {'withName' : 'ouest',
-         'withCableGeometry' : [[-97, 0, 45]],
-         'withAPullPointLocation' : [-10, 0, 30]
-        },
-        {'withName' : 'sud',
-         'withCableGeometry' : [[0, -97, 45]],
-         'withAPullPointLocation' : [0, -10, 30]
-        },
-        {'withName' : 'est',
-         'withCableGeometry' : [[97, 0, 45]],
-         'withAPullPointLocation' : [10, 0, 30]
-        }
-    ]
+		{'withName' : 'nord',
+		 'withCableGeometry' : [[0, 97, 45]],
+		 'withAPullPointLocation' : [0, 10, 30]
+		},
+		{'withName' : 'ouest',
+		 'withCableGeometry' : [[-97, 0, 45]],
+		 'withAPullPointLocation' : [-10, 0, 30]
+		},
+		{'withName' : 'sud',
+		 'withCableGeometry' : [[0, -97, 45]],
+		 'withAPullPointLocation' : [0, -10, 30]
+		},
+		{'withName' : 'est',
+		 'withCableGeometry' : [[97, 0, 45]],
+		 'withAPullPointLocation' : [10, 0, 30]
+		}
+	]
 
 meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
 
 def createScene(rootNode):
 
-	rootNode = MainHeader(	rootNode, 
-							plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
-							dt=1,
-							gravity=[0.0,0.0,-9810])
+	rootNode.createObject('VisualStyle')
+
+	rootNode.findData('gravity').value=[0.0,0.0,-9810];
+	rootNode.findData('dt').value=1
+
+	plugins=["SofaPython","SoftRobots","ModelOrderReduction"]
+	for name in plugins:
+		rootNode.createObject('RequiredPlugin', name=name, printLog=False)
+		
+	rootNode.createObject('OglSceneFrame', style="Arrows", alignment="TopRight")
+
+	rootNode.createObject('FreeMotionAnimationLoop')
+	rootNode.createObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
+
 
 	modelNode = ElasticMaterialObject(
 		attachedTo=rootNode,
 		volumeMeshFileName=meshPath+'siliconeV0.vtu',
 		name='modelNode',
-        rotation=[90, 0.0, 0.0],
-        translation=[0.0, 0.0, 35],
+		rotation=[90, 0.0, 0.0],
+		translation=[0.0, 0.0, 35],
 		totalMass=0.5,
 		withConstrain=False,
 		# surfaceMeshFileName=meshPath+'surface.stl',
@@ -54,7 +64,6 @@ def createScene(rootNode):
 		youngModulus=450)
 	
 	modelNode.createObject('GenericConstraintCorrection', solverName='Solver')
-	# modelNode.createObject('WriteState', filename="init_myDiamondQuiteFine.vtu.state", period='0.1',writeX="0", writeX0="1", writeV="0") 
 
 	FixedBox(
 		atPositions=[-15, -15, -40,  15, 15, 10],

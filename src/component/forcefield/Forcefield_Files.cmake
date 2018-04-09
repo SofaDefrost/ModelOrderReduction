@@ -9,6 +9,8 @@ list(APPEND HEADER_FILES
     src/component/forcefield/HyperReducedTriangleFEMForceField.inl
     src/component/forcefield/MappedMatrixForceFieldAndMass.h
     src/component/forcefield/MappedMatrixForceFieldAndMass.inl
+    src/component/forcefield/MappedMatrixForceFieldAndMassMOR.h
+    src/component/forcefield/MappedMatrixForceFieldAndMassMOR.inl
     src/component/forcefield/MooneyRivlin.h
     src/component/forcefield/NeoHookean.h
 
@@ -20,6 +22,7 @@ list(APPEND SOURCE_FILES
     src/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.cpp
     src/component/forcefield/HyperReducedTriangleFEMForceField.cpp
     src/component/forcefield/MappedMatrixForceFieldAndMass.cpp
+    src/component/forcefield/MappedMatrixForceFieldAndMassMOR.cpp
 
     )
 

@@ -1,5 +1,10 @@
 # ModelOrderReduction
 
+This Sofa package contains...
+
+You can find a complete documentation at this address: ...   
+You can also explore the *examples* directory in this repository.
+
 ## AUTHOR :
 
  - Team DEFROST (INRIA/CRISTAL), Lille
@@ -14,3 +19,7 @@
 
 
 ## OTHER COMMENTS :
+
+### Prerequisite
+
+Enable `SOFA_WITH_EXPERIMENTAL_FEATURES` option in the cmake-gui.

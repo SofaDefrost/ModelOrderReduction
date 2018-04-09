@@ -9,16 +9,16 @@ path = os.path.dirname(os.path.abspath(__file__))
 def TRSinOrigin(positions,modelPosition,translation,rotation):
     posOrigin = subtract(positions , modelPosition)
     if any(isinstance(el, list) for el in positions):
-        posOriginTRS = positionsTRS(posOrigin,translation,rotation)
+        posOriginTRS = transformPositions(posOrigin,translation,rotation)
     else:
-        posOriginTRS = pointTRS(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
+        posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
     return add(posOriginTRS,modelPosition).tolist()
     
 def newBox(positions,modelPosition,translation,rotation,offset):
     pos = TRSinOrigin(positions,modelPosition,translation,rotation)
-    offset =positionsTRS([offset],eulerRotation=rotation)[0]
+    offset =transformPositions([offset],eulerRotation=rotation)[0]
     return add(pos,offset).tolist()
-
+    
 def Reduced_diamond(
                   attachedTo=None,
                   name="Reduced_diamond",
@@ -59,7 +59,7 @@ def Reduced_diamond(
     modelNode_MOR.createObject('SparseLDLSolver' , name = 'Solver')
     modelNode_MOR.createObject('GenericConstraintCorrection' , solverName = 'Solver')
     modelNode_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0', template = 'Vec1d')
-    modelNode_MOR.createObject('MappedMatrixForceFieldAndMass' , mappedForceField = '@./modelNode/HyperReducedFEMForceField_modelNode', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_modelNode.txt', template = 'Vec1d,Vec1d', performECSW = 'True', mappedMass = '@./modelNode/UniformMass')
+    modelNode_MOR.createObject('MappedMatrixForceFieldAndMassMOR' , mappedForceField = '@./modelNode/HyperReducedFEMForceField_modelNode', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_modelNode.txt', template = 'Vec1d,Vec1d', performECSW = 'True', mappedMass = '@./modelNode/UniformMass')
 
 
     modelNode = modelNode_MOR.createChild('modelNode')

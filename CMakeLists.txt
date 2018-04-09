@@ -54,55 +54,58 @@ sofa_create_package(ModelOrderReduction ${MODELORDERREDUCTION_VERSION} ${PROJECT
 #     add_subdirectory(src/component/ModelOrderReduction_test)
 # endif()
 
-####################################
-####     LINK SPARSE LIBRARY    ####
-####################################
+#[[
+####   GPU CALCULATION CMAKE    ####
 
-####     Link ViennaCL library  ####
-set(VIENNACL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/")
-set(VIENNACL_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/build/libviennacl/libviennacl.so")
+#####################################
+#####     LINK SPARSE LIBRARY    ####
+#####################################
 
-include_directories(${VIENNACL_LIBRARY_DIRECTORY})
-target_link_libraries(${PROJECT_NAME} ${VIENNACL_LIBRARY})
-####################################
+#####     Link ViennaCL library  ####
+#set(VIENNACL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/")
+#set(VIENNACL_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/build/libviennacl/libviennacl.so")
 
-####     Link OpenCL library    ####
-set(OPENCL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/CL")
-set(OPENCL_LIBRARY "/usr/local/cuda-9.0/lib64/libOpenCL.so")
+#include_directories(${VIENNACL_LIBRARY_DIRECTORY})
+#target_link_libraries(${PROJECT_NAME} ${VIENNACL_LIBRARY})
+#####################################
 
-include_directories(${OPENCL_LIBRARY_DIRECTORY})
-target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
+#####     Link OpenCL library    ####
+#set(OPENCL_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/ViennaCL-1.7.1/CL")
+#set(OPENCL_LIBRARY "/usr/local/cuda-9.0/lib64/libOpenCL.so")
 
-#find_package(OpenCL REQUIRED)
+#include_directories(${OPENCL_LIBRARY_DIRECTORY})
 #target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
-#===> cleaner but doesn't work, have to try it again
 
-####################################
+##find_package(OpenCL REQUIRED)
+##target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
+##===> cleaner but doesn't work, have to try it again
 
-####     Link Eigen library     ####
-#set(EIGEN_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/eigen3")
-#include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_LIBRARY_DIRECTORY})
+#####################################
+
+#####     Link Eigen library     ####
+##set(EIGEN_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/extlibs/eigen3")
+##include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_LIBRARY_DIRECTORY})
 
 
-####################################
-####     SET COMPILER OPTION    ####
-####################################
+#####################################
+#####     SET COMPILER OPTION    ####
+#####################################
 
-####  Compiler option viennacl  ####
-option(ENABLE_OPENCL "Use the OpenCL backend" ON)
-option(ENABLE_CUDA "Use the CUDA backend" OFF)
-####################################
+#####  Compiler option viennacl  ####
+#option(ENABLE_OPENCL "Use the OpenCL backend" ON)
+#option(ENABLE_CUDA "Use the CUDA backend" OFF)
+#####################################
 
-# Targets using OpenCL
-if (ENABLE_OPENCL)
+## Targets using OpenCL
+#if (ENABLE_OPENCL)
 
-    target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARIES})
-    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DVIENNACL_WITH_OPENCL")
+#    target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARIES})
+#    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DVIENNACL_WITH_OPENCL")
 
-endif (ENABLE_OPENCL)
+#endif (ENABLE_OPENCL)
 
-##find_package(OpenMP)
-##if (OPENMP_FOUND)
-##    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-##endif()
-
+###find_package(OpenMP)
+###if (OPENMP_FOUND)
+###    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+###endif()
+]]

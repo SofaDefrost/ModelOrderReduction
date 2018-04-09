@@ -97,7 +97,7 @@ def MORreplace(node,type,newParam,initialParam):
             # print index
             # print(type)
 
-            # 	Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMass
+            # 	Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMassMOR
             if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
                 if 'name' in initialParam:
                     solverParam[index].append(initialParam['name'])
@@ -201,8 +201,8 @@ def searchObjectAndDestroy(node,mySolver,newParam):
                     # print pathToLink
                     param['paramMappedMatrixMapping']['mappedForceField2'] = pathToLink
                 # print param['paramMappedMatrixMapping']
-                modelMOR.createObject('MappedMatrixForceFieldAndMass', **param['paramMappedMatrixMapping'] )
-                # print 'Create MappedMatrixForceFieldAndMass in modelMOR'
+                modelMOR.createObject('MappedMatrixForceFieldAndMassMOR', **param['paramMappedMatrixMapping'] )
+                # print 'Create MappedMatrixForceFieldAndMassMOR in modelMOR'
 
                 if 'paramMORMapping' in param:      
                     child.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])

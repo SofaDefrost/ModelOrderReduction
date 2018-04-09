@@ -34,7 +34,7 @@ def findSolver(node,type,newParam,initialParam):
                 pass
             else:
                 solverToDelete[node.name] = []
-            #   Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMass
+            #   Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMassMOR
             # print(type)
             if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
                 if 'name' in initialParam:

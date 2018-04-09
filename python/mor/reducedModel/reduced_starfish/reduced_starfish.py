@@ -9,14 +9,14 @@ path = os.path.dirname(os.path.abspath(__file__))
 def TRSinOrigin(positions,modelPosition,translation,rotation):
     posOrigin = subtract(positions , modelPosition)
     if any(isinstance(el, list) for el in positions):
-        posOriginTRS = positionsTRS(posOrigin,translation,rotation)
+        posOriginTRS = transformPositions(posOrigin,translation,rotation)
     else:
-        posOriginTRS = pointTRS(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
+        posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
     return add(posOriginTRS,modelPosition).tolist()
     
 def newBox(positions,modelPosition,translation,rotation,offset):
     pos = TRSinOrigin(positions,modelPosition,translation,rotation)
-    offset =positionsTRS([offset],eulerRotation=rotation)[0]
+    offset =transformPositions([offset],eulerRotation=rotation)[0]
     return add(pos,offset).tolist()
 
 def Reduced_starfish(
@@ -59,7 +59,7 @@ def Reduced_starfish(
     model_MOR.createObject('SparseLDLSolver' , name = 'preconditioner', template = 'CompressedRowSparseMatrix3d')
     model_MOR.createObject('GenericConstraintCorrection' , solverName = 'preconditioner')
     model_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0', template = 'Vec1d')
-    model_MOR.createObject('MappedMatrixForceFieldAndMass' , mappedForceField = '@./model/HyperReducedFEMForceField_model', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_model.txt', template = 'Vec1d,Vec1d', mappedForceField2 = '@./model/modelSubTopo/HyperReducedFEMForceField_modelSubTopo', performECSW = 'True', mappedMass = '@./model/UniformMass')
+    model_MOR.createObject('MappedMatrixForceFieldAndMassMOR' , mappedForceField = '@./model/HyperReducedFEMForceField_model', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_model.txt', template = 'Vec1d,Vec1d', mappedForceField2 = '@./model/modelSubTopo/HyperReducedFEMForceField_modelSubTopo', performECSW = 'True', mappedMass = '@./model/UniformMass')
 
 
     model = model_MOR.createChild('model')
