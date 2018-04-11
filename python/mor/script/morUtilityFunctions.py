@@ -138,7 +138,7 @@ def selectECSW(G,b,tau,verbose):
 #########################################################
 
 
-def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBodyModes=False, verbose=False ):
+def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBodyModes=None, verbose=False ):
 
     print "###################################################"
     print "Executing readStateFilesAndComputeModes.py\n" 
@@ -195,11 +195,22 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
             translationModes[3*i][0] = 1/math.sqrt(nbDOFs/3)
             translationModes[3*i+1][1] = 1/math.sqrt(nbDOFs/3)
             translationModes[3*i+2][2] = 1/math.sqrt(nbDOFs/3)
-        if (addRigidBodyModes == True):
-            for i in range(3):
+        
+        tmp = []
+        if (addRigidBodyModes):
+            if (addRigidBodyModes[0] == 1):
                 for j in range(nbSnap-1):    
-                    snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[i]]))*translationModes[:,[i]]
-
+                    snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[0]]))*translationModes[:,[0]]
+                tmp.append(0)
+            if (addRigidBodyModes[1] == 1):
+                for j in range(nbSnap-1):    
+                    snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[1]]))*translationModes[:,[1]]
+                tmp.append(1)
+            if (addRigidBodyModes[2] == 1):
+                for j in range(nbSnap-1):    
+                    snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[2]]))*translationModes[:,[2]]
+                tmp.append(2)
+        print("tmp : "+str(tmp))
         U, s, V = np.linalg.svd(snapshotDiff, full_matrices=False) # 99% time execution
         sSquare = [i**2 for i in s]
         sumSVD = np.sum(sSquare)
@@ -216,9 +227,9 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
             i = i+1
 
         nbModes = i
-        if (addRigidBodyModes == True):    
+        if (addRigidBodyModes and addRigidBodyModes != [0]*3):    
             print "Concatenating translation modes"
-            modesTot = np.concatenate((translationModes, U[:,0:nbModes]), axis=1)
+            modesTot = np.concatenate((translationModes[:,tmp], U[:,0:nbModes]), axis=1)
             np.savetxt(modesFileName, modesTot, header=str(nbDOFs)+' '+str(nbModes+3), comments='', fmt='%10.5f')
         else:
             np.savetxt(modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
