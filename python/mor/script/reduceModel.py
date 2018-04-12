@@ -6,6 +6,7 @@ import math
 from launcher import *
 import errno
 import fileinput
+import datetime
 
 # MOR IMPORT
 from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes, copy
@@ -130,7 +131,7 @@ class ReduceModel():
 
         self.nbIterations = [0]*self.nbActuator
         for i in range(self.nbActuator):
-            self.nbIterations[i] = (self.maxPull[i]/self.increment[i])*self.breathTime[i] + (self.maxPull[i]/self.increment[i]) 
+            self.nbIterations[i] = (self.maxPull[i]/self.increment[i])*self.breathTime[i] + (self.maxPull[i]/self.increment[i])
 
         for i in range(self.nbPossibility):
             binVal = "{0:b}".format(i)
@@ -310,6 +311,20 @@ class ReduceModel():
                     currentGieFile.close()
                 gieFile.close()
 
+            with open(self.debugDir+self.stateFileName+'2', "a") as stateFile:
+                currentStateFile = open(res["directory"]+"/stateFile.state", "r")
+                stateFile.write(currentStateFile.read())
+                currentStateFile.close()
+            stateFile.close()
+
+        counter = 1
+        for line in fileinput.input(self.debugDir+self.stateFileName+'2', inplace=True):
+            if line.find('T=') != -1:
+                line = 'T= '+str(self.periodSaveGIE[0]*counter)+'\n'
+                print("%s" % line),
+                counter += 1
+            else : print(line),
+
 
         print("PHASE 3 --- %s seconds ---" % (time.time() - start_time))
 
@@ -479,4 +494,5 @@ class ReduceModel():
                 raise
 
         print('The reduction is now finished !')
-        print("TOTAL TIME --- %s seconds ---" % (time.time() - self.init_time))
+        time = int(round(time.time() - self.init_time))
+        print("TOTAL TIME --- %s ---" % (datetime.timedelta(seconds=time) ) )

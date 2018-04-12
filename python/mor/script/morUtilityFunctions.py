@@ -210,7 +210,7 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
                 for j in range(nbSnap-1):    
                     snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[2]]))*translationModes[:,[2]]
                 tmp.append(2)
-        print("tmp : "+str(tmp))
+
         U, s, V = np.linalg.svd(snapshotDiff, full_matrices=False) # 99% time execution
         sSquare = [i**2 for i in s]
         sumSVD = np.sum(sSquare)
