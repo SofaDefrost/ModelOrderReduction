@@ -15,7 +15,6 @@ filename, file_extension = os.path.splitext(originalScene)
 importScene = str(ntpath.basename(filename))
 originalScene = importlib.import_module(importScene)
 
-# paramWrapper = [('/modelNode', {'paramForcefield': {'performECSW': True, 'RIDPath': 'data/RID_modelNode.txt', 'modesPath': 'data/test_modes.txt', 'weightsPath': 'data/weight_modelNode.txt'}, 'paramMORMapping': {'input': '@../MechanicalObject', 'modesPath': 'data/test_modes.txt'}, 'paramMappedMatrixMapping': {'object1': '@./MechanicalObject', 'object2': '@./MechanicalObject', 'listActiveNodesPath': 'data/conectivity_modelNode.txt', 'performECSW': True, 'template': 'Vec1d,Vec1d'}})]
 paramWrapper = $PARAMWRAPPER
 
 solverToDelete = {}

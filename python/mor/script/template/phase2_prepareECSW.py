@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import sys
+import numpy as np
 
 #   STLIB IMPORT
 from stlib.animation import AnimationManager , animate
@@ -7,75 +9,46 @@ from stlib.scene.wrapper import Wrapper
 # MOR IMPORT
 from mor.wrapper import MORWrapper
 
-# Because sofa launcher create a template of our scene, we need to indicate the path to our original scene
-import sys
-import numpy as np
-
+# Our Phase1 Scene IMPORT
 import phase1_snapshots
 
-####################				PARAM 			  #########################
-
-#### Run manually diamond
-# modesFilePath = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/2_Modes_Options/"
-# modesFileName = "test_modes.txt"
-# phase = [1,1,1,1]
-# nbrOfModes = 28
-# periodSaveGIE = [11, 11, 11, 11]
-# nbTrainingSet = 128
-# myModelToMOR = "/modelNode"
-##################
-
-#### Run manually strafish
-# modesFilePath = "/home/felix/SOFA/plugin/ModelOrderReduction/examples/Tests/2_OUTPUT/2_Modes_Options/"
-# modesFileName = "test_modes.txt"
-# phase = [1,1,1,1,1]
-# nbrOfModes = 41
-# periodSaveGIE = [3, 3, 3, 3, 3]
-# nbTrainingSet = 50
-# myModelToMOR = "/model"
-##################
-
-#### with launcher
+# Scene parameters
 phase = $PHASE
 nbrOfModes = $NBROFMODES
 periodSaveGIE = $PERIODSAVEGIE
 nbTrainingSet = $NBTRAININGSET
 paramWrapper = $PARAMWRAPPER
-##################
-
-# nodesToReduce =['/model','/model/modelSubTopo']
-
-# defaultParamForcefield = {
-#     'prepareECSW' : True,
-#     'modesPath': modesFilePath+modesFileName,
-#     'periodSaveGIE' : periodSaveGIE[0],
-#     'nbModes' : nbrOfModes,
-#     'nbTrainingSet' : nbTrainingSet}
-
-# defaultParamMappedMatrixMapping = {
-#     'template': 'Vec1d,Vec1d',
-#     'object1': '@./MechanicalObject',
-#     'object2': '@./MechanicalObject',
-#     'performECSW': False}
-
-# defaultParamMORMapping = {
-#     'input': '@../MechanicalObject',
-#     'modesPath': modesFilePath+modesFileName}
-
-# paramWrapper = []
-# paramWrapper.append(   (nodesToReduce[0] , 
-#                        {'subTopo' : 'modelSubTopo',
-#                         'paramForcefield': defaultParamForcefield.copy(),
-#                         'paramMORMapping': defaultParamMORMapping.copy(),
-#                         'paramMappedMatrixMapping': defaultParamMappedMatrixMapping.copy()} ) )
-
-# paramWrapper.append(  (nodesToReduce[1] ,{'paramForcefield': defaultParamForcefield.copy()} ) )
 
 modesPositionStr = '0'
 for i in range(1,nbrOfModes):
     modesPositionStr = modesPositionStr + ' 0'
 
 ###############################################################################
+tmp = []
+def searchInGraphScene(node,toFind):
+    '''
+        Args:
+        node (Sofa.node):     Sofa node in wich we are working
+
+        toFind (list[str]):  list of node name we want to find
+
+        Description:
+
+            Search in the Graph scene recursively for all the node
+            with name contained in the list toFind
+    '''
+    global tmp
+    for child in node.getChildren():
+        # print(child.name)
+        if child.getPathName() in toFind and len(tmp) < len(toFind):
+            # print(child.name)
+            tmp.append(child)
+        if len(tmp) == len(toFind):
+            tmp = tmp + [-1]
+            return None
+        else:
+            searchInGraphScene(child,toFind)
+
 
 def MORNameExistance (name,kwargs):
     if 'name' in kwargs :
@@ -149,70 +122,58 @@ def MORreplace(node,type,newParam,initialParam):
 
     return None
 
-tmpFind = 0
-modify = []
-def searchObjectAndDestroy(node,mySolver,newParam):
-    global tmpFind
-    global modify
 
-    for child in node.getChildren():
-        currentPath = child.getPathName()
-        # print ('child Name : ',child.name)
-        for item in newParam :
-            index = newParam.index(item)
-            path , param = item
-            # path = '/'.join(tabReduced[:-1])
-            # print ('path : '+path)
-            # print ('currenPath : '+currentPath)
-            if currentPath == path :
+def modifyGraphScene(nodeFound,mySolver,newParam):
 
-                if 'paramMappedMatrixMapping' in param:
-                    modify.append((path,param,index,child))
-
-                if phase == [1]*len(phase):
+    if phase == [0]*len(phase):
+        for child in nodeFound :
+            path = child.getPathName()
+            for item in newParam :
+                pathTmp , param = item
+                index = newParam.index(item)
+                if path == pathTmp:
                     containerName , valueType = containers[index].split('/')
                     containerName = child.getObject(containerName)
                     dt = containerName.getContext().getDt()
                     animate(saveElements, {"node" : child ,'containerName' : containerName, 'valueType' : valueType, 'startTime' : 0}, dt)
 
-                tmpFind+=1
+    for child in nodeFound :
+        path = child.getPathName()
 
-        if tmpFind == len(paramWrapper):
-            # print (modify)
-            for item in modify :
-                # print 'Create new child modelMOR and move node in it'
-                path, param, index, child = item
-                myParent = child.getParents()[0]
-                modelMOR = myParent.createChild(child.name+'_MOR')
-                modelMOR.createObject('MechanicalObject',template='Vec1d',position=modesPositionStr)
-                modelMOR.moveChild(child)
+        for item in newParam :
+            pathTmp , param = item
+            index = newParam.index(item)
+            if path == pathTmp:
+                if 'paramMappedMatrixMapping' in param:
+                    # print 'Create new child modelMOR and move node in it'
 
-                for obj in child.getObjects():
-                    # print obj.name 
-                    if obj.name in mySolver[index]:
-                        # print('To move!')
-                        child.removeObject(obj)
-                        child.getParents()[0].addObject(obj)
+                    myParent = child.getParents()[0]
+                    modelMOR = myParent.createChild(child.name+'_MOR')
+                    modelMOR.createObject('MechanicalObject',template='Vec1d',position=modesPositionStr)
+                    modelMOR.moveChild(child)
 
-                param['paramMappedMatrixMapping']['mappedForceField'] = '@.'+path+'/'+'HyperReducedFEMForceField_'+path[1:]
-                if 'subTopo' in param:
-                    nodeName = param['subTopo']
-                    pathToLink = '@.'+path+'/'+nodeName+'/'+'HyperReducedFEMForceField_'+nodeName
-                    # print pathToLink
-                    param['paramMappedMatrixMapping']['mappedForceField2'] = pathToLink
-                # print param['paramMappedMatrixMapping']
-                modelMOR.createObject('MappedMatrixForceFieldAndMassMOR', **param['paramMappedMatrixMapping'] )
-                # print 'Create MappedMatrixForceFieldAndMassMOR in modelMOR'
+                    for obj in child.getObjects():
+                        # print obj.name
+                        if obj.name in mySolver[index]:
+                            # print('To move!')
+                            child.removeObject(obj)
+                            child.getParents()[0].addObject(obj)
 
-                if 'paramMORMapping' in param:      
-                    child.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
-                    print "Create ModelOrderReductionMapping in node"
-                # else do error !!
-            tmpFind += 1
-            return None
+                    param['paramMappedMatrixMapping']['mappedForceField'] = '@.'+path+'/'+'HyperReducedFEMForceField_'+path[1:]
+                    if 'subTopo' in param:
+                        nodeName = param['subTopo']
+                        pathToLink = '@.'+path+'/'+nodeName+'/'+'HyperReducedFEMForceField_'+nodeName
+                        # print pathToLink
+                        param['paramMappedMatrixMapping']['mappedForceField2'] = pathToLink
+                    # print param['paramMappedMatrixMapping']
+                    modelMOR.createObject('MappedMatrixForceFieldAndMassMOR', **param['paramMappedMatrixMapping'] )
+                    # print 'Create MappedMatrixForceFieldAndMassMOR in modelMOR'
 
-        else:
-            searchObjectAndDestroy(child,mySolver,newParam)	
+                    if 'paramMORMapping' in param:
+                        child.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
+                        print "Create ModelOrderReductionMapping in node"
+                    # else do error !!
+
 
 def saveElements(node,containerName,valueType, **param):
 
@@ -227,4 +188,13 @@ def createScene(rootNode):
     # print ('Solver to move : 	'+str(solverParam))
     # print ('Containers : 		'+str(containers))
     # print ('ComponentType : 	'+str(componentType))
-    searchObjectAndDestroy(rootNode,solverParam,paramWrapper)
+    toFind = []
+    for item in paramWrapper:
+        path, param = item
+        toFind.append(path)
+
+    searchInGraphScene(rootNode,toFind)
+
+    nodeFound = tmp[:-1]
+
+    modifyGraphScene(nodeFound,solverParam,paramWrapper)

@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-import sys
 import os
-import ntpath
-import importlib
 import sys
-import numpy as np
+import imp
 from collections import OrderedDict
 
 #   STLIB IMPORT
@@ -14,16 +11,16 @@ from stlib.scene.wrapper import Wrapper
 from mor.wrapper import MORWrapper
 from mor.wrapper import writeScene
 
+# Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
+originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
+
+# Scene parameters
 nbrOfModes = $NBROFMODES
 paramWrapper = $PARAMWRAPPER
-toAnimate= $TOANIMATE
+toKeep = $TOKEEP
 packageName = '$PACKAGENAME'
 
-sys.path.insert(0,os.path.dirname(os.path.abspath(originalScene)))
-filename, file_extension = os.path.splitext(originalScene)
-importScene = str(ntpath.basename(filename))
-originalScene = importlib.import_module(importScene)
 
 
 modesPositionStr = '0'
@@ -119,7 +116,7 @@ def MORreplace(node,type,newParam,initialParam):
 
                 myModel[node.name].append((str(type),initialParam))
 
-    if node.name in toAnimate:
+    if node.name in toKeep:
         # print(node.name)
         if node.name not in myModel:
             myModel[node.name] = []

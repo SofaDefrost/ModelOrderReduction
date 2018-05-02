@@ -234,11 +234,11 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
         else:
             np.savetxt(modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
         if verbose :
-            print "Number of modes to reach tolerance: ", nbModes
             print "===> Success readStateFilesAndComputeModes.py\n"
 
         f.close()
 
+        print(str(nbModes)+" possible modes with a tolerance of "+str(tol))
         return nbModes
 
     else: 
