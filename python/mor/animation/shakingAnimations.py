@@ -1,73 +1,41 @@
 # -*- coding: utf-8 -*-
-import Sofa
 
 """
 Files containing all the developped shaking animation 
 function to help produced a reduced model
 
 """
-def upDateValue(phaseTest,actualValue,actuatorMaxPull,actuatorIncrement):
+def upDateValue(actualValue,actuatorMaxPull,actuatorIncrement):
+    if actualValue < actuatorMaxPull:
+        print "INCREMENT ++"
+        return actualValue + actuatorIncrement
+    else:
+        print "Done"
+        return actualValue
 
-	if phaseTest == 1:
-		if actualValue < actuatorMaxPull:
-			print "INCREMENT ++"
-			return actualValue + actuatorIncrement
-		else:
-			print "Done"
-			return actualValue
-	else:
-		if actualValue >= actuatorIncrement:
-			print "INCREMENT --"
-			return actualValue - actuatorIncrement
-		else:
-			print "Done"
-			return actualValue
+def defaultShaking( objToAnimate,
+                    dt,
+                    factor,
+                    **param):
+    import Sofa
+    """
+    Object with an elastic deformation law.
 
-def defaultShaking( target,
-					phaseTest,
-					actuatorNb,
-					actuatorMaxPull,
-					actuatorBreathTime,
-					actuatorIncrement,
-					breathTimeCounter,
-                                        **param):
-	"""
-	Object with an elastic deformation law.
+    Args:
+        target (Sofa.node): 	Sofa node in wich we are working
 
-	Args:
-	    target (Sofa.node): 	Sofa node in wich we are working
+        phaseTest (list[int]):  activation of actuator sequence (ie: [1,0,0,1])
 
-	    phaseTest (list[int]):  activation of actuator sequence (ie: [1,0,0,1])
+        actuatorNb (int):   	The number of our actuator we are currently working with
 
-	    actuatorNb (int):   	The number of our actuator we are currently working with
+    """
+    moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
+    # print("currentTime - startTime : "+str(factor * objToAnimate.duration))
+    if moduloResult == 0:
+        print("For Actuator : "+objToAnimate.location)
 
-	"""
-	if actuatorBreathTime == breathTimeCounter.tmp[actuatorNb]:
-		print("For Actuator : "+str(target.name))
-		actualValue = None
-		myObjName = None
-		for obj in target.getObjects():
-			if obj.getClassName() ==  'CableConstraint':
-				myObjName = obj.name
-			elif obj.getClassName() ==  'SurfacePressureConstraint':
-				myObjName = obj.name
+        actualValue = objToAnimate.obj.findData(objToAnimate.params["dataToWorkOn"]).value[0][0]
+        actualValue = upDateValue(actualValue,objToAnimate.params['rangeOfAction'],objToAnimate.params['incr'])
+        objToAnimate.obj.findData(objToAnimate.params["dataToWorkOn"]).value = actualValue
 
-		if myObjName:
-			actualValue = target.getObject(myObjName).findData('value').value[0][0]
-
-			# print (	"with actualValue :", 	actualValue,
-			# 		"a maxPull of :", 		actuatorMaxPull,
-			# 		"& INCREMENT :", 		actuatorIncrement)
-
-			actualValue = upDateValue(phaseTest[actuatorNb],actualValue,actuatorMaxPull,actuatorIncrement)
-
-			print ("Updated Value :"+str(actualValue)+'\n')
-
-			target.getObject(myObjName).findData('value').value = actualValue
-		else:
-			print 'Err'	
-
-		breathTimeCounter.tmp[actuatorNb] = 0
-
-	else:
-		breathTimeCounter.tmp[actuatorNb] += 1
+        print ("Updated Value :"+str(actualValue)+'\n')

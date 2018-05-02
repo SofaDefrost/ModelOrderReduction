@@ -1,124 +1,132 @@
 # -*- coding: utf-8 -*-
+import imp
 
 #	STLIB IMPORT
 from stlib.animation import AnimationManager , animate
 from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT
-from mor.animation import defaultShaking
+from mor import animation
+from mor.script import ObjToAnimate
 
-# Because sofa launcher create a template of our scene, we need to indicate the path to our original scene
-import sys
-import os
-import ntpath
-import importlib
 
-#### Run manually diamond
-# import originalScene
-# # A list of what you want to animate in your scene and with which parameters
-# toAnimate = ["nord","ouest","sud","est"]
-
-# nbActuator = len(toAnimate)
-# increment = [5]*nbActuator
-# breathTime = [10]*nbActuator
-# maxPull = [40]*nbActuator
-# nbIterations = [0]*nbActuator
-# periodSaveGIE = [x+1 for x in breathTime]
-
-# for i in range(nbActuator):
-#     nbIterations[i] = ((maxPull[i]/increment[i])*breathTime[i]) + (maxPull[i]/increment[i])
-
-# phase = [1,1,1,1]
-##################
-
-#### Run manually starfish
-# import quadruped_snapshotGeneration as originalScene
-# # A list of what you want to animate in your scene and with which parameters
-# toAnimate = ["centerCavity","rearLeftCavity","rearRightCavity","frontLeftCavity","frontRightCavity"]
-
-# nbActuator = len(toAnimate)
-# increment = [350,200,200,200,200]
-# breathTime = [2]*nbActuator
-# maxPull = [x*10 for x in increment]
-# nbIterations = [0]*nbActuator
-# periodSaveGIE = [x+1 for x in breathTime]
-
-# for i in range(nbActuator):
-#     nbIterations[i] = ((maxPull[i]/increment[i])*breathTime[i]) + (maxPull[i]/increment[i])
-
-# phase = [1,1,1,1,1]
-##################
-
-#### with launcher
+# Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
+originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
 
-sys.path.insert(0,os.path.dirname(os.path.abspath(originalScene)))
-filename, file_extension = os.path.splitext(originalScene)
-importScene = str(ntpath.basename(filename))
-originalScene = importlib.import_module(importScene)
-# print importScene
-
-toAnimate= $TOANIMATE
-maxPull = $MAXPULL
-breathTime = $BREATHTIME
-increment = $INCREMENT
+# Animation parameters
+listObjToAnimate = []
+#for $obj in $LISTOBJTOANIMATE:
+listObjToAnimate.append(ObjToAnimate('$obj.location',$obj.animFct,objName='$obj.objName',duration=$obj.duration,**$obj.params))
+#end for
 phase = $PHASE
 nbIterations = $nbIterations
-periodSaveGIE = $PERIODSAVEGIE
-##################
 
-
+# GLOBAL
 timeExe = 0.0
 dt = 0.0
-print "Scene Phase :",phase
-###############################################################################
+tmp = []
 
-class SingletonTmp(object):
-	def __init__(self, breathTime):
-		self.tmp = list(breathTime)
 
-mySingleton = SingletonTmp(breathTime)
+def searchInGraphScene(node,toFind):
+    '''
+        Args:
+        node (Sofa.node):     Sofa node in wich we are working
 
-tmpFind = 0
-def searchChildAndAnimate(node,toAnimate):
-    global tmpFind
+        toFind (list[str]):  list of node name we want to find
+
+        Description:
+
+            Search in the Graph scene recursively for all the node
+            with name contained in the list toFind
+    '''
+    global tmp
     for child in node.getChildren():
-        if child.name in toAnimate and tmpFind < len(toAnimate):
-            print ('Animate : '+child.name)
-            animate(defaultShaking, {
-            "target" : child ,
-            "phaseTest" : phase, 
-            "actuatorNb" : tmpFind,
-            "actuatorMaxPull" : maxPull[tmpFind],
-            "actuatorBreathTime" : breathTime[tmpFind],
-            "actuatorIncrement" : increment[tmpFind],
-            "breathTimeCounter" : mySingleton}, timeExe)
-            tmpFind+=1
-
-        if tmpFind == len(toAnimate):
-            myParent = child.getParents()[0]
-            if phase == [0]*len(phase):
-                myParent.createObject('WriteState', filename="stateFile.state", period=periodSaveGIE[0]*dt,writeX="1", writeX0="1", writeV="0") 
-            else :
-                myParent.createObject('WriteState', filename="stateFile.state", period=periodSaveGIE[0]*dt,writeX="1", writeX0="0", writeV="0")
-            tmpFind += 1
+        # print(child.name)
+        if child.name in toFind and len(tmp) < len(toFind):
+            # print(child.name)
+            tmp.append(child)
+        if len(tmp) == len(toFind):
+            tmp = tmp + [-1]
             return None
         else:
-            searchChildAndAnimate(child,toAnimate)
+            searchInGraphScene(child,toFind)
+
+def searchChildAndAnimate(node):
+    '''
+        FOR all node find to animate animate only the one moving -> phase 1/0
+
+        If DEFAULT :
+          - SEARCH here for the obj to animate & its valueToIncrement
+        Else :
+          - GIVE obj name to work with & its valueToIncrement
+
+        give to animate :
+          - the obj to work with & its valueToIncrement
+          if DEFAULT :
+              - the animation function will be defaultShaking
+              - the general param lis(range,period,increment)
+          else :
+              - give the new animation function
+              - param lis(...)
+    '''
+    tmpFind = 0
+    for objToAnimate in listObjToAnimate:
+        if phase[tmpFind] :
+            # param = listParam.copy()
+            for obj in objToAnimate.node.getObjects():
+                if not 'objName' in objToAnimate.params:
+                    if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
+                        objToAnimate.obj = obj
+                        objToAnimate.params["dataToWorkOn"] = 'value'
+
+                elif obj.getClassName() == objToAnimate.params['objName']:
+                    objToAnimate.obj = obj
+                    objToAnimate.params["dataToWorkOn"] = 'value'
+
+            if objToAnimate.obj and objToAnimate.params["dataToWorkOn"]:
+                objToAnimate.duration = timeExe
+
+                animate(objToAnimate.animFct, {'objToAnimate':objToAnimate,'dt':dt}, objToAnimate.duration)
+                print("Animate "+obj.getClassName()+" from node "+node.name+"\nwith parameters :\n"+str(objToAnimate.params))
+
+            else:
+                print("Found Nothing to animate in "+str(node.name))
+
+        tmpFind += 1
+
+    myParent = listObjToAnimate[0].node.getParents()[0]
+    if phase == [0]*len(phase):
+        myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="1", writeV="0") 
+    else :
+        myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="0", writeV="0")
 
 
 def createScene(rootNode):
-	global timeExe, dt
+    global timeExe, dt
 
-	originalScene.createScene(rootNode)
-	dt = rootNode.dt
-	timeExe = nbIterations * dt 
-	# timeExe = nbIterations[0] * rootNode.dt
-	print "timeExe :",timeExe
+    print ("Scene Phase :"+str(phase))
+    originalScene.createScene(rootNode)
 
-	if isinstance(rootNode, Wrapper):
-		AnimationManager(rootNode.node)
-		searchChildAndAnimate(rootNode.node,toAnimate)
-	else:
-		AnimationManager(rootNode)
-		searchChildAndAnimate(rootNode,toAnimate)
+    toAnimate = []
+    for obj in listObjToAnimate:
+        toAnimate.append(obj.location)
+
+    searchInGraphScene(rootNode,toAnimate)
+
+    nodeFound = tmp[:-1]
+    if len(nodeFound) != len(listObjToAnimate):
+        raise "ERROR haven't found all node to animate"
+    for i in range(len(listObjToAnimate)):
+        listObjToAnimate[i].node = nodeFound[i]
+
+    dt = rootNode.dt
+    timeExe = nbIterations * dt
+    # print "timeExe :",timeExe
+
+    if isinstance(rootNode, Wrapper):
+        AnimationManager(rootNode.node)
+        searchChildAndAnimate(rootNode.node)
+    else:
+        AnimationManager(rootNode)
+        searchChildAndAnimate(rootNode)

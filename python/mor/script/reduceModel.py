@@ -9,32 +9,76 @@ import fileinput
 import datetime
 
 # MOR IMPORT
-from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes, copy
+from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/reducedModel/'
 # print('pathToReducedModel : '+pathToReducedModel)
 
-class ReduceModel():
+class ObjToAnimate():
 
-    def __init__(self,
-                 originalScene,
-                 nodesToReduce,
-                 animationParam,
-                 tolModes,
-                 tolGIE,
-                 outputDir,
-                 meshDir,
-                 packageName = None,
-                 addToLib = False,
-                 verbose = False,
-                 addRigidBodyModes = False):
+    def __init__(self,location, animFct, objName=None, node=None, obj=None, duration=-1, **params):
+        self.location = location
+        self.animFct = animFct
+        self.objName =objName
+        self.node = node
+        self.obj = obj
+        self.duration = duration
+        self.params = params # name, dataToWorkOn, incr, incrPeriod, rangeOfAction ...
 
-        self.init_time = time.time()
-        self.originalScene = originalScene
+class ReductionAnimations():
 
-        self.nodesToReduce = nodesToReduce
+    def __init__(self,listObjToAnimate):
 
+        # A list of what you want to animate in your scene and with which parameters
+        self.listObjToAnimate = listObjToAnimate
+
+        self.nbActuator = len(self.listObjToAnimate)
+        self.nbPossibility = 2**self.nbActuator
+
+
+        self.nbIterations = 0
+        self.setNbIteration()
+
+        self.phaseNumClass = None
+        self.generateListOfPhase(self.nbPossibility,self.nbActuator)
+
+    def setNbIteration(self,nbIterations=None):
+
+        if nbIterations :
+            self.nbIterations = nbIterations
+        else :
+            for obj in self.listObjToAnimate:
+                tmp = 0
+                if all (k in obj.params for k in ("incr","incrPeriod")):
+                    tmp = ((obj.params['rangeOfAction']/obj.params['incr'])-1)*obj.params['incrPeriod'] + obj.params['incrPeriod']
+                if tmp > self.nbIterations:
+                    self.nbIterations = tmp
+
+    def generateListOfPhase(self,nbPossibility,nbActuator):
+
+        phaseNum = [[0] * nbActuator for i in range(nbPossibility)]
+        phaseNumClass = []
+        for i in range(nbPossibility):
+            binVal = "{0:b}".format(i)
+            for j in range(len(binVal)):
+                phaseNum[i][j + nbActuator-len(binVal)] = int(binVal[j])
+
+        for nb in range(nbActuator+1):
+            for i in range(nbPossibility):
+                if sum(phaseNum[i]) == nb:
+                    phaseNumClass.append(phaseNum[i])
+
+        self.phaseNumClass = phaseNumClass
+
+class PackageBuilder():
+
+    def __init__(self,outputDir,meshDir,toKeep,packageName = None ,addToLib = False):
+
+        self.outputDir = outputDir
+        self.meshDir = meshDir+'/'
+
+        self.toKeep = toKeep
         self.addToLib = addToLib
 
         if packageName :
@@ -43,29 +87,141 @@ class ReduceModel():
             if os.path.isdir(pathToReducedModel+self.packageName) and addToLib:
                 raise Exception('A Package named %s already exist in the MOR lib !\nPlease choose another name for this new package' % packageName)
 
-        # A list of what you want to animate in your scene and with which parameters
-        self.toAnimate = animationParam['toAnimate']
-        self.increment = animationParam['increment']
-        self.breathTime = animationParam['breathTime']
-        self.maxPull = animationParam['maxPull']
-        self.nbActuator = len(self.toAnimate)
-        self.addRigidBodyModes = addRigidBodyModes
-
-        # The different Tolerance & Nbr of Nodes
-        self.tolModes = tolModes
-        self.tolGIE = tolGIE
-
-        self.verbose = verbose
-        self.nbrOfModes = -1
-
-        # Where will be all the different results and with which name
-        self.meshDir = meshDir+'/'
-        self.outputDir = outputDir
         self.dataDir = self.outputDir+'/data/'
         self.debugDir = self.outputDir+'/debug/'
 
+    def copy(self, src, dest):
+
+        try:
+            shutil.copytree(src, dest)
+        except OSError as e:
+            # If the error was caused because the source wasn't a directory
+            if e.errno == errno.ENOTDIR:
+                shutil.copy(src, dest)
+            else:
+                print('Directory not copied. Error: %s' % e)
+
+    def checkExistance(self,dir):
+
+        if not os.path.exists(os.path.dirname(dir)):
+            try:
+                os.makedirs(os.path.dirname(dir))
+            except OSError as exc: # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+
+    def checkNodeNbr(self,modeFileName):
+
+        nbrOfModes = -1 
+        try:
+
+            with open(self.dataDir+modeFileName, "r") as myFile:
+                lineSplit = myFile.readline().strip().split();
+                nbrOfModes = lineSplit[1]
+
+        except IOError:
+            print("IOError : there is no "+self.dataDir+modeFileName)
+
+        except:
+            raise
+
+        return int(nbrOfModes)
+
+    def cleanStateFile(self,periodSaveGIE,stateFileName):
+
+        counter = 1
+        for line in fileinput.input(self.debugDir+stateFileName, inplace=True):
+            if line.find('T=') != -1:
+                line = 'T= '+str(periodSaveGIE*counter)+'\n'
+                print("%s" % line),
+                counter += 1
+            else : print(line),
+
+    def copyFileIntoAnother(self,fileToCopy,fileToPasteInto):
+
+        try:
+
+            with open(fileToPasteInto, "a") as myFile:
+                currentFile = open(fileToCopy, "r")
+                myFile.write(currentFile.read())
+                currentFile.close()
+
+        except IOError:
+            print("IOError : there is no "+fileToCopy+" , check the template log to find why.\nHere some clue for its probable origin :"\
+                            +"    - Your animation arguments are incorrect and it hasn't find anything to animate")
+
+        except:
+            raise
+
+    def copyAndCleanState(self,results,periodSaveGIE,stateFileName,gie=None):
+
+        self.checkExistance(self.debugDir)
+
+        for res in results:
+            self.copyFileIntoAnother(res["directory"]+"/stateFile.state",self.debugDir+stateFileName)
+
+            if gie:
+                for fileName in gie :
+                    self.copyFileIntoAnother(res["directory"]+'/'+fileName,self.debugDir+fileName)
+
+
+        self.cleanStateFile(periodSaveGIE,stateFileName)
+
+
+    def finalizePackage(self,result):
+
+        shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir)
+
+        self.copy(self.meshDir, self.outputDir+'/mesh/')
+
+        if self.addToLib :
+
+            self.addToLib()
+
+    def addToLib(self):
+
+        self.copy(self.outputDir, pathToReducedModel+self.packageName+'/')
+
+        try:
+            with open(path+'myInit.txt', "r") as myfile:
+                myInit = myfile.read()
+
+                myInit = myInit.replace('MyReducedModel',self.packageName[0].upper()+self.packageName[1:])
+                myInit = myInit.replace('myReducedModel',self.packageName)
+
+                with open(pathToReducedModel+self.packageName+'/__init__.py', "a") as logFile:
+                    logFile.write(myInit)
+
+                # print(myInit)
+
+            for line in fileinput.input(pathToReducedModel+'__init__.py', inplace=True):
+                if line.find('__all__') != -1:
+                    if line.find('[]') != -1:
+                        line = line[:-2]+"'"+self.packageName+"']"'\n'
+
+                    else:
+                        line = line[:-2]+",'"+self.packageName+"']"'\n'
+                    print("%s" % line),
+
+                else : print(line),
+
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            raise
+
+class ReductionParam():
+
+    def __init__(self,tolModes,tolGIE,addRigidBodyModes,dataDir):
+
+        self.tolModes = tolModes
+        self.tolGIE = tolGIE
+
+        self.addRigidBodyModes = addRigidBodyModes
+        self.dataDir = dataDir
+        self.dataFolder = '/'+dataDir.split('/')[-2]+'/'
+
         self.stateFileName = "stateFile.state"
-        self.modesFileName = "test_modes.txt"
+        self.modesFileName = "modes.txt"
 
         self.gieFilesNames = []
         self.RIDFilesNames = []
@@ -73,53 +229,104 @@ class ReduceModel():
         self.savedElementsFilesNames = []
         self.connectivityFilesNames = []
 
-        ####################   SHAKING VARIABLES  ###########################
-        self.nbPossibility = 2**self.nbActuator
-        self.phaseNum = [[0] * self.nbActuator for i in range(self.nbPossibility)]
-        self.phaseNumClass = []
-
-
-        self.periodSaveGIE = [x+1 for x in self.breathTime]
-        self.nbTrainingSet = (self.maxPull[0]/self.increment[0]) * self.nbPossibility
-
-        ####################        OTHER           #########################        
-        self.activesNodesLists = []
-        ####################  INIT SCENE SEQUENCES  #########################
-
-        defaultParamForcefield = {
-            'prepareECSW' : True,
-            'modesPath': self.dataDir+self.modesFileName,
-            'periodSaveGIE' : self.periodSaveGIE[0],
-            'nbTrainingSet' : self.nbTrainingSet}
-
-        defaultParamMappedMatrixMapping = {
-            'template': 'Vec1d,Vec1d',
-            'object1': '@./MechanicalObject',
-            'object2': '@./MechanicalObject',
-            'performECSW': False}
-
-        defaultParamMORMapping = {
-            'input': '@../MechanicalObject',
-            'modesPath': self.dataDir+self.modesFileName}
+        self.nbrOfModes = -1
+        self.periodSaveGIE = 10
+        self.nbTrainingSet = -1
 
         self.paramWrapper = []
-        self.subTopoList = []
-        for item in self.nodesToReduce :
-            if isinstance(item,tuple):
-                modelSubTopoName = item[1].split('/')[-1]
-                self.subTopoList.append(self.nodesToReduce.index(item))
-                self.paramWrapper.append(   (item[0] , 
-                                       {'subTopo' : modelSubTopoName,
-                                        'paramForcefield': defaultParamForcefield.copy(),
-                                        'paramMORMapping': defaultParamMORMapping.copy(),
-                                        'paramMappedMatrixMapping': defaultParamMappedMatrixMapping.copy()} ) )
 
-                self.paramWrapper.append(  (item[1] ,{'paramForcefield': defaultParamForcefield.copy()} ) )
-            else:
-                self.paramWrapper.append(   (item , 
-                                       {'paramForcefield': defaultParamForcefield.copy(),
-                                        'paramMORMapping': defaultParamMORMapping.copy(),
-                                        'paramMappedMatrixMapping': defaultParamMappedMatrixMapping.copy()} ) )
+    def setNbTrainingSet(self,rangeOfAction,incr,nbPossibility):
+
+        self.nbTrainingSet = (rangeOfAction/incr) * nbPossibility
+
+    def addParamWrapper(self ,nodeToReduce ,prepareECSW = True ,subTopo = None ,paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
+
+        nodeName = nodeToReduce.split('/')[-1]
+
+        defaultParamPrepare = {
+                'paramForcefield' : {
+                    'prepareECSW' : True,
+                    'modesPath': self.dataDir+self.modesFileName,
+                    'periodSaveGIE' : self.periodSaveGIE,
+                    'nbTrainingSet' : self.nbTrainingSet},
+
+                'paramMORMapping' : {
+                    'input': '@../MechanicalObject',
+                    'modesPath': self.dataDir+self.modesFileName},
+
+                'paramMappedMatrixMapping' : {
+                    'template': 'Vec1d,Vec1d',
+                    'object1': '@./MechanicalObject',
+                    'object2': '@./MechanicalObject',
+                    'performECSW': False}
+                }
+
+        defaultParamPerform = {
+                'paramForcefield' : {
+                    'performECSW': True,
+                    'modesPath': self.dataFolder+self.modesFileName,
+                    'RIDPath': self.dataFolder+'RID_'+nodeName+'.txt',
+                    'weightsPath': self.dataFolder+'weight_'+nodeName+'.txt'},
+
+                'paramMORMapping' : {
+                    'input': '@../MechanicalObject',
+                    'modesPath': self.dataFolder+self.modesFileName},
+
+                'paramMappedMatrixMapping' : {
+                    'template': 'Vec1d,Vec1d',
+                    'object1': '@./MechanicalObject',
+                    'object2': '@./MechanicalObject',
+                    'listActiveNodesPath' : self.dataFolder+'conectivity_'+nodeName+'.txt',
+                    'performECSW': True}
+                }
+
+        if subTopo:
+            subTopoName = subTopo.split('/')[-1]
+            paramsubTopo = {
+                'paramForcefield' : {
+                    'performECSW': True,
+                    'modesPath': self.dataFolder+self.modesFileName,
+                    'RIDPath': self.dataFolder+'RID_'+subTopoName+'.txt',
+                    'weightsPath': self.dataFolder+'weight_'+subTopoName+'.txt'}
+            }
+
+        if paramForcefield and paramMappedMatrixMapping and paramMORMapping :
+            print('plop')
+        else:
+            if prepareECSW:
+                if subTopo:
+                    self.paramWrapper.append(   (nodeToReduce ,
+                                           {'subTopo' : subTopoName,
+                                            'paramForcefield': defaultParamPrepare['paramForcefield'].copy(),
+                                            'paramMORMapping': defaultParamPrepare['paramMORMapping'].copy(),
+                                            'paramMappedMatrixMapping': defaultParamPrepare['paramMappedMatrixMapping'].copy()} ) )
+
+                    self.paramWrapper.append(  (subTopo ,{'paramForcefield': defaultParamPrepare['paramForcefield'].copy()} ) )
+                else:
+                    self.paramWrapper.append(   (nodeToReduce ,
+                                           {'paramForcefield': defaultParamPrepare['paramForcefield'].copy(),
+                                            'paramMORMapping': defaultParamPrepare['paramMORMapping'].copy(),
+                                            'paramMappedMatrixMapping': defaultParamPrepare['paramMappedMatrixMapping'].copy()} ) )
+
+            else :
+                if subTopo:
+                    self.paramWrapper.append(   (nodeToReduce ,
+                                           {'subTopo' : subTopoName,
+                                            'paramForcefield': defaultParamPerform['paramForcefield'].copy(),
+                                            'paramMORMapping': defaultParamPerform['paramMORMapping'].copy(),
+                                            'paramMappedMatrixMapping': defaultParamPerform['paramMappedMatrixMapping'].copy()} ) )
+
+                    self.paramWrapper.append(  (subTopo ,{'paramForcefield': paramsubTopo['paramForcefield'].copy()} ) )
+                else:
+                    self.paramWrapper.append(   (nodeToReduce ,
+                                           {'paramForcefield': defaultParamPerform['paramForcefield'].copy(),
+                                            'paramMORMapping': defaultParamPerform['paramMORMapping'].copy(),
+                                            'paramMappedMatrixMapping': defaultParamPerform['paramMappedMatrixMapping'].copy()} ) )
+
+
+        return self.paramWrapper
+
+    def setFilesName(self):
 
         for path , param in self.paramWrapper :
             nodeName = path.split('/')[-1]
@@ -129,42 +336,111 @@ class ReduceModel():
             self.savedElementsFilesNames.append('elmts_'+nodeName+'.txt')
             self.connectivityFilesNames.append('conectivity_'+nodeName+'.txt')
 
-        self.nbIterations = [0]*self.nbActuator
-        for i in range(self.nbActuator):
-            self.nbIterations[i] = (self.maxPull[i]/self.increment[i])*self.breathTime[i] + (self.maxPull[i]/self.increment[i])
+class ReduceModel():
 
-        for i in range(self.nbPossibility):
-            binVal = "{0:b}".format(i)
-            for j in range(len(binVal)):
-                self.phaseNum[i][j + self.nbActuator-len(binVal)] = int(binVal[j])
+    def __init__(self,
+                 originalScene,
+                 nodesToReduce,
+                 listObjToAnimate,
+                 tolModes,
+                 tolGIE,
+                 outputDir,
+                 meshDir,
+                 packageName = None,
+                 toKeep = None,
+                 addToLib = False,
+                 verbose = False,
+                 addRigidBodyModes = False,
+                 nbrCPU = 4):
 
-        for nb in range(self.nbActuator+1):
-            for i in range(self.nbPossibility):
-                if sum(self.phaseNum[i]) == nb:
-                    self.phaseNumClass.append(self.phaseNum[i])
+        self.originalScene = originalScene
+        self.nodesToReducePath = nodesToReduce
+
+
+        ### Obj Containing all the argument & function about how the shaking will be done and with which actuators
+        self.reductionAnimations = ReductionAnimations(listObjToAnimate)
+
+        ### If nothing is indicated to keep in the future package, by default we add all the actuators used to create the reduced model
+        if not toKeep:
+            toKeep = []
+            for obj in listObjToAnimate:
+                toKeep.append(obj.location)
+
+        ### Obj Containing all the argument & function about how to create the end package and where 
+        self.packageBuilder = PackageBuilder(outputDir,meshDir,toKeep,packageName,addToLib)
+
+        ### Obj Containing all the argument & function about the actual reduction
+        self.reductionParam = ReductionParam(tolModes,tolGIE,addRigidBodyModes,self.packageBuilder.dataDir)
+
+        ### With the previous parameters (listObjToAnimate/nbPossibility) we can set our training set number
+        self.reductionParam.setNbTrainingSet(   listObjToAnimate[0].params['rangeOfAction'],
+                                                listObjToAnimate[0].params['incr'],
+                                                self.reductionAnimations.nbPossibility)
+
+
+        self.nodeToReduceNames = []
+        self.subTopoList = []
+        for nodePath in self.nodesToReducePath :
+            if isinstance(nodePath,tuple):
+                nodeName = nodePath[0].split('/')[-1]
+                modelSubTopoName = nodePath[1].split('/')[-1]
+                self.nodeToReduceNames.append((nodeName,modelSubTopoName))
+                self.subTopoList.append(self.nodesToReducePath.index(nodePath))
+                self.reductionParam.addParamWrapper(nodePath[0], subTopo = nodePath[1])
+
+            else :
+                nodeName = nodePath.split('/')[-1]
+                self.nodeToReduceNames.append(nodeName)
+
+                self.reductionParam.addParamWrapper(nodePath)
+
+        self.reductionParam.setFilesName()
+
+
+        self.nbrCPU = nbrCPU
+        self.verbose = verbose
+
+        self.activesNodesLists = []
+        self.listSofaScene = []
+
+        strInfo = 'periodSaveGIE : '+str(self.reductionParam.periodSaveGIE)+' | '
+        strInfo += 'nbTrainingSet : '+str(self.reductionParam.nbTrainingSet)+' | '
+        strInfo += 'nbIterations : '+str(self.reductionAnimations.nbIterations)+'\n'
+        strInfo += "List of phase :"+str(self.reductionAnimations.phaseNumClass)+'\n'
+        strInfo += "##################################################"
+        print(strInfo)
+
+    def setListSofaScene(self,phasesToExecute=None):
 
         self.listSofaScene = []
-        for i in range(self.nbPossibility):
+
+        if not phasesToExecute:
+            phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
+
+        for i in phasesToExecute:
+            if i >= self.reductionAnimations.nbPossibility or i < 0 :
+                raise ValueError("phasesToExecute incorrect, select an non-existent phase : "+phasesToExecute)
             self.listSofaScene.append({ "ORIGINALSCENE": self.originalScene,
-                                        "TOANIMATE": self.toAnimate,
-                                        "PHASE": self.phaseNumClass[i],
-                                        "INCREMENT" : self.increment,
-                                        "MAXPULL" : self.maxPull,
-                                        "BREATHTIME" : self.breathTime,
-                                        "PERIODSAVEGIE" : self.periodSaveGIE,
-                                        "PARAMWRAPPER" : self.paramWrapper,
-                                        "nbIterations":self.nbIterations[0]
-                })
+                                        "LISTOBJTOANIMATE": self.reductionAnimations.listObjToAnimate,
+                                        "PHASE": self.reductionAnimations.phaseNumClass[i],
+                                        "PERIODSAVEGIE" : self.reductionParam.periodSaveGIE,
+                                        "PARAMWRAPPER" : self.reductionParam.paramWrapper,
+                                        "nbIterations":self.reductionAnimations.nbIterations})
 
-        strInfo = 'periodSaveGIE : '+str(self.periodSaveGIE[0])+' | '
-        strInfo += 'nbTrainingSet : '+str(self.nbTrainingSet)+' | '
-        strInfo += 'nbIterations : '+str(self.nbIterations[0])
-        print(strInfo)
-        print ('listSofaScene : ')
-        for key, value in self.listSofaScene[0].items():
-            print('- '+key+' : '+str(value))
+    def performReduction(self,phasesToExecute=None,nbrOfModes=None):
 
-    def phase1(self):
+        ### This initila time we allow us to give at the end the total time execution
+        init_time = time.time()
+
+        self.phase1(phasesToExecute)
+        self.phase2()
+        self.phase3(phasesToExecute,nbrOfModes)
+        self.phase4(nbrOfModes)
+
+        tps = int(round(time.time() - init_time))
+        print("TOTAL TIME --- %s ---" % (datetime.timedelta(seconds=tps) ) )
+
+    def phase1(self,phasesToExecute=None):
         ####################    SOFA LAUNCHER       ##########################
         #                                                                    #
         #                           PHASE 1                                  #
@@ -176,10 +452,10 @@ class ReduceModel():
         ######################################################################
         start_time = time.time()
 
-        if self.verbose :
-            print ("List of phase :",self.phaseNumClass)
-            print ("Number of Iteration per phase :",self.nbIterations[0])
-            print ("##############")
+        if not phasesToExecute:
+            phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
+
+        self.setListSofaScene(phasesToExecute)
 
         filenames = ["phase1_snapshots.py","debug_scene.py"]
         filesandtemplates = []
@@ -187,7 +463,7 @@ class ReduceModel():
             filesandtemplates.append( (open(path+filename).read(), filename) )
 
 
-        results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(4))
+        results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(self.nbrCPU))
 
         if self.verbose:
             for res in results:
@@ -196,29 +472,8 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")  
 
-        if not os.path.exists(os.path.dirname(self.debugDir)):
-            try:
-                os.makedirs(os.path.dirname(self.debugDir))
-            except OSError as exc: # Guard against race condition
-                if exc.errno != errno.EEXIST:
-                    raise
-
-        for res in results:
-            with open(self.debugDir+self.stateFileName, "a") as stateFile:
-                currentStateFile = open(res["directory"]+"/stateFile.state", "r") 
-                stateFile.write(currentStateFile.read())
-                currentStateFile.close()
-            stateFile.close()
-
-        copy(results[0]["directory"]+"/debug_scene.py", self.debugDir)
-
-        counter = 1
-        for line in fileinput.input(self.debugDir+self.stateFileName, inplace=True):
-            if line.find('T=') != -1:
-                line = 'T= '+str(self.periodSaveGIE[0]*counter)+'\n'
-                print("%s" % line),
-                counter += 1
-            else : print(line),
+        self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName)
+        self.packageBuilder.copy(results[0]["directory"]+"/debug_scene.py", self.packageBuilder.debugDir)
 
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
 
@@ -234,28 +489,20 @@ class ReduceModel():
         ######################################################################
         start_time = time.time()
 
-        if not os.path.exists(os.path.dirname(self.dataDir)):
-            try:
-                os.makedirs(os.path.dirname(self.dataDir))
-            except OSError as exc: # Guard against race condition
-                if exc.errno != errno.EEXIST:
-                    raise
-
-
-        self.nbrOfModes = readStateFilesAndComputeModes(stateFilePath = self.debugDir+self.stateFileName,
-                                                        modesFileName = self.dataDir+self.modesFileName,
-                                                        tol = self.tolModes,
-                                                        addRigidBodyModes = self.addRigidBodyModes,
+        self.packageBuilder.checkExistance(self.packageBuilder.dataDir)
+ 
+        self.reductionParam.nbrOfModes = readStateFilesAndComputeModes(stateFilePath = self.packageBuilder.debugDir+self.reductionParam.stateFileName,
+                                                        modesFileName = self.packageBuilder.dataDir+self.reductionParam.modesFileName,
+                                                        tol = self.reductionParam.tolModes,
+                                                        addRigidBodyModes = self.reductionParam.addRigidBodyModes,
                                                         verbose= self.verbose)
 
-        if self.nbrOfModes == -1:
+        if self.reductionParam.nbrOfModes == -1:
             raise ValueError("problem of execution of readStateFilesAndComputeModes")
-
-        print('Number of Modes :'+str(self.nbrOfModes))
 
         print("PHASE 2 --- %s seconds ---" % (time.time() - start_time))
 
-    def phase3(self):
+    def phase3(self,phasesToExecute=None,nbrOfModes=None):
         ####################    SOFA LAUNCHER       ##########################
         #                                                                    #
         #                           PHASE 3                                  #
@@ -272,9 +519,31 @@ class ReduceModel():
         ######################################################################
         start_time = time.time()
 
-        for i in range(self.nbPossibility):
-            self.listSofaScene[i]['NBROFMODES'] = self.nbrOfModes
-            self.listSofaScene[i]['NBTRAININGSET'] = self.nbTrainingSet
+        if not phasesToExecute:
+            phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
+        if not nbrOfModes:
+            nbrOfModes = self.reductionParam.nbrOfModes
+
+        if not os.path.isfile(self.packageBuilder.dataDir+self.reductionParam.modesFileName):
+            raise IOError("There is no mode file at "+self.packageBuilder.dataDir+self.reductionParam.modesFileName\
+                +"\nPlease give one at this location or indicate the correct location or re-generate one with phase 1 & 2")
+
+        nbrOfModesPossible = self.packageBuilder.checkNodeNbr(self.reductionParam.modesFileName)
+
+        if not nbrOfModes:
+            nbrOfModes = self.reductionParam.nbrOfModes
+        if nbrOfModes == -1 :
+            nbrOfModes = self.reductionParam.nbrOfModes = nbrOfModesPossible
+
+        if (nbrOfModes <= 0) or (nbrOfModes > nbrOfModesPossible):
+            raise ValueError("nbrOfModes incorrect\n"\
+                +"  nbrOfModes given :"+str(nbrOfModes)+" | nbrOfModes max possible : "+str(nbrOfModesPossible))
+
+        self.setListSofaScene(phasesToExecute)
+
+        for i in range(len(phasesToExecute)):
+            self.listSofaScene[i]['NBROFMODES'] = nbrOfModes
+            self.listSofaScene[i]['NBTRAININGSET'] = self.reductionParam.nbTrainingSet
             # self.listSofaScene[i]["PARAMWRAPPER"] = self.paramWrapper
 
         filenames = ["phase2_prepareECSW.py","phase1_snapshots.py"]
@@ -282,7 +551,7 @@ class ReduceModel():
         for filename in filenames:                
             filesandtemplates.append( (open(path+filename).read(), filename) )
              
-        results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(4))
+        results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(self.nbrCPU))
 
         if self.verbose:
             for res in results:
@@ -291,44 +560,18 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")
 
-        try: 
-            for fileName in self.savedElementsFilesNames :
-                with open(self.debugDir+fileName, "a") as savedElementsFile:
-                    currentStateFile = open(results[-1]["directory"]+'/'+fileName, "r") 
-                    savedElementsFile.write(currentStateFile.read())
-                    currentStateFile.close()
-                savedElementsFile.close() 
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
-            raise
+        for fileName in self.reductionParam.savedElementsFilesNames :
+            self.packageBuilder.copyFileIntoAnother(results[0]["directory"]+'/'+fileName,self.packageBuilder.debugDir+fileName)
 
-        for res in results:
 
-            for fileName in self.gieFilesNames :
-                with open(self.debugDir+fileName, "a") as gieFile:
-                    currentGieFile = open(res["directory"]+'/'+fileName, "r") 
-                    gieFile.write(currentGieFile.read())
-                    currentGieFile.close()
-                gieFile.close()
-
-            with open(self.debugDir+self.stateFileName+'2', "a") as stateFile:
-                currentStateFile = open(res["directory"]+"/stateFile.state", "r")
-                stateFile.write(currentStateFile.read())
-                currentStateFile.close()
-            stateFile.close()
-
-        counter = 1
-        for line in fileinput.input(self.debugDir+self.stateFileName+'2', inplace=True):
-            if line.find('T=') != -1:
-                line = 'T= '+str(self.periodSaveGIE[0]*counter)+'\n'
-                print("%s" % line),
-                counter += 1
-            else : print(line),
+        self.packageBuilder.copyAndCleanState(  results,self.reductionParam.periodSaveGIE,
+                                                'step2_'+self.reductionParam.stateFileName,
+                                                gie=self.reductionParam.gieFilesNames)
 
 
         print("PHASE 3 --- %s seconds ---" % (time.time() - start_time))
 
-    def phase4(self):
+    def phase4(self,nbrOfModes=None):
         ####################    PYTHON SCRIPT       ##########################
         #                                                                    #
         #                           PHASE 4                                  #
@@ -340,159 +583,79 @@ class ReduceModel():
         ######################################################################
         start_time = time.time()
 
-        for fileName in self.gieFilesNames :
-            index = self.gieFilesNames.index(fileName)
-            readGieFileAndComputeRIDandWeights( self.debugDir+fileName,
-                                                self.dataDir+self.RIDFilesNames[index],
-                                                self.dataDir+self.weightsFilesNames[index],
-                                                self.tolGIE,
+        if not os.path.isfile(self.packageBuilder.dataDir+self.reductionParam.modesFileName):
+            raise IOError("There is no mode file at "+self.packageBuilder.dataDir+self.reductionParam.modesFileName\
+                +"\nPlease give one at this location or indicate the correct location or re-generate one with phase 1 & 2")
+
+        nbrOfModesPossible = self.packageBuilder.checkNodeNbr(self.reductionParam.modesFileName)
+
+        if not nbrOfModes:
+            nbrOfModes = self.reductionParam.nbrOfModes
+        if nbrOfModes == -1 :
+            nbrOfModes = self.reductionParam.nbrOfModes = nbrOfModesPossible
+
+        if (nbrOfModes <= 0) or (nbrOfModes > nbrOfModesPossible):
+            raise ValueError("nbrOfModes incorrect\n"\
+                +"  nbrOfModes given :"+str(nbrOfModes)+" | nbrOfModes max possible : "+str(nbrOfModesPossible))
+
+        for fileName in self.reductionParam.gieFilesNames :
+            if not os.path.isfile(self.packageBuilder.debugDir+fileName):
+                raise IOError("There is no GIE file at "+self.packageBuilder.debugDir+fileName\
+                    +"\nPlease give one at this location or indicate the correct location or re-generate one with phase 3")
+
+            index = self.reductionParam.gieFilesNames.index(fileName)
+            readGieFileAndComputeRIDandWeights( self.packageBuilder.debugDir+fileName,
+                                                self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[index],
+                                                self.packageBuilder.dataDir+self.reductionParam.weightsFilesNames[index],
+                                                self.reductionParam.tolGIE,
                                                 verbose= self.verbose)
 
-            self.activesNodesLists.append(  convertRIDinActiveNodes(self.dataDir+self.RIDFilesNames[index],
-                                                                    self.debugDir+self.savedElementsFilesNames[index],
-                                                                    self.dataDir+self.connectivityFilesNames[index],
+            self.activesNodesLists.append(  convertRIDinActiveNodes(self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[index],
+                                                                    self.packageBuilder.debugDir+self.reductionParam.savedElementsFilesNames[index],
+                                                                    self.packageBuilder.dataDir+self.reductionParam.connectivityFilesNames[index],
                                                                     verbose= self.verbose))
 
-
-        print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
-        start_time = time.time()
 
         if self.subTopoList :
             print('there is at least one subTopo : '+str(self.subTopoList))
             for i in range(len(self.subTopoList)) :
-                nodeName1 , nodeName2 = self.nodesToReduce[i]
-                nodeName1 = nodeName1.split('/')[-1]
-                nodeName2 = nodeName2.split('/')[-1]
-                # print ('nodeName1 ', nodeName1)
-                # print ('nodeName2 ', nodeName2)
-                print self.activesNodesLists[i]
-                print '###################\n\n'
-                print self.activesNodesLists[i+1]
-                print '===================\n\n'
+                nodeName1 , nodeName2 = self.nodeToReduceNames[i]
+                print ('nodeName1 ', nodeName1)
+                print ('nodeName2 ', nodeName2)
+                print (self.activesNodesLists[i])
+                print ('###################\n\n')
+                print (self.activesNodesLists[i+1])
+                print ('===================\n\n')
                 self.activesNodesLists[i] = list(set().union(self.activesNodesLists[i],self.activesNodesLists[i+1]))
-                print self.activesNodesLists[i]
+                print (self.activesNodesLists[i])
 
-                with open(self.dataDir+'conectivity_'+nodeName1+'.txt', "w") as file:
+                with open(self.packageBuilder.dataDir+'conectivity_'+nodeName1+'.txt', "w") as file:
                     for item in self.activesNodesLists[i]:
                       file.write("%i\n" % item)
                 file.close()
 
 
-        filenames = ["phase3_performECSW.py"]
+        filename = "phase3_performECSW.py"
+        filesandtemplates = [(open(path+filename).read(), filename)]
 
-        filesandtemplates = []
-        for filename in filenames:                
-            filesandtemplates.append( (open(path+filename).read(), filename) )
-
-
-        self.paramWrapper = []
-        dataFolder = '/'+self.dataDir.split('/')[-2]+'/'
-
-        for item in self.nodesToReduce :
-
-            defaultParamMORMapping = {
-                'input': '@../MechanicalObject',
-                'modesPath': dataFolder+self.modesFileName}
-
-            if isinstance(item,tuple):
-
-                nodeName = item[0].split('/')[-1]
-                nodeNameSubTopo = item[1].split('/')[-1]
-                tmptParamForcefield = {
-                    'performECSW': True,
-                    'modesPath': dataFolder+self.modesFileName,
-                    'RIDPath': dataFolder+'RID_'+nodeName+'.txt',
-                    'weightsPath': dataFolder+'weight_'+nodeName+'.txt'}
-
-                tmptParamForcefieldSubTopo = {
-                    'performECSW': True,
-                    'modesPath': dataFolder+self.modesFileName,
-                    'RIDPath': dataFolder+'RID_'+nodeNameSubTopo+'.txt',
-                    'weightsPath': dataFolder+'weight_'+nodeNameSubTopo+'.txt'}
-
-                tmpParamMappedMatrixMapping = {
-                    'template': 'Vec1d,Vec1d',
-                    'object1': '@./MechanicalObject',
-                    'object2': '@./MechanicalObject',
-                    'listActiveNodesPath': dataFolder+'conectivity_'+nodeName+'.txt',
-                    'performECSW': True}
-
-                self.paramWrapper.append(   (item[0] , 
-                                       {'subTopo' : nodeNameSubTopo,
-                                        'paramForcefield': tmptParamForcefield.copy(),
-                                        'paramMORMapping': defaultParamMORMapping.copy(),
-                                        'paramMappedMatrixMapping': tmpParamMappedMatrixMapping.copy()} ) )
-
-                self.paramWrapper.append(  (item[1] ,{'paramForcefield': tmptParamForcefieldSubTopo.copy()} ) )
-            else:
-
-                nodeName = item.split('/')[-1]
-
-                tmptParamForcefield = {
-                    'performECSW': True,
-                    'modesPath': dataFolder+self.modesFileName,
-                    'RIDPath': dataFolder+'RID_'+nodeName+'.txt',
-                    'weightsPath': dataFolder+'weight_'+nodeName+'.txt'}
-
-                tmpParamMappedMatrixMapping = {
-                    'template': 'Vec1d,Vec1d',
-                    'object1': '@./MechanicalObject',
-                    'object2': '@./MechanicalObject',
-                    'listActiveNodesPath': dataFolder+'conectivity_'+nodeName+'.txt',
-                    'performECSW': True}
-
-                self.paramWrapper.append(   (item , 
-                                       {'paramForcefield': tmptParamForcefield.copy(),
-                                        'paramMORMapping': defaultParamMORMapping.copy(),
-                                        'paramMappedMatrixMapping': tmpParamMappedMatrixMapping.copy()} ) )
+        self.reductionParam.paramWrapper = []
+        for nodePath in self.nodesToReducePath :
+            if isinstance(nodePath,tuple):
+                self.reductionParam.addParamWrapper(nodePath[0], subTopo = nodePath[1], prepareECSW = False)
+            else :
+                self.reductionParam.addParamWrapper(nodePath, prepareECSW = False)
 
         finalScene = {}
         finalScene["ORIGINALSCENE"] = self.originalScene
-        finalScene["PARAMWRAPPER"] = self.paramWrapper
-        finalScene['NBROFMODES'] = self.nbrOfModes
+        finalScene["PARAMWRAPPER"] = self.reductionParam.paramWrapper
+        finalScene['NBROFMODES'] = nbrOfModes
         finalScene["nbIterations"] = 1
-        finalScene["TOANIMATE"] = self.toAnimate
-        finalScene["PACKAGENAME"] = self.packageName
+        finalScene["TOKEEP"] = self.packageBuilder.toKeep
+        finalScene["PACKAGENAME"] = self.packageBuilder.packageName
 
-        results = startSofa([finalScene], filesandtemplates, launcher=ParallelLauncher(4))
-        # print(results[0]["scene"])
-        shutil.move(results[0]['directory']+'/'+self.packageName+'.py', self.outputDir)
-        copy(self.meshDir, self.outputDir+'/mesh/')
+        results = startSofa([finalScene], filesandtemplates, launcher=ParallelLauncher(1))
 
-        if self.addToLib :
+        self.packageBuilder.finalizePackage(results[0])
 
-            copy(self.outputDir, pathToReducedModel+self.packageName+'/')
-
-            try:
-                with open(path+'myInit.txt', "r") as myfile:
-                    myInit = myfile.read()
-
-                    myInit = myInit.replace('MyReducedModel',self.packageName[0].upper()+self.packageName[1:])
-                    myInit = myInit.replace('myReducedModel',self.packageName)
-
-                    with open(pathToReducedModel+self.packageName+'/__init__.py', "a") as logFile:
-                        logFile.write(myInit)
-                        logFile.close()
-
-                    myfile.close()
-                    # print(myInit)
-
-                for line in fileinput.input(pathToReducedModel+'__init__.py', inplace=True):
-                    if line.find('__all__') != -1:
-                        if line.find('[]') != -1:
-                            line = line[:-2]+"'"+self.packageName+"']"'\n'
-
-                        else:
-                            line = line[:-2]+",'"+self.packageName+"']"'\n'
-                        print("%s" % line),
-
-                    else : print(line),
-
-
-            except:
-                print "Unexpected error:", sys.exc_info()[0]
-                raise
-
+        print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
         print('The reduction is now finished !')
-        time = int(round(time.time() - self.init_time))
-        print("TOTAL TIME --- %s ---" % (datetime.timedelta(seconds=time) ) )
