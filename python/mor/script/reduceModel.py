@@ -17,9 +17,14 @@ pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('
 
 class ObjToAnimate():
 
-    def __init__(self,location, animFct, objName=None, node=None, obj=None, duration=-1, **params):
+    def __init__(self,location, animFct=None, objName=None, node=None, obj=None, duration=-1, **params):
         self.location = location
-        self.animFct = animFct
+        if animFct == None:
+            self.animFct = 'animation.defaultShaking'
+        elif isinstance(animFct, str):
+            self.animFct = 'animation.shakingAnimations.'+animFct
+        else:
+            self.animFct = animFct
         self.objName =objName
         self.node = node
         self.obj = obj
@@ -46,14 +51,14 @@ class ReductionAnimations():
     def setNbIteration(self,nbIterations=None):
 
         if nbIterations :
-            self.nbIterations = nbIterations
+            self.nbIterations = int(math.ceil(nbIterations))
         else :
             for obj in self.listObjToAnimate:
                 tmp = 0
                 if all (k in obj.params for k in ("incr","incrPeriod")):
                     tmp = ((obj.params['rangeOfAction']/obj.params['incr'])-1)*obj.params['incrPeriod'] + obj.params['incrPeriod']
                 if tmp > self.nbIterations:
-                    self.nbIterations = tmp
+                    self.nbIterations = int(math.ceil(tmp))
 
     def generateListOfPhase(self,nbPossibility,nbActuator):
 
@@ -167,7 +172,6 @@ class PackageBuilder():
 
         self.cleanStateFile(periodSaveGIE,stateFileName)
 
-
     def finalizePackage(self,result):
 
         shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir)
@@ -230,7 +234,7 @@ class ReductionParam():
         self.connectivityFilesNames = []
 
         self.nbrOfModes = -1
-        self.periodSaveGIE = 10
+        self.periodSaveGIE = 3 #10
         self.nbTrainingSet = -1
 
         self.paramWrapper = []
@@ -659,3 +663,4 @@ class ReduceModel():
 
         print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
         print('The reduction is now finished !')
+        return self.packageBuilder.outputDir+'/'+self.packageBuilder.packageName+'.py'

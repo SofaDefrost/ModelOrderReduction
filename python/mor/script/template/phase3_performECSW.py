@@ -23,6 +23,8 @@ packageName = '$PACKAGENAME'
 
 
 
+forceFieldImplemented = ['TetrahedronFEMForceField','TriangleFEMForceField']
+
 modesPositionStr = '0'
 for i in range(1,nbrOfModes):
     modesPositionStr = modesPositionStr + ' 0'
@@ -61,7 +63,8 @@ def MORreplace(node,type,newParam,initialParam):
                     solverParam[index].append(type)
                 myMORModel.append((str(type),initialParam))
             
-            elif str(type).find('ForceField') != -1:
+            elif str(type).find('ForceField') != -1 and str(type) in forceFieldImplemented :
+
                     #Change the initial Forcefield by the HyperReduced one with the new argument 
                     # print str(type)
                     name = 'HyperReducedFEMForceField_'+path.split('/')[-1]

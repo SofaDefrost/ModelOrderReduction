@@ -21,7 +21,7 @@ listObjToAnimate.append(ObjToAnimate('$obj.location',$obj.animFct,objName='$obj.
 #end for
 phase = $PHASE
 nbIterations = $nbIterations
-
+paramWrapper = $PARAMWRAPPER
 # GLOBAL
 timeExe = 0.0
 dt = 0.0
@@ -75,14 +75,13 @@ def searchChildAndAnimate(node):
         if phase[tmpFind] :
             # param = listParam.copy()
             for obj in objToAnimate.node.getObjects():
-                if not 'objName' in objToAnimate.params:
+                if objToAnimate.objName == '':
                     if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
                         objToAnimate.obj = obj
                         objToAnimate.params["dataToWorkOn"] = 'value'
 
-                elif obj.getClassName() == objToAnimate.params['objName']:
+                elif obj.getClassName() == objToAnimate.objName:
                     objToAnimate.obj = obj
-                    objToAnimate.params["dataToWorkOn"] = 'value'
 
             if objToAnimate.obj and objToAnimate.params["dataToWorkOn"]:
                 objToAnimate.duration = timeExe
@@ -95,18 +94,13 @@ def searchChildAndAnimate(node):
 
         tmpFind += 1
 
-    myParent = listObjToAnimate[0].node.getParents()[0]
-    if phase == [0]*len(phase):
-        myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="1", writeV="0") 
-    else :
-        myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="0", writeV="0")
-
 
 def createScene(rootNode):
-    global timeExe, dt
+    global timeExe, dt, tmp
 
     print ("Scene Phase :"+str(phase))
     originalScene.createScene(rootNode)
+    tmp = []
 
     toAnimate = []
     for obj in listObjToAnimate:
@@ -130,3 +124,17 @@ def createScene(rootNode):
     else:
         AnimationManager(rootNode)
         searchChildAndAnimate(rootNode)
+
+    toFind = []
+    for item in paramWrapper:
+        path, param = item
+        toFind.append(path.split('/')[-1])
+
+    tmp = []
+    searchInGraphScene(rootNode,toFind)
+    if tmp:
+        myParent = tmp[0]
+        if phase == [0]*len(phase):
+            myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="1", writeV="0")
+        else :
+            myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="0", writeV="0")

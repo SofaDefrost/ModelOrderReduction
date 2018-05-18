@@ -19,6 +19,9 @@ periodSaveGIE = $PERIODSAVEGIE
 nbTrainingSet = $NBTRAININGSET
 paramWrapper = $PARAMWRAPPER
 
+
+forceFieldImplemented = ['TetrahedronFEMForceField','TriangleFEMForceField']
+
 modesPositionStr = '0'
 for i in range(1,nbrOfModes):
     modesPositionStr = modesPositionStr + ' 0'
@@ -104,7 +107,7 @@ def MORreplace(node,type,newParam,initialParam):
                     return (-1, -1, newParam)
 
             #	Change the initial Forcefield by the HyperReduced one with the new argument 
-            if str(type).find('ForceField') != -1:
+            if str(type).find('ForceField') != -1 and str(type) in forceFieldImplemented :
                 # print str(type)
                 name = 'HyperReducedFEMForceField_'+path.split('/')[-1]
                 param['paramForcefield']['name'] = name
