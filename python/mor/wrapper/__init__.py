@@ -2,13 +2,9 @@
 """
 Animation framework for MOR
 
-Functions:
-**********
 .. autosummary::
 
-    mor.wraper.morWrapper
-
-.. autofunction:: mor.wrapper.MORWrapper
+    morWrapper
 
 """
 __all__=["morWrapper","saveReducedModelWrapper","writeScene"]

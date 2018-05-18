@@ -2,15 +2,10 @@
 """
 Animation framework for MOR
 
-Functions:
-**********
 .. autosummary::
 
-    mor.script.MORUtilityFunctions
-    mor.script.ReduceModel
-
-.. autofunction:: mor.script.MORUtilityFunctions
-.. autofunction:: mor.script.ReduceModel
+    morUtilityFunctions
+    reduceModel
 
 """
 __all__=["morUtilityFunctions","reduceModel"]

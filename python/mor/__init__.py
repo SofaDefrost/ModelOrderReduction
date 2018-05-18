@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Content of the library
-**********************
 
 .. autosummary::
     :toctree: _autosummary
@@ -9,14 +7,6 @@ Content of the library
     mor.animation
     mor.script
     mor.wrapper
-
-
-Indices and tables
-******************
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 """
 
