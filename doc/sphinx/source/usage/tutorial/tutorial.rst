@@ -10,6 +10,7 @@ Reduction Process Tutoriel
 				``/ModelOrderReduction/tools``
 
 			then, if you have installed jupyter like explained in the requirement, open a terminal there and launch a session:
+
 				``jupyter notebook``
 
 			It will open in your web-Browser a tab displaying the current files in the directory. Normally you should have one called **modelOrderReduction.ipynb**

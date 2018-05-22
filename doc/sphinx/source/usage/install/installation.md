@@ -24,4 +24,11 @@ git clone https://github.com/SofaDefrost/ModelOrderReduction
 
 ## Launch test
 
-to confirm all the previous steps verify with *this example* the proper functioning of the plugin
+To confirm all the previous steps and verify that the plugin is working properly you can launch the *test_component.py* SOFA scene situated in:
+```
+/ModelOrderReduction/tools
+```
+
+This example show that after the reduction of a model (here the 2 examples [Diamond robot](../examples/Diamond/diamond.html#diamond),
+[Starfish robot](../examples/Starfish/starfish.html#starfish)), you can re-use it easily as a python object with different arguments 
+allowing positionning of the model in the SOFA scene.

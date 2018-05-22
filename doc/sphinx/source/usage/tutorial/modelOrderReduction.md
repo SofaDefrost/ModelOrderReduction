@@ -1,23 +1,21 @@
-# Reduction Process Tutoriel
+
+# Model Order Reduction Example
+
 
 ## Introduction <a name="introduction"></a>
 ***
 
 In this python notebook exemple we will see with 2 real examples how to reduce a model from one of your sofa scene thanks to the **Model Order Reduction** plugin done by the INRIA research team **Defrost**.
 
-the two exemple will be :
+the two examples will be :
 
-### The Diamond <a name="Diamond Robot"></a> 
+- **[The Diamond](../examples/Diamond/diamond.html#diamond)** 
 
-DESCRIPTION / PHOTO / VIDEO ?
+![Diamond robot](../examples/Diamond/diamondReal.png)
 
+- **[The Starfish](../examples/Diamond/diamond.html#diamond)**
 
-### The Starfish <a name="Starfish Robot"></a>
-
-DESCRIPTION / PHOTO / VIDEO ?
-
-
-
+![Starfish robot](../examples/Starfish/Starfish_Real.png)
 
 After these expample presentation we can now proceed to the reduction.
 First we have to prepare it by setting a bunch of parameters while explaining there purpose (here the parameters will be set twice, one for the diamond and one for the starfish so you will be able to switch easily between each example) 
@@ -44,10 +42,6 @@ import mor.script.morUtilityFunctions as ui
 from mor.script import ReduceModel
 from mor.script import ObjToAnimate
 ```
-
-
-<script>requirejs.config({paths: { 'plotly': ['https://cdn.plot.ly/plotly-latest.min']},});if(!window.Plotly) {{require(['plotly'],function(plotly) {window.Plotly=plotly;});}}</script>
-
 
 ### The first important things to set are the different path where we will work: <a name="Important Path"></a> 
  - The scene you want to work on
@@ -178,7 +172,7 @@ reduceMyModel = ReduceModel(    originalScene,
 
 We can finally perform the actual reduction. here is a schematic to resume the differents steps we will perform : 
 
-![MOR Process Schematic](../../images/MOR_plugin_execution_v2.png "MOR Process Schematic")
+![MOR Process Schematic](../doc/images/MOR_plugin_execution_v2.png "MOR Process Schematic")
 
 ### Phase 1 <a name="Phase 1"></a>
 
@@ -199,6 +193,7 @@ With the previous result we combine all the generated state files into one to be
 ```python
 reduceMyModel.phase2()
 ```
+
 
 ```python
 # Plot result
