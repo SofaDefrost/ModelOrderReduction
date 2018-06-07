@@ -127,7 +127,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                                 modelRotation = arg['rotation']
                                 modelScale = arg['scale3d']
                             # print(myArgs)
-                        elif type == 'BoxROI' and not arg['orientedBox']: # orientedBoxes aren't handled yet 
+                        elif type == 'BoxROI' and not 'orientedBox' in arg: # orientedBoxes aren't handled yet 
                             tmp = [float(x) for x in arg['box'].split(' ')]
                             # myArgs = ", name= '"+arg['name']+"' , box=np.add(translation,rotate(rotation,"+str(tmp)+") )"
                             if "box" in arg:

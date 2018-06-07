@@ -63,7 +63,7 @@ def createScene(rootNode):
 		poissonRatio=0.45,
 		youngModulus=450)
 	
-	modelNode.createObject('GenericConstraintCorrection', solverName='Solver')
+	modelNode.createObject('GenericConstraintCorrection', solverName='solver')
 
 	FixedBox(
 		atPositions=[-15, -15, -40,  15, 15, 10],

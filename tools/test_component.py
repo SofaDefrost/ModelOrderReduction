@@ -9,12 +9,14 @@ from stlib.physics.rigid import Floor
 # MOR IMPORT
 from mor.reducedModel.reduced_diamond import Reduced_diamond
 from mor.reducedModel.reduced_starfish import Reduced_starfish
+from mor.reducedModel.reduced_sofiaLeg import Reduced_SofiaLeg
 
 path = os.path.dirname(os.path.abspath(__file__))
 
 def createScene(rootNode):
     surfaceMeshFileNameDiamond = 'surface.stl'
     surfaceMeshFileNameStrafish = 'quadriped_collision.stl'
+    surfaceMeshFileNameSofia = 'sofia_leg.stl'
 
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
                         dt=1,
@@ -44,3 +46,10 @@ def createScene(rootNode):
                     translation=[300, 400.0, 100.0],
                     surfaceColor=[1, 0.0, 0.0, 0.5],
                     surfaceMeshFileName=surfaceMeshFileNameStrafish)
+
+    Reduced_SofiaLeg(rootNode,
+                    name="Reduced_sofiaLeg_blue",
+                    rotation=[0, 0.0, 0.0],
+                    translation=[-400, 60.0, 100.0],
+                    surfaceColor=[0.0, 0.0, 1, 0.5],
+                    surfaceMeshFileName=surfaceMeshFileNameSofia)
