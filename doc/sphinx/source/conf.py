@@ -48,11 +48,18 @@ extensions = [
     'sphinx.ext.githubpages',
 
     # C++ / Breathe
-    # 'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
     'sphinx.ext.todo',
     'breathe'
 ]
+
+## Include Python objects as they appear in source files
+## Default: alphabetically ('alphabetical')
+autodoc_member_order = 'bysource'
+## Default flags used by autodoc directives
+autodoc_default_flags = []
+## Generate autodoc stubs with summaries from code
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -185,16 +192,24 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['Sofa', 'numpy']
+MOCK_MODULES = ['Sofa',
+                'stlib',
+                'SofaPython','Quaternion','SofaPython.Quaternion',  # Needed for numerics
+                'PythonScriptController', 'Sofa.PythonScriptController'] # for AnimationManagerController but doesn't work...
+
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
+autodoc_mock_imports= [ "math", # Standard import
+                        "Sofa",
+                        "stlib","wrapper","scene","stlib"]
+
+autoclass_content = 'both' # When auto doc a class it will automatically add the special method __init__ doc
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
 
+
 # Breathe 
-# breathe_projects = { "modelorderreduction": os.getcwd()+"/doxyxml/xml/" }
-# breathe_default_project = "modelorderreduction"
 breathe_projects_source = { 
         "loader" : (os.getcwd()+"/../../../src/component/loader",["MatrixLoader.h"]),
         "mapping" : (os.getcwd()+"/../../../src/component/mapping",["ModelOrderReductionMapping.h"]),

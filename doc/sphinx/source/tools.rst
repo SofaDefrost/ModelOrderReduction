@@ -5,4 +5,3 @@ Tools
    :maxdepth: 2
 
 .. automodule:: mor
-

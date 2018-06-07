@@ -1,5 +1,5 @@
 HyperReducedTetrahedronHyperelasticityFEMForceField
-====================================
+===================================================
 
 .. autodoxygenfile:: HyperReducedTetrahedronHyperelasticityFEMForceField.h
    :project: forcefield

@@ -3,7 +3,6 @@ Welcome to ModelOrderReduction's documentation!
 
 .. toctree::
 	:maxdepth: 2
-	:caption: Contents:
 
 	usage/install/install
 	usage/tutorial/tutorial

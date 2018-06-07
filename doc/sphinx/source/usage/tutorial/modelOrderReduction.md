@@ -60,7 +60,7 @@ outputDir = ui.openDirName('Select the directory tha will contain all the result
 
 #### nodesToReduce <a name="nodesToReduce"></a>
 - *ie : list containing the model path you want to reduce.
-        
+
 For example if you want to reduce child2 which is in the sofa graph scene a child of child1 which is a child of root you would give this path : **'/child1/child2'** * 
 
 
@@ -172,7 +172,7 @@ reduceMyModel = ReduceModel(    originalScene,
 
 We can finally perform the actual reduction. here is a schematic to resume the differents steps we will perform : 
 
-![MOR Process Schematic](../doc/images/MOR_plugin_execution_v2.png "MOR Process Schematic")
+![MOR Process Schematic](../images/MOR_plugin_execution_v2.png)
 
 ### Phase 1 <a name="Phase 1"></a>
 
