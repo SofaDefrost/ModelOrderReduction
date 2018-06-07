@@ -30,8 +30,8 @@ for i in range(1,nbrOfModes):
     modesPositionStr = modesPositionStr + ' 0'
 
 
-myModel = OrderedDict()
-myMORModel = []
+myModel = OrderedDict() # Ordered dic containing has key Sofa.Node.name & has var a tuple of (Sofa_componant_type , param_solver)
+myMORModel = [] # list of tuple (solver_type , param_solver)
 
 def MORNameExistance (name,kwargs):
     if 'name' in kwargs :

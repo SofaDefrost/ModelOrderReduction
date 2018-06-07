@@ -8,7 +8,8 @@
                             template='ExtVec3f',
                             color=surfaceColor,
                             rotation= add(rotation,arg1),
-                            translation = add(translation,arg2))
+                            translation = add(translation,arg2),
+                            scale3d = multiply(scale,arg3))
 
 	    visu.createObject('BarycentricMapping')
 

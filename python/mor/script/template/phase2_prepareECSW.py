@@ -3,7 +3,7 @@ import sys
 import numpy as np
 
 #   STLIB IMPORT
-from stlib.animation import AnimationManager , animate
+from splib.animation import AnimationManager , animate
 from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT
@@ -64,6 +64,9 @@ def MORreplace(node,type,newParam,initialParam):
     global solverParam
 
     currentPath = node.getPathName()
+    # print('NODE : '+node.name)
+    # print('TYPE : '+str(type))
+    # print('PARAM  :'+str(newParam[0][0]) )
 
     for item in newParam :
         index = newParam.index(item)

@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import os
 import Sofa
-from numpy import add,subtract
-from stlib.numerics import *
+from numpy import add,subtract,multiply
+from splib.numerics import *
 
 path = os.path.dirname(os.path.abspath(__file__))
 
-def TRSinOrigin(positions,modelPosition,translation,rotation):
+def TRSinOrigin(positions,modelPosition,translation,rotation,scale=[1.0,1.0,1.0]):
     posOrigin = subtract(positions , modelPosition)
     if any(isinstance(el, list) for el in positions):
-        posOriginTRS = transformPositions(posOrigin,translation,rotation)
+        posOriginTRS = transformPositions(posOrigin,translation,rotation,scale=scale)
     else:
-        posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
+        posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation,scale=scale))
     return add(posOriginTRS,modelPosition).tolist()
     
-def newBox(positions,modelPosition,translation,rotation,offset):
-    pos = TRSinOrigin(positions,modelPosition,translation,rotation)
-    offset =transformPositions([offset],eulerRotation=rotation)[0]
+def newBox(positions,modelPosition,translation,rotation,offset,scale=[1.0,1.0,1.0]):
+    pos = TRSinOrigin(positions,modelPosition,translation,rotation,scale)
+    offset =transformPositions([offset],eulerRotation=rotation,scale=scale)[0]
     return add(pos,offset).tolist()
 
 def MyReducedModel(
@@ -24,6 +24,7 @@ def MyReducedModel(
                   name="MyReducedModel",
                   rotation=[0.0, 0.0, 0.0],
                   translation=[0.0, 0.0, 0.0],
+                  scale=[1.0, 1.0, 1.0],
                   surfaceMeshFileName=False,
                   surfaceColor=[1.0, 1.0, 1.0],
                   poissonRatio=None,
@@ -46,6 +47,8 @@ def MyReducedModel(
         rotation (vec3f):   Apply a 3D rotation to the object in Euler angles.
 
         translation (vec3f):   Apply a 3D translation to the object.
+
+        scale (vec3f): Apply a 3D scale to the object.
 
         poissonRatio (float):  The poisson parameter.
 

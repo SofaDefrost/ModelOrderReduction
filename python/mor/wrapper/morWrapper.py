@@ -4,7 +4,7 @@ Wrapper used for MOR
 """
 import stlib
 
-class MORWrapper(stlib.scene.cWrapper): # Wrapper):
+class MORWrapper(stlib.scene.Wrapper): # Wrapper):
     """
     inherited from the STLIB wrapper
 

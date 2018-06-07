@@ -2,7 +2,7 @@
 import imp
 
 #	STLIB IMPORT
-from stlib.animation import AnimationManager , animate
+from splib.animation import AnimationManager , animate
 from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT

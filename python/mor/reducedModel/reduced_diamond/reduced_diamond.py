@@ -2,7 +2,7 @@
 import os
 import Sofa
 from numpy import add,subtract
-from stlib.numerics import *
+from splib.numerics import *
 
 path = os.path.dirname(os.path.abspath(__file__))
 
