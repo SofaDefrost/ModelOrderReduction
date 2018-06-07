@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append("/home/felix/SOFA/plugin/STLIB/python")
-from stlib.scene.wrapper import Wrapper
+"""
+Wrapper used for MOR
+"""
+import stlib
 
-class MORWrapper(Wrapper):
+class MORWrapper(stlib.scene.cWrapper): # Wrapper):
+    """
+    inherited from the STLIB wrapper
 
+    this wrapper allow us to change, during the scene construction, the datacache arguments
+    
+    for example in order to adjust links between moving component
+    """
     def createObject(self, type, **kwargs):
         # print(type) 
         objectArg = self.attachedFunction(self.node,type,self.datacache,kwargs) 

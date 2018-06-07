@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Animation framework for MOR
+Set of class and functions to modify the SOFA scene 
+during its construction or save it to make a reusable
+component
 
 .. autosummary::
-
-    morWrapper
+    :toctree: _autosummary
+	
+	mor.wrapper.morWrapper
+    mor.wrapper.writeScene
 
 """
-__all__=["morWrapper","saveReducedModelWrapper","writeScene"]
+__all__=["morWrapper","writeScene"]
 from morWrapper import MORWrapper

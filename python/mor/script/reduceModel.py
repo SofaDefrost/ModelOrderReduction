@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Set of class simplifying and allowing to perform ModelReduction 
+"""
 import time
 import os
 import sys 
@@ -13,9 +16,41 @@ from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndCom
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/reducedModel/'
-# print('pathToReducedModel : '+pathToReducedModel)
+print('pathToReducedModel : '+pathToReducedModel)
 
 class ObjToAnimate():
+    '''
+    ObjToAnimate is a class allowing us to store in 1 object all the information about a specific animation
+
+    **Args**
+        
+    +----------+-----------+---------------------------------------------------------------------------------------+
+    | argument | type      | definition                                                                            |
+    +==========+===========+=======================================================================================+
+    | location | Str       | Name of the Sofa Node where our obj to animate is                                     |
+    +----------+-----------+---------------------------------------------------------------------------------------+
+    | animFct  | Str       || Name of our function we want to use to animate.                                      |
+    |          |           || During execution of the Sofa Scene, it will import the module                        |
+    |          |           || mor.animation in which your animation function has to be located in order to be used |
+    +----------+-----------+---------------------------------------------------------------------------------------+
+    | objName  | Str       | Name of our Sofa obj                                                                  |
+    +----------+-----------+---------------------------------------------------------------------------------------+
+    | node     | Sofa.Node | pointer to Sofa node in which we are working on (will be set during execution)        |
+    +----------+-----------+---------------------------------------------------------------------------------------+
+    | obj      | Sofa.Obj  | pointer to Sofa obj working on (will be set during execution)                         |
+    +----------+-----------+---------------------------------------------------------------------------------------+
+    | duration | sc        || Total time in second of the animation (put by default to -1                          |
+    |          |           || & will be calculated & set later in the execution)                                   |
+    +----------+-----------+---------------------------------------------------------------------------------------+
+    | **params | undefined || You can put in addation whatever parameters you will need                            |
+    |          |           || for your specific animation function                                                 |
+    +----------+-----------+---------------------------------------------------------------------------------------+
+
+    Example :
+
+        ObjToAnimate("nord","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
+
+    '''
 
     def __init__(self,location, animFct=None, objName=None, node=None, obj=None, duration=-1, **params):
         self.location = location
@@ -32,7 +67,9 @@ class ObjToAnimate():
         self.params = params # name, dataToWorkOn, incr, incrPeriod, rangeOfAction ...
 
 class ReductionAnimations():
-
+    """
+    TODO
+    """
     def __init__(self,listObjToAnimate):
 
         # A list of what you want to animate in your scene and with which parameters
@@ -77,14 +114,16 @@ class ReductionAnimations():
         self.phaseNumClass = phaseNumClass
 
 class PackageBuilder():
-
+    """
+    TODO
+    """
     def __init__(self,outputDir,meshDir,toKeep,packageName = None ,addToLib = False):
 
         self.outputDir = outputDir
         self.meshDir = meshDir+'/'
 
         self.toKeep = toKeep
-        self.addToLib = addToLib
+        self.addToLibBool = addToLib
 
         if packageName :
             self.packageName = 'reduced_'+packageName
@@ -178,7 +217,7 @@ class PackageBuilder():
 
         self.copy(self.meshDir, self.outputDir+'/mesh/')
 
-        if self.addToLib :
+        if self.addToLibBool :
 
             self.addToLib()
 
@@ -214,7 +253,9 @@ class PackageBuilder():
             raise
 
 class ReductionParam():
-
+    """
+    TODO
+    """
     def __init__(self,tolModes,tolGIE,addRigidBodyModes,dataDir):
 
         self.tolModes = tolModes
@@ -341,7 +382,9 @@ class ReductionParam():
             self.connectivityFilesNames.append('conectivity_'+nodeName+'.txt')
 
 class ReduceModel():
-
+    """
+    TODO
+    """
     def __init__(self,
                  originalScene,
                  nodesToReduce,

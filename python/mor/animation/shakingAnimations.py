@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
 from math import cos
 from math import sin
-"""
-Files containing all the developped shaking animation 
-function to help produced a reduced model
 
-
-
-"""
 def upDateValue(actualValue,actuatorMaxPull,actuatorIncrement):
     if actualValue < actuatorMaxPull:
         print "INCREMENT ++"
@@ -16,20 +10,37 @@ def upDateValue(actualValue,actuatorMaxPull,actuatorIncrement):
         print "Done"
         return actualValue
 
-def defaultShaking( objToAnimate,
-                    dt,
-                    factor,
-                    **param):
+def rotationPoint(Pos0, angle, brasLevier):
+    size0 = len(Pos0);
+    posOut = [0.0]*3*size0;
+
+    for i in range(size0):
+        posOut[3*i] = Pos0[i][0] - brasLevier*cos(angle);
+        posOut[3*i+1] = Pos0[i][1] - brasLevier*sin(angle);
+        posOut[3*i+2] = Pos0[i][2];
+        print(posOut)
+
+    return posOut
+
+def defaultShaking( objToAnimate, dt, factor, **param):
     """
-    Object with an elastic deformation law.
+    *increase* a value of a Sofa object until it reach its *maximum*
 
-    Args:
-        target (Sofa.node): 	Sofa node in wich we are working
+    For this objToAnimate.params arguments which is a dic will need 3 keys:
 
-        phaseTest (list[int]):  activation of actuator sequence (ie: [1,0,0,1])
+    **Keys:**
 
-        actuatorNb (int):   	The number of our actuator we are currently working with
-
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | argument      | type  | definition                                                                      |
+    +===============+=======+=================================================================================+
+    | dataToWorkOn  | str   | Name of the Sofa datafield we will work on by default it will be set to *value* |
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | incrPeriod    | float | Period between each increment                                                   |
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | incr          | float | Value of each increment                                                         |
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | rangeOfAction | float | Until which value the data will increase                                        |
+    +---------------+-------+---------------------------------------------------------------------------------+
     """
     import Sofa
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
@@ -43,23 +54,32 @@ def defaultShaking( objToAnimate,
 
         print ("Updated Value :"+str(actualValue)+'\n')
 
-def shakingSofia( objToAnimate,
-                  dt,
-                  factor,
-                  **param):
+def shakingSofia( objToAnimate, dt, factor, **param):
     """
-    shakingSofia
+    was made specifically to shake the Sofia Leg and can be an example as an custom shaking animation
 
-    Args:
-        target (Sofa.node):     Sofa node in wich we are working
+    It take a position, rotate it and update it in the component
 
-        phaseTest (list[int]):  activation of actuator sequence (ie: [1,0,0,1])
+    For this shaking, objToAnimate.params arguments will need 3 keys:
 
-        actuatorNb (int):       The number of our actuator we are currently working with
+    **Keys:**
+
+    +---------------+-------+-----------------------------------------------------------------------+
+    | argument      | type  | definition                                                            |
+    +===============+=======+=======================================================================+
+    | dataToWorkOn  | str   | Name of the Sofa datafield we will work on here it will be *position* |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | incrPeriod    | float | Period between each increment                                         |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | incr          | float | Value of each increment                                               |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | rangeOfAction | float | Until which value the data will increase                              |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | angle         | float | Initial angle value in radian                                         |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | rodRadius     | float | Radius Lenght of the circle                                           |
+    +---------------+-------+-----------------------------------------------------------------------+
     """
-
-    global angle
-
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
     # print("currentTime - startTime : "+str(factor * objToAnimate.duration))
     if moduloResult == 0:
@@ -75,32 +95,9 @@ def shakingSofia( objToAnimate,
 
         print ("Updated Value :"+str(actualValue)+'\n')
 
-
-def rotationPoint(Pos0, angle, brasLevier):
-    size0 = len(Pos0);
-    posOut = [0.0]*3*size0;
-
-    for i in range(size0):
-        posOut[3*i] = Pos0[i][0] - brasLevier*cos(angle);
-        posOut[3*i+1] = Pos0[i][1] - brasLevier*sin(angle);
-        posOut[3*i+2] = Pos0[i][2];
-        print(posOut)
-
-    return posOut
-
-def shakingInverse( objToAnimate,
-                    dt,
-                    factor,
-                    **param):
+def shakingInverse( objToAnimate, dt, factor, **param):
     """
-    shakingInverse
-
-    Args:
-        target (Sofa.node):     Sofa node in wich we are working
-
-        phaseTest (list[int]):  activation of actuator sequence (ie: [1,0,0,1])
-
-        actuatorNb (int):       The number of our actuator we are currently working with
+    TODO
     """
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
     # print("currentTime - startTime : "+str(factor * objToAnimate.duration))

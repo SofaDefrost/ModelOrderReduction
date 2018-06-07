@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Animation framework for MOR
+Set of Function/Class to perform Model Reduction
 
 .. autosummary::
+    :toctree: _autosummary
 
-    morUtilityFunctions
-    reduceModel
+    mor.script.reduceModel
+    mor.script.morUtilityFunctions
 
 """
 __all__=["morUtilityFunctions","reduceModel"]
