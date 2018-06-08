@@ -1,6 +1,10 @@
 mor.script.reduceModel
 ======================
 
+Set of class simplifying and allowing to perform ModelReduction 
+
+**Content:**
+
 .. autosummary::
     :toctree: _autosummary
 

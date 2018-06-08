@@ -2,6 +2,8 @@
 """
 Set of Function/Class to perform Model Reduction
 
+**Content:**
+
 .. autosummary::
     :toctree: _autosummary
 

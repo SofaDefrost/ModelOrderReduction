@@ -68,7 +68,7 @@ class ObjToAnimate():
 
 class ReductionAnimations():
     """
-    TODO
+    Contain all the parameters & functions related to the animation of the reduction
     """
     def __init__(self,listObjToAnimate):
 
@@ -115,7 +115,7 @@ class ReductionAnimations():
 
 class PackageBuilder():
     """
-    TODO
+    Contain all the parameters & functions related to building the package
     """
     def __init__(self,outputDir,meshDir,toKeep,packageName = None ,addToLib = False):
 
@@ -254,7 +254,7 @@ class PackageBuilder():
 
 class ReductionParam():
     """
-    TODO
+    Contain all the parameters related to the reduction
     """
     def __init__(self,tolModes,tolGIE,addRigidBodyModes,dataDir):
 
@@ -383,7 +383,40 @@ class ReductionParam():
 
 class ReduceModel():
     """
-    TODO
+    Main class that will perform the reduction
+
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | argument          | type         | definition                                                                                |
+    +===================+==============+===========================================================================================+
+    | originalScene     | str          | absolute path to original scene                                                           |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | nodesToReduce     | list(str)    | list of paths to models to reduce                                                         |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | listObjToAnimate  | ObjToAnimate | list conaining all the ObjToAnimate that will be use to shake our model                   |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | tolModes          | float        | tolerance applied to choose the modes                                                     |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | tolGIE            | float        | tolerance applied to calculated GIE                                                       |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | outputDir         | str          | absolute path to output directiry in which all results will be stored                     |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | meshDir           | str          || absolute path to the directory containing the different                                  |
+    |                   |              || mesh used by the Sofa scene in reduction                                                 |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | packageName       | str          | Which name will have the final componant & package if the option is activated             |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | toKeep            | str          || Indicate which Sofa.node to keep for our reduced component.                              |
+    |                   |              || by default will keep all the node used for animation                                     |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | addToLib          | Bool         | If ``True`` will add in the python library of this plugin the finalized reduced component |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | verbose           | Bool         | display more or less verbose                                                              |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | addRigidBodyModes | list(int)    | List of 3 of 0/1 that will allow translation along [x,y,z] axis of our reduced model      |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+    | nbrCPU            | int          | Number of CPU we will use to generate/calculate the reduced model                         |
+    +-------------------+--------------+-------------------------------------------------------------------------------------------+
+
     """
     def __init__(self,
                  originalScene,
@@ -458,7 +491,15 @@ class ReduceModel():
         print(strInfo)
 
     def setListSofaScene(self,phasesToExecute=None):
-
+        """
+        +-----------------+-----------+----------------------------------------------------------+
+        | argument        | type      | definition                                               |
+        +=================+===========+==========================================================+
+        | phasesToExecute | list(int) | Allow to choose which phase to execute for the reduction |
+        |                 |           |                                                          |
+        |                 |           | ``by default will select all the phase``                 |
+        +-----------------+-----------+----------------------------------------------------------+
+        """
         self.listSofaScene = []
 
         if not phasesToExecute:
@@ -475,7 +516,21 @@ class ReduceModel():
                                         "nbIterations":self.reductionAnimations.nbIterations})
 
     def performReduction(self,phasesToExecute=None,nbrOfModes=None):
+        """
+        Perform all the steps of the reduction in one function
 
+        if you are sure of all the parameters this way is recommended to gain time
+
+        +-----------------+-----------+----------------------------------------------------------+
+        | argument        | type      | definition                                               |
+        +=================+===========+==========================================================+
+        | phasesToExecute | list(int) || Allow to choose which phase to execute for the reduction|
+        |                 |           || ``by default will select all the phase``                |
+        +-----------------+-----------+----------------------------------------------------------+
+        | nbrOfModes      | int       || Number of modes you want to keep                        |
+        |                 |           || ``by default will keep them all``                       |
+        +-----------------+-----------+----------------------------------------------------------+
+        """
         ### This initila time we allow us to give at the end the total time execution
         init_time = time.time()
 
@@ -488,15 +543,25 @@ class ReduceModel():
         print("TOTAL TIME --- %s ---" % (datetime.timedelta(seconds=tps) ) )
 
     def phase1(self,phasesToExecute=None):
-        ####################    SOFA LAUNCHER       ##########################
-        #                                                                    #
-        #                           PHASE 1                                  #
-        #                                                                    #
-        #      We modify the original scene to do the first step of MOR :    #
-        #   we add animation to each actuators we want for our model         #
-        #   add a writeState componant to save the shaking resulting states  #
-        #                                                                    #
-        ######################################################################
+        """
+        The step will launch in parallel multiple Sofa scene (nbrCPU by nbrCPU number of scene) until
+        it has run all the scene in the sequence. For that it will use the ``sofa launcher`` utility
+
+        +-----------------+-----------+----------------------------------------------------------+
+        | argument        | type      | definition                                               |
+        +=================+===========+==========================================================+
+        | phasesToExecute | list(int) | Allow to choose which phase to execute for the reduction |
+        |                 |           |                                                          |
+        |                 |           | ``by default will select all the phase``                 |
+        +-----------------+-----------+----------------------------------------------------------+
+
+        What does it do to each scene:
+
+            - add animation to each actuators we want for our model in the predifined sequence
+            - add a writeState componant to save the shaking resulting states
+            - take all the resulting states files and combines them in one file put in the ``debug`` dir with a debug scene
+
+        """
         start_time = time.time()
 
         if not phasesToExecute:
@@ -525,15 +590,12 @@ class ReduceModel():
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
 
     def phase2(self):
-        ####################    PYTHON SCRIPT       ##########################
-        #                                                                    #
-        #                           PHASE 2                                  #
-        #                                                                    #
-        #      With the previous result we combine all the generated         #
-        #       state files into one to be able to extract from it           #
-        #                       the different mode                           #
-        #                                                                    #
-        ######################################################################
+        """
+        With the previous result we compute the modes
+
+        it will set ``nbrOfModes`` to its maximum, but it can be changed has argument to the next step
+
+        """
         start_time = time.time()
 
         self.packageBuilder.checkExistance(self.packageBuilder.dataDir)
@@ -550,20 +612,32 @@ class ReduceModel():
         print("PHASE 2 --- %s seconds ---" % (time.time() - start_time))
 
     def phase3(self,phasesToExecute=None,nbrOfModes=None):
-        ####################    SOFA LAUNCHER       ##########################
-        #                                                                    #
-        #                           PHASE 3                                  #
-        #                                                                    #
-        #      We launch again a set of sofa scene with the sofa launcher    #
-        #      with the same previous arguments but with a different scene   #
-        #      This scene take the previous one and add the model order      #
-        #      reduction component:                                          #
-        #            - HyperReducedFEMForceField                             #
-        #            - MappedMatrixForceFieldAndMass                         #
-        #            - ModelOrderReductionMapping                            #
-        #       and produce an Hyper Reduced description of the model        #
-        #                                                                    #
-        ######################################################################
+        """
+        The step will launch in parallel multiple Sofa scene (nbrCPU by nbrCPU number of scene) until
+        it has run all the scene in the sequence. For that it will use the ``sofa launcher`` utility
+
+        +-----------------+-----------+----------------------------------------------------------+
+        | argument        | type      | definition                                               |
+        +=================+===========+==========================================================+
+        | phasesToExecute | list(int) || Allow to choose which phase to execute for the reduction|
+        |                 |           || ``by default will select all the phase``                |
+        +-----------------+-----------+----------------------------------------------------------+
+        | nbrOfModes      | int       || Number of modes you want to keep                        |
+        |                 |           || ``by default will keep them all``                       |
+        +-----------------+-----------+----------------------------------------------------------+
+
+        What does it do to each scene:
+
+            - take the previous one and add the model order reduction component:
+               - HyperReducedFEMForceField
+               - MappedMatrixForceFieldAndMas
+               - ModelOrderReductionMapping
+            - produce an Hyper Reduced description of the model
+            - produce files listing the different element to keep
+            - produce also a state file of all the resulting states files & put in the ``debug``
+
+
+        """
         start_time = time.time()
 
         if not phasesToExecute:
@@ -619,15 +693,15 @@ class ReduceModel():
         print("PHASE 3 --- %s seconds ---" % (time.time() - start_time))
 
     def phase4(self,nbrOfModes=None):
-        ####################    PYTHON SCRIPT       ##########################
-        #                                                                    #
-        #                           PHASE 4                                  #
-        #                                                                    #
-        #      Final step : we gather again all the results of the           #
-        #      previous scenes into one and then compute the RID and Weigts  #
-        #      with it. Additionnally we also compute the Active Nodes       #
-        #                                                                    #
-        ######################################################################
+        """
+        Final step :
+
+            - compute the RID and Weigts
+            - compute the Active Nodes
+            - finalize the package
+            - add it to the plugin library if option activated
+
+        """
         start_time = time.time()
 
         if not os.path.isfile(self.packageBuilder.dataDir+self.reductionParam.modesFileName):
