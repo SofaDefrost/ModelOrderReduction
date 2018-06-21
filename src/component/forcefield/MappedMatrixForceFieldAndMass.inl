@@ -30,7 +30,6 @@
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/helper/gl/template.h>
 #include <sofa/helper/system/config.h>
-#include <sofa/helper/system/glut.h>
 #include <sofa/helper/rmath.h>
 #include <assert.h>
 #include <iostream>
@@ -149,7 +148,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(
     sofa::core::MatrixDerivId Id= sofa::core::MatrixDerivId::mappingJacobian();
     core::objectmodel::BaseContext* context = this->getContext();
     simulation::Node* gnode = dynamic_cast<simulation::Node*>(context);
-    simulation::MechanicalResetConstraintVisitor(eparams).execute(gnode);
+    simulation::MechanicalResetConstraintVisitor(&cparams).execute(context);
     buildIdentityBlocksInJacobian(mstate,Id);
 
     MechanicalAccumulateJacobian(&cparams, core::MatrixDerivId::mappingJacobian()).execute(gnode);
@@ -469,8 +468,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     core::ConstraintParams cparams = core::ConstraintParams(*eparams);
 
     core::objectmodel::BaseContext* context = this->getContext();
-    simulation::Node* gnode = dynamic_cast<simulation::Node*>(context);
-    simulation::MechanicalResetConstraintVisitor(eparams).execute(gnode);
+    simulation::MechanicalResetConstraintVisitor(&cparams).execute(context);
 
 }
 
