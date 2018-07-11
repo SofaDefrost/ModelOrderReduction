@@ -19,7 +19,7 @@
 #   STLIB IMPORT
 from stlib.scene import MainHeader
 def createScene(rootNode):
-    surfaceMeshFileName = ''
+    surfaceMeshFileName = False
 
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
                         dt=1,

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import imp
 
 #	STLIB IMPORT
 from stlib.scene.wrapper import Wrapper
@@ -9,11 +10,7 @@ import ntpath
 import importlib
 
 originalScene = '$ORIGINALSCENE'
-
-sys.path.insert(0,os.path.dirname(os.path.abspath(originalScene)))
-filename, file_extension = os.path.splitext(originalScene)
-importScene = str(ntpath.basename(filename))
-originalScene = importlib.import_module(importScene)
+originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
 
 paramWrapper = $PARAMWRAPPER
 

@@ -52,7 +52,7 @@ def searchInGraphScene(node,toFind):
         else:
             searchInGraphScene(child,toFind)
 
-def searchChildAndAnimate(node):
+def searchChildAndAnimate():
     '''
         FOR all node find to animate animate only the one moving -> phase 1/0
 
@@ -87,10 +87,10 @@ def searchChildAndAnimate(node):
                 objToAnimate.duration = timeExe
 
                 animate(objToAnimate.animFct, {'objToAnimate':objToAnimate,'dt':dt}, objToAnimate.duration)
-                print("Animate "+obj.getClassName()+" from node "+node.name+"\nwith parameters :\n"+str(objToAnimate.params))
+                print("Animate "+objToAnimate.obj.getClassName()+" from node "+objToAnimate.node.name+"\nwith parameters :\n"+str(objToAnimate.params))
 
             else:
-                print("Found Nothing to animate in "+str(node.name))
+                print("Found Nothing to animate in "+str(objToAnimate.node.name))
 
         tmpFind += 1
 
@@ -120,10 +120,10 @@ def createScene(rootNode):
 
     if isinstance(rootNode, Wrapper):
         AnimationManager(rootNode.node)
-        searchChildAndAnimate(rootNode.node)
     else:
         AnimationManager(rootNode)
-        searchChildAndAnimate(rootNode)
+
+    searchChildAndAnimate()
 
     toFind = []
     for item in paramWrapper:

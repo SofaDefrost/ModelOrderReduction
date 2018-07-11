@@ -31,7 +31,7 @@ class ObjToAnimate():
     +----------+-----------+---------------------------------------------------------------------------------------+
     | animFct  | Str       || Name of our function we want to use to animate.                                      |
     |          |           || During execution of the Sofa Scene, it will import the module                        |
-    |          |           || mor.animation in which your animation function has to be located in order to be used |
+    |          |           || mor.animation.animFct where your function has to be located in order to be used      |
     +----------+-----------+---------------------------------------------------------------------------------------+
     | objName  | Str       | Name of our Sofa obj                                                                  |
     +----------+-----------+---------------------------------------------------------------------------------------+
@@ -52,11 +52,9 @@ class ObjToAnimate():
 
     '''
 
-    def __init__(self,location, animFct=None, objName=None, node=None, obj=None, duration=-1, **params):
+    def __init__(self,location, animFct='defaultShaking', objName=None, node=None, obj=None, duration=-1, **params):
         self.location = location
-        if animFct == None:
-            self.animFct = 'animation.defaultShaking'
-        elif isinstance(animFct, str):
+        if isinstance(animFct, str):
             self.animFct = 'animation.shakingAnimations.'+animFct
         else:
             self.animFct = animFct
