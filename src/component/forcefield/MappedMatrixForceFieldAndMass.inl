@@ -30,6 +30,7 @@
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/helper/gl/template.h>
 #include <sofa/helper/system/config.h>
+//#include <sofa/helper/system/glut.h>
 #include <sofa/helper/rmath.h>
 #include <assert.h>
 #include <iostream>
@@ -72,18 +73,8 @@ MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAnd
       d_mappedForceField2(initLink("mappedForceField2",
                                    "link to a second forcefield that is mapped too (not mandatory)")),
       d_mappedMass(initLink("mappedMass",
-                                   "link to a mass defined typically at the same node than mappedForceField"))//,
-//      saveReducedMass(initData(&saveReducedMass,false,"saveReducedMass",
-//                                    "Save the mass in the reduced space: Jt*M*J. Only make sense if timeInvariantMapping is set to true.")),
-//      usePrecomputedMass(initData(&usePrecomputedMass,false,"usePrecomputedMass",
-//                                         "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
-//      precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
-//                                       "Path to the precomputed reduced Mass Matrix Jt*M*J. usePrecomputedMass has to be set to true."))
+                                   "link to a mass defined typically at the same node than mappedForceField"))
 {
-    ////Eigen::initParallel();
-    //Eigen::setNbThreads(4);
-    //int nthreads = Eigen::nbThreads( );
-    //std::cout << "THREADS = " << nthreads <<std::ends; // returns '1'
 
 }
 
@@ -94,30 +85,14 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init()
 
     if (mstate1.get() == NULL || mstate2.get() == NULL)
     {
-        serr<< "Init of MixedInteractionForceField " << getContext()->getName() << " failed!" << sendl;
-        //getContext()->removeObject(this);
+        msg_error()<< "Init of MixedInteractionForceField " << getContext()->getName() << " failed!" << sendl;
         return;
     }
-
-
-//    if (usePrecomputedMass.getValue() == true)
-//    {
-//        Eigen::MatrixXd denseJtMJ;
-//        MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
-//        matLoader->setFileName(precomputedMassPath.getValue());
-//        matLoader->load();
-//        matLoader->getMatrix(denseJtMJ);
-//        delete matLoader;
-//        JtMJ = denseJtMJ.sparseView();
-
-//    }
-
 }
 
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id)
 {
-    msg_info(this) << "In buildIdentityBlocksInJacobianPasMOR, performECSW is false du coup";
     sofa::helper::vector<unsigned int> list;
     std::cout << "mstate->getSize()" << mstate->getSize() << std::endl;
     for (unsigned int i=0; i<mstate->getSize(); i++)
@@ -134,10 +109,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobiansO
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(const MechanicalParams* mparams)
 {
-
-    //sofa::helper::system::thread::CTime *timer;
-    //double timeScale, time ;
-    //timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
 
     // STEP1 : accumulate Jacobians J1 and J2
 
@@ -342,8 +313,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     /*                  we now get the matrices J1 and J2                         */
     /* -------------------------------------------------------------------------- */
 
-    msg_info(this)<<" nRow: "<< K->nRow << " nCol: " << K->nCol;
-
     ///////////////////////////     STEP 4      ////////////////////////////////////
     /* -------------------------------------------------------------------------- */
     /*          perform the multiplication with [J1t J2t] * K * [J1 J2]           */
@@ -352,9 +321,6 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     double startTime= (double)timer->getTime();
     Eigen::SparseMatrix<double,Eigen::ColMajor> Keig;
     copyKToEigenFormat(K,Keig);
-    msg_info(this) << "Keig size:" << Keig.size();
-    msg_info(this) << "Keig rows:" << Keig.rows();
-    msg_info(this) << "Keig cols:" << Keig.cols();
 
     //--------------------------------------------------------------------------------------------------------------------
 
