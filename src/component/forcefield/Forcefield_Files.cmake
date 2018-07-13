@@ -1,6 +1,9 @@
 
 list(APPEND HEADER_FILES
 
+    src/component/forcefield/HyperReducedForceField.h
+    src/component/forcefield/HyperReducedRestShapeSpringsForceField.h
+    src/component/forcefield/HyperReducedRestShapeSpringsForceField.inl
     src/component/forcefield/HyperReducedTetrahedronFEMForceField.h
     src/component/forcefield/HyperReducedTetrahedronFEMForceField.inl
     src/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.h
@@ -18,6 +21,7 @@ list(APPEND HEADER_FILES
 
 list(APPEND SOURCE_FILES
 
+    src/component/forcefield/HyperReducedRestShapeSpringsForceField.cpp
     src/component/forcefield/HyperReducedTetrahedronFEMForceField.cpp
     src/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.cpp
     src/component/forcefield/HyperReducedTriangleFEMForceField.cpp
@@ -25,16 +29,3 @@ list(APPEND SOURCE_FILES
     src/component/forcefield/MappedMatrixForceFieldAndMassMOR.cpp
 
     )
-
-if(SOFA_WITH_EXPERIMENTAL_FEATURES==1)
-
-    list(APPEND HEADER_FILES
-        src/component/forcefield/MappedMatrixForceField.h
-        src/component/forcefield/MappedMatrixForceField.inl
-        )
-
-    list(APPEND SOURCE_FILES
-        src/component/forcefield/MappedMatrixForceField.cpp
-        )
-
-endif()

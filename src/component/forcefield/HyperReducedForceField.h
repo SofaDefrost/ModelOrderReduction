@@ -1,0 +1,158 @@
+#ifndef HYPERREDUCEDFORCEFIELD_H
+#define HYPERREDUCEDFORCEFIELD_H
+
+#include <sofa/core/objectmodel/Data.h>
+#include <sofa/core/objectmodel/BaseObject.h>
+#include <sofa/core/behavior/ForceField.h>
+#include <sofa/helper/system/config.h>
+#include <SofaDeformable/config.h>
+#include <fstream> // for reading the file
+#include <iostream>
+
+
+#include "../loader/MatrixLoader.h"
+
+
+namespace sofa
+{
+
+namespace component
+{
+
+namespace forcefield
+{
+
+using sofa::component::loader::MatrixLoader;
+
+template<class DataTypes>
+class HyperReducedForceField : public core::behavior::ForceField<DataTypes>
+{
+public:
+    SOFA_CLASS(SOFA_TEMPLATE(HyperReducedForceField, DataTypes), SOFA_TEMPLATE(core::behavior::ForceField, DataTypes));
+
+//class HyperReducedForceField
+//{
+public:
+    // Reduced order model SOFA Data parameters
+    Data< bool > d_prepareECSW;
+    Data<unsigned int> d_nbModes;
+    Data<std::string> d_modesPath;
+    Data<unsigned int> d_nbTrainingSet;
+    Data<unsigned int> d_periodSaveGIE;
+
+    Data< bool > d_performECSW;
+    Data<std::string> d_RIDPath;
+    Data<std::string> d_weightsPath;
+
+    // Reduced order model variables
+    Eigen::MatrixXd m_modes;
+    std::vector<std::vector<double> > Gie;
+    Eigen::VectorXd weights;
+    Eigen::VectorXi reducedIntegrationDomain;
+    unsigned int m_RIDsize;
+
+public:
+    HyperReducedForceField()
+        : d_prepareECSW(initData(&d_prepareECSW,false,"prepareECSW","Save data necessary for the construction of the reduced model"))
+        , d_nbModes(initData(&d_nbModes,unsigned(3),"nbModes","Number of modes when preparing the ECSW method only"))
+        , d_modesPath(initData(&d_modesPath,std::string("modes.txt"),"modesPath","Path to the file containing the modes (useful only for preparing ECSW)"))
+        , d_nbTrainingSet(initData(&d_nbTrainingSet,unsigned(40),"nbTrainingSet","When preparing the ECSW, size of the training set"))
+        , d_periodSaveGIE(initData(&d_periodSaveGIE,unsigned(5),"periodSaveGIE","When prepareECSW is true, the values of Gie are taken every periodSaveGIE timesteps."))
+        , d_performECSW(initData(&d_performECSW,false,"performECSW","Use the reduced model with the ECSW method"))
+        , d_RIDPath(initData(&d_RIDPath,std::string("reducedIntegrationDomain.txt"),"RIDPath","Path to the Reduced Integration domain when performing the ECSW method"))
+        , d_weightsPath(initData(&d_weightsPath,std::string("weights.txt"),"weightsPath","Path to the weights when performing the ECSW method"))
+    {
+    }
+
+    void initMOR(unsigned int nbElements){
+        if (d_prepareECSW.getValue()){
+            MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
+            matLoader->setFileName(d_modesPath.getValue());
+            matLoader->load();
+            matLoader->getMatrix(m_modes);
+            delete matLoader;
+            m_modes.conservativeResize(Eigen::NoChange,d_nbModes.getValue());
+
+            Gie.resize(d_nbTrainingSet.getValue()*d_nbModes.getValue());
+            for (unsigned int i = 0; i < d_nbTrainingSet.getValue()*d_nbModes.getValue(); i++)
+            {
+                Gie[i].resize(nbElements);
+                for (unsigned int j = 0; j < nbElements; j++)
+                {
+                    Gie[i][j] = 0;
+                }
+            }
+        }
+
+        if (d_performECSW.getValue())
+        {
+
+            MatrixLoader<Eigen::VectorXd>* weightsMatLoader = new MatrixLoader<Eigen::VectorXd>();
+            weightsMatLoader->setFileName(d_weightsPath.getValue());
+            weightsMatLoader->load();
+            weightsMatLoader->getMatrix(weights);
+            delete weightsMatLoader;
+
+            MatrixLoader<Eigen::VectorXi>* RIDMatLoader = new MatrixLoader<Eigen::VectorXi>();
+            RIDMatLoader->setFileName(d_RIDPath.getValue());
+            RIDMatLoader->load();
+            RIDMatLoader->getMatrix(reducedIntegrationDomain);
+            delete RIDMatLoader;
+
+            m_RIDsize = reducedIntegrationDomain.rows();
+
+        }
+        else
+        {
+            m_RIDsize = nbElements;  // the reduced integration contains all the elements in this case.
+            reducedIntegrationDomain.resize(m_RIDsize);
+            for (unsigned int i = 0; i<m_RIDsize; i++)
+                reducedIntegrationDomain(i) = i;
+        }
+
+    }
+
+
+    void saveGieFile(unsigned int nbElements){
+        if (d_performECSW.getValue())
+        {
+            int numTest = this->getContext()->getTime()/this->getContext()->getDt();
+            if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
+            {
+                numTest = numTest/d_periodSaveGIE.getValue();
+                if (numTest < d_nbTrainingSet.getValue()){
+                    std::stringstream gieFileNameSS;
+                    gieFileNameSS << this->name << "_Gie.txt";
+                    std::string gieFileName = gieFileNameSS.str();
+                    std::ofstream myfileGie (gieFileName, std::fstream::app);
+                    msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
+                    for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
+                        for (unsigned int l=0;l<nbElements;l++){
+                            myfileGie << Gie[k][l] << " ";
+                        }
+                        myfileGie << std::endl;
+                    }
+                    myfileGie.close();
+                    msg_info(this) << "Storing Done";
+                }
+                else
+                {
+                    msg_info(this) << d_nbTrainingSet.getValue() << "were already stored. Learning phase completed.";
+                }
+            }
+        }
+
+    }
+
+};
+
+
+
+} // namespace forcefield
+
+} // namespace component
+
+} // namespace sofa
+
+
+#endif // HYPERREDUCEDFORCEFIELD_H
