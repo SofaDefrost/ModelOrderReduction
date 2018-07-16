@@ -40,11 +40,6 @@ using namespace sofa::defaulttype;
 
 
 ////////////////////////////////////////////    FACTORY    //////////////////////////////////////////////
-// Registering the component
-// see: http://wiki.sofa-framework.org/wiki/ObjectFactory
-// 1-SOFA_DECL_CLASS(componentName) : Set the class name of the component
-// 2-RegisterObject("description") + .add<> : Register the component
-// 3-.add<>(true) : Set default template
 SOFA_DECL_CLASS(MappedMatrixForceFieldAndMass)
 
 int MappedMatrixForceFieldAndMassClass = core::RegisterObject("Partially rigidify a mechanical object using a rigid mapping.")
@@ -63,10 +58,6 @@ int MappedMatrixForceFieldAndMassClass = core::RegisterObject("Partially rigidif
         ;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Force template specialization for the most common sofa floating point related type.
-// This goes with the extern template declaration in the .h. Declaring extern template
-// avoid the code generation of the template for each compilation unit.
-// see: http://www.stroustrup.com/C++11FAQ.html#extern-templates
 #ifdef SOFA_WITH_DOUBLE
 template class MappedMatrixForceFieldAndMass<Vec3dTypes, Rigid3dTypes>;
 template class MappedMatrixForceFieldAndMass<Vec3dTypes, Vec3dTypes>;

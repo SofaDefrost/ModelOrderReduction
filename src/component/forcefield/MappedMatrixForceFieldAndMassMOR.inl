@@ -192,13 +192,13 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addMassToSystem(c
 {
     if (usePrecomputedMass.getValue() == false)
     {
-        if (MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::d_mappedMass != NULL)
+        if (MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass != NULL)
         {
-            MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::d_mappedMass.get()->addMToMatrix(mparams, KAccessor);
+            MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->addMToMatrix(mparams, KAccessor);
         }
         else
         {
-            msg_info(this) << "There is no d_mappedMass";
+            msg_info(this) << "There is no mappedMass";
         }
     }
 }
@@ -217,17 +217,17 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addPrecomputedMas
     {
         if (saveReducedMass.getValue() == true)
         {
-            if (MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::d_mappedMass != NULL)
+            if (MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass != NULL)
             {
                 CompressedRowSparseMatrix<typename DataTypes1::Real >* M = new CompressedRowSparseMatrix<typename DataTypes1::Real > ( );
                 M->resizeBloc( 3*mstateSize ,  3*mstateSize);
                 M->clear();
                 DefaultMultiMatrixAccessor* MassAccessor;
                 MassAccessor = new DefaultMultiMatrixAccessor;
-                MassAccessor->addMechanicalState(  MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::d_mappedMass.get()->getContext()->getMechanicalState() );
+                MassAccessor->addMechanicalState(  MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->getContext()->getMechanicalState() );
                 MassAccessor->setGlobalMatrix(M);
                 MassAccessor->setupMatrices();
-                MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::d_mappedMass.get()->addMToMatrix(mparams, MassAccessor);
+                MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->addMToMatrix(mparams, MassAccessor);
                 M->compress();
 
                 std::vector< Eigen::Triplet<double> > tripletListM;
@@ -250,7 +250,7 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addPrecomputedMas
                 Eigen::SparseMatrix<double>  JtMJeigen(nbColsJ1,nbColsJ1);
                 JtMJeigen = Jeig.transpose()*Meig*Jeig;
                 msg_info(this) << JtMJeigen;
-                std::string massName = MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::d_mappedMass.get()->getName() + "_reduced.txt";
+                std::string massName = MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->getName() + "_reduced.txt";
                 msg_info(this) << "Storing " << massName << " ... ";
                 std::ofstream file(massName);
                 if (file.is_open())

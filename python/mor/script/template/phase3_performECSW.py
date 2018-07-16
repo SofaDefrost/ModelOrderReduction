@@ -98,15 +98,6 @@ def MORreplace(node,type,newParam,initialParam):
                     param['paramMORMapping']['output'] = '@./MechanicalObject'
                 return (-1, -1, newParam)
 
-            elif str(type).find('UniformMass') != -1:
-                #Find UniformMass name to be able to save to link it to the ModelOrderReductionMapping
-                myModel[node.name].append((str(type),initialParam))
-                if 'name' in initialParam :
-                    param['paramMappedMatrixMapping']['mappedMass'] = '@.'+path+'/'+initialParam['name']
-                else:
-                    param['paramMappedMatrixMapping']['mappedMass'] = '@.'+path+'/'+'UniformMass'
-                return (-1, -1, newParam)
-
             else:
                 if str(type).find('Loader') != -1 or str(type).find('Container') != -1:
                     #   Find the loader/container to be able to save elements allowing to build the connectivity file
@@ -167,12 +158,6 @@ def searchObjectAndDestroy(node,mySolver,newParam):
                         child.removeObject(obj)
                         child.getParents()[0].addObject(obj)
 
-                param['paramMappedMatrixMapping']['mappedForceField'] = '@.'+path+'/'+'HyperReducedFEMForceField_'+path[1:]
-                if 'subTopo' in param:
-                    nodeName = param['subTopo']
-                    pathToLink = '@.'+path+'/'+nodeName+'/'+'HyperReducedFEMForceField_'+nodeName
-                    # print pathToLink
-                    param['paramMappedMatrixMapping']['mappedForceField2'] = pathToLink
                 # print param['paramMappedMatrixMapping']
                 myMORModel.append(('MappedMatrixForceFieldAndMassMOR',param['paramMappedMatrixMapping']))
                 modelMOR.createObject('MappedMatrixForceFieldAndMassMOR', **param['paramMappedMatrixMapping'] )

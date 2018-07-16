@@ -91,7 +91,7 @@ class ReductionAnimations():
             for obj in self.listObjToAnimate:
                 tmp = 0
                 if all (k in obj.params for k in ("incr","incrPeriod")):
-                    tmp = ((obj.params['rangeOfAction']/obj.params['incr'])-1)*obj.params['incrPeriod'] + obj.params['incrPeriod']
+                    tmp = ((obj.params['rangeOfAction']/obj.params['incr'])-1)*obj.params['incrPeriod'] + 2*obj.params['incrPeriod']-1
                 if tmp > self.nbIterations:
                     self.nbIterations = int(math.ceil(tmp))
 
@@ -285,6 +285,7 @@ class ReductionParam():
     def addParamWrapper(self ,nodeToReduce ,prepareECSW = True ,subTopo = None ,paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
 
         nodeName = nodeToReduce.split('/')[-1]
+        nodeToParse = '@.'+nodeToReduce
 
         defaultParamPrepare = {
                 'paramForcefield' : {
@@ -298,6 +299,7 @@ class ReductionParam():
                     'modesPath': self.dataDir+self.modesFileName},
 
                 'paramMappedMatrixMapping' : {
+                    'nodeToParse': nodeToParse,
                     'template': 'Vec1d,Vec1d',
                     'object1': '@./MechanicalObject',
                     'object2': '@./MechanicalObject',
@@ -316,6 +318,7 @@ class ReductionParam():
                     'modesPath': self.dataFolder+self.modesFileName},
 
                 'paramMappedMatrixMapping' : {
+                    'nodeToParse': nodeToParse,
                     'template': 'Vec1d,Vec1d',
                     'object1': '@./MechanicalObject',
                     'object2': '@./MechanicalObject',

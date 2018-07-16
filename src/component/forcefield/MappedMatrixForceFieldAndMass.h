@@ -36,7 +36,6 @@
 
 #include <sofa/core/topology/BaseMeshTopology.h>
 
-
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/core/ConstraintParams.h>
 #include <sofa/core/MultiVecId.h>
@@ -97,12 +96,11 @@ protected:
 };
 
 
-
-
 using sofa::component::linearsolver::CompressedRowSparseMatrix ;
 using sofa::core::behavior::MixedInteractionForceField ;
 using sofa::core::behavior::BaseForceField ;
 using sofa::core::behavior::BaseMass ;
+using sofa::core::behavior::BaseMechanicalState ;
 using sofa::core::behavior::MultiMatrixAccessor ;
 using sofa::component::linearsolver::DefaultMultiMatrixAccessor ;
 using sofa::defaulttype::BaseMatrix ;
@@ -115,6 +113,7 @@ public:
     SOFA_CLASS(SOFA_TEMPLATE2(MappedMatrixForceFieldAndMass, TDataTypes1, TDataTypes2), SOFA_TEMPLATE2(MixedInteractionForceField, TDataTypes1, TDataTypes2));
 
     typedef MixedInteractionForceField<TDataTypes1, TDataTypes2> Inherit;
+
     // Vec3
     typedef TDataTypes1 DataTypes1;
     typedef typename DataTypes1::VecCoord VecCoord1;
@@ -127,7 +126,8 @@ public:
     typedef typename DataTypes1::MatrixDeriv::RowConstIterator MatrixDeriv1RowConstIterator;
     typedef typename DataTypes1::MatrixDeriv::ColConstIterator MatrixDeriv1ColConstIterator;
     static const unsigned int DerivSize1 = Deriv1::total_size;
-
+    typedef Data<VecCoord1>    DataVecCoord1;
+    typedef Data<VecDeriv1>    DataVecDeriv1;
 
     // Rigid
     typedef TDataTypes2 DataTypes2;
@@ -141,23 +141,23 @@ public:
     typedef typename DataTypes2::MatrixDeriv::RowConstIterator MatrixDeriv2RowConstIterator;
     typedef typename DataTypes2::MatrixDeriv::ColConstIterator MatrixDeriv2ColConstIterator;
     static const unsigned int DerivSize2 = Deriv2::total_size;
-
-    typedef Data<VecCoord1>    DataVecCoord1;
-    typedef Data<VecDeriv1>    DataVecDeriv1;
     typedef Data<VecCoord2>    DataVecCoord2;
     typedef Data<VecDeriv2>    DataVecDeriv2;
 
-    typedef sofa::defaulttype::BaseVector::Index  Index;
 
+    typedef sofa::defaulttype::BaseVector::Index  Index;
     typedef typename CompressedRowSparseMatrix<Real1>::Range  Range;
 
 
 protected:
-    SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, BaseForceField, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK > d_mappedForceField;
-    SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, BaseForceField, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK > d_mappedForceField2;
-    SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, BaseMass, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_STRONGLINK > d_mappedMass;
 
-    Data<unsigned int> d_methodUsed;
+    SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, sofa::simulation::Node , BaseLink::FLAG_STOREPATH | BaseLink::FLAG_DOUBLELINK > l_nodeToParse;
+
+    SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, sofa::core::behavior::BaseMechanicalState , BaseLink::FLAG_STOREPATH | BaseLink::FLAG_DOUBLELINK > l_mechanicalState;
+    SingleLink < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, sofa::core::behavior::BaseMass , BaseLink::FLAG_STOREPATH | BaseLink::FLAG_DOUBLELINK > l_mappedMass;
+    MultiLink  < MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>, sofa::core::behavior::BaseForceField, BaseLink::FLAG_STOREPATH | BaseLink::FLAG_DOUBLELINK > l_forceField;
+
+    Data<helper::vector<std::string>> d_forceFieldList;
 
     MappedMatrixForceFieldAndMass() ;
 
@@ -185,7 +185,7 @@ public:
     virtual double getPotentialEnergy(const MechanicalParams* mparams,
                                       const DataVecCoord1& x1, const DataVecCoord2& x2) const ;
 
-
+    void parseNode(sofa::simulation::Node *node);
 
 
 protected:
@@ -210,12 +210,6 @@ protected:
     using MixedInteractionForceField<TDataTypes1, TDataTypes2>::mstate2 ;
     using MixedInteractionForceField<TDataTypes1, TDataTypes2>::getContext ;
     ////////////////////////////////////////////////////////////////////////////
-
-//    Data< bool > saveReducedMass;
-//    Data< bool > usePrecomputedMass;
-//    sofa::core::objectmodel::DataFileName precomputedMassPath;
-
-//    Eigen::SparseMatrix<double> JtMJ;
 
 };
 

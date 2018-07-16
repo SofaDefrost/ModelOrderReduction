@@ -91,23 +91,6 @@ def MORreplace(node,type,newParam,initialParam):
                         containers.append(initialParam['name'])
                     else: 
                         containers.append(type)
-			#    Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
-            if str(type).find('MechanicalObject') != -1:
-                if 'name' in initialParam :
-                    param['paramMORMapping']['output'] = '@./'+initialParam['name']
-                    return (-1, -1, newParam)
-                else:
-                    param['paramMORMapping']['output'] = '@./MechanicalObject'
-                    return (-1, -1, newParam)
-
-            #   Find UniformMass name to be able to save to link it to the ModelOrderReductionMapping
-            if str(type).find('UniformMass') != -1:
-                if 'name' in initialParam :
-                    param['paramMappedMatrixMapping']['mappedMass'] = '@.'+path+'/'+initialParam['name']
-                    return (-1, -1, newParam)
-                else:
-                    param['paramMappedMatrixMapping']['mappedMass'] = '@.'+path+'/'+'UniformMass'
-                    return (-1, -1, newParam)
 
             #	Change the initial Forcefield by the HyperReduced one with the new argument 
             if str(type).find('ForceField') != -1 and str(type) in forceFieldImplemented :
@@ -165,12 +148,6 @@ def modifyGraphScene(nodeFound,mySolver,newParam):
                             child.removeObject(obj)
                             child.getParents()[0].addObject(obj)
 
-                    param['paramMappedMatrixMapping']['mappedForceField'] = '@.'+path+'/'+'HyperReducedFEMForceField_'+path[1:]
-                    if 'subTopo' in param:
-                        nodeName = param['subTopo']
-                        pathToLink = '@.'+path+'/'+nodeName+'/'+'HyperReducedFEMForceField_'+nodeName
-                        # print pathToLink
-                        param['paramMappedMatrixMapping']['mappedForceField2'] = pathToLink
                     # print param['paramMappedMatrixMapping']
                     modelMOR.createObject('MappedMatrixForceFieldAndMassMOR', **param['paramMappedMatrixMapping'] )
                     # print 'Create MappedMatrixForceFieldAndMassMOR in modelMOR'

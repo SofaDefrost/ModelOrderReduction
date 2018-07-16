@@ -64,8 +64,7 @@ def Reduced_SofiaLeg(
     SofiaLeg_MOR.createObject('EulerImplicit' , firstOrder = '0', name = 'odesolver',rayleighStiffness=0.1,rayleighMass=0.1)
     SofiaLeg_MOR.createObject('SparseLDLSolver' , name = 'preconditioner')
     SofiaLeg_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0', template = 'Vec1d')
-    SofiaLeg_MOR.createObject('MappedMatrixForceFieldAndMassMOR' ,usePrecomputedMass=False,precomputedMassPath=path+'/data/SofiaLegMass_reduced.txt', mappedForceField = '@./SofiaLeg/HyperReducedFEMForceField_SofiaLeg',mappedForceField2 = '@./SofiaLeg/actuatorSpring', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_SofiaLeg.txt', template = 'Vec1d,Vec1d', performECSW = 'True', mappedMass = '@./SofiaLeg/UniformMass')
-
+    SofiaLeg_MOR.createObject('MappedMatrixForceFieldAndMassMOR',nodeToParse='@./SofiaLeg',usePrecomputedMass=False,precomputedMassPath=path+'/data/SofiaLegMass_reduced.txt', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_SofiaLeg.txt', template = 'Vec1d,Vec1d', performECSW = 'True')
 
     SofiaLeg = SofiaLeg_MOR.createChild('SofiaLeg')
     SofiaLeg.createObject('MeshVTKLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + '/mesh/sofia_leg.vtu')
@@ -120,17 +119,17 @@ def createScene(rootNode):
                         gravity=[0, -9810, 0])
 
     Reduced_SofiaLeg(rootNode,
-                    name="Reduced_SofiaLeg_blue_1", 
+                    name="Reduced_SofiaLeg_blue_1",
                     rotation=[0, 0.0, 0.0],
                     translation=[0, 0.0, 0.0],
                     surfaceColor=[0.0, 0.0, 1, 0.5],
                     controller={'offset':40},
                     surfaceMeshFileName=surfaceMeshFileName)
 
-    Reduced_SofiaLeg(rootNode,
-                    name="Reduced_SofiaLeg_blue_2", 
-                    rotation=[0, 0.0, 0.0],
-                    translation=[0, 0.0, -40.0],
-                    surfaceColor=[0.0, 1, 0, 0.5],
-                    controller={},
-                    surfaceMeshFileName=surfaceMeshFileName)
+    # Reduced_SofiaLeg(rootNode,
+    #                 name="Reduced_SofiaLeg_blue_2", 
+    #                 rotation=[0, 0.0, 0.0],
+    #                 translation=[0, 0.0, -40.0],
+    #                 surfaceColor=[0.0, 1, 0, 0.5],
+    #                 controller={},
+    #                 surfaceMeshFileName=surfaceMeshFileName)

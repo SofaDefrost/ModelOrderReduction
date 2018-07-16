@@ -22,6 +22,7 @@ def rotationPoint(Pos0, angle, brasLevier):
 
     return posOut
 
+lastTime = 0
 def defaultShaking( objToAnimate, dt, factor, **param):
     """
     *increase* a value of a Sofa object until it reach its *maximum*
@@ -43,9 +44,26 @@ def defaultShaking( objToAnimate, dt, factor, **param):
     +---------------+-------+---------------------------------------------------------------------------------+
     """
     import Sofa
-    moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
-    # print("currentTime - startTime : "+str(factor * objToAnimate.duration))
-    if moduloResult == 0:
+
+    global lastTime
+    writeCurrent = False
+    time = factor * objToAnimate.duration
+    period = dt * objToAnimate.params['incrPeriod']
+    # print("lastTime : "+str(lastTime))
+    # print("currentTime - startTime : "+str(time))
+
+    if (time == dt):
+        writeCurrent = True
+
+    if (time >= (lastTime + period + dt)):
+        writeCurrent = True
+
+    # TODO will bug if period of 1 !!
+    if (time >= (lastTime + period + 2*dt)):
+        lastTime += period
+
+    if (writeCurrent):
+
         print("For Actuator : "+objToAnimate.location)
 
         actualValue = objToAnimate.obj.findData(objToAnimate.params["dataToWorkOn"]).value[0][0]

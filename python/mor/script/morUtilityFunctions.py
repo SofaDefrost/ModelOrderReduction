@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+"""
+Utilities functions used mainly by the **reduceModel** classes
+"""
 import time, sys
 import math
 import numpy as np
@@ -229,8 +231,9 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
         nbModes = i
         if (addRigidBodyModes and addRigidBodyModes != [0]*3):    
             print "Concatenating translation modes"
+            nbModes += 3
             modesTot = np.concatenate((translationModes[:,tmp], U[:,0:nbModes]), axis=1)
-            np.savetxt(modesFileName, modesTot, header=str(nbDOFs)+' '+str(nbModes+3), comments='', fmt='%10.5f')
+            np.savetxt(modesFileName, modesTot, header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
         else:
             np.savetxt(modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
         if verbose :

@@ -59,7 +59,7 @@ def Reduced_starfish(
     model_MOR.createObject('SparseLDLSolver' , name = 'preconditioner', template = 'CompressedRowSparseMatrix3d')
     model_MOR.createObject('GenericConstraintCorrection' , solverName = 'preconditioner')
     model_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0', template = 'Vec1d')
-    model_MOR.createObject('MappedMatrixForceFieldAndMassMOR' , mappedForceField = '@./model/HyperReducedFEMForceField_model', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_model.txt', template = 'Vec1d,Vec1d', mappedForceField2 = '@./model/modelSubTopo/HyperReducedFEMForceField_modelSubTopo', performECSW = 'True', mappedMass = '@./model/UniformMass')
+    model_MOR.createObject('MappedMatrixForceFieldAndMassMOR' , nodeToParse='@./model', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_model.txt', template = 'Vec1d,Vec1d', performECSW = 'True')
 
 
     model = model_MOR.createChild('model')

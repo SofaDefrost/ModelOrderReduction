@@ -36,7 +36,7 @@ class SofiaLegController(Sofa.PythonScriptController):
         # self.factor = 0
 
     def init(self,auto=True,forward=True,offset=0):
-        print ("INIT")
+        # print ("INIT")
         self.auto = auto
 
         self.forward = forward

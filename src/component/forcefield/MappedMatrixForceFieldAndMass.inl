@@ -25,7 +25,6 @@
 #ifndef SOFA_COMPONENT_FORCEFIELD_MappedMatrixForceFieldAndMass_INL
 #define SOFA_COMPONENT_FORCEFIELD_MappedMatrixForceFieldAndMass_INL
 
-
 #include "MappedMatrixForceFieldAndMass.h"
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/helper/gl/template.h>
@@ -67,14 +66,15 @@ using sofa::core::behavior::BaseMechanicalState ;
 template<class DataTypes1, class DataTypes2>
 MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::MappedMatrixForceFieldAndMass()
     :
-      d_mappedForceField(initLink("mappedForceField",
-                                  "link to the forcefield that is mapped")),
-      d_mappedForceField2(initLink("mappedForceField2",
-                                   "link to a second forcefield that is mapped too (not mandatory)")),
-      d_mappedMass(initLink("mappedMass",
-                                   "link to a mass defined typically at the same node than mappedForceField"))
-{
+      d_forceFieldList(initData(&d_forceFieldList,"forceFieldList",
+                                  "ForceFields to work on (by default will take all)")),
+      l_nodeToParse(initLink("nodeToParse",
+                                  "link to the node on which the component will work")),
+      l_mechanicalState(initLink("mechanicalState","The mechanicalState with which the component will work on")),
+      l_mappedMass(initLink("mass","mass with which the component will work on")),
+      l_forceField(initLink("forceField", "The ForceField(s) attached to this node"))
 
+{
 }
 
 template<class DataTypes1, class DataTypes2>
@@ -87,6 +87,37 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init()
         msg_error()<< "Init of MixedInteractionForceField " << getContext()->getName() << " failed!" << sendl;
         return;
     }
+
+    // Add link to mechanical & mass
+    l_mechanicalState.add(l_nodeToParse.get()->mechanicalState,l_nodeToParse.get()->mechanicalState->getPathName());
+    l_mappedMass.add(l_nodeToParse.get()->mass,l_nodeToParse.get()->mass->getPathName());
+    // Parse l_nodeToParse to find & link with the forcefields
+    parseNode(l_nodeToParse.get());
+}
+
+template<class DataTypes1, class DataTypes2>
+void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::parseNode(sofa::simulation::Node *node)
+{
+    bool empty = d_forceFieldList.getValue().empty();
+    for(unsigned int i=0; i<node->forceField.size(); i++)
+    {
+        if (node->forceField[i]->name != "UniformMass")
+        {
+            bool found = true;
+            if (!empty)
+                found = (std::find(d_forceFieldList.getValue().begin(), d_forceFieldList.getValue().end(), node->forceField[i]->getName()) != d_forceFieldList.getValue().end());
+
+            if(found)
+            {
+                l_forceField.add(node->forceField[i],node->forceField[i]->getPathName());
+            }
+        }
+    }
+    for (sofa::simulation::Node::ChildIterator it = node->child.begin(), itend = node->child.end(); it != itend; ++it)
+    {
+        parseNode(it->get());
+    }
+    return;
 }
 
 template<class DataTypes1, class DataTypes2>
@@ -108,28 +139,22 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobiansO
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::accumulateJacobians(const MechanicalParams* mparams)
 {
-
-    // STEP1 : accumulate Jacobians J1 and J2
-
     const core::ExecParams* eparams = dynamic_cast<const core::ExecParams *>( mparams );
     core::ConstraintParams cparams = core::ConstraintParams(*eparams);
 
-    core::behavior::BaseMechanicalState* mstate = d_mappedForceField.get()->getContext()->getMechanicalState();
     sofa::core::MatrixDerivId Id= sofa::core::MatrixDerivId::mappingJacobian();
     core::objectmodel::BaseContext* context = this->getContext();
     simulation::Node* gnode = dynamic_cast<simulation::Node*>(context);
     simulation::MechanicalResetConstraintVisitor(&cparams).execute(context);
-    buildIdentityBlocksInJacobian(mstate,Id);
+    buildIdentityBlocksInJacobian(l_mechanicalState,Id);
 
     MechanicalAccumulateJacobian(&cparams, core::MatrixDerivId::mappingJacobian()).execute(gnode);
-
 }
 
 template<class T>
 void copyKToEigenFormat(CompressedRowSparseMatrix< T >* K, Eigen::SparseMatrix<double,Eigen::ColMajor>& Keig)
 {
     Keig.resize(K->nRow,K->nRow);
-    //Keig.reserve(K->colsValue.size());
     std::vector< Eigen::Triplet<double> > tripletList;
     tripletList.reserve(K->colsValue.size());
 
@@ -194,13 +219,13 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::optimizeAndCopyMappi
 template<class DataTypes1, class DataTypes2>
 void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor)
 {
-    if (d_mappedMass != NULL)
+    if (l_mappedMass != NULL)
     {
-        d_mappedMass.get()->addMToMatrix(mparams, KAccessor);
+        l_mappedMass->addMToMatrix(mparams, KAccessor);
     }
     else
     {
-        msg_info(this) << "There is no d_mappedMass";
+        msg_info(this) << "There is no mappedMass";
     }
 }
 
@@ -260,14 +285,13 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
 
     ///////////////////////     GET K       ////////////////////////////////////////
-    core::behavior::BaseMechanicalState* mstate = d_mappedForceField.get()->getContext()->getMechanicalState();
     CompressedRowSparseMatrix< Real1 >* K = new CompressedRowSparseMatrix< Real1 > ( );
 
-    K->resizeBloc( 3*mstate->getSize() ,  3*mstate->getSize());
+    K->resizeBloc( 3*l_mechanicalState->getSize() ,  3*l_mechanicalState->getSize());
     K->clear();
     DefaultMultiMatrixAccessor* KAccessor;
     KAccessor = new DefaultMultiMatrixAccessor;
-    KAccessor->addMechanicalState(  d_mappedForceField.get()->getContext()->getMechanicalState() );
+    KAccessor->addMechanicalState( l_mechanicalState );
     KAccessor->setGlobalMatrix(K);
     KAccessor->setupMatrices();
 
@@ -279,15 +303,15 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
     time= (double)timer->getTime();
 
 
-    d_mappedForceField.get()->addKToMatrix(mparams, KAccessor);
-    if (d_mappedForceField2 != NULL)
+    for(unsigned int i=0; i<l_forceField.size(); i++)
     {
-        d_mappedForceField2.get()->addKToMatrix(mparams, KAccessor);
+        l_forceField[i]->addKToMatrix(mparams, KAccessor);
     }
+
     addMassToSystem(mparams,KAccessor);
     msg_info(this)<<" time addKtoMatrix K : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 
-    else{ msg_info(this) << "There is no d_mappedMass"; }
+    else{ msg_info(this) << "There is no mappedMass"; }
     //msg_info(this) << "Out of the d_mappedMass business";
 
     msg_info(this)<<"   time addKtoMatrix K : "<<( (double)timer->getTime() - time)*timeScale<<" ms" ; //(MAYBE OPTIMIZED)
@@ -377,7 +401,7 @@ void MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::addKToMatrix(const M
 
     msg_info(this)<<" time compute all JtKJeigen with J1eig and J2eig : "<<( (double)timer->getTime() - startTime)*timeScale<<" ms";
     //int row;
-    unsigned int mstateSize = mstate->getSize();
+    unsigned int mstateSize = l_mechanicalState->getSize();
     addPrecomputedMassToSystem(mparams,mstateSize,J1eig,J1tKJ1eigen);
     int offset,offrow, offcol;
     startTime= (double)timer->getTime();
