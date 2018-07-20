@@ -64,7 +64,7 @@ def Reduced_SofiaLeg(
     SofiaLeg_MOR.createObject('EulerImplicit' , firstOrder = '0', name = 'odesolver',rayleighStiffness=0.1,rayleighMass=0.1)
     SofiaLeg_MOR.createObject('SparseLDLSolver' , name = 'preconditioner')
     SofiaLeg_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0', template = 'Vec1d')
-    SofiaLeg_MOR.createObject('MappedMatrixForceFieldAndMassMOR',nodeToParse='@./SofiaLeg',usePrecomputedMass=False,precomputedMassPath=path+'/data/SofiaLegMass_reduced.txt', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_SofiaLeg.txt', template = 'Vec1d,Vec1d', performECSW = 'True')
+    SofiaLeg_MOR.createObject('MechanicalMatrixMapper',nodeToParse='@./SofiaLeg',printLog='1',usePrecomputedMass=False,precomputedMassPath=path+'/data/SofiaLegMass_reduced.txt', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_SofiaLeg.txt', template = 'Vec1d,Vec1d', performECSW = 'True')
 
     SofiaLeg = SofiaLeg_MOR.createChild('SofiaLeg')
     SofiaLeg.createObject('MeshVTKLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + '/mesh/sofia_leg.vtu')

@@ -7,9 +7,9 @@ from stlib.scene import ContactHeader
 from stlib.physics.rigid import Floor
 
 # MOR IMPORT
-from mor.reducedModel.reduced_diamond import Reduced_diamond
-from mor.reducedModel.reduced_starfish import Reduced_starfish
-from mor.reducedModel.reduced_sofiaLeg import Reduced_SofiaLeg
+from morlib.reduced_diamond import Reduced_diamond
+from morlib.reduced_starfish import Reduced_starfish
+from morlib.reduced_sofiaLeg import Reduced_SofiaLeg
 
 path = os.path.dirname(os.path.abspath(__file__))
 

@@ -59,7 +59,7 @@ def Reduced_diamond(
     modelNode_MOR.createObject('SparseLDLSolver' , name = 'Solver')
     modelNode_MOR.createObject('GenericConstraintCorrection' , solverName = 'Solver')
     modelNode_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0', template = 'Vec1d')
-    modelNode_MOR.createObject('MappedMatrixForceFieldAndMassMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_modelNode.txt', template = 'Vec1d,Vec1d', performECSW = 'True', nodeToParse = '@./modelNode')
+    modelNode_MOR.createObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_modelNode.txt', template = 'Vec1d,Vec1d', performECSW = 'True', nodeToParse = '@./modelNode')
 
 
     modelNode = modelNode_MOR.createChild('modelNode')
