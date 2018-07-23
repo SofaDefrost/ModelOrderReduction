@@ -22,4 +22,3 @@ You can also explore the *examples* directory in this repository.
 
 ### Prerequisite
 
-Enable `SOFA_WITH_EXPERIMENTAL_FEATURES` option in the cmake-gui.
