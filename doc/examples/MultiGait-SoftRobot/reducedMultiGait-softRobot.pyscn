@@ -61,7 +61,7 @@ def createScene(rootNode):
                 solverNode.createObject('EulerImplicit', name='odesolver',firstOrder="false", rayleighStiffness='0.1', rayleighMass='0.1', printLog="0",verbose="0")
                 solverNode.createObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrix3d")
                 solverNode.createObject('GenericConstraintCorrection', solverName='preconditioner')
-                solverNode.createObject('MappedMatrixForceFieldAndMassMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', mappedForceField='@./reducedModel/model/Append_HyperReducedFF_QuadrupedWellConverged_'+str(nbModes)+'modes', mappedForceField2='@./reducedModel/model/modelSubTopo/Append_subTopoFEM', mappedMass='@./reducedModel/model/quadrupedMass', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = 'true',timeInvariantMapping2 = 'true', saveReducedMass="false", usePrecomputedMass="false", precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', printLog='0')
+                solverNode.createObject('MechanicalMatrixMapperMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', nodeToParse='@./reducedModel/model', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = 'true',timeInvariantMapping2 = 'true', saveReducedMass="false", usePrecomputedMass="false", precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', printLog='0')
 
 
                 ##########################################

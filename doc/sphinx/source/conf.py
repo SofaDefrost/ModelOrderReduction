@@ -43,15 +43,26 @@ extensions = [
     'sphinx.ext.autosummary',
     #'sphinx.ext.intersphinx',
     #'sphinx.ext.ifconfig',
-    'sphinx.ext.mathjax',
+    #'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
 
     # C++ / Breathe
     'sphinx.ext.ifconfig',
     'sphinx.ext.todo',
-    'breathe'
+    'breathe',
+
+    # Generate pdf
+    'rst2pdf.pdfbuilder'
 ]
+
+
+pdf_documents = [('index', u'morDoc', u'Model Order Reduction Documentation', u'Olivier Goury & Félix Vanneste')]
+
+# index - master document
+# rst2pdf - name of the generated pdf
+# Sample rst2pdf doc - title of the pdf
+# Your Name - author name in the pdf
 
 ## Include Python objects as they appear in source files
 ## Default: alphabetically ('alphabetical')
