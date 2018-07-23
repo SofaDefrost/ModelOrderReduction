@@ -30,7 +30,7 @@ def findSolver(node,type,newParam,initialParam):
                 pass
             else:
                 solverToDelete[node.name] = []
-            #   Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMassMOR
+            #   Find the differents solver to move them in order to have them before the MechanicalMatrixMapperMOR
             # print(type)
             if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
                 if 'name' in initialParam:
@@ -102,6 +102,8 @@ def createScene(rootNode):
     # print('nodeToKeep ',nodeToKeep)
     # print('solverToDelete :',solverToDelete)
     searchObjectAndDestroy(rootNode)
+    rootNode.createObject('VisualStyle', displayFlags='showVisualModels showForceFields')
+
     
 
 

@@ -76,7 +76,7 @@ def MORreplace(node,type,newParam,initialParam):
             # print index
             # print(type)
 
-            # 	Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMassMOR
+            # 	Find the differents solver to move them in order to have them before the MechanicalMatrixMapperMOR
             if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
                 if 'name' in initialParam:
                     solverParam[index].append(initialParam['name'])
@@ -149,8 +149,8 @@ def modifyGraphScene(nodeFound,mySolver,newParam):
                             child.getParents()[0].addObject(obj)
 
                     # print param['paramMappedMatrixMapping']
-                    modelMOR.createObject('MappedMatrixForceFieldAndMassMOR', **param['paramMappedMatrixMapping'] )
-                    # print 'Create MappedMatrixForceFieldAndMassMOR in modelMOR'
+                    modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
+                    # print 'Create MechanicalMatrixMapperMOR in modelMOR'
 
                     if 'paramMORMapping' in param:
                         child.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])

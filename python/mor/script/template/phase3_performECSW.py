@@ -56,7 +56,7 @@ def MORreplace(node,type,newParam,initialParam):
                 myModel[node.name] = []
 
             if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
-                #Find the differents solver to move them in order to have them before the MappedMatrixForceFieldAndMassMOR
+                #Find the differents solver to move them in order to have them before the MechanicalMatrixMapperMOR
                 if 'name' in initialParam:
                     solverParam[index].append(initialParam['name'])
                 else: 
@@ -159,9 +159,9 @@ def searchObjectAndDestroy(node,mySolver,newParam):
                         child.getParents()[0].addObject(obj)
 
                 # print param['paramMappedMatrixMapping']
-                myMORModel.append(('MappedMatrixForceFieldAndMassMOR',param['paramMappedMatrixMapping']))
-                modelMOR.createObject('MappedMatrixForceFieldAndMassMOR', **param['paramMappedMatrixMapping'] )
-                # print 'Create MappedMatrixForceFieldAndMassMOR in modelMOR'
+                myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
+                modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
+                # print 'Create MechanicalMatrixMapperMOR in modelMOR'
 
                 if 'paramMORMapping' in param:
                     myModel[child.name].append(('ModelOrderReductionMapping',param['paramMORMapping']))  

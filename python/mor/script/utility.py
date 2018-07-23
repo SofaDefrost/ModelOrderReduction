@@ -34,6 +34,13 @@ def openFileName(infoStr):
     filename, _filter = QtWidgets.QFileDialog.getOpenFileName(None, infoStr, '.', filter="Sofa Scene (*.py *.pyscn)")
     return filename
 
+def saveMeshFiles(infoStr):
+    from PyQt5 import QtGui
+    from PyQt5 import QtGui, QtWidgets
+    app = QtWidgets.QApplication([dir])
+    filename, _filter = QtWidgets.QFileDialog.getOpenFileNames(None, infoStr, '.', filter="*.stl *.vtu *.vtk")
+    return filename
+
 def distance3D(vec1,vec2):
    norm = ((vec2[0]-vec1[0])**2 + (vec2[1]-vec1[1])**2 + (vec2[2]-vec1[2])**2)**0.5
    return norm

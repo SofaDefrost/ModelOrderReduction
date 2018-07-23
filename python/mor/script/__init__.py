@@ -11,6 +11,6 @@ Set of Function/Class to perform Model Reduction
     mor.script.morUtilityFunctions
 
 """
-__all__=["morUtilityFunctions","reduceModel"]
+__all__=["utility","reduceModel"]
 from reduceModel import ReduceModel
 from reduceModel import ObjToAnimate

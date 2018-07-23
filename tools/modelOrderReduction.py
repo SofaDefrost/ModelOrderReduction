@@ -19,7 +19,7 @@ sys.path.append(path+'/../python') # TO CHANGE
 
 # MOR IMPORT
 from mor.animation import defaultShaking
-from mor.script import morUtilityFunctions
+from mor.script import utility
 from mor.script import ReduceModel
 from mor.script import ObjToAnimate
 
@@ -27,20 +27,21 @@ from mor.script import ObjToAnimate
 ####################       PARAMETERS       ###########################
 
 # Select Output Dir and original scene name & path
-originalScene = morUtilityFunctions.openFileName('Select the SOFA scene you want to reduce')
-meshDir = morUtilityFunctions.openDirName('Select the directory containing the mesh of your scene')
-outputDir = morUtilityFunctions.openDirName('Select the directory tha will contain all the results')
+originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+meshDir = utility.saveMeshFiles('Select the directory containing the mesh of your scene')
+outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
-# originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/Terrestrian_centered.py'
+
+# originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/PneuNets.pyscn'
 # meshDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh'
-# outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofia_fine'
+# outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/incr1000Period2'
 
 ### DIAMOND ROBOT PARAM
 # nodesToReduce = ['/modelNode']
-# nord = ObjToAnimate("nord","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
-# sud = ObjToAnimate("sud","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
-# est = ObjToAnimate("est","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
-# ouest = ObjToAnimate("ouest","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
+# nord = ObjToAnimate("nord", incr=5,incrPeriod=10,rangeOfAction=40)
+# sud = ObjToAnimate("sud", incr=5,incrPeriod=10,rangeOfAction=40)
+# est = ObjToAnimate("est", incr=5,incrPeriod=10,rangeOfAction=40)
+# ouest = ObjToAnimate("ouest", incr=5,incrPeriod=10,rangeOfAction=40)
 # listObjToAnimate = [nord,ouest,sud,est]
 # addRigidBodyModes = [0,0,0]
 
@@ -82,13 +83,13 @@ outputDir = morUtilityFunctions.openDirName('Select the directory tha will conta
 # addRigidBodyModes = [0,0,0]
 
 ### PNEUNETS PARAM
-nodesToReduce =['/model']
-cavity = ObjToAnimate("cavity", incr=2000,incrPeriod=30,rangeOfAction=40000)
-listObjToAnimate = [cavity]
-addRigidBodyModes = [0,0,0]
+# nodesToReduce =['/model']
+# cavity = ObjToAnimate("cavity", incr=1000,incrPeriod=2000,rangeOfAction=25000)
+# listObjToAnimate = [cavity]
+# addRigidBodyModes = [0,0,0]
 
 # Tolerance
-tolModes = 0.001
+tolModes = 0.000001
 tolGIE =  0.05
 
 # Optionnal
@@ -110,19 +111,10 @@ reduceMyModel = ReduceModel(    originalScene,
                                 verbose = verbose,
                                 addRigidBodyModes = addRigidBodyModes)
 
-# reduceMyModel.reductionParam.paramWrapper[0][1]['paramMappedMatrixMapping']['mappedForceField2'] = '@./SofiaLeg/fixedTopForceField'
-# reduceMyModel.reductionParam.paramWrapper[0][1]['paramMappedMatrixMapping']['mappedForceField3'] = '@./SofiaLeg/actuatorSpring'
-
-# reduceMyModel.reductionParam.paramWrapper[0][1]['paramMappedMatrixMapping']['mappedForceField2'] = '@./SofiaLeg/sensor'
-# reduceMyModel.reductionParam.paramWrapper[0][1]['paramMappedMatrixMapping']['mappedForceField3'] = '@./SofiaLeg/1'
-
-reduceMyModel.reductionParam.paramWrapper[0][1]['paramMappedMatrixMapping']['mappedForceField2'] = '@./model/RestShapeSpringsForceField'
-
-
 #######################################################################
 ####################       EXECUTION        ###########################
 
-reduceMyModel.performReduction() # phasesToExecute=list(range(8)),nbrOfModes=18)
+# reduceMyModel.performReduction(phasesToExecute=[1]) # phasesToExecute=list(range(8)),nbrOfModes=18)
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
@@ -162,7 +154,7 @@ reduceMyModel.performReduction() # phasesToExecute=list(range(8)),nbrOfModes=18)
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase3(phasesToExecute=[1])
+# reduceMyModel.phase3()
 
 
 ####################    PYTHON SCRIPT       ##########################

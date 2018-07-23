@@ -12,11 +12,11 @@ import fileinput
 import datetime
 
 # MOR IMPORT
-from morUtilityFunctions import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
+from utility import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
-pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/reducedModel/'
-print('pathToReducedModel : '+pathToReducedModel)
+pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/../morlib/'
+# print('pathToReducedModel : '+pathToReducedModel)
 
 class ObjToAnimate():
     '''
@@ -115,10 +115,10 @@ class PackageBuilder():
     """
     Contain all the parameters & functions related to building the package
     """
-    def __init__(self,outputDir,meshDir,toKeep,packageName = None ,addToLib = False):
+    def __init__(self,outputDir,meshes,toKeep,packageName = None ,addToLib = False):
 
         self.outputDir = outputDir
-        self.meshDir = meshDir+'/'
+        self.meshes = meshes
 
         self.toKeep = toKeep
         self.addToLibBool = addToLib
@@ -131,6 +131,7 @@ class PackageBuilder():
 
         self.dataDir = self.outputDir+'/data/'
         self.debugDir = self.outputDir+'/debug/'
+        self.meshDir = self.outputDir+'/mesh/'
 
     def copy(self, src, dest):
 
@@ -213,7 +214,9 @@ class PackageBuilder():
 
         shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir)
 
-        self.copy(self.meshDir, self.outputDir+'/mesh/')
+        self.checkExistance(self.meshDir)
+        for mesh in self.meshes: 
+            self.copy(mesh, self.meshDir)
 
         if self.addToLibBool :
 
@@ -401,8 +404,8 @@ class ReduceModel():
     +-------------------+--------------+-------------------------------------------------------------------------------------------+
     | outputDir         | str          | absolute path to output directiry in which all results will be stored                     |
     +-------------------+--------------+-------------------------------------------------------------------------------------------+
-    | meshDir           | str          || absolute path to the directory containing the different                                  |
-    |                   |              || mesh used by the Sofa scene in reduction                                                 |
+    | meshes            | str          || absolute path to the differents mesh files                                               |
+    |                   |              || they will be copied at the end into of the reduction process into a new mesh directory   |
     +-------------------+--------------+-------------------------------------------------------------------------------------------+
     | packageName       | str          | Which name will have the final componant & package if the option is activated             |
     +-------------------+--------------+-------------------------------------------------------------------------------------------+
@@ -426,7 +429,7 @@ class ReduceModel():
                  tolModes,
                  tolGIE,
                  outputDir,
-                 meshDir,
+                 meshes,
                  packageName = None,
                  toKeep = None,
                  addToLib = False,
@@ -448,7 +451,7 @@ class ReduceModel():
                 toKeep.append(obj.location)
 
         ### Obj Containing all the argument & function about how to create the end package and where 
-        self.packageBuilder = PackageBuilder(outputDir,meshDir,toKeep,packageName,addToLib)
+        self.packageBuilder = PackageBuilder(outputDir,meshes,toKeep,packageName,addToLib)
 
         ### Obj Containing all the argument & function about the actual reduction
         self.reductionParam = ReductionParam(tolModes,tolGIE,addRigidBodyModes,self.packageBuilder.dataDir)
