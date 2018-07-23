@@ -22,11 +22,11 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_MAPPEDMATRIXFORCEFIELDANDMASSMOR_INL
-#define SOFA_COMPONENT_FORCEFIELD_MAPPEDMATRIXFORCEFIELDANDMASSMOR_INL
+#ifndef MECHANICALMATRIXMAPPERMOR_INL
+#define MECHANICALMATRIXMAPPERMOR_INL
 
-#include "MappedMatrixForceFieldAndMassMOR.h"
-#include "MappedMatrixForceFieldAndMass.inl"
+#include "MechanicalMatrixMapperMOR.h"
+#include <SofaGeneralAnimationLoop/MechanicalMatrixMapper.inl>
 
 #include "../loader/MatrixLoader.h"
 
@@ -45,7 +45,7 @@ namespace interactionforcefield
 using sofa::component::loader::MatrixLoader;
 
 template<typename DataTypes1, typename DataTypes2>
-MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::MappedMatrixForceFieldAndMassMOR()
+MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::MechanicalMatrixMapperMOR()
     :
       performECSW(initData(&performECSW,false,"performECSW",
                            "Use the reduced model with the ECSW method")),
@@ -61,17 +61,13 @@ MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::MappedMatrixForceField
                                   "Skip computation of the mass by using the value of the precomputed mass in the reduced space: Jt*M*J")),
       precomputedMassPath(initData(&precomputedMassPath,"precomputedMassPath",
                                    "Path to the precomputed reduced Mass Matrix Jt*M*J. usePrecomputedMass has to be set to true."))
-
-
-
 {
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::init()
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
 {
-    MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::init();
-
+    MechanicalMatrixMapper<DataTypes1, DataTypes2>::init();
     listActiveNodes.resize(0);
     if (performECSW.getValue())
     {
@@ -101,7 +97,7 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::init()
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptimized(const MechanicalParams* mparams)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptimized(const MechanicalParams* mparams)
 {
     if (((timeInvariantMapping1.getValue() || timeInvariantMapping2.getValue()) == false) || (this->getContext()->getTime() == 0))
     {
@@ -114,7 +110,7 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::accumulateJacobia
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id)
 {
     if (performECSW.getValue())
     {
@@ -133,7 +129,7 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::buildIdentityBloc
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJacobianToEigenFormat1(const typename DataTypes1::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJacobianToEigenFormat1(const typename DataTypes1::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
 {
     msg_info(this) << "type1: ";
     bool timeInvariantMapping = timeInvariantMapping1.getValue();
@@ -160,7 +156,7 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::optimizeAndCopyMa
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJacobianToEigenFormat2(const typename DataTypes2::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJacobianToEigenFormat2(const typename DataTypes2::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig)
 {
 
     msg_info(this) << "type2: ";
@@ -188,13 +184,13 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::optimizeAndCopyMa
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor)
 {
     if (usePrecomputedMass.getValue() == false)
     {
-        if (MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass != NULL)
+        if (MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::l_mappedMass != NULL)
         {
-            MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->addMToMatrix(mparams, KAccessor);
+            MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::l_mappedMass->addMToMatrix(mparams, KAccessor);
         }
         else
         {
@@ -204,7 +200,7 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addMassToSystem(c
 }
 
 template<class DataTypes1, class DataTypes2>
-void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addPrecomputedMassToSystem(const MechanicalParams* mparams,const unsigned int mstateSize, const Eigen::SparseMatrix<double>& Jeig, Eigen::SparseMatrix<double>& JtKJeig)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addPrecomputedMassToSystem(const MechanicalParams* mparams,const unsigned int mstateSize, const Eigen::SparseMatrix<double>& Jeig, Eigen::SparseMatrix<double>& JtKJeig)
 {
     typedef typename DataTypes1::Real     Real1;
 
@@ -217,17 +213,17 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addPrecomputedMas
     {
         if (saveReducedMass.getValue() == true)
         {
-            if (MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass != NULL)
+            if (MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::l_mappedMass != NULL)
             {
                 CompressedRowSparseMatrix<typename DataTypes1::Real >* M = new CompressedRowSparseMatrix<typename DataTypes1::Real > ( );
                 M->resizeBloc( 3*mstateSize ,  3*mstateSize);
                 M->clear();
                 DefaultMultiMatrixAccessor* MassAccessor;
                 MassAccessor = new DefaultMultiMatrixAccessor;
-                MassAccessor->addMechanicalState(  MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->getContext()->getMechanicalState() );
+                MassAccessor->addMechanicalState( this->l_mechanicalState);
                 MassAccessor->setGlobalMatrix(M);
                 MassAccessor->setupMatrices();
-                MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->addMToMatrix(mparams, MassAccessor);
+                this->l_mappedMass->addMToMatrix(mparams, MassAccessor);
                 M->compress();
 
                 std::vector< Eigen::Triplet<double> > tripletListM;
@@ -250,7 +246,7 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addPrecomputedMas
                 Eigen::SparseMatrix<double>  JtMJeigen(nbColsJ1,nbColsJ1);
                 JtMJeigen = Jeig.transpose()*Meig*Jeig;
                 msg_info(this) << JtMJeigen;
-                std::string massName = MappedMatrixForceFieldAndMass<DataTypes1, DataTypes2>::l_mappedMass->getName() + "_reduced.txt";
+                std::string massName = MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::l_mappedMass.get()->getName() + "_reduced.txt";
                 msg_info(this) << "Storing " << massName << " ... ";
                 std::ofstream file(massName);
                 if (file.is_open())
@@ -280,31 +276,12 @@ void MappedMatrixForceFieldAndMassMOR<DataTypes1, DataTypes2>::addPrecomputedMas
         msg_info(this) << "Adding reduced precomputed mass ...";
         JtKJeig = JtKJeig + JtMJ;
     }
-
-
 }
 
-}
-}
-}
+} // namespace interactionforcefield
 
+} // namespace component
 
+} // namespace sofa
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif
+#endif // MechanicalMatrixMapperMOR_INL

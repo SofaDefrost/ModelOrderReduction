@@ -22,7 +22,7 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#include "MappedMatrixForceFieldAndMass.inl"
+#include "MechanicalMatrixMapperMOR.inl"
 #include <sofa/defaulttype/Vec3Types.h>
 #include <sofa/defaulttype/RigidTypes.h>
 #include <sofa/core/ObjectFactory.h>
@@ -40,38 +40,47 @@ using namespace sofa::defaulttype;
 
 
 ////////////////////////////////////////////    FACTORY    //////////////////////////////////////////////
-SOFA_DECL_CLASS(MappedMatrixForceFieldAndMass)
+// Registering the component
+// see: http://wiki.sofa-framework.org/wiki/ObjectFactory
+// 1-SOFA_DECL_CLASS(componentName) : Set the class name of the component
+// 2-RegisterObject("description") + .add<> : Register the component
+// 3-.add<>(true) : Set default template
+SOFA_DECL_CLASS(MechanicalMatrixMapperMOR)
 
-int MappedMatrixForceFieldAndMassClass = core::RegisterObject("Partially rigidify a mechanical object using a rigid mapping.")
+int MechanicalMatrixMapperMORClass = core::RegisterObject("Partially rigidify a mechanical object using a rigid mapping.")
 #ifdef SOFA_WITH_FLOAT
-        .add< MappedMatrixForceFieldAndMass<Vec3fTypes, Rigid3fTypes> >()
-        .add< MappedMatrixForceFieldAndMass<Vec3fTypes, Vec3fTypes> >()
-        .add< MappedMatrixForceFieldAndMass<Vec1fTypes, Rigid3fTypes> >()
-        .add< MappedMatrixForceFieldAndMass<Vec1fTypes, Vec1fTypes> >()
+        .add< MechanicalMatrixMapperMOR<Vec3fTypes, Rigid3fTypes> >()
+        .add< MechanicalMatrixMapperMOR<Vec3fTypes, Vec3fTypes> >()
+        .add< MechanicalMatrixMapperMOR<Vec1fTypes, Rigid3fTypes> >()
+        .add< MechanicalMatrixMapperMOR<Vec1fTypes, Vec1fTypes> >()
 #endif
 #ifdef SOFA_WITH_DOUBLE
-        .add< MappedMatrixForceFieldAndMass<Vec3dTypes, Rigid3dTypes> >(true)
-        .add< MappedMatrixForceFieldAndMass<Vec3dTypes, Vec3dTypes> >(true)
-        .add< MappedMatrixForceFieldAndMass<Vec1dTypes, Rigid3dTypes> >(true)
-        .add< MappedMatrixForceFieldAndMass<Vec1dTypes, Vec1dTypes> >(true)
+        .add< MechanicalMatrixMapperMOR<Vec3dTypes, Rigid3dTypes> >(true)
+        .add< MechanicalMatrixMapperMOR<Vec3dTypes, Vec3dTypes> >(true)
+        .add< MechanicalMatrixMapperMOR<Vec1dTypes, Rigid3dTypes> >(true)
+        .add< MechanicalMatrixMapperMOR<Vec1dTypes, Vec1dTypes> >(true)
 #endif
         ;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Force template specialization for the most common sofa floating point related type.
+// This goes with the extern template declaration in the .h. Declaring extern template
+// avoid the code generation of the template for each compilation unit.
+// see: http://www.stroustrup.com/C++11FAQ.html#extern-templates
 #ifdef SOFA_WITH_DOUBLE
-template class MappedMatrixForceFieldAndMass<Vec3dTypes, Rigid3dTypes>;
-template class MappedMatrixForceFieldAndMass<Vec3dTypes, Vec3dTypes>;
-template class MappedMatrixForceFieldAndMass<Vec1dTypes, Rigid3dTypes>;
-template class MappedMatrixForceFieldAndMass<Vec1dTypes, Vec1dTypes>;
+template class MechanicalMatrixMapperMOR<Vec3dTypes, Rigid3dTypes>;
+template class MechanicalMatrixMapperMOR<Vec3dTypes, Vec3dTypes>;
+template class MechanicalMatrixMapperMOR<Vec1dTypes, Rigid3dTypes>;
+template class MechanicalMatrixMapperMOR<Vec1dTypes, Vec1dTypes>;
 #endif
 #ifdef SOFA_WITH_FLOAT
-template class MappedMatrixForceFieldAndMass<Vec3fTypes, Rigid3fTypes>;
-template class MappedMatrixForceFieldAndMass<Vec3fTypes, Vec3fTypes>;
-template class MappedMatrixForceFieldAndMass<Vec1fTypes, Rigid3fTypes>;
-template class MappedMatrixForceFieldAndMass<Vec1fTypes, Vec1fTypes>;
+template class MechanicalMatrixMapperMOR<Vec3fTypes, Rigid3fTypes>;
+template class MechanicalMatrixMapperMOR<Vec3fTypes, Vec3fTypes>;
+template class MechanicalMatrixMapperMOR<Vec1fTypes, Rigid3fTypes>;
+template class MechanicalMatrixMapperMOR<Vec1fTypes, Vec1fTypes>;
 #endif
 
-} // namespace forcefield
+} // namespace interactionforcefield
 
 } // namespace component
 

@@ -1,8 +1,7 @@
-#ifndef MAPPEDMATRIXFORCEFIELDANDMASSMOR_H
-#define MAPPEDMATRIXFORCEFIELDANDMASSMOR_H
+#ifndef MECHANICALMATRIXMAPPERMOR_H
+#define MECHANICALMATRIXMAPPERMOR_H
 
-
-#include "MappedMatrixForceFieldAndMass.h"
+#include <SofaGeneralAnimationLoop/MechanicalMatrixMapper.h>
 
 namespace sofa
 {
@@ -15,16 +14,15 @@ namespace interactionforcefield
 
 
 template<typename TDataTypes1, typename TDataTypes2>
-class MappedMatrixForceFieldAndMassMOR : public MappedMatrixForceFieldAndMass<TDataTypes1, TDataTypes2>
+class MechanicalMatrixMapperMOR : public MechanicalMatrixMapper<TDataTypes1, TDataTypes2>
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE2(MappedMatrixForceFieldAndMassMOR, TDataTypes1, TDataTypes2), SOFA_TEMPLATE2(MappedMatrixForceFieldAndMass, TDataTypes1, TDataTypes2));
-    typedef MappedMatrixForceFieldAndMass<TDataTypes1, TDataTypes2> Inherit;
-
+    SOFA_CLASS(SOFA_TEMPLATE2(MechanicalMatrixMapperMOR, TDataTypes1, TDataTypes2), SOFA_TEMPLATE2(MechanicalMatrixMapper, TDataTypes1, TDataTypes2));
+    typedef MechanicalMatrixMapper<TDataTypes1, TDataTypes2> Inherit;
 
 
 protected:
-    MappedMatrixForceFieldAndMassMOR();
+    MechanicalMatrixMapperMOR();
 
 public:
     Data< bool > performECSW;
@@ -64,20 +62,4 @@ protected:
 
 } // namespace sofa
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif // MAPPEDMATRIXFORCEFIELDANDMASSMOR_H
+#endif // MechanicalMatrixMapperMOR_H
