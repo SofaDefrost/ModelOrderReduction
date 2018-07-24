@@ -1,14 +1,14 @@
-# Diamond
+# Cable-driven Soft Robot
 
 ![Diamond robot](diamond-different-meshes.png)
 
 ## Presentation
 
-The diamond robot is a demonstrator of our team showing control of actuators by SOFA simulation. There are multiples papers which have been written using it, here a [link](https://team.inria.fr/defrost/control-algorithms/) to them, we also use it for our model order reduction paper (link). 
+The Cable-driven Soft Robot is a proof of concept for the DEFROST team showing control of soft robots using SOFA simulation. There are several papers which have been written using it: [link](https://team.inria.fr/defrost/control-algorithms/). More recently it was reduced using this plugin: [link](https://hal.inria.fr/hal-01834483). 
 
 **Brief description :**
 
-the robot is entirely made of soft silicone and is actuated by four cables controlled by 
+The robot is entirely made of soft silicone and is actuated by four cables controlled by 
 step motors located at its center. Pulling on the cables has the effect of lifting the effector located on top of the robot.
 The “game” with this robot is to control the position of the effector by pulling on the cables.
 

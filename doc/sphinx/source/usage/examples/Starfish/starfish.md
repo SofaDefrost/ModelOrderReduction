@@ -1,10 +1,10 @@
-# Starfish
+# Multigait Soft Robot
 
 ![Starfish robot](starfish-different-meshes.png)
 
 ## Presentation
 
-the Sarfish robot or more precisly the multigait soft robot come from the work described here : [paper link](http://www.pnas.org/content/108/51/20400)
+The multigait soft robot is a pneumatic robot from the work of R. Shepherd et. al, described here : [paper link](http://www.pnas.org/content/108/51/20400)
 
 **Brief description :**
 
@@ -13,8 +13,6 @@ one thick layer of soft silicone containing the cavities, and one stiffer and th
 (PDMS) that can bend easily but does not elongate. The robot is actuated by five air cavities that can be actuated
 independently. The effect of inflating each cavity is to create a motion of bending. Then, by actuating with
 various sequences each cavities, the robot can move along the floor.
-
-*Little video of presentation showing it in action :*
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/QpnLj-rzjIo" frameborder="0" allowfullscreen="allowfullscreen"></iframe><br/><br/>
 
@@ -46,4 +44,4 @@ exemple results with a fine mesh:
 
 ![reduced mesh](Starfish_Reduced.png)
 
-For more details about the results, displacmeent error comparison, test with different mesh and other, you can read the paper affiliated with this plugin here(link!)
+For more details about the results, displacement error comparison, test with different mesh and other, you can read the paper affiliated with this plugin [here](https://hal.inria.fr/hal-01834483)

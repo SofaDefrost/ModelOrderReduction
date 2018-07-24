@@ -1,4 +1,4 @@
-# Sofia
+# 6-legged Robot
 
 ![sofia robot](sofia_robot.jpeg)
 
@@ -6,7 +6,8 @@
 
 **Brief description :**
 
-
+This robot has 6 legs actuated independently by 6 motors, which allows it to have various kind of movements.
+ 
 *presentation video of the simulation showing it in action:*
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/iQbSaFNWkAE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
@@ -25,7 +26,7 @@ Here we only reduce the leg of our robot not its core.
 
 ## Reduction Parameters
 
-To reduce this robot we had to create a new special function to shake.
+To make a reduced model of one leg of this robot, we had to create a new special function to explore its workspace.
 To create the rotation mouvement we see on the different previous videos we rotate a point that will be followed by the model creating the rotation.
 
 [here](../../../_autosummary/_autosummary/mor.animation.defaultShaking.html) how it was implemented
