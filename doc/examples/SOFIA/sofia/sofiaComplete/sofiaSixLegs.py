@@ -4,8 +4,10 @@ import Sofa
 from numpy import add,multiply
 from splib.numerics import *
 
-from sofia.sofiaLeg import SofiaLeg
-from sofia.reduced_sofiaLeg import Reduced_SofiaLeg
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from sofiaLeg import SofiaLeg
+from reduced_sofiaLeg import Reduced_SofiaLeg
 
 from controller import SofiaController
 
