@@ -2,10 +2,11 @@
 import os
 import sys
 import imp
-from collections import OrderedDict
 
 #   STLIB IMPORT
 from stlib.scene.wrapper import Wrapper
+from mor.script import sceneCreationUtility
+from mor.script.sceneCreationUtility import SceneCreationUtility
 
 # MOR IMPORT
 from mor.wrapper import MORWrapper
@@ -21,168 +22,55 @@ paramWrapper = $PARAMWRAPPER
 toKeep = $TOKEEP
 packageName = '$PACKAGENAME'
 
+# We had these differents parameters to be able to save the scene
+for item in paramWrapper:
+    path, param = item
+    param['nbrOfModes'] = $NBROFMODES
+    param['save'] = True
+    param['toKeep'] = $TOKEEP
 
-
-forceFieldImplemented = ['TetrahedronFEMForceField','TriangleFEMForceField']
-
-modesPositionStr = '0'
-for i in range(1,nbrOfModes):
-    modesPositionStr = modesPositionStr + ' 0'
-
-
-myModel = OrderedDict() # Ordered dic containing has key Sofa.Node.name & has var a tuple of (Sofa_componant_type , param_solver)
-myMORModel = [] # list of tuple (solver_type , param_solver)
-
-def MORNameExistance (name,kwargs):
-    if 'name' in kwargs :
-        if kwargs['name'] == name : 
-            return True
-
-solverParam = [[]]*len(paramWrapper)
-containers = []
-def MORreplace(node,type,newParam,initialParam):
-
-    currentPath = node.getPathName()
-
-    for item in newParam :
-        index = newParam.index(item)
-        path , param = item
-        
-        if currentPath == path :
-            # print index
-            # print(type)
-
-            if node.name not in myModel:
-                myModel[node.name] = []
-
-            if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
-                #Find the differents solver to move them in order to have them before the MechanicalMatrixMapperMOR
-                if 'name' in initialParam:
-                    solverParam[index].append(initialParam['name'])
-                else: 
-                    solverParam[index].append(type)
-                myMORModel.append((str(type),initialParam))
-            
-            elif str(type).find('ForceField') != -1 and str(type) in forceFieldImplemented :
-
-                    #Change the initial Forcefield by the HyperReduced one with the new argument 
-                    # print str(type)
-                    name = 'HyperReducedFEMForceField_'+path.split('/')[-1]
-                    param['paramForcefield']['name'] = name
-                    param['paramForcefield']['nbModes'] = nbrOfModes
-                    param['paramForcefield']['poissonRatio'] = initialParam['poissonRatio']
-                    param['paramForcefield']['youngModulus'] = initialParam['youngModulus']
-
-                    #Add to the container list  which data it has to save
-                    newType =''
-                    if str(type) == 'TetrahedronFEMForceField':
-                        containers[-1] += '/tetrahedra'
-                        newType = 'HyperReducedTetrahedronFEMForceField'
-                    elif str(type) == 'TriangleFEMForceField':
-                        containers[-1] += '/triangles'
-                        newType = 'HyperReducedTriangleFEMForceField'
-
-                    if not newType :
-                        print('!! FORCFIELD NOT IMPLEMENTED !!')
-                        return -1, -1 , newParam
-
-                    myModel[node.name].append((newType,param['paramForcefield']))
-                    return newType, param['paramForcefield'] , newParam
-
-            elif str(type).find('MechanicalObject') != -1:
-                #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
-                myModel[node.name].append((str(type),initialParam))
-                if 'name' in initialParam :
-                    param['paramMORMapping']['output'] = '@./'+initialParam['name']
-                else:
-                    param['paramMORMapping']['output'] = '@./MechanicalObject'
-                return (-1, -1, newParam)
-
-            else:
-                if str(type).find('Loader') != -1 or str(type).find('Container') != -1:
-                    #   Find the loader/container to be able to save elements allowing to build the connectivity file
-                    if len(containers) != index+1 :
-                        # print len(containers)
-                        if 'name' in initialParam:
-                            containers.append(initialParam['name'])
-                        else: 
-                            containers.append(type)
-
-                myModel[node.name].append((str(type),initialParam))
-
-    if node.name in toKeep:
-        # print(node.name)
-        if node.name not in myModel:
-            myModel[node.name] = []
-        
-        myModel[node.name].append((str(type),initialParam))
-
-    return None
-
-tmpFind = 0
-modify = []
-def searchObjectAndDestroy(node,mySolver,newParam):
-    global tmpFind
-    for child in node.getChildren():
-        currentPath = child.getPathName()
-        # print ('child Name : ',child.name)
-        for item in newParam :
-            index = newParam.index(item)
-            path , param = item
-            # path = '/'.join(tabReduced[:-1])
-            # print ('path : '+path)
-            # print ('currenPath : '+currentPath)
-            if currentPath == path :
-
-                if 'paramMappedMatrixMapping' in param:
-                    modify.append((path,param,index,child))
-
-                tmpFind+=1
-
-        if tmpFind == len(paramWrapper):
-            # print (modify)
-            for item in modify :
-                # print 'Create new child modelMOR and move node in it'
-                path, param, index, child = item
-                myParent = child.getParents()[0]
-                modelMOR = myParent.createChild(child.name+'_MOR')
-                argMecha = {'template':'Vec1d','position':modesPositionStr}
-                myMORModel.append(('MechanicalObject',argMecha))
-                modelMOR.createObject('MechanicalObject', **argMecha)
-                modelMOR.moveChild(child)
-
-                for obj in child.getObjects():
-                    # print obj.name 
-                    if obj.name in mySolver[index]:
-                        # print('To move!')
-                        child.removeObject(obj)
-                        child.getParents()[0].addObject(obj)
-
-                # print param['paramMappedMatrixMapping']
-                myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
-                modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
-                # print 'Create MechanicalMatrixMapperMOR in modelMOR'
-
-                if 'paramMORMapping' in param:
-                    myModel[child.name].append(('ModelOrderReductionMapping',param['paramMORMapping']))  
-                    child.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
-                    print "Create ModelOrderReductionMapping in node"
-                # else do error !!
-            tmpFind += 1
-            return None
-
-        else:
-            searchObjectAndDestroy(child,mySolver,newParam) 
-
+# We create our SceneCreationUtility that will ease our scene transformation
+u = SceneCreationUtility()
 
 def createScene(rootNode):
-    
-    originalScene.createScene(MORWrapper(rootNode, MORreplace, paramWrapper)) 
-    searchObjectAndDestroy(rootNode,solverParam,paramWrapper)
-    # print('myMORModel : '+str(myMORModel)+'\n\n')
-    # print('myModel : '+str(myModel)+'\n\n')
+
+    print(  "This Scene will crash : it is NORMAL\n\
+            Its purpose is only to save the scene (thanks to MORWrapper)\n\
+            To create the package with it afterward")
+
+    # Import Original Scene
+    # Here we use a wrapper (MORWrapper) that will allow us (with MORreplace)
+    # to modify the initial scene and get informations on its structures
+    # For more details on the process involved additionnal doc are with :
+    #       - mor.wrapper.MORWrapper
+    #       - mor.script.sceneCreationUtility
+
+    originalScene.createScene(MORWrapper(rootNode, u.MORreplace, paramWrapper))  # 1
+
+    # Search the nodes we are reducing
+
+    toFind = []
+    for item in paramWrapper:
+        path, param = item
+        toFind.append(path.split('/')[-1])
+
+    nodeFound = u.searchInGraphScene(rootNode,toFind)
+
+    # Modify the scene to perform hyper-reduction according
+    # to the informations collected by the wrapper
+
+    u.modifyGraphScene(nbrOfModes,nodeFound,paramWrapper,save=True) # 2
+
+    # We collect all the informations during 1 & 2 to be able to create with
+    # writeGraphScene a SOFA scene containing only our reduced model that we can instanciate
+    # as a whole component with differents usefull argument (translation/rotation/color...)
+    # For more details on the process involved additionnal doc are with :
+    #       - mor.wrapper.writeScene
 
     if packageName:
+        myMORModel = sceneCreationUtility.myMORModel
+        myModel = sceneCreationUtility.myModel
+
         nodeName = paramWrapper[0][0].split('/')[-1]
 
         writeScene.writeHeader(packageName)

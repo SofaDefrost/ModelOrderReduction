@@ -8,7 +8,7 @@ from stlib.scene.wrapper import Wrapper
 # MOR IMPORT
 from mor import animation
 from mor.script import ObjToAnimate
-
+from mor.script.sceneCreationUtility import SceneCreationUtility
 
 # Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
@@ -22,119 +22,62 @@ listObjToAnimate.append(ObjToAnimate('$obj.location',$obj.animFct,objName='$obj.
 phase = $PHASE
 nbIterations = $nbIterations
 paramWrapper = $PARAMWRAPPER
-# GLOBAL
-timeExe = 0.0
-dt = 0.0
-tmp = []
 
+# We create our SceneCreationUtility that will ease our scene transformation
+u = SceneCreationUtility()
 
-def searchInGraphScene(node,toFind):
-    '''
-        Args:
-        node (Sofa.node):     Sofa node in wich we are working
-
-        toFind (list[str]):  list of node name we want to find
-
-        Description:
-
-            Search in the Graph scene recursively for all the node
-            with name contained in the list toFind
-    '''
-    global tmp
-    for child in node.getChildren():
-        # print(child.name)
-        if child.name in toFind and len(tmp) < len(toFind):
-            # print(child.name)
-            tmp.append(child)
-        if len(tmp) == len(toFind):
-            tmp = tmp + [-1]
-            return None
-        else:
-            searchInGraphScene(child,toFind)
-
-def searchChildAndAnimate():
-    '''
-        FOR all node find to animate animate only the one moving -> phase 1/0
-
-        If DEFAULT :
-          - SEARCH here for the obj to animate & its valueToIncrement
-        Else :
-          - GIVE obj name to work with & its valueToIncrement
-
-        give to animate :
-          - the obj to work with & its valueToIncrement
-          if DEFAULT :
-              - the animation function will be defaultShaking
-              - the general param lis(range,period,increment)
-          else :
-              - give the new animation function
-              - param lis(...)
-    '''
-    tmpFind = 0
-    for objToAnimate in listObjToAnimate:
-        if phase[tmpFind] :
-            # param = listParam.copy()
-            for obj in objToAnimate.node.getObjects():
-                if objToAnimate.objName == '':
-                    if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
-                        objToAnimate.obj = obj
-                        objToAnimate.params["dataToWorkOn"] = 'value'
-
-                elif obj.getClassName() == objToAnimate.objName:
-                    objToAnimate.obj = obj
-
-            if objToAnimate.obj and objToAnimate.params["dataToWorkOn"]:
-                objToAnimate.duration = timeExe
-
-                animate(objToAnimate.animFct, {'objToAnimate':objToAnimate,'dt':dt}, objToAnimate.duration)
-                print("Animate "+objToAnimate.obj.getClassName()+" from node "+objToAnimate.node.name+"\nwith parameters :\n"+str(objToAnimate.params))
-
-            else:
-                print("Found Nothing to animate in "+str(objToAnimate.node.name))
-
-        tmpFind += 1
-
+###############################################################################
 
 def createScene(rootNode):
-    global timeExe, dt, tmp
-
     print ("Scene Phase :"+str(phase))
+
+    # Import Original scene
+
     originalScene.createScene(rootNode)
-    tmp = []
+    dt = rootNode.dt
+    timeExe = nbIterations * dt
+
+    # Search node to animate
 
     toAnimate = []
     for obj in listObjToAnimate:
         toAnimate.append(obj.location)
 
-    searchInGraphScene(rootNode,toAnimate)
+    nodeFound = u.searchInGraphScene(rootNode,toAnimate)
 
-    nodeFound = tmp[:-1]
-    if len(nodeFound) != len(listObjToAnimate):
-        raise "ERROR haven't found all node to animate"
+
     for i in range(len(listObjToAnimate)):
         listObjToAnimate[i].node = nodeFound[i]
 
-    dt = rootNode.dt
-    timeExe = nbIterations * dt
-    # print "timeExe :",timeExe
+    # Add Animation Manager to Scene
+    # (ie: python script controller to which we will pass our differents animations)
+    # more details at splib.animation.AnimationManager (https://stlib.readthedocs.io/en/latest/)
 
     if isinstance(rootNode, Wrapper):
         AnimationManager(rootNode.node)
     else:
         AnimationManager(rootNode)
 
-    searchChildAndAnimate()
+    # Now that we have the AnimationManager & a list of the node we want to animate
+    # we can add an animation to then according to the arguments in listObjToAnimate
+
+    u.addAnimation(phase,timeExe,dt,listObjToAnimate)
+
+    # Now that all the animation are defined we need to record there results
+    # for that we take the parent node normally given as an argument in paramWrapper
 
     toFind = []
     for item in paramWrapper:
         path, param = item
         toFind.append(path.split('/')[-1])
 
-    tmp = []
-    searchInGraphScene(rootNode,toFind)
-    if tmp:
-        myParent = tmp[0]
-        if phase == [0]*len(phase):
-            myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="1", writeV="0")
-        else :
-            myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,writeX="1", writeX0="0", writeV="0")
+    myParent = u.searchInGraphScene(rootNode,toFind)[0]
+
+    # We need rest_position and because its normally always the same we record it one time
+    # during the first phase with the argument writeX0 put to True
+    if phase == [0]*len(phase):
+        myParent.createObject('WriteState', filename="stateFile.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
+                                            writeX="1", writeX0="1", writeV="0")
+    else :
+        myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
+                                            writeX="1", writeX0="0", writeV="0")

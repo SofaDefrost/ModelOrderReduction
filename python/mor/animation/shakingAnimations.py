@@ -56,10 +56,10 @@ def defaultShaking( objToAnimate, dt, factor, **param):
         writeCurrent = True
 
     # TODO will bug if period of 1 !!
-    if (time >= (lastTime + period + 2*dt)):
+    if (time > (lastTime + period + dt)):
         lastTime += period
 
-    if (time >= (lastTime + period + dt)):
+    if (time == (lastTime + period + dt)):
         writeCurrent = True
 
     if (writeCurrent):
