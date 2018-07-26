@@ -142,7 +142,7 @@ def createScene(rootNode):
     surfaceMeshFileName = 'quadriped_collision.stl'
 
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
-                        dt=1,
+                        dt=0.001,
                         gravity=[0.0,0.0,-9810])
 
     translate = 300
