@@ -19,6 +19,7 @@ sys.path.append(path+'/../python') # TO CHANGE
 
 # MOR IMPORT
 from mor.animation import defaultShaking
+from mor.animation import shakingSofia
 from mor.script import utility
 from mor.script import ReduceModel
 from mor.script import ObjToAnimate
@@ -27,14 +28,14 @@ from mor.script import ObjToAnimate
 ####################       PARAMETERS       ###########################
 
 # Select Output Dir and original scene name & path
-originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-meshDir = utility.saveMeshFiles('Select the directory containing the mesh of your scene')
-outputDir = utility.openDirName('Select the directory tha will contain all the results')
+#originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+#meshDir = utility.saveMeshFiles('Select the directory containing the mesh of your scene')
+#outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 
-# originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/PneuNets.pyscn'
-# meshDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh'
-# outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/incr1000Period2'
+originalScene = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/liverFine.pyscn'
+meshDir = ['/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liverFine.vtu', '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liver-smoothUV.obj']
+outputDir = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/mor'
 
 ### DIAMOND ROBOT PARAM
 # nodesToReduce = ['/modelNode']
@@ -88,14 +89,23 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # listObjToAnimate = [cavity]
 # addRigidBodyModes = [0,0,0]
 
+### SOFIA
+nodesToReduce =['/liver']
+actuator = ObjToAnimate("actuator","shakingSofia",'MechanicalObject',incr=0.20,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.4)
+# # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
+listObjToAnimate = [actuator]
+addRigidBodyModes = [0,0,0]
+
+
+
 # Tolerance
-tolModes = 0.000001
+tolModes = 0.0001
 tolGIE =  0.05
 
 # Optionnal
-verbose = False
+verbose = True
 
-packageName = 'pneunet'
+packageName = 'liver'
 addToLib = False
 
 #######################################################################
@@ -114,7 +124,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #######################################################################
 ####################       EXECUTION        ###########################
 
-# reduceMyModel.performReduction(phasesToExecute=[1]) # phasesToExecute=list(range(8)),nbrOfModes=18)
+#reduceMyModel.performReduction(phasesToExecute=[1]) # phasesToExecute=list(range(8)),nbrOfModes=18)
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
@@ -125,7 +135,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #   add a writeState componant to save the shaking resulting states  #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase1(phasesToExecute=[1])
+#reduceMyModel.phase1()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -137,7 +147,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #                       the different mode                           #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase2()
+#reduceMyModel.phase2()
 
 
 ####################    SOFA LAUNCHER       ##########################
@@ -154,7 +164,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase3()
+#reduceMyModel.phase3()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -166,4 +176,4 @@ reduceMyModel = ReduceModel(    originalScene,
 #      with it. Additionnally we also compute the Active Nodes       #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase4()
+reduceMyModel.phase4()
