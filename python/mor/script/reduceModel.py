@@ -671,7 +671,7 @@ class ReduceModel():
             self.listSofaScene[i]['NBTRAININGSET'] = self.reductionParam.nbTrainingSet
             # self.listSofaScene[i]["PARAMWRAPPER"] = self.paramWrapper
 
-        filenames = ["phase2_prepareECSW.py","phase1_snapshots.py"]
+        filenames = ["phase2_prepareECSW.py","phase1_snapshots.py","debug_scene.py"]
         filesandtemplates = []
         for filename in filenames:                
             filesandtemplates.append( (open(path+filename).read(), filename) )
