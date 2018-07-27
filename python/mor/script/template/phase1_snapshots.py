@@ -37,18 +37,6 @@ def createScene(rootNode):
     dt = rootNode.dt
     timeExe = nbIterations * dt
 
-    # Search node to animate
-
-    toAnimate = []
-    for obj in listObjToAnimate:
-        toAnimate.append(obj.location)
-
-    nodeFound = u.searchInGraphScene(rootNode,toAnimate)
-
-
-    for i in range(len(listObjToAnimate)):
-        listObjToAnimate[i].node = nodeFound[i]
-
     # Add Animation Manager to Scene
     # (ie: python script controller to which we will pass our differents animations)
     # more details at splib.animation.AnimationManager (https://stlib.readthedocs.io/en/latest/)
@@ -61,7 +49,7 @@ def createScene(rootNode):
     # Now that we have the AnimationManager & a list of the node we want to animate
     # we can add an animation to then according to the arguments in listObjToAnimate
 
-    u.addAnimation(phase,timeExe,dt,listObjToAnimate)
+    u.addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate)
 
     # Now that all the animation are defined we need to record there results
     # for that we take the parent node normally given as an argument in paramWrapper
@@ -70,8 +58,9 @@ def createScene(rootNode):
     for item in paramWrapper:
         path, param = item
         toFind.append(path.split('/')[-1])
+    toFind = toFind[0]
 
-    myParent = u.searchInGraphScene(rootNode,toFind)[0]
+    myParent = u.searchNodeInGraphScene(rootNode,toFind)
 
     # We need rest_position and because its normally always the same we record it one time
     # during the first phase with the argument writeX0 put to True

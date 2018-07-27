@@ -38,24 +38,15 @@ def createScene(rootNode):
     #       - mor.wrapper.MORWrapper
     #       - mor.script.sceneCreationUtility
 
-    phase1_snapshots.createScene(MORWrapper(rootNode, u.MORreplace, paramWrapper))
-    
-    # Search the nodes we are reducing
-
-    toFind = []
-    for item in paramWrapper:
-        path, param = item
-        toFind.append(path.split('/')[-1])
-
-    nodeFound = u.searchInGraphScene(rootNode,toFind)
+    phase1_snapshots.createScene(Wrapper(rootNode, u.MORreplace, paramWrapper))
 
     # Save connectivity list that will allow us after work only on the necessary elements
 
     if phase == [0]*len(phase):
-        u.saveElements(phase,nodeFound,paramWrapper)
+        u.saveElements(rootNode,phase,paramWrapper)
 
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
 
-    u.modifyGraphScene(nbrOfModes,nodeFound,paramWrapper)
+    u.modifyGraphScene(rootNode,nbrOfModes,paramWrapper)

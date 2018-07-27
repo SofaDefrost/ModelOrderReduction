@@ -45,21 +45,12 @@ def createScene(rootNode):
     #       - mor.wrapper.MORWrapper
     #       - mor.script.sceneCreationUtility
 
-    originalScene.createScene(MORWrapper(rootNode, u.MORreplace, paramWrapper))  # 1
-
-    # Search the nodes we are reducing
-
-    toFind = []
-    for item in paramWrapper:
-        path, param = item
-        toFind.append(path.split('/')[-1])
-
-    nodeFound = u.searchInGraphScene(rootNode,toFind)
+    originalScene.createScene(Wrapper(rootNode, u.MORreplace, paramWrapper))  # 1
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
 
-    u.modifyGraphScene(nbrOfModes,nodeFound,paramWrapper,save=True) # 2
+    u.modifyGraphScene(rootNode,nbrOfModes,paramWrapper,save=True) # 2
 
     # We collect all the informations during 1 & 2 to be able to create with
     # writeGraphScene a SOFA scene containing only our reduced model that we can instanciate
