@@ -5,8 +5,7 @@ import imp
 
 #   STLIB IMPORT
 from stlib.scene.wrapper import Wrapper
-from mor.script import sceneCreationUtility
-from mor.script.sceneCreationUtility import SceneCreationUtility
+from mor.script import sceneCreationUtility as u
 
 # MOR IMPORT
 from mor.wrapper import MORWrapper
@@ -28,9 +27,6 @@ for item in paramWrapper:
     param['nbrOfModes'] = $NBROFMODES
     param['save'] = True
     param['toKeep'] = $TOKEEP
-
-# We create our SceneCreationUtility that will ease our scene transformation
-u = SceneCreationUtility()
 
 def createScene(rootNode):
 
@@ -59,8 +55,8 @@ def createScene(rootNode):
     #       - mor.wrapper.writeScene
 
     if packageName:
-        myMORModel = sceneCreationUtility.myMORModel
-        myModel = sceneCreationUtility.myModel
+        myMORModel = u.myMORModel
+        myModel = u.myModel
 
         nodeName = paramWrapper[0][0].split('/')[-1]
 

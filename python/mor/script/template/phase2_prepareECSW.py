@@ -8,7 +8,7 @@ from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT
 from mor.wrapper import MORWrapper
-from mor.script.sceneCreationUtility import SceneCreationUtility
+from mor.script import sceneCreationUtility as u
 
 # Our Phase1 Scene IMPORT
 import phase1_snapshots
@@ -23,9 +23,6 @@ paramWrapper = $PARAMWRAPPER
 for item in paramWrapper:
     path, param = item
     param['nbrOfModes'] = $NBROFMODES
-
-# We create our SceneCreationUtility that will ease our scene transformation
-u = SceneCreationUtility()
 
 ###############################################################################
 

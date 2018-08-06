@@ -8,7 +8,7 @@ from stlib.scene.wrapper import Wrapper
 # MOR IMPORT
 from mor import animation
 from mor.script import ObjToAnimate
-from mor.script.sceneCreationUtility import SceneCreationUtility
+from mor.script import sceneCreationUtility as u
 
 # Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
@@ -22,9 +22,6 @@ listObjToAnimate.append(ObjToAnimate('$obj.location',$obj.animFct,objName='$obj.
 phase = $PHASE
 nbIterations = $nbIterations
 paramWrapper = $PARAMWRAPPER
-
-# We create our SceneCreationUtility that will ease our scene transformation
-u = SceneCreationUtility()
 
 ###############################################################################
 
