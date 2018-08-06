@@ -16,7 +16,7 @@ You can also explore the *examples* directory in the repository *doc/examples/* 
 
  - [GPL 2](LICENSE)
 
-### Prerequisite
+## Prerequisite
 
 
 - [Python 2.7.X](https://www.python.org/downloads/)
