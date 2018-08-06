@@ -13,5 +13,5 @@ component
     mor.wrapper.writeScene
 
 """
-__all__=["morWrapper","writeScene"]
+__all__=["writeScene"]
 from morWrapper import MORWrapper
