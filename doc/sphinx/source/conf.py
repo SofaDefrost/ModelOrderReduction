@@ -66,7 +66,7 @@ extensions = [
     # 'breathe',
 
     # Generate pdf
-    'rst2pdf.pdfbuilder'
+    # 'rst2pdf.pdfbuilder'
 ]
 
 
