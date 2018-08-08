@@ -1,6 +1,6 @@
-mor.script.utility.rst
+mor.script.utility
 ======================
 
-.. automodule:: mor.script.utility.rst
+.. automodule:: mor.script.utility
    :members:
    :undoc-members:
