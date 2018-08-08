@@ -63,7 +63,7 @@ extensions = [
     # C++ / Breathe
     'sphinx.ext.ifconfig',
     'sphinx.ext.todo',
-    'breathe',
+    # 'breathe',
 
     # Generate pdf
     'rst2pdf.pdfbuilder'
