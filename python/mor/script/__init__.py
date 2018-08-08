@@ -8,7 +8,7 @@ Set of Function/Class to perform Model Reduction
     :toctree: _autosummary
 
     mor.script.reduceModel
-    mor.script.morUtilityFunctions
+    mor.script.utility
 
 """
 __all__=["utility","reduceModel"]

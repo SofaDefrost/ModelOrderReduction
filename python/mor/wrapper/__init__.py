@@ -8,10 +8,9 @@ component
 
 .. autosummary::
     :toctree: _autosummary
-	
-	mor.wrapper.morWrapper
+
     mor.wrapper.writeScene
 
 """
 __all__=["writeScene"]
-from morWrapper import MORWrapper
+
