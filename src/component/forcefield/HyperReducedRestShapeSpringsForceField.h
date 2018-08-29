@@ -88,6 +88,12 @@ public:
     using HyperReducedForceField<DataTypes>::d_RIDPath;
     using HyperReducedForceField<DataTypes>::d_weightsPath;
 
+    using HyperReducedForceField<DataTypes>::Gie;
+    using HyperReducedForceField<DataTypes>::weights;
+    using HyperReducedForceField<DataTypes>::reducedIntegrationDomain;
+
+    using HyperReducedForceField<DataTypes>::m_modes;
+    using HyperReducedForceField<DataTypes>::m_RIDsize;
 
     Data< helper::vector< unsigned int > > points; ///< points controlled by the rest shape springs
     Data< VecReal > stiffness; ///< stiffness values between the actual position and the rest shape position
@@ -100,18 +106,6 @@ public:
 
     SingleLink<HyperReducedRestShapeSpringsForceField<DataTypes>, sofa::core::behavior::MechanicalState< DataTypes >, BaseLink::FLAG_STOREPATH|BaseLink::FLAG_STRONGLINK> restMState;
     linearsolver::EigenBaseSparseMatrix<typename DataTypes::Real> matS;
-
-//    // Reduced order model boolean parameters
-//    Data< bool > d_prepareECSW;
-//    Data<unsigned int> d_nbModes;
-//    Data<unsigned int> d_nbTrainingSet;
-//    Data<unsigned int> d_periodSaveGIE;
-
-//    Data< bool > d_performECSW;
-//    Data<std::string> d_modesPath;
-//    Data<std::string> d_RIDPath;
-//    Data<std::string> d_weightsPath;
-
 
 protected:
     HyperReducedRestShapeSpringsForceField();
@@ -162,14 +156,6 @@ protected :
     helper::vector<CPos> m_pivots;
 
     SReal lastUpdatedStep;
-
-    // Reduced order model variables
-    Eigen::MatrixXd m_modes;
-    std::vector<std::vector<double> > Gie;
-    Eigen::VectorXd weights;
-    Eigen::VectorXi reducedIntegrationDomain;
-    unsigned int m_RIDsize;
-
 
 private :
 

@@ -74,7 +74,6 @@ HyperReducedTriangleFEMForceField<DataTypes>::~HyperReducedTriangleFEMForceField
     f_young.setRequired(true);
 }
 
-
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::init()
 {
@@ -173,8 +172,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::init()
 
 }
 
-
-
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::reinit()
 {
@@ -188,7 +185,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::reinit()
     initLarge();  // compute the per-element strain-displacement matrices
     computeMaterialStiffnesses();
 }
-
 
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::MechanicalParams* /* mparams */, DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv& /* v */)
@@ -256,7 +252,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::Mechanic
     f.endEdit();
 }
 
-
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx)
 {
@@ -291,7 +286,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffness( VecCoord& v, 
         applyStiffnessLarge( v, h, x, kFactor );
     }
 }
-
 
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::computeStrainDisplacement( StrainDisplacement &J, Coord /*a*/, Coord b, Coord c )
@@ -359,7 +353,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::computeStrainDisplacement( St
 
 }
 
-
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::computeMaterialStiffnesses()
 {
@@ -404,7 +397,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::computeMaterialStiffnesses()
         }
     }
 }
-
 
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::computeForce( Displacement &F, const Displacement &Depl, const MaterialStiffness &K, const StrainDisplacement &J )
@@ -481,7 +473,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::computeForce( Displacement &F
     F[5] = /* J[5][0] * KJtD[0] + */ J[5][1] * KJtD[1] /* + J[5][2] * KJtD[2] */ ;
 }
 
-
 /*
 ** SMALL DEFORMATION METHODS
 */
@@ -503,7 +494,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::initSmall()
         _rotations[i] = identity;
     }
 }
-
 
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceSmall( VecCoord &f, const VecCoord &p, Index elementIndex, bool implicit )
@@ -583,11 +573,9 @@ void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessSmall(VecCoord 
     }
 }
 
-
 /*
 ** LARGE DEFORMATION METHODS
 */
-
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::initLarge()
 {
@@ -628,7 +616,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::initLarge()
     }
 }
 
-
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::computeRotationLarge( Transformation &r, const VecCoord &p, const Index &a, const Index &b, const Index &c)
 {
@@ -664,7 +651,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::computeRotationLarge( Transfo
     r[2][1] = edgez[1];
     r[2][2] = edgez[2];
 }
-
 
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord &f, const VecCoord &p, Index elementIndex, bool implicit )
@@ -856,7 +842,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessLarge(VecCoord 
     }
 }
 
-
 template<class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::VisualParams* vparams)
 {
@@ -897,7 +882,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::Visu
 #endif /* SOFA_NO_OPENGL */
 }
 
-
 template<class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::computeElementStiffnessMatrix( StiffnessMatrix& S, StiffnessMatrix& SR, const MaterialStiffness &K, const StrainDisplacement &J, const Transformation& Rot )
 {
@@ -933,7 +917,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::computeElementStiffnessMatrix
     S = RR*Ke;
     SR = S*RRt;
 }
-
 
 template<class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset)

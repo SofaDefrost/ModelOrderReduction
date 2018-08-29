@@ -795,7 +795,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::updateTange
     m_updateMatrix=false;
 }
 
-
 template <class DataTypes> 
 void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(const core::MechanicalParams* mparams /* PARAMS FIRST */, DataVecDeriv& d_df, const DataVecDeriv& d_dx)
 {
@@ -933,7 +932,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatri
 
     m_edgeInfo.endEdit();
 }
-
 
 template<class DataTypes>
 Mat<3,3,double> HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::getPhi(int TetrahedronIndex)
@@ -1084,7 +1082,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::testDerivat
     d_deltaPos.endEdit();
     d_deltaForceCalculated.endEdit();
 }
-
 
 template<class DataTypes>
 void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::saveMesh( const char *filename )

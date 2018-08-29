@@ -90,6 +90,7 @@ public:
             m_modes.conservativeResize(Eigen::NoChange,d_nbModes.getValue());
 
             Gie.resize(d_nbTrainingSet.getValue()*d_nbModes.getValue());
+
             for (unsigned int i = 0; i < d_nbTrainingSet.getValue()*d_nbModes.getValue(); i++)
             {
                 Gie[i].resize(nbElements);

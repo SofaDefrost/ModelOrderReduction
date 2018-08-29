@@ -2072,7 +2072,6 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(const core::M
     else msg_error(this) << "addKToMatrix found no valid matrix accessor." ;
 }
 
-
 template<class DataTypes>
 void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset)
 {
