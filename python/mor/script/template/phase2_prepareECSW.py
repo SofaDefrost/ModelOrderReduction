@@ -7,7 +7,6 @@ from splib.animation import AnimationManager , animate
 from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT
-from mor.wrapper import MORWrapper
 from mor.script import sceneCreationUtility as u
 
 # Our Phase1 Scene IMPORT

@@ -8,7 +8,6 @@ from stlib.scene.wrapper import Wrapper
 from mor.script import sceneCreationUtility as u
 
 # MOR IMPORT
-from mor.wrapper import MORWrapper
 from mor.wrapper import writeScene
 
 # Our Original Scene IMPORT
