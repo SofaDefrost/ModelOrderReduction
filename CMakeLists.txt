@@ -32,7 +32,7 @@ set(README_FILES
 include(src/component/forcefield/Forcefield_Files.cmake)
 include(src/component/mapping/Mapping_Files.cmake)
 include(src/component/loader/Loader_Files.cmake)
-include(src/gui/morGUI.cmake)
+#include(src/gui/morGUI.cmake)
 
 find_package(SofaFramework REQUIRED)
 
