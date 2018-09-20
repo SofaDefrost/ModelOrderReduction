@@ -34,7 +34,7 @@ from mor.script import ObjToAnimate
 
 
 originalScene = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/liverFine.pyscn'
-meshDir = ['/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liverFine.vtu', '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liver-smoothUV.obj']
+meshDir = ['/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liverCoarse.vtu', '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liver-smoothUV.obj']
 outputDir = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/mor'
 
 ### DIAMOND ROBOT PARAM
@@ -91,6 +91,7 @@ outputDir = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/m
 
 ### SOFIA
 nodesToReduce =['/liver']
+print "About to be shaking sofia!!!!!!!!!!!!!!!!!"
 actuator = ObjToAnimate("actuator","shakingSofia",'MechanicalObject',incr=0.20,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.4)
 # # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 listObjToAnimate = [actuator]
@@ -164,7 +165,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase3()
+reduceMyModel.phase3()
 
 
 ####################    PYTHON SCRIPT       ##########################

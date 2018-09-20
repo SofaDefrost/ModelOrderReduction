@@ -9,22 +9,29 @@ def createScene(rootNode):
     rootNode.createObject('RequiredPlugin', name='SofaPython', pluginName='SofaPython')
 
     rootNode.createObject('VisualStyle', displayFlags='showCollision showVisualModels showForceFields showInteractionForceFields hideCollisionModels hideBoundingCollisionModels hideWireframe')
-    rootNode.findData('dt').value=0.02
+    rootNode.findData('dt').value=0.01
+    #rootNode.findData('dt').value=1
     rootNode.findData('gravity').value=[0, -981, 0]
+    #rootNode.findData('gravity').value=[0, 0, 0]
     liver = rootNode.createChild('liver')
-    liver.createObject('EulerImplicitSolver', rayleighStiffness = 0.1, rayleighMass = 0.1)
+    liver.createObject('EulerImplicitSolver', rayleighStiffness = 0.0, rayleighMass = 0.0)
     #liver.createObject('CGLinearSolver', tolerance="1e-12", threshold="1e-09")
-    liver.createObject('SparseLDLSolver')
+    liver.createObject('SparseLDLSolver', saveMatrixToFile='False')
     #liver.createObject('MeshVTKLoader', name="loader", filename=meshPath+'liverFine.vtu')
-    liver.createObject('MeshVTKLoader', name="loader", filename=meshPath+'liverSemiFine.vtu')
+    #liver.createObject('MeshVTKLoader', name="loader", filename=meshPath+'liverSemiFine.vtu')
+    liver.createObject('MeshVTKLoader', name="loader", filename=meshPath+'liverCoarse.vtu')
+    #liver.createObject('MeshVTKLoader', name="loader", filename=meshPath+'liverVeryCOARSE.vtu')
+    #liver.createObject('MeshVTKLoader', name="loader", filename=meshPath+'liverTinyMesh.vtu')
     liver.createObject('TetrahedronSetTopologyContainer', src="@loader")
     liver.createObject('TetrahedronSetGeometryAlgorithms')
     liver.createObject('MechanicalObject')
+    #liver.createObject('WriteState',filename="liverInitial.state", period='0.01',writeX="0", writeX0="1")
+    #liver.createObject('WriteState',filename="liverPositions.state",period=0.05, time=[0.3], writeX="1", writeX0="0")
     liver.createObject('BoxROI', name='ROI1', box='0 3 -1 2 5 2', drawBoxes='true')
     liver.createObject('BoxROI', name='boxROIactuation', box='-5 0 -0.5 -4 0.5 0.5', drawBoxes='true')
 
     #liver.createObject('DiagonalMass', massDensity=1)
-    liver.createObject('UniformMass', totalMass=0.1)
+    liver.createObject('UniformMass', totalMass=0.3)
     liver.createObject('TetrahedronFEMForceField', poissonRatio="0.3", youngModulus="5000")
     liver.createObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
     liver.createObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')

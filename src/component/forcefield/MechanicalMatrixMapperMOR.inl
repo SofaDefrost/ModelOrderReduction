@@ -113,7 +113,6 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::buildIdentityBlocksInJac
     {
         msg_info(this) << "In buildIdentityBlocksInJacobianMOR, performECSW is false";
         sofa::helper::vector<unsigned int> list;
-        std::cout << "mstate->getSize()" << mstate->getSize() << std::endl;
         for (unsigned int i=0; i<mstate->getSize(); i++)
             list.push_back(i);
         mstate->buildIdentityBlocksInJacobian(list, Id);

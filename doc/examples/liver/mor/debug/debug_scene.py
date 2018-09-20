@@ -61,7 +61,7 @@ def searchObjectAndDestroy(node):
                             child.removeObject(obj)
 
                     if solverToDelete[child.name]:
-                        child.createObject('ReadState', filename="stateFile.state") 
+                        child.createObject('ReadState', filename="../../diplayNormalModes.state") 
                     
                     childs = child.getChildren()
                     for node in childs:
