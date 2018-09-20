@@ -3,9 +3,9 @@
 This Sofa package contains c++ components with python utilitaries allowing
 to perform model reduction and use these reduced model in Sofa scene.
 
-You can find a complete documentation at this address: ...
+Our complete documentation is hosted [here](https://modelorderreduction.readthedocs.io/en/latest/index.html) using [readthedocs](https://readthedocs.org/) services.
 
-You can also explore the *examples* directory in the repository *doc/examples/* .
+You can also explore the *examples* directory in the repository *doc/examples/* where there are complete robot you can control which are completely or partially reduced.
 
 ## AUTHOR :
 
@@ -16,7 +16,7 @@ You can also explore the *examples* directory in the repository *doc/examples/* 
 
  - [GPL 2](LICENSE)
 
-### Prerequisite
+## Prerequisite
 
 
 - [Python 2.7.X](https://www.python.org/downloads/)
@@ -25,7 +25,7 @@ You can also explore the *examples* directory in the repository *doc/examples/* 
 - [Cheetah](http://cheetahtemplate.org/)
 
 
-- [PyQt](https://wiki.python.org/moin/PyQt)
+- [PyQt](https://wiki.python.org/moin/PyQt) *(optional)*
 
 
 - SOFA Plugin Dependencies
@@ -45,4 +45,4 @@ You can also explore the *examples* directory in the repository *doc/examples/* 
 	export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher
 	```
 
-More informations in requirement section of our doc
+More informations in [requirement](https://modelorderreduction.readthedocs.io/en/latest/usage/install/requirement.html) section of our doc

@@ -1,6 +1,4 @@
-
 # Model Order Reduction Example
-
 
 ## Introduction <a name="introduction"></a>
 ***
@@ -9,11 +7,11 @@ In this python notebook exemple we will see with 2 real examples how to reduce a
 
 the two examples will be :
 
-- **[The Diamond](../examples/Diamond/diamond.html#diamond)** 
+- **[A cable-driven silicone robot](https://modelorderreduction.readthedocs.io/en/latest/usage/examples/Diamond/diamond.html)** (*paper link : [C. Duriez, ICRA, 2013](https://hal.archives-ouvertes.fr/hal-00823766/document)*).
 
 ![Diamond robot](../examples/Diamond/diamondReal.png)
 
-- **[The Starfish](../examples/Diamond/diamond.html#diamond)**
+- **[A pneumatic Soft Robot](https://modelorderreduction.readthedocs.io/en/latest/usage/examples/Starfish/starfish.html)** (*paper link : Multigait soft Robot [R.F. Shepherd et al, PNAS, 2011](http://www.pnas.org/content/108/51/20400)*).
 
 ![Starfish robot](../examples/Starfish/Starfish_Real.png)
 

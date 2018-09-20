@@ -186,8 +186,8 @@ def writeFooter(packageName,nodeName,modelTransform):
         with open(path+'myFooter.txt', "r") as myfile:
             myFooter = myfile.read()
 
-            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
             myFooter = myFooter.replace('myReducedModel',nodeName)
+            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
             if modelTransform:
                 myFooter = myFooter.replace('arg1',str(modelTransform[0]))
                 myFooter = myFooter.replace('arg2',str(modelTransform[1]))

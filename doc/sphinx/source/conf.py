@@ -14,7 +14,20 @@
 #
 import os
 import sys
+
 sys.path.append(os.getcwd()+"/../../../python")
+
+
+# -- To Build Breath doc with ReadTheDocs--------------------------------------
+
+import subprocess, os
+
+read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+if read_the_docs_build:
+
+    subprocess.call('cd .. ; doxygen', shell=True)
+    html_extra_path = ['../build/html']
 
 # -- Project information -----------------------------------------------------
 
@@ -50,10 +63,10 @@ extensions = [
     # C++ / Breathe
     'sphinx.ext.ifconfig',
     'sphinx.ext.todo',
-    'breathe',
+    # 'breathe',
 
     # Generate pdf
-    'rst2pdf.pdfbuilder'
+    # 'rst2pdf.pdfbuilder'
 ]
 
 

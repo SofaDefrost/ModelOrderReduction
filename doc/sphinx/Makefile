@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = ModelOrderReduction
 SOURCEDIR     = source
-BUILDDIR      = ../generated
+BUILDDIR      = build
 
 # Put it first so that "make" without argument is like "make help".
 help:

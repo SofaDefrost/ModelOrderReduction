@@ -79,7 +79,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::parse(core::objectmodel:
 template <class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::init()
 {
-    this->initMOR(m_indices.size());
+//    this->initMOR(m_indices.size()); --> move to bwdInit
 }
 
 template<class DataTypes>
@@ -111,6 +111,9 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
     k = stiffness.getValue();
 
     recomputeIndices();
+
+    this->initMOR(m_indices.size());
+    msg_info() << "---------------------------------------> BWDINIT";
 
     BaseMechanicalState* state = this->getContext()->getMechanicalState();
     assert(state);
@@ -191,6 +194,8 @@ const typename HyperReducedRestShapeSpringsForceField<DataTypes>::DataVecCoord* 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const MechanicalParams*  mparams , DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv&  v )
 {
+    msg_info() << "--------------------------------> addForce";
+
     SOFA_UNUSED(mparams);
     SOFA_UNUSED(v);
     std::vector<double> GieUnit;
@@ -232,7 +237,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
         {
             for (unsigned int i=0; i<m_indices.size(); i++)
             {
-                const unsigned int index = m_indices[i];
+                const unsigned int index = i; //m_indices[i];
 
                 unsigned int ext_index = m_indices[i];
                 if(useRestMState)
@@ -247,7 +252,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
                     int numTest = this->getContext()->getTime()/this->getContext()->getDt();
                     if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
                     {
-
                         numTest = numTest/d_periodSaveGIE.getValue();
 
                         for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
@@ -264,7 +268,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
                         }
                     }
                 }
-
             }
         }
         this->saveGieFile(m_indices.size());
@@ -302,13 +305,13 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
     }
 }
 
-
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx)
 {
     //  remove to be able to build in parallel
     // 	const VecIndex& indices = points.getValue();
     // 	const VecReal& k = stiffness.getValue();
+    msg_info() << "--------------------------------> addDForce";
 
     WriteAccessor< DataVecDeriv > df1 = df;
     ReadAccessor< DataVecDeriv > dx1 = dx;
@@ -402,7 +405,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const MechanicalParams* mparams, const MultiMatrixAccessor* matrix )
 {
-    //      remove to be able to build in parallel
+    //  remove to be able to build in parallel
     // 	const VecIndex& indices = points.getValue();
     // 	const VecReal& k = stiffness.getValue();
     MultiMatrixAccessor::MatrixRef mref = matrix->getMatrix(this->mstate);
@@ -478,7 +481,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addSubKToMatrix(const MechanicalParams* mparams, const MultiMatrixAccessor* matrix, const vector<unsigned> & addSubIndex )
 {
-    //      remove to be able to build in parallel
+    //  remove to be able to build in parallel
     // 	const VecIndex& indices = points.getValue();
     // 	const VecReal& k = stiffness.getValue();
     MultiMatrixAccessor::MatrixRef mref = matrix->getMatrix(this->mstate);
@@ -524,7 +527,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addSubKToMatrix(const Me
         }
     }
 }
-
 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::updateForceMask()

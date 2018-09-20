@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+###############################################################################
+#            Model Order Reduction plugin for SOFA                            #
+#                         version 1.0                                         #
+#                       Copyright © Inria                                     #
+#                       All rights reserved                                   #
+#                       2018                                                  #
+#                                                                             #
+# This software is under the GNU General Public License v2 (GPLv2)            #
+#            https://www.gnu.org/licenses/licenses.en.html                    #
+#                                                                             #
+#                                                                             #
+#                                                                             #
+# Authors: Olivier Goury, Felix Vanneste                                      #
+#                                                                             #
+# Contact information: https://project.inria.fr/modelorderreduction/contact   #
+###############################################################################
 """
 Utilities functions used mainly by the **reduceModel** classes
 """
@@ -64,6 +80,7 @@ def update_progress(progress):
         text =  text+"\n"
     sys.stdout.write(text)
     sys.stdout.flush()
+
 
 def errDif(G, xi, b):
     return np.linalg.norm(G.dot(xi) - b)
@@ -325,69 +342,69 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
 
 def convertRIDinActiveNodes(RIDFileName,connectivityFileName,listActiveNodesFileName, verbose=False ):
 
-        print "###################################################"
-        print "Executing convertRIDinActiveNodes.py\n"
-        print "Arguments :\n"
-        print "     INPUT  :"
-        print "         -RIDFileName                :",RIDFileName
-        print "         -connectivityFileName       :",connectivityFileName
-        print "     OUTPUT :"
-        print "         -listActiveNodesFileName    :",listActiveNodesFileName,"\n"
-        print "###################################################"
+    print "###################################################"
+    print "Executing convertRIDinActiveNodes.py\n"
+    print "Arguments :\n"
+    print "     INPUT  :"
+    print "         -RIDFileName                :",RIDFileName
+    print "         -connectivityFileName       :",connectivityFileName
+    print "     OUTPUT :"
+    print "         -listActiveNodesFileName    :",listActiveNodesFileName,"\n"
+    print "###################################################"
 
-        ##############################################################################
+    ##############################################################################
 
-        fRID = open(RIDFileName,'r')
-        if verbose : print "Reading file :",RIDFileName
-        RIDlist = []
-        for line in fRID:
-            lineSplit = line.split();
-            RIDlist.append(int(lineSplit[0]))
-        fRID.close()
-        #print RIDlist
-        if verbose : print "Done reading file :",RIDFileName,'\n'
-
-
-        fconnec = open(connectivityFileName,'r')
-        if verbose : print "Reading file :",connectivityFileName
-        connecList = []
-        for line in fconnec:
-            lineSplit = line.split();
-            connecList.append(map(int,lineSplit))
-        fconnec.close()
-        #print connecList
-        if verbose : print "Done reading file :",connectivityFileName,'\n'
+    fRID = open(RIDFileName,'r')
+    if verbose : print "Reading file :",RIDFileName
+    RIDlist = []
+    for line in fRID:
+        lineSplit = line.split();
+        RIDlist.append(int(lineSplit[0]))
+    fRID.close()
+    #print RIDlist
+    if verbose : print "Done reading file :",RIDFileName,'\n'
 
 
-        if verbose : print "Generating listActiveNodes\n"
-        dimension = len(lineSplit)
-        listActiveNodes = []
-        for i in RIDlist:
-            #if verbose :
-                # print "#######################"
-                # print "elem number: ", i
-                # for coordIndex in range(dimension):
-                #     print connecList[i][coordIndex]
-            lenStart = len(listActiveNodes)
-            for coordIndex in range(dimension):
-                if connecList[i][coordIndex] not in listActiveNodes:
-                        listActiveNodes.append(connecList[i][coordIndex])
-            lenEnd = len(listActiveNodes)
-            #if (lenEnd - lenStart < dimension and verbose):
-                #print 'some nodes were already in the list !!! '
+    fconnec = open(connectivityFileName,'r')
+    if verbose : print "Reading file :",connectivityFileName
+    connecList = []
+    for line in fconnec:
+        lineSplit = line.split();
+        connecList.append(map(int,lineSplit))
+    fconnec.close()
+    #print connecList
+    if verbose : print "Done reading file :",connectivityFileName,'\n'
 
 
-        listActiveNodes.sort()
+    if verbose : print "Generating listActiveNodes\n"
+    dimension = len(lineSplit)
+    listActiveNodes = []
+    for i in RIDlist:
+        #if verbose :
+            # print "#######################"
+            # print "elem number: ", i
+            # for coordIndex in range(dimension):
+            #     print connecList[i][coordIndex]
+        lenStart = len(listActiveNodes)
+        for coordIndex in range(dimension):
+            if connecList[i][coordIndex] not in listActiveNodes:
+                    listActiveNodes.append(connecList[i][coordIndex])
+        lenEnd = len(listActiveNodes)
+        #if (lenEnd - lenStart < dimension and verbose):
+            #print 'some nodes were already in the list !!! '
 
-        if verbose : print "Filling file :",listActiveNodesFileName,"\n"
-        fActiveNodes = open(listActiveNodesFileName,'w')
-        for item in listActiveNodes:
-            fActiveNodes.write("%d\n" % item)
-        fActiveNodes.close()
 
-        if verbose :
-            print "listActiveNodes :"
-            print listActiveNodes
-            print "===> Success convertRIDinActiveNodes.py\n"
+    listActiveNodes.sort()
 
-        return listActiveNodes
+    if verbose : print "Filling file :",listActiveNodesFileName,"\n"
+    fActiveNodes = open(listActiveNodesFileName,'w')
+    for item in listActiveNodes:
+        fActiveNodes.write("%d\n" % item)
+    fActiveNodes.close()
+
+    if verbose :
+        print "listActiveNodes :"
+        print listActiveNodes
+        print "===> Success convertRIDinActiveNodes.py\n"
+
+    return listActiveNodes
