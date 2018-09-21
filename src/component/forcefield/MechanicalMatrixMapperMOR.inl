@@ -19,7 +19,8 @@
 
 #include "MechanicalMatrixMapperMOR.h"
 #include <SofaGeneralAnimationLoop/MechanicalMatrixMapper.inl>
-
+#include <SofaDeformable/SpringForceField.h>
+#include <SofaDeformable/StiffSpringForceField.h>
 #include "../loader/MatrixLoader.h"
 
 #include <fstream>
@@ -43,6 +44,8 @@ MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::MechanicalMatrixMapperMOR()
                            "Use the reduced model with the ECSW method")),
       listActiveNodesPath(initData(&listActiveNodesPath,"listActiveNodesPath",
                                    "Path to the list of active nodes when performing the ECSW method")),
+      listActiveNodes(initData(&listActiveNodes,"listActiveNodes",
+                                   "list of active nodes when performing the ECSW method")),
       timeInvariantMapping1(initData(&timeInvariantMapping1,false,"timeInvariantMapping1",
                                      "Are the mapping matrices to the first mechanicalObject constant with time? If yes, set to true to avoid useless recomputations.")),
       timeInvariantMapping2(initData(&timeInvariantMapping2,false,"timeInvariantMapping2",
@@ -60,7 +63,9 @@ template<class DataTypes1, class DataTypes2>
 void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
 {
     MechanicalMatrixMapper<DataTypes1, DataTypes2>::init();
-    listActiveNodes.resize(0);
+    //listActiveNodes.resize(0);
+    sofa::helper::vector <unsigned int>& listActiveNodesInit = *(listActiveNodes.beginEdit());
+    listActiveNodesInit.resize(0);
     if (performECSW.getValue())
     {
         std::ifstream listActiveNodesFile(listActiveNodesPath.getValue(), std::ios::in);
@@ -68,12 +73,13 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
         std::string lineValues;  // déclaration d'une chaîne qui contiendra la ligne lue
         while (getline(listActiveNodesFile, lineValues))
         {
-            listActiveNodes.push_back(std::stoi(lineValues));
+            listActiveNodesInit.push_back(std::stoi(lineValues));
             //nbLine++;
         }
         listActiveNodesFile.close();
-        msg_info(this) << "list of Active nodes : " << listActiveNodes ;
+        msg_info(this) << "list of Active nodes : " << listActiveNodesInit ;
     }
+    listActiveNodes.endEdit();
     if (usePrecomputedMass.getValue() == true)
     {
         Eigen::MatrixXd denseJtMJ;
@@ -85,6 +91,8 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
         JtMJ = denseJtMJ.sparseView();
 
     }
+    m_nbInteractionForceFieldsMOR = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get()->interactionForceField.size();
+
 
 }
 
@@ -106,8 +114,9 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::buildIdentityBlocksInJac
 {
     if (performECSW.getValue())
     {
+
         msg_info(this) << "In buildIdentityBlocksInJacobianMOR, performECSW is true";
-        mstate->buildIdentityBlocksInJacobian(listActiveNodes, Id);
+        mstate->buildIdentityBlocksInJacobian(listActiveNodes.getValue(), Id);
     }
     else
     {
@@ -125,6 +134,48 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
     msg_info(this) << "type1: ";
     bool timeInvariantMapping = timeInvariantMapping1.getValue();
 
+    sofa::simulation::Node *node = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get();
+    size_t currentNbInteractionFFs = node->interactionForceField.size();
+    bool mouseInteraction;
+    if (m_nbInteractionForceFieldsMOR != currentNbInteractionFFs)
+    {
+
+        for(BaseForceField* iforcefield : node->interactionForceField)
+        {
+            if (iforcefield->getName() == "Spring-Mouse-Contact")
+            {
+                mouseInteraction = true;
+                std::string springData = iforcefield->findData("spring")->getValueString();
+                unsigned int index1,mechaIndex;
+                std::stringstream ssin(springData);
+                ssin >> index1;
+                ssin >> mechaIndex;
+                sofa::helper::vector <unsigned int>& listActiveNodesUpdate = *(listActiveNodes.beginEdit());
+                bool alreadyIn = false;
+                for (int i=0;i< listActiveNodesUpdate.size();i++)
+                {
+                    if (listActiveNodesUpdate[i] == mechaIndex)
+                    {
+                        alreadyIn = true;
+                        break;
+                    }
+                }
+                if (!alreadyIn)
+                    listActiveNodesUpdate.push_back(mechaIndex);
+                listActiveNodes.endEdit();
+
+            }
+            else
+            {
+                mouseInteraction = false;
+            }
+        }
+        m_nbInteractionForceFieldsMOR = currentNbInteractionFFs;
+        if (mouseInteraction)
+        {
+            msg_info() << "Mouse interaction!";
+        }
+    }
 
 
     if ((timeInvariantMapping == false) || (this->getContext()->getTime() == 0))
