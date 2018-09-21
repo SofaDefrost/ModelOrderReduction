@@ -44,11 +44,11 @@ def defaultShaking( objToAnimate, dt, factor, **param):
     +---------------+-------+---------------------------------------------------------------------------------+
     """
     import Sofa
-
     global lastTime
     writeCurrent = False
     time = factor * objToAnimate.duration
     period = dt * objToAnimate.params['incrPeriod']
+
     # print("lastTime : "+str(lastTime))
     # print("currentTime - startTime : "+str(time))
 
@@ -56,10 +56,10 @@ def defaultShaking( objToAnimate, dt, factor, **param):
         writeCurrent = True
 
     # TODO will bug if period of 1 !!
-    if (time > (lastTime + period + dt)):
+    if (time-(lastTime + period + dt) >= 0.000001): #{time > (lastTime + period + dt)):
         lastTime += period
 
-    if (time == (lastTime + period + dt)):
+    if ( abs(time-(lastTime + period + dt)) <= 0.000001 ):
         writeCurrent = True
 
     if (writeCurrent):
