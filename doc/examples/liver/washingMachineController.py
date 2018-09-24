@@ -13,7 +13,7 @@ def rotationPoint(Pos0, angle, brasLevier):
 
     return posOut
 
-class SofiaLegController(Sofa.PythonScriptController):
+class washingMachineController(Sofa.PythonScriptController):
 
     def initGraph(self, node):
 
