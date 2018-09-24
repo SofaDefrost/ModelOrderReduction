@@ -136,10 +136,10 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
 
     sofa::simulation::Node *node = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get();
     size_t currentNbInteractionFFs = node->interactionForceField.size();
-    bool mouseInteraction;
+    bool mouseInteraction = false;
     if (m_nbInteractionForceFieldsMOR != currentNbInteractionFFs)
     {
-
+        sofa::helper::vector <unsigned int>& listActiveNodesUpdate = *(listActiveNodes.beginEdit());
         for(BaseForceField* iforcefield : node->interactionForceField)
         {
             if (iforcefield->getName() == "Spring-Mouse-Contact")
@@ -150,9 +150,9 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
                 std::stringstream ssin(springData);
                 ssin >> index1;
                 ssin >> mechaIndex;
-                sofa::helper::vector <unsigned int>& listActiveNodesUpdate = *(listActiveNodes.beginEdit());
+
                 bool alreadyIn = false;
-                for (int i=0;i< listActiveNodesUpdate.size();i++)
+                for (size_t i=0;i< listActiveNodesUpdate.size();i++)
                 {
                     if (listActiveNodesUpdate[i] == mechaIndex)
                     {
@@ -162,19 +162,20 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
                 }
                 if (!alreadyIn)
                     listActiveNodesUpdate.push_back(mechaIndex);
-                listActiveNodes.endEdit();
-
-            }
-            else
-            {
-                mouseInteraction = false;
             }
         }
+
         m_nbInteractionForceFieldsMOR = currentNbInteractionFFs;
         if (mouseInteraction)
         {
-            msg_info() << "Mouse interaction!";
+            msg_info() << "Mouse interaction starts!";
         }
+        else
+        {
+            msg_info() << "Mouse interaction ends!";
+            listActiveNodesUpdate.pop_back();
+        }
+        listActiveNodes.endEdit();
     }
 
 
