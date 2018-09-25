@@ -54,12 +54,12 @@ namespace forcefield
 * An external MechanicalState reference can also be passed to the ForceField as rest shape position.
 */
 template<class DataTypes>
-class HyperReducedRestShapeSpringsForceField : public HyperReducedForceField<DataTypes>
+class HyperReducedRestShapeSpringsForceField : public virtual RestShapeSpringsForceField<DataTypes>, public HyperReducedForceField
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE(HyperReducedRestShapeSpringsForceField, DataTypes), SOFA_TEMPLATE(HyperReducedForceField, DataTypes));
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedRestShapeSpringsForceField, DataTypes), SOFA_TEMPLATE(RestShapeSpringsForceField, DataTypes), HyperReducedForceField);
 
-    typedef HyperReducedForceField<DataTypes> Inherit;
+    typedef HyperReducedForceField Inherit;
     typedef typename DataTypes::VecCoord VecCoord;
     typedef typename DataTypes::VecDeriv VecDeriv;
     typedef typename DataTypes::Coord Coord;
@@ -78,22 +78,22 @@ public:
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
 
-    using HyperReducedForceField<DataTypes>::d_prepareECSW;
-    using HyperReducedForceField<DataTypes>::d_nbModes;
-    using HyperReducedForceField<DataTypes>::d_modesPath;
-    using HyperReducedForceField<DataTypes>::d_nbTrainingSet;
-    using HyperReducedForceField<DataTypes>::d_periodSaveGIE;
+    using HyperReducedForceField::d_prepareECSW;
+    using HyperReducedForceField::d_nbModes;
+    using HyperReducedForceField::d_modesPath;
+    using HyperReducedForceField::d_nbTrainingSet;
+    using HyperReducedForceField::d_periodSaveGIE;
 
-    using HyperReducedForceField<DataTypes>::d_performECSW;
-    using HyperReducedForceField<DataTypes>::d_RIDPath;
-    using HyperReducedForceField<DataTypes>::d_weightsPath;
+    using HyperReducedForceField::d_performECSW;
+    using HyperReducedForceField::d_RIDPath;
+    using HyperReducedForceField::d_weightsPath;
 
-    using HyperReducedForceField<DataTypes>::Gie;
-    using HyperReducedForceField<DataTypes>::weights;
-    using HyperReducedForceField<DataTypes>::reducedIntegrationDomain;
+    using HyperReducedForceField::Gie;
+    using HyperReducedForceField::weights;
+    using HyperReducedForceField::reducedIntegrationDomain;
 
-    using HyperReducedForceField<DataTypes>::m_modes;
-    using HyperReducedForceField<DataTypes>::m_RIDsize;
+    using HyperReducedForceField::m_modes;
+    using HyperReducedForceField::m_RIDsize;
 
     Data< helper::vector< unsigned int > > points; ///< points controlled by the rest shape springs
     Data< VecReal > stiffness; ///< stiffness values between the actual position and the rest shape position
@@ -138,7 +138,6 @@ public:
     virtual void addSubKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix, const helper::vector<unsigned> & addSubIndex ) override;
 
     virtual void draw(const core::visual::VisualParams* vparams) override;
-
 
     const DataVecCoord* getExtPosition() const;
     const VecIndex& getIndices() const { return m_indices; }

@@ -17,6 +17,13 @@
 #ifndef HYPERREDUCEDFORCEFIELD_H
 #define HYPERREDUCEDFORCEFIELD_H
 
+#include <sofa/core/behavior/BaseMechanicalState.h>
+#include <sofa/core/objectmodel/Event.h>
+#include <sofa/simulation/AnimateBeginEvent.h>
+#include <sofa/simulation/AnimateEndEvent.h>
+#include <sofa/defaulttype/DataTypeInfo.h>
+#include <sofa/simulation/Visitor.h>
+
 #include <sofa/core/objectmodel/Data.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 #include <sofa/core/behavior/ForceField.h>
@@ -27,6 +34,7 @@
 
 
 #include "../loader/MatrixLoader.h"
+#include <sofa/core/objectmodel/BaseContext.h>
 
 
 namespace sofa
@@ -40,12 +48,11 @@ namespace forcefield
 
 using sofa::component::loader::MatrixLoader;
 
-template<class DataTypes>
-class HyperReducedForceField : public core::behavior::ForceField<DataTypes>
+class HyperReducedForceField : public virtual core::objectmodel::BaseObject
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE(HyperReducedForceField, DataTypes), SOFA_TEMPLATE(core::behavior::ForceField, DataTypes));
 
+    SOFA_CLASS(HyperReducedForceField,core::objectmodel::BaseObject);
 //class HyperReducedForceField
 //{
 public:
@@ -79,6 +86,7 @@ public:
         , d_weightsPath(initData(&d_weightsPath,std::string("weights.txt"),"weightsPath","Path to the weights when performing the ECSW method"))
     {
     }
+
 
     void initMOR(unsigned int nbElements){
         if (d_prepareECSW.getValue()){
