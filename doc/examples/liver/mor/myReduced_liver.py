@@ -66,7 +66,7 @@ def Reduced_liver(
         liver_MOR.createObject('MechanicalObject' , position = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], template = 'Vec1d')
     else:
         liver_MOR.createObject('MechanicalObject' , position = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], template = 'Vec1d')
-    liver_MOR.createObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_liver.txt', template = 'Vec1d,Vec1d', performECSW = True, nodeToParse = '@./liver',printLog=True)
+    liver_MOR.createObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_liver.txt', template = 'Vec1d,Vec1d', performECSW = True, nodeToParse = '@./liver',printLog=False)
 
 
     liver = liver_MOR.createChild('liver')
@@ -82,7 +82,7 @@ def Reduced_liver(
     liver.createObject('BoxROI' , name= 'boxROIactuation' , orientedBox= newBox([[-5.0, 0.0, 0], [-4.0, 0, 0], [-4.0, 0.5, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[1.0]).tolist(),drawBoxes=True)
     liver.createObject('UniformMass' , totalMass = 1.3)
     liver.createObject('HyperReducedTetrahedronFEMForceField' , RIDPath = path + '/data/RID_liver.txt', name = 'HyperReducedFEMForceField_liver', weightsPath = path + '/data/weight_liver.txt', youngModulus = 5000, modesPath = path + '/data/modes.txt', performECSW =True, poissonRatio = 0.3, nbModes = 10)
-    liver.createObject('RestShapeSpringsForceField' , points = '@ROI1.indices', stiffness = '1e8')
+    #liver.createObject('RestShapeSpringsForceField' , points = '@ROI1.indices', stiffness = '1e8')
  #   liver.createObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
     if POD:
         liver.createObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + '/data/modes.txt', output = '@./MechanicalObject')
