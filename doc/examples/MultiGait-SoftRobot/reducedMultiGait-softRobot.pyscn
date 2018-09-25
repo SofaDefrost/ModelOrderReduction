@@ -77,7 +77,7 @@ def createScene(rootNode):
                 model.createObject('Mesh',src = '@loader')
                 model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0',printLog="0")
                 model.createObject('ModelOrderReductionMapping', input='@../alpha', output='@./tetras',modesPath=modesRobot, printLog='0', mapMatrices = '0')
-                model.createObject('UniformMass',name='quadrupedMass', totalmass='0.035', printLog='0')
+                model.createObject('UniformMass',name='quadrupedMass', totalMass='0.035', printLog='0')
                 model.createObject('HyperReducedTetrahedronFEMForceField', template='Vec3d', name='Append_HyperReducedFF_QuadrupedWellConverged_'+str(nbModes)+'modes', method='large', poissonRatio='0.05',  youngModulus='70', drawAsEdges="0", prepareECSW=prepareECSWBool, performECSW=performECSWBoolBody, nbModes=str(nbModes), modesPath=modesRobot, RIDPath=RIDFile, weightsPath=weightsFile, nbTrainingSet="93", periodSaveGIE="50",printLog="0")		  
                 model.createObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes='true') 
                 model.createObject('BoxROI', name='membraneROISubTopo', box='0 0 -0.1 150 -100 0.1',computeTetrahedra="false", drawBoxes='true') 
@@ -143,8 +143,9 @@ def createScene(rootNode):
                 ##########################################
                 # Visualization                          #
                 ##########################################
-                modelVisu = model.createChild('visu')                
-                modelVisu.createObject('OglModel', filename=pathMesh+"quadriped_collision.stl", template='ExtVec3f', color='0.7 0.7 0.7 0.6')
+                modelVisu = model.createChild('visu')        
+                modelVisu.createObject('MeshSTLLoader', name='loader', filename=pathMesh+"quadriped_collision.stl")
+                modelVisu.createObject('OglModel', src='@loader', template='ExtVec3f', color='0.7 0.7 0.7 0.6')
                 modelVisu.createObject('BarycentricMapping')
 
                 planeNode = rootNode.createChild('Plane')

@@ -15,9 +15,9 @@ def rotationPoint(Pos0, angle, brasLevier):
     posOut = [0.0]*3*size0;
 
     for i in range(size0):
-        posOut[3*i] = Pos0[i][0] - brasLevier*cos(angle);
+        posOut[3*i] = Pos0[i][0] ;
         posOut[3*i+1] = Pos0[i][1] - brasLevier*sin(angle);
-        posOut[3*i+2] = Pos0[i][2];
+        posOut[3*i+2] = Pos0[i][2] - brasLevier*cos(angle);
         print(posOut)
 
     return posOut
@@ -98,6 +98,7 @@ def shakingSofia( objToAnimate, dt, factor, **param):
     | rodRadius     | float | Radius Lenght of the circle                                           |
     +---------------+-------+-----------------------------------------------------------------------+
     """
+    print "shaking sofia!!!!!!!!!!!!!!!!!"
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
     # print("currentTime - startTime : "+str(factor * objToAnimate.duration))
     if moduloResult == 0:

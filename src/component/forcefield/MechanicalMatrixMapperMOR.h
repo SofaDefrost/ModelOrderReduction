@@ -39,10 +39,11 @@ public:
 
 protected:
     MechanicalMatrixMapperMOR();
+    size_t m_nbInteractionForceFieldsMOR;
 
 public:
     Data< bool > performECSW;
-    sofa::helper::vector<unsigned int> listActiveNodes;
+    Data <sofa::helper::vector<unsigned int>> listActiveNodes;
     sofa::core::objectmodel::DataFileName listActiveNodesPath;
     Data< bool > timeInvariantMapping1;
     Data< bool > timeInvariantMapping2;
