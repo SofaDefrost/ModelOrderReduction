@@ -99,12 +99,20 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
 template<class DataTypes1, class DataTypes2>
 void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptimized(const MechanicalParams* mparams)
 {
-    if (((timeInvariantMapping1.getValue() || timeInvariantMapping2.getValue()) == false) || (this->getContext()->getTime() == 0))
+    sofa::simulation::Node *node = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get();
+    size_t currentNbInteractionFFs = node->interactionForceField.size();
+    bool mouseInteraction = false;
+    if (m_nbInteractionForceFieldsMOR != currentNbInteractionFFs)
+        mouseInteraction = true;
+    msg_warning() <<"1: mouseInteraction  in accumulJOptimised: " << mouseInteraction;
+    if (((timeInvariantMapping1.getValue() || timeInvariantMapping2.getValue()) == false) || (this->getContext()->getTime() == 0) || mouseInteraction)
     {
+        msg_warning() <<"2. NOT Skipping Jacobian computation." << mouseInteraction;
         this->accumulateJacobians(mparams);
     }
     else
     {
+        msg_warning() <<"2. Skipping Jacobian computation." << mouseInteraction;
         msg_info(this) <<"Skipping Jacobian computation.";
     }
 }
@@ -136,15 +144,17 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
 
     sofa::simulation::Node *node = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get();
     size_t currentNbInteractionFFs = node->interactionForceField.size();
+    bool mousePick = false;
     bool mouseInteraction = false;
     if (m_nbInteractionForceFieldsMOR != currentNbInteractionFFs)
     {
+        mouseInteraction = true;
         sofa::helper::vector <unsigned int>& listActiveNodesUpdate = *(listActiveNodes.beginEdit());
         for(BaseForceField* iforcefield : node->interactionForceField)
         {
             if (iforcefield->getName() == "Spring-Mouse-Contact")
             {
-                mouseInteraction = true;
+                mousePick = true;
                 std::string springData = iforcefield->findData("spring")->getValueString();
                 unsigned int index1,mechaIndex;
                 std::stringstream ssin(springData);
@@ -166,36 +176,47 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
         }
 
         m_nbInteractionForceFieldsMOR = currentNbInteractionFFs;
-        if (mouseInteraction)
+        if (mousePick)
         {
-            msg_info() << "Mouse interaction starts!";
+            msg_info() << "Mouse pick has started!";
+            msg_warning() << "3. Mouse pick has started!";
         }
         else
         {
-            msg_info() << "Mouse interaction ends!";
+            msg_info() << "Mouse pick ends!";
+            msg_warning() << "3. Mouse pick ends!";
             listActiveNodesUpdate.pop_back();
         }
         listActiveNodes.endEdit();
     }
-
-
-    if ((timeInvariantMapping == false) || (this->getContext()->getTime() == 0))
+    if (mouseInteraction)
+    {
+        msg_warning() << "4. mouseInteraction in optimizeAndCopyMappingJacobianToEigenFormat1 !!!";
+    }
+    else
+    {
+        msg_warning() << "4. NOT NOT NOT mouseInteraction in optimizeAndCopyMappingJacobianToEigenFormat1 !!!";
+    }
+    if ((timeInvariantMapping == false) || (this->getContext()->getTime() == 0) || mouseInteraction)
     {
         copyMappingJacobianToEigenFormat<DataTypes1>(J, Jeig);
     }
 
     if (timeInvariantMapping == true){
-        if (this->getContext()->getTime() == 0)
+        if ((this->getContext()->getTime() == 0) || mouseInteraction)
         {
+            msg_warning() << "5. Jeig set constantJ1";
             constantJ1.resize(Jeig.rows(), Jeig.cols());
             constantJ1.reserve(Eigen::VectorXi::Constant(Jeig.rows(),Jeig.cols()));
             constantJ1 = Jeig;
         }
         else
         {
+            msg_warning() << "5. constantJ1 set Jeig";
             Jeig = constantJ1;
         }
     }
+
 }
 
 template<class DataTypes1, class DataTypes2>

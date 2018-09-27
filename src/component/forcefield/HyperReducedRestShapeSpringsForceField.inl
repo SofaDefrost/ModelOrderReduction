@@ -52,15 +52,15 @@ using core::visual::VisualParams;
 
 template<class DataTypes>
 HyperReducedRestShapeSpringsForceField<DataTypes>::HyperReducedRestShapeSpringsForceField()
-    : points(initData(&points, "points", "points controlled by the rest shape springs"))
-    , stiffness(initData(&stiffness, "stiffness", "stiffness values between the actual position and the rest shape position"))
-    , angularStiffness(initData(&angularStiffness, "angularStiffness", "angularStiffness assigned when controlling the rotation of the points"))
-    , pivotPoints(initData(&pivotPoints, "pivot_points", "global pivot points used when translations instead of the rigid mass centers"))
-    , external_points(initData(&external_points, "external_points", "points from the external Mechancial State that define the rest shape springs"))
-    , recompute_indices(initData(&recompute_indices, true, "recompute_indices", "Recompute indices (should be false for BBOX)"))
-    , drawSpring(initData(&drawSpring,false,"drawSpring","draw Spring"))
-    , springColor(initData(&springColor, defaulttype::RGBAColor(0.0,1.0,0.0,1.0), "springColor","spring color. (default=[0.0,1.0,0.0,1.0])"))
-    , restMState(initLink("external_rest_shape", "rest_shape can be defined by the position of an external Mechanical State"))
+//    : points(initData(&points, "points", "points controlled by the rest shape springs"))
+//    , stiffness(initData(&stiffness, "stiffness", "stiffness values between the actual position and the rest shape position"))
+//    , angularStiffness(initData(&angularStiffness, "angularStiffness", "angularStiffness assigned when controlling the rotation of the points"))
+//    , pivotPoints(initData(&pivotPoints, "pivot_points", "global pivot points used when translations instead of the rigid mass centers"))
+//    , external_points(initData(&external_points, "external_points", "points from the external Mechancial State that define the rest shape springs"))
+//    , recompute_indices(initData(&recompute_indices, true, "recompute_indices", "Recompute indices (should be false for BBOX)"))
+//    , drawSpring(initData(&drawSpring,false,"drawSpring","draw Spring"))
+//    , springColor(initData(&springColor, defaulttype::RGBAColor(0.0,1.0,0.0,1.0), "springColor","spring color. (default=[0.0,1.0,0.0,1.0])"))
+//    , restMState(initLink("external_rest_shape", "rest_shape can be defined by the position of an external Mechanical State"))
 {
 }
 
@@ -79,7 +79,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::parse(core::objectmodel:
 template <class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::init()
 {
-//    this->initMOR(m_indices.size()); --> move to bwdInit
+    //this->initMOR(m_indices.size()); //--> move to bwdInit
 }
 
 template<class DataTypes>
@@ -119,7 +119,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
     assert(state);
     matS.resize(state->getMatrixSize(),state->getMatrixSize());
     lastUpdatedStep = -1.0;
-
 
 }
 
@@ -235,27 +234,24 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
         }
         else
         {
-            for (unsigned int i=0; i<m_indices.size(); i++)
+            for (size_t numElem=0; numElem<m_indices.size(); numElem++)
             {
-                const unsigned int index = i; //m_indices[i];
-
-                unsigned int ext_index = m_indices[i];
+                const unsigned int index = m_indices[numElem];
+                unsigned int ext_index = m_indices[numElem];
                 if(useRestMState)
-                    ext_index= m_ext_indices[i];
+                    ext_index= m_ext_indices[numElem];
 
                 Deriv dx = p1[index] - p0[ext_index];
-
                 f1[index] -=  dx * k0 ;
-
                 if (d_prepareECSW.getValue())
                 {
                     int numTest = this->getContext()->getTime()/this->getContext()->getDt();
                     if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
                     {
                         numTest = numTest/d_periodSaveGIE.getValue();
-
                         for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
                         {
+
                             GieUnit[modNum] = 0;
                             GieUnit[modNum] -= (dx * k0)*Deriv(m_modes(3*index,modNum),m_modes(3*index+1,modNum),m_modes(3*index+2,modNum));
                         }
@@ -263,7 +259,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
                         {
                             if ( d_nbModes.getValue()*numTest < d_nbModes.getValue()*d_nbTrainingSet.getValue() )
                             {
-                                Gie[d_nbModes.getValue()*numTest+i][index] = GieUnit[i];
+                                Gie[d_nbModes.getValue()*numTest+i][numElem] = GieUnit[i];
                             }
                         }
                     }
@@ -300,6 +296,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
 
                 Deriv dx = p1[index] - p0[ext_index];
                 f1[index] -=  dx * k[i];
+
             }
         }
     }
@@ -379,24 +376,43 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
     const VecIndex& ext_indices = (useRestMState ? m_ext_indices : m_indices);
 
     vector<Vector3> vertices;
-
-    for (unsigned int i=0; i<indices.size(); i++)
-    {
-        const unsigned int index = indices[i];
-        const unsigned int ext_index = ext_indices[i];
-
-        Vector3 v0(0.0, 0.0, 0.0);
-        Vector3 v1(0.0, 0.0, 0.0);
-        for(unsigned int j=0 ; j<DataTypes::spatial_dimensions ; j++)
+    if (d_performECSW.getValue()){
+        for (unsigned int i=0; i<m_RIDsize; i++)
         {
-            v0[j] = p[index][j];
-            v1[j] = p0[ext_index][j];
+            const unsigned int index = indices[reducedIntegrationDomain(i)];
+            const unsigned int ext_index = ext_indices[reducedIntegrationDomain(i)];
+
+            Vector3 v0(0.0, 0.0, 0.0);
+            Vector3 v1(0.0, 0.0, 0.0);
+            for(unsigned int j=0 ; j<DataTypes::spatial_dimensions ; j++)
+            {
+                v0[j] = p[index][j];
+                v1[j] = p0[ext_index][j];
+            }
+
+            vertices.push_back(v0);
+            vertices.push_back(v1);
         }
-
-        vertices.push_back(v0);
-        vertices.push_back(v1);
     }
+    else
+    {
+        for (unsigned int i=0; i<indices.size(); i++)
+        {
+            const unsigned int index = indices[i];
+            const unsigned int ext_index = ext_indices[i];
 
+            Vector3 v0(0.0, 0.0, 0.0);
+            Vector3 v1(0.0, 0.0, 0.0);
+            for(unsigned int j=0 ; j<DataTypes::spatial_dimensions ; j++)
+            {
+                v0[j] = p[index][j];
+                v1[j] = p0[ext_index][j];
+            }
+
+            vertices.push_back(v0);
+            vertices.push_back(v1);
+        }
+    }
     //todo(dmarchal) because of https://github.com/sofa-framework/sofa/issues/64
     vparams->drawTool()->drawLines(vertices,5,Vec4f(springColor.getValue()));
     vparams->drawTool()->restoreLastState();

@@ -69,6 +69,7 @@ public:
 
     // Reduced order model variables
     Eigen::MatrixXd m_modes;
+    //sofa::helper::vector<sofa::helper::vector<double>> Gie;
     std::vector<std::vector<double> > Gie;
     Eigen::VectorXd weights;
     Eigen::VectorXi reducedIntegrationDomain;
@@ -139,7 +140,7 @@ public:
 
 
     void saveGieFile(unsigned int nbElements){
-        if (d_performECSW.getValue())
+        if (d_prepareECSW.getValue())
         {
             int numTest = this->getContext()->getTime()/this->getContext()->getDt();
             if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
