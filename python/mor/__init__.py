@@ -8,4 +8,4 @@
     mor.wrapper
 
 """
-__all__=["animation","script","wrapper","reducedModel"]
+__all__=["animation","script","wrapper","reducedModel","gui"]
