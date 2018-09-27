@@ -13,7 +13,10 @@ from mor.script import sceneCreationUtility as u
 import phase1_snapshots
 
 # Scene parameters
-phase = $PHASE
+phase = []
+#for $item in $PHASE
+phase.append($item)
+#end for
 nbrOfModes = $NBROFMODES
 periodSaveGIE = $PERIODSAVEGIE
 nbTrainingSet = $NBTRAININGSET

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import os
 import Sofa
+import os
+import sys
 from numpy import add,multiply
 from splib.numerics import *
 

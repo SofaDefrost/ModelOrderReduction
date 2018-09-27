@@ -49,11 +49,8 @@ class ObjToAnimate():
     |          |           || During execution of the Sofa Scene, it will import the module                        |
     |          |           || mor.animation.animFct where your function has to be located in order to be used      |
     +----------+-----------+---------------------------------------------------------------------------------------+
-    | objName  | Str       | Name of our Sofa obj                                                                  |
-    +----------+-----------+---------------------------------------------------------------------------------------+
-    | node     | Sofa.Node | pointer to Sofa node in which we are working on (will be set during execution)        |
-    +----------+-----------+---------------------------------------------------------------------------------------+
-    | obj      | Sofa.Obj  | pointer to Sofa obj working on (will be set during execution)                         |
+    | item     | Sofa.Node/||pointer to Sofa node/obj in which we are working on (will be set during execution)    |
+    |          | Sofa.Obj  ||                                                                                      |
     +----------+-----------+---------------------------------------------------------------------------------------+
     | duration | sc        || Total time in second of the animation (put by default to -1                          |
     |          |           || & will be calculated & set later in the execution)                                   |
@@ -68,15 +65,13 @@ class ObjToAnimate():
 
     '''
 
-    def __init__(self,location, animFct='defaultShaking', objName=None, node=None, obj=None, duration=-1, **params):
+    def __init__(self,location, animFct='defaultShaking', item=None, duration=-1, **params):
         self.location = location
         if isinstance(animFct, str):
             self.animFct = 'animation.shakingAnimations.'+animFct
         else:
             self.animFct = animFct
-        self.objName =objName
-        self.node = node
-        self.obj = obj
+        self.item = item
         self.duration = duration
         self.params = params # name, dataToWorkOn, incr, incrPeriod, rangeOfAction ...
 
@@ -199,7 +194,6 @@ class PackageBuilder():
     def copyFileIntoAnother(self,fileToCopy,fileToPasteInto):
 
         try:
-
             with open(fileToPasteInto, "a") as myFile:
                 currentFile = open(fileToCopy, "r")
                 myFile.write(currentFile.read())
@@ -216,6 +210,9 @@ class PackageBuilder():
 
         self.checkExistance(self.debugDir)
 
+        if os.path.exists(self.debugDir+stateFileName):
+            os.remove(self.debugDir+stateFileName)
+
         for res in results:
             self.copyFileIntoAnother(res["directory"]+"/stateFile.state",self.debugDir+stateFileName)
 
@@ -231,8 +228,10 @@ class PackageBuilder():
         shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir)
 
         self.checkExistance(self.meshDir)
-        for mesh in self.meshes: 
-            self.copy(mesh, self.meshDir)
+
+        if meshes:
+            for mesh in self.meshes:
+                self.copy(mesh, self.meshDir)
 
         if self.addToLibBool :
 
@@ -322,6 +321,8 @@ class ReductionParam():
                     'template': 'Vec1d,Vec1d',
                     'object1': '@./MechanicalObject',
                     'object2': '@./MechanicalObject',
+                    'timeInvariantMapping1': True,
+                    'timeInvariantMapping2': True,
                     'performECSW': False}
                 }
 
@@ -445,7 +446,7 @@ class ReduceModel():
                  tolModes,
                  tolGIE,
                  outputDir,
-                 meshes,
+                 meshes = None,
                  packageName = 'myReducedModel',
                  toKeep = None,
                  addToLib = False,

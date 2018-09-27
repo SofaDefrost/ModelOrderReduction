@@ -66,9 +66,9 @@ def defaultShaking( objToAnimate, dt, factor, **param):
 
         print("For Actuator : "+objToAnimate.location)
 
-        actualValue = objToAnimate.obj.findData(objToAnimate.params["dataToWorkOn"]).value[0][0]
+        actualValue = objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value[0][0]
         actualValue = upDateValue(actualValue,objToAnimate.params['rangeOfAction'],objToAnimate.params['incr'])
-        objToAnimate.obj.findData(objToAnimate.params["dataToWorkOn"]).value = actualValue
+        objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value = actualValue
 
         print ("Updated Value :"+str(actualValue)+'\n')
 

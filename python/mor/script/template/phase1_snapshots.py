@@ -17,9 +17,12 @@ originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
 # Animation parameters
 listObjToAnimate = []
 #for $obj in $LISTOBJTOANIMATE:
-listObjToAnimate.append(ObjToAnimate('$obj.location',$obj.animFct,objName='$obj.objName',duration=$obj.duration,**$obj.params))
+listObjToAnimate.append(ObjToAnimate('$obj.location',$obj.animFct,duration=$obj.duration,**$obj.params))
 #end for
-phase = $PHASE
+phase = []
+#for $item in $PHASE
+phase.append($item)
+#end for
 nbIterations = $nbIterations
 paramWrapper = $PARAMWRAPPER
 

@@ -17,6 +17,9 @@
 ###############################################################################
 from collections import OrderedDict
 from splib.animation import animate
+from splib.scenegraph import *
+
+import yaml
 
 forceFieldImplemented = ['TetrahedronFEMForceField','TriangleFEMForceField']
 
@@ -119,6 +122,68 @@ def searchObjectInGraphScene(node,toFind):
     else:
         return tmp.results
 
+def getGraphScene(node,getObj=False):
+    class Namespace(object):
+        pass
+    tmp = Namespace()
+    tmp.results = {}
+    tmp.results["tree"] = {}
+    tmp.results["obj"] = {}
+    # tmp.results = None
+
+    def buildTree(node,dic):
+        if node.name != "root":
+            if getObj:
+                dic[node] = {}
+            else:
+                dic[node.name] = {}
+                # dic = AnyNode(node.name = )
+
+        for child in node.getChildren():
+            if node.name != "root":
+                if getObj:
+                    buildTree(child,dic[node])
+                else:
+                    buildTree(child,dic[node.name])
+            else:
+                buildTree(child,dic)
+    def objTree(node,dic):
+
+        if getObj:
+            dic[node] = {}
+        else:
+            dic[node.name] = {}
+
+        for obj in node.getObjects():
+            # print('root '+str(type(obj).__name__)+' '+obj.getName())
+
+            if getObj:
+                dic[node][obj] = obj.getClassName()
+            else:
+                dic[node.name][obj.getName()] = obj.getClassName()
+
+        for child in node.getChildren():
+            if getObj:
+                objTree(child,dic)
+            else:
+                objTree(child,dic)
+
+    buildTree(node,tmp.results["tree"])
+    # print(tmp.results["tree"])
+    objTree(node,tmp.results["obj"])
+    # print(tmp.results["obj"])
+
+    # for key in tmp.results:
+    #     print(str(key)+' : '+str(tmp.results[key])+'\n')
+
+    return tmp.results
+
+def dumpGraphScene(node,fileName='graphScene.yml'):
+
+    data = getGraphScene(node)
+    with open(fileName, 'w') as ymlfile:
+        yaml.dump(data,ymlfile, default_flow_style=False)
+
 def removeObject(obj):
     obj.getContext().removeObject(obj)
 
@@ -174,35 +239,37 @@ def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
 
     toAnimate = []
     for obj in listObjToAnimate:
-        toAnimate.append(obj.location)
+        node = get(rootNode,obj.location)
+        print(node.name)
+        toAnimate.append(node)
 
-    nodeFound = searchNodeInGraphScene(rootNode,toAnimate)
-
-    for i in range(len(listObjToAnimate)):
-        listObjToAnimate[i].node = nodeFound[i]
-
+    if len(toAnimate) != len(listObjToAnimate):
+        raise Exception("All Obj/Node to animate haven't benn found")
 
     tmp = 0
     for objToAnimate in listObjToAnimate:
         if phase[tmp] :
-            # param = listParam.copy()
-            for obj in objToAnimate.node.getObjects():
-                if objToAnimate.objName == '':
+            print('plap')
+            if type(toAnimate[tmp]).__name__ == "Node":
+                objToAnimate.item = toAnimate[tmp]
+                for obj in objToAnimate.item.getObjects():
+                    print(obj.getClassName())
                     if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
-                        objToAnimate.obj = obj
+                        print("plop")
+                        objToAnimate.item = obj
                         objToAnimate.params["dataToWorkOn"] = 'value'
 
-                elif obj.getClassName() == objToAnimate.objName:
-                    objToAnimate.obj = obj
+            elif type(toAnimate[tmp]).__name__ == "BaseObject":
+                objToAnimate.item = toAnimate[tmp]
 
-            if objToAnimate.obj and objToAnimate.params["dataToWorkOn"]:
+            if objToAnimate.item and objToAnimate.params["dataToWorkOn"]:
                 objToAnimate.duration = timeExe
 
                 animate(objToAnimate.animFct, {'objToAnimate':objToAnimate,'dt':dt}, objToAnimate.duration)
-                print("Animate "+objToAnimate.obj.getClassName()+" from node "+objToAnimate.node.name+"\nwith parameters :\n"+str(objToAnimate.params))
+                print("Animate "+objToAnimate.location+" of type "+objToAnimate.item.getClassName()+"\nwith parameters :\n"+str(objToAnimate.params))
 
             else:
-                print("Found Nothing to animate in "+str(objToAnimate.node.name))
+                print("Found Nothing to animate in "+str(objToAnimate.location))
 
         tmp += 1
 
