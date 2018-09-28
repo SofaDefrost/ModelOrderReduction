@@ -40,11 +40,12 @@ public:
 protected:
     MechanicalMatrixMapperMOR();
     size_t m_nbInteractionForceFieldsMOR;
+    bool m_mouseInteraction;
 
 public:
     Data< bool > performECSW;
-    Data <sofa::helper::vector<unsigned int>> listActiveNodes;
     sofa::core::objectmodel::DataFileName listActiveNodesPath;
+    Data <sofa::helper::vector<unsigned int>> listActiveNodes;
     Data< bool > timeInvariantMapping1;
     Data< bool > timeInvariantMapping2;
     Eigen::SparseMatrix<double> constantJ1;
