@@ -4,8 +4,10 @@
     :toctree: _autosummary
 
     mor.animation
-    mor.script
+    mor.reduction
     mor.wrapper
+    mor.utility
+    mor.gui
 
 """
-__all__=["animation","script","wrapper","reducedModel","gui"]
+__all__=["reduction","animation","wrapper","gui",'utility']

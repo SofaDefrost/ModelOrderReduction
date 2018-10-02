@@ -15,174 +15,12 @@
 #                                                                             #
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
-from collections import OrderedDict
 from splib.animation import animate
 from splib.scenegraph import *
 
+from mor.wrapper import replaceAndSave
+
 import yaml
-
-forceFieldImplemented = ['TetrahedronFEMForceField','TriangleFEMForceField']
-
-myModel = OrderedDict() # Ordered dic containing has key Sofa.Node.name & has var a tuple of (Sofa_componant_type , param_solver)
-myMORModel = [] # list of tuple (solver_type , param_solver)
-
-
-def searchNodeInGraphScene(node,toFind):
-    '''
-        Args:
-        node (Sofa.node):     Sofa node in wich we are working
-
-        toFind (list[str]):  list of node name we want to find
-
-        Description:
-
-            Search in the Graph scene recursively for all the node
-            with name contained in the list toFind
-    '''
-    class Namespace(object):
-        pass
-    tmp = Namespace()
-    tmp.results = []
-
-    returnString = False
-    if isinstance(toFind,str):
-        toFind = [toFind]
-        returnString = True
-    elif isinstance(toFind,list):
-        pass
-    else:
-        raise Exception("toFind is either a string or a list of string")
-
-    def search(node,toFind):
-
-        if len(tmp.results) != len(toFind):
-
-            for child in node.getChildren():
-
-                if child.name in toFind and len(tmp.results) < len(toFind):
-                    tmp.results.append(child)
-
-                if len(tmp.results) < len(toFind):
-                    search(child,toFind)
-
-    search(node,toFind)
-
-    if len(toFind) != len(tmp.results):
-        raise Exception("ERROR haven't found all Node")
-
-    if returnString:
-        return tmp.results[0]
-    else:
-        return tmp.results
-
-def searchObjectInGraphScene(node,toFind):
-    '''
-        Args:
-        node (Sofa.node):     Sofa node in wich we are working
-
-        toFind (list[str]):  list of node name we want to find
-
-        Description:
-
-            Search in the Graph scene recursively for all the node
-            with name contained in the list toFind
-    '''
-    class Namespace(object):
-        pass
-    tmp = Namespace()
-    tmp.results = []
-
-    if isinstance(toFind,str):
-        toFind = [toFind]
-    elif isinstance(toFind,list):
-        pass
-    else:
-        raise Exception("toFind is either a string or a list of string")
-
-    def search(node,toFind):
-
-        if len(tmp.results) != len(toFind):
-
-            for obj in node.getObjects():
-                if obj.getName() in toFind and len(tmp.results) < len(toFind):
-                    tmp.results.append(obj)
-
-            if len(tmp.results) < len(toFind):
-                for child in node.getChildren():
-
-                    search(child,toFind)
-
-    search(node,toFind)
-
-    if len(toFind) != len(tmp.results):
-        raise Exception("ERROR haven't found all Object")
-
-    if len(toFind) == 1:
-        return tmp.results[0]
-    else:
-        return tmp.results
-
-def getGraphScene(node,getObj=False):
-    class Namespace(object):
-        pass
-    tmp = Namespace()
-    tmp.results = {}
-    tmp.results["tree"] = {}
-    tmp.results["obj"] = {}
-    # tmp.results = None
-
-    def buildTree(node,dic):
-        if node.name != "root":
-            if getObj:
-                dic[node] = {}
-            else:
-                dic[node.name] = {}
-                # dic = AnyNode(node.name = )
-
-        for child in node.getChildren():
-            if node.name != "root":
-                if getObj:
-                    buildTree(child,dic[node])
-                else:
-                    buildTree(child,dic[node.name])
-            else:
-                buildTree(child,dic)
-    def objTree(node,dic):
-
-        if getObj:
-            dic[node] = {}
-        else:
-            dic[node.name] = {}
-
-        for obj in node.getObjects():
-            # print('root '+str(type(obj).__name__)+' '+obj.getName())
-
-            if getObj:
-                dic[node][obj] = obj.getClassName()
-            else:
-                dic[node.name][obj.getName()] = obj.getClassName()
-
-        for child in node.getChildren():
-            if getObj:
-                objTree(child,dic)
-            else:
-                objTree(child,dic)
-
-    buildTree(node,tmp.results["tree"])
-    # print(tmp.results["tree"])
-    objTree(node,tmp.results["obj"])
-    # print(tmp.results["obj"])
-
-    # for key in tmp.results:
-    #     print(str(key)+' : '+str(tmp.results[key])+'\n')
-
-    return tmp.results
-
-def dumpGraphScene(node,fileName='graphScene.yml'):
-
-    data = getGraphScene(node)
-    with open(fileName, 'w') as ymlfile:
-        yaml.dump(data,ymlfile, default_flow_style=False)
 
 def removeObject(obj):
     obj.getContext().removeObject(obj)
@@ -249,13 +87,11 @@ def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
     tmp = 0
     for objToAnimate in listObjToAnimate:
         if phase[tmp] :
-            print('plap')
             if type(toAnimate[tmp]).__name__ == "Node":
                 objToAnimate.item = toAnimate[tmp]
                 for obj in objToAnimate.item.getObjects():
-                    print(obj.getClassName())
+                    # print(obj.getClassName())
                     if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
-                        print("plop")
                         objToAnimate.item = obj
                         objToAnimate.params["dataToWorkOn"] = 'value'
 
@@ -273,63 +109,6 @@ def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
 
         tmp += 1
 
-def MORreplace(node,type,newParam,initialParam):
-
-    currentPath = node.getPathName()
-    # print('NODE : '+node.name)
-    # print('TYPE : '+str(type))
-    # print('PARAM  :'+str(newParam[0][0]) )
-    save = False
-    if 'save' in newParam[0][1]:
-        save = True
-
-    for item in newParam :
-        path , param = item
-        
-        if currentPath == path :
-            # print(type)
-
-            #   Change the initial Forcefield by the HyperReduced one with the new argument 
-            if str(type).find('ForceField') != -1 and str(type) in forceFieldImplemented :
-                # print str(type)
-                import random
-                name = 'HyperReducedFEMForceField_'+ node.name #str(random.randint(0, 20))
-                initialParam['name'] = name
-                initialParam['nbModes'] = param['nbrOfModes']
-                for key in param['paramForcefield']:
-                    initialParam[key] = param['paramForcefield'][key]
-
-                #Add to the container list  which data it has to save
-                if str(type) == 'TetrahedronFEMForceField':
-                    type = 'HyperReducedTetrahedronFEMForceField'
-                elif str(type) == 'TriangleFEMForceField':
-                    type = 'HyperReducedTriangleFEMForceField'
-                elif str(type) == 'RestShapeSpringsForceField':
-                    type = 'HyperReducedRestShapeSpringsForceField'
-                else:
-                    raise Exception("!! FORCFIELD NOT IMPLEMENTED !!")
-
-                if save:
-                    myModel[node.name].append((str(type),initialParam))
-
-                return type , initialParam
-
-            elif save:
-                if type.find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
-                    myMORModel.append((str(type),initialParam))
-                else:
-                    if node.name not in myModel:
-                        myModel[node.name] = []
-                    myModel[node.name].append((str(type),initialParam))
-
-    if save:
-        if node.name in newParam[0][1]['toKeep']:
-            # print(node.name)
-            if node.name not in myModel:
-                myModel[node.name] = []
-
-            myModel[node.name].append((str(type),initialParam))
-
 def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
 
     modesPositionStr = '0'
@@ -339,9 +118,9 @@ def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
 
     for item in newParam :
         pathTmp , param = item
-        node = searchNodeInGraphScene(rootNode,pathTmp.split('/')[-1])
+        node = get(rootNode,pathTmp[1:])
         solver = getNodeSolver(node)
-
+        print("node.getPathName()",node.getPathName())
         if node.getPathName() == pathTmp:
             if 'paramMappedMatrixMapping' in param:
                 # print 'Create new child modelMOR and move node in it'
@@ -361,14 +140,14 @@ def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
                 # print 'Create MechanicalMatrixMapperMOR in modelMOR'
 
                 if save:
-                    myMORModel.append(('MechanicalObject',argMecha))
-                    myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
+                    replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
+                    replaceAndSave.myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
 
                 if 'paramMORMapping' in param:
                     #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
                     param['paramMORMapping']['output'] = '@./'+node.getMechanicalState().name
                     if save:
-                        myModel[node.name].append(('ModelOrderReductionMapping',param['paramMORMapping']))
+                        replaceAndSave.myModel[node.name].append(('ModelOrderReductionMapping',param['paramMORMapping']))
 
                     node.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
                     print ("Create ModelOrderReductionMapping in node")
@@ -386,8 +165,8 @@ def saveElements(rootNode,phase,newParam):
     for item in newParam :
         pathTmp , param = item
         index = newParam.index(item)
-        node = searchNodeInGraphScene(rootNode,pathTmp.split('/')[-1])
-
+        node = get(rootNode,pathTmp[1:])
+        print(pathTmp,node)
         if node.getPathName() == pathTmp:
             
             forcefield = []
@@ -427,8 +206,7 @@ def createDebug(rootNode,paramWrapper,stateFile="stateFile.state"):
     nodes = []
     for item in paramWrapper :
         path , param = item
-        node = searchNodeInGraphScene(rootNode,path.split('/')[-1])
-        # print node.name
+        node = get(rootNode,path[1:])
         solver = getNodeSolver(node)
         removeObjects(solver)
 

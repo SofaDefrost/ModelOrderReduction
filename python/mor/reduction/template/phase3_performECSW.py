@@ -5,10 +5,11 @@ import imp
 
 #   STLIB IMPORT
 from stlib.scene.wrapper import Wrapper
-from mor.script import sceneCreationUtility as u
 
 # MOR IMPORT
-from mor.wrapper import writeScene
+from mor.utility import sceneCreation as u
+from mor.utility import writeScene
+from mor.wrapper import replaceAndSave
 
 # Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
@@ -40,7 +41,7 @@ def createScene(rootNode):
     #       - mor.wrapper.MORWrapper
     #       - mor.script.sceneCreationUtility
 
-    originalScene.createScene(Wrapper(rootNode, u.MORreplace, paramWrapper))  # 1
+    originalScene.createScene(Wrapper(rootNode, replaceAndSave.MORreplace, paramWrapper))  # 1
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
@@ -54,8 +55,8 @@ def createScene(rootNode):
     #       - mor.wrapper.writeScene
 
     if packageName:
-        myMORModel = u.myMORModel
-        myModel = u.myModel
+        myMORModel = replaceAndSave.myMORModel
+        myModel = replaceAndSave.myModel
 
         nodeName = paramWrapper[0][0].split('/')[-1]
 

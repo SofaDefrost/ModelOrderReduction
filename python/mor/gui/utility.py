@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 from PyQt4 import QtCore, QtGui
 
 class Color():
@@ -32,7 +33,7 @@ def setCellColor(tab,dialog,row,column):
 def check_state(sender):
     # sender.blockSignals(True)
 
-    print("check_state -------> "+str(sender.text()))
+    # print("check_state -------> "+str(sender.text()))
     validator = sender.validator()
     state = validator.validate(sender.text(), 0)[0]
     if state == QtGui.QValidator.Acceptable:
@@ -43,7 +44,6 @@ def check_state(sender):
         color = Color.bad
     setBackColor(sender,color)
     # sender.blockSignals(False)
-
 
 def checkedBoxes(checkBox,items,checked=True):
     '''
@@ -85,12 +85,12 @@ def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
 
     return filename
 
-def openFilesNames(hdialog,display=None):
+def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
     '''
     openFilesNames will pop up a dialog window allowing the user to choose multiple files
     and potentially display there coreponding path
     '''
-    filesName = QtGui.QFileDialog.getOpenFileNames(None,hdialog, '.', filter="*.stl *.vtu *.vtk")
+    filesName = QtGui.QFileDialog.getOpenFileNames(None,hdialog, '.', filter=filter)
     if display:
         for fileName in filesName:
             display.append(fileName)
@@ -135,3 +135,23 @@ def removeLine(tab,rm=False):
     if rm:
         tab.removeRow(row)
         return row
+
+def update_progress(progress):
+    barLength = 50 # Modify this to change the length of the progress bar
+    status = "Compute Weight&RID"
+    if isinstance(progress, int):
+        progress = float(progress)
+    if not isinstance(progress, float):
+        progress = 0
+        status = "error: progress var must be float\r\n"
+    if progress < 0:
+        progress = 0
+        status = "Halt...\r\n"
+    if progress > 1:
+        progress = 1
+    block = int(round(barLength*progress))
+    text = "\r[{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
+    if progress == 1 :
+        text =  text+"\n"
+    sys.stdout.write(text)
+    sys.stdout.flush()

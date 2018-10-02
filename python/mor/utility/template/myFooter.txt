@@ -1,17 +1,19 @@
 
     ## Visualization
     if surfaceMeshFileName:
-	    visu = myReducedModel.createChild('Visual')
+        visu = myReducedModel.createChild('Visual')
 
-	    visu.createObject(	'OglModel', 
-	    					filename=path+'/mesh/'+surfaceMeshFileName,
+        visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+
+        visu.createObject(	'OglModel',
+                            src='@loader',
                             template='ExtVec3f',
                             color=surfaceColor,
                             rotation= add(rotation,arg1),
                             translation = add(translation,arg2),
                             scale3d = multiply(scale,arg3))
 
-	    visu.createObject('BarycentricMapping')
+        visu.createObject('BarycentricMapping')
 
     return myReducedModel
 

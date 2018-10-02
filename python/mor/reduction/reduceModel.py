@@ -27,9 +27,6 @@ import errno
 import fileinput
 import datetime
 
-# MOR IMPORT
-from utility import readStateFilesAndComputeModes, readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
-
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/../morlib/'
 # print('pathToReducedModel : '+pathToReducedModel)
@@ -225,11 +222,11 @@ class PackageBuilder():
 
     def finalizePackage(self,result):
 
-        shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir)
+        shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir+'/'+self.packageName+'.py')
 
         self.checkExistance(self.meshDir)
 
-        if meshes:
+        if self.meshes:
             for mesh in self.meshes:
                 self.copy(mesh, self.meshDir)
 
@@ -617,6 +614,9 @@ class ReduceModel():
         it will set ``nbrOfModes`` to its maximum, but it can be changed has argument to the next step
 
         """
+        # MOR IMPORT
+        from script import readStateFilesAndComputeModes
+
         start_time = time.time()
 
         self.packageBuilder.checkExistance(self.packageBuilder.dataDir)
@@ -723,6 +723,9 @@ class ReduceModel():
             - add it to the plugin library if option activated
 
         """
+        # MOR IMPORT
+        from script import readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
+
         start_time = time.time()
 
         if not os.path.isfile(self.packageBuilder.dataDir+self.reductionParam.modesFileName):

@@ -7,7 +7,8 @@ from splib.animation import AnimationManager , animate
 from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT
-from mor.script import sceneCreationUtility as u
+from mor.utility import sceneCreation as u
+from mor.wrapper import MORreplace
 
 # Our Phase1 Scene IMPORT
 import phase1_snapshots
@@ -37,7 +38,7 @@ def createScene(rootNode):
     #       - mor.wrapper.MORWrapper
     #       - mor.script.sceneCreationUtility
 
-    phase1_snapshots.createScene(Wrapper(rootNode, u.MORreplace, paramWrapper))
+    phase1_snapshots.createScene(Wrapper(rootNode, MORreplace, paramWrapper))
 
     # Save connectivity list that will allow us after work only on the necessary elements
 

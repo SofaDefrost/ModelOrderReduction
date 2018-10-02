@@ -4,11 +4,12 @@ import imp
 #	STLIB IMPORT
 from splib.animation import AnimationManager , animate
 from stlib.scene.wrapper import Wrapper
+from splib.scenegraph import *
 
 # MOR IMPORT
 from mor import animation
-from mor.script import ObjToAnimate
-from mor.script import sceneCreationUtility as u
+from mor.reduction import ObjToAnimate
+from mor.utility import sceneCreation as u
 
 # Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
@@ -54,13 +55,8 @@ def createScene(rootNode):
     # Now that all the animation are defined we need to record there results
     # for that we take the parent node normally given as an argument in paramWrapper
 
-    toFind = []
-    for item in paramWrapper:
-        path, param = item
-        toFind.append(path.split('/')[-1])
-    toFind = toFind[0]
-
-    myParent = u.searchNodeInGraphScene(rootNode,toFind)
+    path, param = paramWrapper[0]
+    myParent = get(rootNode,path[1:])
 
     # We need rest_position and because its normally always the same we record it one time
     # during the first phase with the argument writeX0 put to True

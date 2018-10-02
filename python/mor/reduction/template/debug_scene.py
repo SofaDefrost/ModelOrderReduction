@@ -6,7 +6,7 @@ from sys import argv
 from stlib.scene.wrapper import Wrapper
 
 # MOR IMPORT
-from mor.script import sceneCreationUtility as u
+from mor.utility import sceneCreation as u
 
 originalScene = '$ORIGINALSCENE'
 originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)

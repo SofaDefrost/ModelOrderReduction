@@ -9,8 +9,9 @@ component
 .. autosummary::
     :toctree: _autosummary
 
-    mor.wrapper.writeScene
+    mor.wrapper.replaceAndSave
 
 """
-__all__=["writeScene"]
+__all__=["replaceAndSave"]
+from replaceAndSave import MORreplace
 

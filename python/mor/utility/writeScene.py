@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+###############################################################################
+#            Model Order Reduction plugin for SOFA                            #
+#                         version 1.0                                         #
+#                       Copyright © Inria                                     #
+#                       All rights reserved                                   #
+#                       2018                                                  #
+#                                                                             #
+# This software is under the GNU General Public License v2 (GPLv2)            #
+#            https://www.gnu.org/licenses/licenses.en.html                    #
+#                                                                             #
+#                                                                             #
+#                                                                             #
+# Authors: Olivier Goury, Felix Vanneste                                      #
+#                                                                             #
+# Contact information: https://project.inria.fr/modelorderreduction/contact   #
+###############################################################################
 """
 Set of functions to create a reusable SOFA component out of a SOFA scene
 """
@@ -186,8 +202,8 @@ def writeFooter(packageName,nodeName,modelTransform):
         with open(path+'myFooter.txt', "r") as myfile:
             myFooter = myfile.read()
 
-            myFooter = myFooter.replace('myReducedModel',nodeName)
             myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
+            myFooter = myFooter.replace('myReducedModel',nodeName)
             if modelTransform:
                 myFooter = myFooter.replace('arg1',str(modelTransform[0]))
                 myFooter = myFooter.replace('arg2',str(modelTransform[1]))
