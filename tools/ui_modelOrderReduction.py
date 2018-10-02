@@ -40,21 +40,19 @@ import yaml
 from collections import OrderedDict
 from pydoc import locate
 
-
-from launcher import *
-
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path+'/../python') # TO CHANGE
 
-from mor.script import utility
-from mor.script import ReduceModel
-from mor.script import ObjToAnimate
+from mor.reduction import ReduceModel
+from mor.reduction import ObjToAnimate
 
 from mor.gui import MyCompleter
 from mor.gui import TreeModel
 from mor.gui import GenericDialogForm
 from mor.gui import utility as u
+from mor.utility import graphScene
+
 
 #######################################################################
 
@@ -140,7 +138,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.btn_mesh.clicked.connect(lambda: u.openFilesNames('Select the meshes & visual of your scene',display=self.lineEdit_mesh))
         self.btn_addLine.clicked.connect(lambda: self.addLine(self.tableWidget_animationParam))
         self.btn_removeLine.clicked.connect(lambda: self.removeLine(self.tableWidget_animationParam,self.animationDialog))
-        self.btn_launchReduction.clicked.connect(self.test) #self.execute)
+        self.btn_launchReduction.clicked.connect(self.execute)
         
         # QCheckBox Action
         # self.checkBox_mesh.stateChanged.connect(lambda: u.greyOut(self.checkBox_mesh,[self.lineEdit_mesh,self.btn_mesh]))
@@ -195,7 +193,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                     {
                         'lineEdit_output': '',
                         'lineEdit_mesh': '',
-                        'lineEdit_scene': '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py',
+                        'lineEdit_scene': '' #/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py',
                     },
                 'grpBox_ReductionParam': 
                     {   'lineEdit_NodeToReduce': '',
@@ -310,9 +308,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         phase.blockSignals(False)
 
     def checkPhases(self):
-        print("checkPhases")
+        # print("checkPhases")
         if str(self.lineEdit_output.text()) != '':
-            print(self.lineEdit_output.text())
+            # print(self.lineEdit_output.text())
             path = self.lineEdit_output.text()
             phasesFile = [
                         ["/debug/debug_scene.py","/debug/stateFile.state"],
@@ -326,7 +324,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                 try:
                     f = open(file,'r')
                     if f:
-                        print(file+" NOT EMPTY")
+                        # print(file+" NOT EMPTY")
                         # item.setExpanded(True)
                         # print("isTristate ",checkBox.isTristate())
 
@@ -339,7 +337,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
                         # item.setText(1,"Done")
                     else:
-                        print(file+" EMPTY")
+                        # print(file+" EMPTY")
                         # item.setExpanded(False)
                         checkBox.setCheckState(False)
                         checkBox.setDisabled(False)
@@ -360,10 +358,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                         files = glob.glob(str(path+file)+"*")
                         if files:
                             for file in files:
-                                print(file)
+                                # print(file)
                                 check(file,item)
                         else:
-                            print(path+file+" NONE")
+                            # print(path+file+" NONE")
                             # item.setExpanded(False)
                             checkBox.setCheckState(False)
                             checkBox.setDisabled(False)
@@ -375,7 +373,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                         if os.path.exists(path+file):
                             check(path+file,item)
                         else:
-                            print(path+file+" NONE")
+                            # print(path+file+" NONE")
                             # item.setExpanded(False)
                             checkBox.setCheckState(False)
                             checkBox.setDisabled(False)
@@ -385,8 +383,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             def checkExecution(phases,phaseItem,globing=False):
                 for phase in phases :
                     item = phaseItem[phases.index(phase)]
-                    state = test(phase,item,globing) 
-                    if not state:
+                    state = test(phase,item,globing)
+                    if state and state == False:
                         return
 
             checkExecution(phasesFile[:2],self.phaseItem[:2])
@@ -455,11 +453,11 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         '''
         Reset (with ctrl+R) application to a 'blank' state
         '''
+        self.setEnabled(state)
         for page in self.grpBoxes:
             pageName = str(page.objectName())
             self.loadPage(page,self.resetFileName[pageName])
         self.saveFile = None
-        self.setEnabled(state)
 
     def save(self):
         '''
@@ -504,20 +502,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
     def importScene(self,filePath):
         print('importScene : '+str(self.lineEdit_scene.text()))
         if str(self.lineEdit_scene.text()) != '':
-            numiterations = 1
-            filename = "importScene.py"
-            path = os.path.dirname(os.path.abspath(__file__))+'/'
-            filesandtemplates = [ (open(path+filename).read(), filename)]
 
-            listSofaScene = [
-                                {"ORIGINALSCENE": filePath,
-                                 "nbIterations":numiterations}
-                            ]
-
-            results = startSofa(listSofaScene, filesandtemplates, launcher=SerialLauncher())
-
-            with open(results[0]["directory"]+'/graphScene.yml', 'r') as ymlfile:
-                self.cfg = yaml.load(ymlfile)
+            self.cfg = graphScene.importScene(filePath)
             
             model = TreeModel(self.cfg)
             # print(model.rootItem.itemData)
@@ -577,7 +563,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                             self.phaseItem[index][0].setCheckState(True)
                         elif cfg[objectName]['checkBox'] == 'False':
                             self.phaseItem[index][0].setCheckState(False)
-                    if type(child).__name__ == 'QLineEdit':
+                    if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "MyLineEdit":
                         # print('----------------->'+objectName)
                         child.setText(cfg[objectName])
                     if type(child).__name__ == 'QTextEdit':
@@ -628,18 +614,19 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         '''
         BuildDic will build a Dictionnary that will describe the state of a 'page' of our application
         '''
-        toSave = ['QLineEdit','QTextEdit','QCheckBox','QTableWidget','QSpinBox']
+        toSave = ['QLineEdit','QTextEdit','QCheckBox','QTableWidget','QSpinBox','MyLineEdit']
         if not pageName:
             pageName=str(page.objectName())
         data[pageName] = {}
         # print('pageName : '+pageName)
         for child in page.children():
             objectName = str(child.objectName())
-            # print(objectName)
-            # print(type(child).__name__)
+            if type(child).__name__ == "MyLineEdit":
+                print(objectName)
+                print(type(child).__name__)
             if type(child).__name__ in toSave:
                 # print('--------------->'+child.objectName())
-                if type(child).__name__ == 'QLineEdit':
+                if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "MyLineEdit":
                     data[pageName][objectName] = str(child.text())
                     # print('----------------->'+str(child.text()))
                 if type(child).__name__ == 'QTextEdit':
@@ -735,7 +722,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         # ReductionParam Arguments
         pageName = str(self.grpBox_ReductionParam.objectName())
 
-        arguments['nodesToReduce'] = [data[pageName]['lineEdit_NodeToReduce']]
+        arguments['nodesToReduce'] = ['/'+data[pageName]['lineEdit_NodeToReduce']]
 
         if data[pageName]['lineEdit_moduleName']:
             arguments['packageName'] = data[pageName]['lineEdit_moduleName']
@@ -796,14 +783,14 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         # self.textEdit_preExecutionInfos.setText(msg)
         separator = "---------------------\n\n"
 
-        print(msg)
+        # print(msg)
 
         if msg.find('ERROR') != -1:
             pass
             # self.textEdit_preExecutionInfos.append(separator+'Execution Stopped')
         else:
-            for arg in arguments:
-                print(arg)
+            # for arg in arguments:
+            #     print(arg)
             reduceMyModel = ReduceModel(**arguments)
 
             steps = []
@@ -861,7 +848,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             tab.insertRow(tab.rowCount())
             row = tab.rowCount()-1
 
-            tmp = ui_v1proposition.MyLineEdit(tab)
+            tmp = ui_design.MyLineEdit(tab)
             model = TreeModel(self.cfg,obj=True)
 
             completer = MyCompleter(tmp)

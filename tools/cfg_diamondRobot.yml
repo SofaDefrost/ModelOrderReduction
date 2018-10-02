@@ -1,57 +1,54 @@
-AdvancedSettings:
+grpBox_AdvancedParam:
   checkBox_addToLib: 'False'
-  checkBox_verbose: 'False'
   lineEdit_toKeep: ''
   lineEdit_tolGIE: '0.05'
   lineEdit_tolModes: '0.001'
-  spinBox_numberCPU: 4
-MainParameters:
-  checkBox_AddTranslation: 'False'
-  checkBox_mesh: 'True'
-  lineEdit_NodeToReduce: /modelNode
+grpBox_AnimationParam:
+  tableWidget_animationParam:
+    0:
+      0: defaultShaking
+      1:
+        incr: '5'
+        incrPeriod: '10'
+        rangeOfAction: '40'
+      2: modelNode/nord
+    1:
+      0: defaultShaking
+      1:
+        incr: '5'
+        incrPeriod: '10'
+        rangeOfAction: '40'
+      2: modelNode/est
+    2:
+      0: defaultShaking
+      1:
+        incr: '5'
+        incrPeriod: '10'
+        rangeOfAction: '40'
+      2: modelNode/ouest
+    3:
+      0: defaultShaking
+      1:
+        incr: '5'
+        incrPeriod: '10'
+        rangeOfAction: '40'
+      2: modelNode/sud
+grpBox_Execution:
+  Phase 1:
+    checkBox: 'True'
+  Phase 2:
+    checkBox: 'True'
+  Phase 3:
+    checkBox: 'True'
+  Phase 4:
+    checkBox: 'True'
+grpBox_Path:
   lineEdit_mesh: '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/surface.stl
 
     /home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/siliconeV0.vtu'
-  lineEdit_moduleName: myReducedModel
   lineEdit_output: /home/felix/SOFA/plugin/ModelOrderReduction/tools/TEST
   lineEdit_scene: /home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py
-  tableWidget_animationParam:
-    0:
-      0: nord
-      1: defaultShaking
-      2: null
-      3:
-        incr: '5.0'
-        incrPeriod: '10.0'
-        rangeOfAction: '40.0'
-    1:
-      0: sud
-      1: defaultShaking
-      2: null
-      3:
-        incr: '5.0'
-        incrPeriod: '10.0'
-        rangeOfAction: '40.0'
-    2:
-      0: est
-      1: defaultShaking
-      2: null
-      3:
-        incr: '5.0'
-        incrPeriod: '10.0'
-        rangeOfAction: '40.0'
-    3:
-      0: ouest
-      1: defaultShaking
-      2: null
-      3:
-        incr: '5.0'
-        incrPeriod: '10.0'
-        rangeOfAction: '40.0'
-ReductionSteps:
-  checkBox_executeAll: 'True'
-  checkBox_phase1: 'True'
-  checkBox_phase2: 'True'
-  checkBox_phase3: 'True'
-  checkBox_phase4: 'True'
-  textEdit_preExecutionInfos: ''
+grpBox_ReductionParam:
+  checkBox_AddTranslation: 'False'
+  lineEdit_NodeToReduce: modelNode
+  lineEdit_moduleName: myReducedModel
