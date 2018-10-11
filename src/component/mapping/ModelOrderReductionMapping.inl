@@ -183,7 +183,7 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams
 //    tripletList.reserve(in.size());
 
     for (typename Out::MatrixDeriv::RowConstIterator rowIt = in.begin(); rowIt != rowItEnd; ++rowIt)
-    {        
+    {
         typename Out::MatrixDeriv::ColConstIterator colIt = rowIt.begin();
         typename Out::MatrixDeriv::ColConstIterator colItEnd = rowIt.end();
 

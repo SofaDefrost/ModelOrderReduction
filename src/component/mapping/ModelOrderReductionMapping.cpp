@@ -36,7 +36,7 @@ using namespace core::behavior;
 SOFA_DECL_CLASS(ModelOrderReductionMapping)
 
 // Register in the Factory
-int ModelOrderReductionMappingClass = core::RegisterObject("Reduced model")
+static int ModelOrderReductionMappingClass = core::RegisterObject("Reduced model")
 #ifdef SOFA_WITH_DOUBLE
         .add< ModelOrderReductionMapping< Vec1dTypes, Vec3dTypes > >(true)
 #endif

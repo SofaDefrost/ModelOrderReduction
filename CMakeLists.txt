@@ -7,7 +7,6 @@ project(ModelOrderReduction VERSION 1.0)
 
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -36,36 +35,11 @@ include(src/component/loader/Loader_Files.cmake)
 
 find_package(SofaFramework REQUIRED)
 
-set(TEST_CUDA OFF)
+add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
-if (TEST_CUDA) # ENABLE_CUDA
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
+target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction)
 
-    find_package(CUDA REQUIRED)
-    message("CUDA SET --> WILL BE USED FOR MOR")
-    set(CUDA_SOURCES
-        src/component/forcefield/CudaMatMult.cu
-        )
-
-    # Make the compiler definitions available to nvcc
-    add_definitions("-DSOFA_BUILD_SOFACUDA")
-    # Give include directories to nvcc compiler.
-    # Note: keep cuda_include_directories() before cuda_add_library().
-    cuda_include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
-    cuda_include_directories("${CMAKE_BINARY_DIR}/include")
-    cuda_add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${CUDA_SOURCES} ${README_FILES})
-    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${SOFACUDA_COMPILE_DEFINITIONS}")
-
-    #####    LIBRARY LINKS               ############################################
-    target_link_libraries(${PROJECT_NAME}  SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction ${CUDA_LIBRARY} ${CUDA_cusparse_LIBRARY})
-
-
-else()
-    add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
-
-    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
-    target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction)
-
-endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
 
