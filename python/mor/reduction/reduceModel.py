@@ -26,6 +26,7 @@ from launcher import *
 import errno
 import fileinput
 import datetime
+import glob
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/../morlib/'
@@ -189,6 +190,8 @@ class PackageBuilder():
             else : print(line),
 
     def copyFileIntoAnother(self,fileToCopy,fileToPasteInto):
+        print("fileToCopy ------->> "+fileToCopy)
+        print("fileToPasteInto ------->> "+fileToPasteInto)
 
         try:
             with open(fileToPasteInto, "a") as myFile:
@@ -288,14 +291,14 @@ class ReductionParam():
         self.connectivityFilesNames = []
 
         self.nbrOfModes = -1
-        self.periodSaveGIE = 3 #10
+        self.periodSaveGIE = 6 #10
         self.nbTrainingSet = -1
 
         self.paramWrapper = []
 
-    def setNbTrainingSet(self,rangeOfAction,incr,nbPossibility):
+    def setNbTrainingSet(self,rangeOfAction,incr):
 
-        self.nbTrainingSet = (rangeOfAction/incr) * nbPossibility
+        self.nbTrainingSet = rangeOfAction/incr
 
     def addParamWrapper(self ,nodeToReduce ,prepareECSW = True ,subTopo = None ,paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
 
@@ -472,8 +475,7 @@ class ReduceModel():
 
         ### With the previous parameters (listObjToAnimate/nbPossibility) we can set our training set number
         self.reductionParam.setNbTrainingSet(   listObjToAnimate[0].params['rangeOfAction'],
-                                                listObjToAnimate[0].params['incr'],
-                                                self.reductionAnimations.nbPossibility)
+                                                listObjToAnimate[0].params['incr'])
 
 
         self.nodeToReduceNames = []
@@ -504,7 +506,7 @@ class ReduceModel():
         strInfo = 'periodSaveGIE : '+str(self.reductionParam.periodSaveGIE)+' | '
         strInfo += 'nbTrainingSet : '+str(self.reductionParam.nbTrainingSet)+' | '
         strInfo += 'nbIterations : '+str(self.reductionAnimations.nbIterations)+'\n'
-        strInfo += "List of phase :"+str(self.reductionAnimations.phaseNumClass)+'\n'
+        # strInfo += "List of phase :"+str(self.reductionAnimations.phaseNumClass)+'\n'
         strInfo += "##################################################"
         print(strInfo)
 
@@ -702,9 +704,26 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")
 
+        files = glob.glob(results[0]["directory"]+"/elmts_*.txt")
+        if files:
+            for file in files:
+                idx = files.index(file)
+                files[idx] = file.split('/')[-1]
+            print("FILES ----------->",files)
+            self.reductionParam.savedElementsFilesNames = files
+
         for fileName in self.reductionParam.savedElementsFilesNames :
             self.packageBuilder.copyFileIntoAnother(results[0]["directory"]+'/'+fileName,self.packageBuilder.debugDir+fileName)
 
+        files = glob.glob(results[0]["directory"]+"/*_Gie.txt")
+        if files: 
+            for file in files:
+                idx = files.index(file)
+                files[idx] = file.split('/')[-1]
+            print("FILES ----------->",files)
+            self.reductionParam.gieFilesNames = files
+        else:
+            raise IOError("Missing GIE Files")
 
         self.packageBuilder.copyAndCleanState(  results,self.reductionParam.periodSaveGIE,
                                                 'step2_'+self.reductionParam.stateFileName,
@@ -743,6 +762,23 @@ class ReduceModel():
             raise ValueError("nbrOfModes incorrect\n"\
                 +"  nbrOfModes given :"+str(nbrOfModes)+" | nbrOfModes max possible : "+str(nbrOfModesPossible))
 
+
+        files = glob.glob(self.packageBuilder.debugDir+"/elmts_*.txt")
+        if files:
+            for file in files:
+                idx = files.index(file)
+                files[idx] = file.split('/')[-1]
+            print("FILES ----------->",files)
+            self.reductionParam.savedElementsFilesNames = files
+
+        files = glob.glob(self.packageBuilder.debugDir+"/*_Gie.txt")
+        if files: 
+            for file in files:
+                idx = files.index(file)
+                files[idx] = file.split('/')[-1]
+            print("FILES ----------->",files)
+            self.reductionParam.gieFilesNames = files
+
         for fileName in self.reductionParam.gieFilesNames :
             if not os.path.isfile(self.packageBuilder.debugDir+fileName):
                 raise IOError("There is no GIE file at "+self.packageBuilder.debugDir+fileName\
@@ -750,17 +786,20 @@ class ReduceModel():
 
             index = self.reductionParam.gieFilesNames.index(fileName)
             readGieFileAndComputeRIDandWeights( self.packageBuilder.debugDir+fileName,
-                                                self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[index],
-                                                self.packageBuilder.dataDir+self.reductionParam.weightsFilesNames[index],
+                                                self.packageBuilder.dataDir+'RID_'+fileName,
+                                                self.packageBuilder.dataDir+'weight_'+fileName,
                                                 self.reductionParam.tolGIE,
                                                 verbose= self.verbose)
+            print(index)
+            print(len(self.reductionParam.savedElementsFilesNames))
+            if index-1 < len(self.reductionParam.savedElementsFilesNames):
+                self.activesNodesLists.append(  convertRIDinActiveNodes(self.packageBuilder.dataDir+'RID_'+fileName,
+                                                                        self.packageBuilder.debugDir+self.reductionParam.savedElementsFilesNames[index-1],
+                                                                        self.packageBuilder.dataDir+'elmts_'+fileName,
+                                                                        verbose= self.verbose))
 
-            self.activesNodesLists.append(  convertRIDinActiveNodes(self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[index],
-                                                                    self.packageBuilder.debugDir+self.reductionParam.savedElementsFilesNames[index],
-                                                                    self.packageBuilder.dataDir+self.reductionParam.connectivityFilesNames[index],
-                                                                    verbose= self.verbose))
 
-
+        ## !!!!! WON'T WORK ANYMORE WITH CHANGE IN FILE NAME !!!!
         if self.subTopoList :
             print('there is at least one subTopo : '+str(self.subTopoList))
             for i in range(len(self.subTopoList)) :

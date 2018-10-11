@@ -20,7 +20,17 @@ from splib.scenegraph import *
 
 from mor.wrapper import replaceAndSave
 
+
+forceFieldImplemented = {
+                            'HyperReducedTetrahedronFEMForceField':'tetrahedra',
+                            'HyperReducedTriangleFEMForceField':'triangles',
+                            # 'HyperReducedRestShapeSpringsForceField':'points'
+                        }
+
+
 import yaml
+
+tmp = 0
 
 def removeObject(obj):
     obj.getContext().removeObject(obj)
@@ -157,16 +167,17 @@ def saveElements(rootNode,phase,newParam):
     import numpy as np
 
     def save(node,container,valueType, **param):
-
+        global tmp
         elements = container.findData(valueType).value
-        np.savetxt('elmts_'+node.name+'.txt', elements,fmt='%i')
+        np.savetxt('elmts_'+valueType+'_'+ node.name + '_' + str(tmp)+'.txt', elements,fmt='%i')
+        tmp += 1
         print('save : '+'elmts_'+node.name+' from '+container.name+' with value Type '+valueType)
 
     for item in newParam :
         pathTmp , param = item
         index = newParam.index(item)
         node = get(rootNode,pathTmp[1:])
-        print(pathTmp,node)
+        # print(pathTmp,node)
         if node.getPathName() == pathTmp:
             
             forcefield = []
@@ -184,21 +195,14 @@ def saveElements(rootNode,phase,newParam):
             # print('--------------------->  ',forcefield)
 
             for obj in forcefield:
-                # print('--------------------->  '+obj.getName())
-                className = obj.getClassName()
-                if className == 'HyperReducedTetrahedronFEMForceField':
-                    valueType = 'tetrahedra'
-                elif className == 'HyperReducedTriangleFEMForceField':
-                    valueType = 'triangles'
-                elif className == 'HyperReducedRestShapeSpringsForceField':
-                    valueType = 'points'
-                else:
-                    valueType = None
+                print("TEST " + obj.getClassName())
+                if obj.getClassName() in forceFieldImplemented :
+                    valueType = forceFieldImplemented[obj.getClassName()]
 
-                # print('--------------------->  ',valueType)
+                    print('--------------------->  ',valueType)
 
-                if valueType:
-                    animate(save, {"node" : node ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, dt)
+                    if valueType:
+                        animate(save, {"node" : node ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
 def createDebug(rootNode,paramWrapper,stateFile="stateFile.state"):
 

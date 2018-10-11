@@ -2,14 +2,20 @@
 
 from collections import OrderedDict
 
-forceFieldImplemented = ['TetrahedronFEMForceField','TriangleFEMForceField']
+forceFieldImplemented = {
+                            'TetrahedronFEMForceField':('HyperReducedTetrahedronFEMForceField','tetrahedra'),
+                            'TriangleFEMForceField':('HyperReducedTriangleFEMForceField','triangles'),
+                            'RestShapeSpringsForceField':('HyperReducedRestShapeSpringsForceField','points')
+                        }
 
 myModel = OrderedDict() # Ordered dic containing has key Sofa.Node.name & has var a tuple of (Sofa_componant_type , param_solver)
 myMORModel = [] # list of tuple (solver_type , param_solver)
 
 
-def MORreplace(node,type,newParam,initialParam):
+tmp = 0
 
+def MORreplace(node,type,newParam,initialParam):
+    global tmp
     currentPath = node.getPathName()
     # print('NODE : '+node.name)
     # print('TYPE : '+str(type))
@@ -25,24 +31,17 @@ def MORreplace(node,type,newParam,initialParam):
             # print(type)
 
             #   Change the initial Forcefield by the HyperReduced one with the new argument 
-            if str(type).find('ForceField') != -1 and str(type) in forceFieldImplemented :
+            if str(type) in forceFieldImplemented :
+                type , valueType = forceFieldImplemented[type]
                 # print str(type)
-                import random
-                name = 'HyperReducedFEMForceField_'+ node.name #str(random.randint(0, 20))
+
+                name = 'reducedFF_'+ node.name + '_' + str(tmp)
+                tmp += 1
                 initialParam['name'] = name
                 initialParam['nbModes'] = param['nbrOfModes']
+
                 for key in param['paramForcefield']:
                     initialParam[key] = param['paramForcefield'][key]
-
-                #Add to the container list  which data it has to save
-                if str(type) == 'TetrahedronFEMForceField':
-                    type = 'HyperReducedTetrahedronFEMForceField'
-                elif str(type) == 'TriangleFEMForceField':
-                    type = 'HyperReducedTriangleFEMForceField'
-                elif str(type) == 'RestShapeSpringsForceField':
-                    type = 'HyperReducedRestShapeSpringsForceField'
-                else:
-                    raise Exception("!! FORCFIELD NOT IMPLEMENTED !!")
 
                 if save:
                     myModel[node.name].append((str(type),initialParam))
