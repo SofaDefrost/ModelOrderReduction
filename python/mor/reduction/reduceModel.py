@@ -295,7 +295,7 @@ class ReductionParam():
 
     def setNbTrainingSet(self,rangeOfAction,incr,nbPossibility):
 
-        self.nbTrainingSet = (rangeOfAction/incr) * nbPossibility
+        self.nbTrainingSet = rangeOfAction/incr
 
     def addParamWrapper(self ,nodeToReduce ,prepareECSW = True ,subTopo = None ,paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
 
