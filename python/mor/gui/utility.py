@@ -83,7 +83,7 @@ def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
     if display:
         display.setText(filename)       
 
-    return filename
+    return str(filename)
 
 def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
     '''
@@ -93,7 +93,7 @@ def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
     filesName = QtGui.QFileDialog.getOpenFileNames(None,hdialog, '.', filter=filter)
     if display:
         for fileName in filesName:
-            display.append(fileName)
+            display.append(str(fileName))
     return filesName
 
 def openDirName(hdialog,display=None):
@@ -104,7 +104,7 @@ def openDirName(hdialog,display=None):
     filename = QtGui.QFileDialog.getExistingDirectory(None,hdialog)
     if display:
         display.setText(filename)
-    return filename
+    return str(filename)
 
 def checkExistance(dir):
 
