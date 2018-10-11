@@ -120,4 +120,4 @@ if __name__ == '__main__':  # if we're running file directly and not importing i
     if len(argv) < 4:
         print("Function need at least 3 arguments")
     else:
-        readStateFilesAndComputeModes(*arv[1:])
+        readStateFilesAndComputeModes(*argv[1:])

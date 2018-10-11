@@ -108,34 +108,41 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
 
     ################################################################################################
 
-    fgie = open(gieFilename,'r')
-    lineCount = 0
-    gie = []
-    keepIndex = []
+    gie = None
 
     #Read all the file & store it in GIE
     if verbose : print "Reading file : %r" %gieFilename
-    for line in fgie:
-        lineSplit = line.split();
-        lineFloat = map(float,lineSplit)
-        gie.append(lineFloat);
-        lineCount = lineCount +1
-    fgie.close()
 
-    if verbose : 
-        print "     File read until line", lineCount
-        print "Done reading file %r:" % gieFilename,'\n'
+    with open(gieFilename,'r') as fgie :
+        nbLines = 0
+        lenght = len(fgie.readline().split())
+        fgie.seek(0)
+        for i,line in enumerate(fgie):
+            lineSplit = line.split()
+            if lineSplit != ['0']*len(lineSplit):
+                nbLines += 1
 
-    gie = np.array(gie)
-    nbLines , nbElements = np.shape(gie)
+        gie=np.zeros((nbLines,lenght),dtype=np.float32)
+        fgie.seek(0)
 
-    #Clean GIE
-    for i in range(nbLines):
-        if any(gie[i,:] != 0):
-            keepIndex.append(i)
+        tmp = 0
+        for i,line in enumerate(fgie):
+            lineSplit = line.split()
+            # print(i,len(lineSplit)
+            if lineSplit != ['0']*len(lineSplit):
+                # print(lineSplit)
+                gie[tmp,:] = lineSplit
+                tmp += 1
 
-    #Creat bECSW from GIE
-    gie = gie[keepIndex,:]
+        # np.set_printoptions(precision=5)
+        # print("DONE -------------> "+str(gie[0][0]))
+
+        if verbose : 
+            print("nbLines "+str(nbLines)+"  lenght "+str(lenght))
+            print("Done reading file %r:" % gieFilename,'\n')
+
+
+    #Create bECSW from GIE
     bECSW = np.sum(gie,axis=1)
     bECSW = bECSW[np.newaxis]
     bECSW = np.transpose(bECSW)
@@ -143,7 +150,7 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
     ####################################
     if verbose : 
         print "INFO pre-process"
-        print "     size GIE (nbLine,nbElements) :   ", '('+str(nbLines)+', '+str(nbElements)+')'
+        # print "     size GIE (nbLine,lenght) :   ", '('+str(nbLines)+', '+str(lenght)+')'
         print "     size cleaned GIE :               ", np.shape(gie)
         print "     size bECSW :                     ", np.shape(bECSW),'\n'
     ####################################
@@ -152,19 +159,18 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
     ECSWindex,xi = selectECSW(gie,bECSW,tol,verbose)
     ECSWindex = np.array(sorted(list(ECSWindex)))
     sizeRID = ECSWindex.size
-    nbElements = xi.size
 
     #Store results in files 
     np.savetxt(RIDFileName,ECSWindex, header=str(sizeRID)+' 1', comments='', fmt='%d')
-    np.savetxt(weightsFileName,xi, header=str(nbElements)+' 1', comments='',fmt='%10.5f')
+    np.savetxt(weightsFileName,xi, header=str(xi.size)+' 1', comments='',fmt='%10.5f')
 
     if verbose: print "===> Success readGieFileAndComputeRIDandWeights.py\n"
 
 
-##########################################################################################
+# ##########################################################################################
 
 if __name__ == '__main__':  # if we're running file directly and not importing it
     if len(argv) < 5:
         print("Function need at least 4 arguments")
     else:
-        readStateFilesAndComputeModes(*arv[1:])
+        readGieFileAndComputeRIDandWeights(*argv[1:])
