@@ -40,6 +40,9 @@ def createScene(rootNode):
 
     phase1_snapshots.createScene(Wrapper(rootNode, MORreplace, paramWrapper))
 
+    # Add MOR plugin if not found
+    u.addPlugin(rootNode,"ModelOrderReduction")
+
     # Save connectivity list that will allow us after work only on the necessary elements
 
     if phase == [0]*len(phase):

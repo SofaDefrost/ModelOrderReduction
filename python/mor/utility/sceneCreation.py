@@ -65,6 +65,52 @@ def getContainer(node):
             container = obj
     return container
 
+def searchObjectClassInGraphScene(node,toFind):
+    '''
+        Args:
+        node (Sofa.node):     Sofa node in wich we are working
+
+        toFind (str):  className we want to find
+
+        Description:
+
+            Search in the Graph scene recursively for all the node
+            with the same className as toFind
+    '''
+    class Namespace(object):
+        pass
+    tmp = Namespace()
+    tmp.results = []
+
+    if not isinstance(toFind,str):
+        raise Exception("toFind is either a string or a list of string")
+
+    def search(node,toFind):
+
+        for obj in node.getObjects():
+            if obj.getClassName() == toFind:
+                tmp.results.append(obj)
+
+        for child in node.getChildren():
+            search(child,toFind)
+
+    search(node,toFind)
+
+    return tmp.results
+
+def searchPlugin(rootNode,pluginName):
+    found = False
+    plugins = searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
+    for plugin in plugins:
+        for name in plugin.pluginName:
+            if name == ["pluginName"]:
+                found = True
+    return found
+
+def addPlugin(rootNode,pluginName):
+    if not searchPlugin(rootNode,pluginName):
+        rootNode.createObject('RequiredPlugin', pluginName=pluginName)
+
 def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
     '''
         FOR all node find to animate animate only the one moving -> phase 1/0

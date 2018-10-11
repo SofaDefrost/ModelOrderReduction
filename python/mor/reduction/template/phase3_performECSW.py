@@ -43,6 +43,9 @@ def createScene(rootNode):
 
     originalScene.createScene(Wrapper(rootNode, replaceAndSave.MORreplace, paramWrapper))  # 1
 
+    # Add MOR plugin if not found
+    u.addPlugin(rootNode,"ModelOrderReduction")
+
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
 
