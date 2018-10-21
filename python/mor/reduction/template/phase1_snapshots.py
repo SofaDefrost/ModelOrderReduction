@@ -2,9 +2,13 @@
 import imp
 
 #	STLIB IMPORT
-from splib.animation import AnimationManager , animate
-from stlib.scene.wrapper import Wrapper
-from splib.scenegraph import *
+try:
+    from splib.animation import AnimationManager , animate
+    from stlib.scene.wrapper import Wrapper
+    from splib.scenegraph import *
+except:
+    raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
+                     +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
 from mor import animation
@@ -26,6 +30,7 @@ phase.append($item)
 #end for
 nbIterations = $nbIterations
 paramWrapper = $PARAMWRAPPER
+phaseToSave = $PHASETOSAVE
 
 ###############################################################################
 
@@ -60,7 +65,7 @@ def createScene(rootNode):
 
     # We need rest_position and because its normally always the same we record it one time
     # during the first phase with the argument writeX0 put to True
-    if phase == [0]*len(phase):
+    if phase == phaseToSave:
         myParent.createObject('WriteState', filename="stateFile.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="1", writeV="0")
     else :

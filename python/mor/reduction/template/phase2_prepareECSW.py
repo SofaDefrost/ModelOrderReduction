@@ -3,12 +3,18 @@ import sys
 import numpy as np
 
 #   STLIB IMPORT
-from splib.animation import AnimationManager , animate
-from stlib.scene.wrapper import Wrapper
+try:
+    from splib.animation import AnimationManager , animate
+    from stlib.scene.wrapper import Wrapper
+    from splib.scenegraph import *
+
+except:
+    raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
+                     +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
 from mor.utility import sceneCreation as u
-from mor.wrapper import MORreplace
+from mor.wrapper import replaceAndSave
 
 # Our Phase1 Scene IMPORT
 import phase1_snapshots
@@ -22,10 +28,14 @@ nbrOfModes = $NBROFMODES
 periodSaveGIE = $PERIODSAVEGIE
 nbTrainingSet = $NBTRAININGSET
 paramWrapper = $PARAMWRAPPER
+phaseToSave = $PHASETOSAVE
 
 for item in paramWrapper:
     path, param = item
     param['nbrOfModes'] = $NBROFMODES
+    if phase == phaseToSave:
+        if 'paramMappedMatrixMapping' in param:
+            param['paramMappedMatrixMapping']['saveReducedMass'] = True
 
 ###############################################################################
 
@@ -38,18 +48,24 @@ def createScene(rootNode):
     #       - mor.wrapper.MORWrapper
     #       - mor.script.sceneCreationUtility
 
-    phase1_snapshots.createScene(Wrapper(rootNode, MORreplace, paramWrapper))
+    phase1_snapshots.createScene(Wrapper(rootNode, replaceAndSave.MORreplace, paramWrapper))
 
     # Add MOR plugin if not found
     u.addPlugin(rootNode,"ModelOrderReduction")
 
     # Save connectivity list that will allow us after work only on the necessary elements
 
-    if phase == [0]*len(phase):
+    if phase == phaseToSave:
         u.saveElements(rootNode,phase,paramWrapper)
-
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
 
     u.modifyGraphScene(rootNode,nbrOfModes,paramWrapper)
+
+
+    # We Update the link 
+    for path , item in replaceAndSave.pathToUpdate.iteritems():
+        data , newValue = item
+        obj = get(rootNode,path)
+        setattr(obj,data,newValue)

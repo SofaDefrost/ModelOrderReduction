@@ -15,18 +15,23 @@
 #                                                                             #
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
-from splib.animation import animate
-from splib.scenegraph import *
+
+import sys
+
+try:
+    from splib.animation import animate
+    from splib.scenegraph import *
+except:
+    raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
+                     +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 from mor.wrapper import replaceAndSave
-
 
 forceFieldImplemented = {
                             'HyperReducedTetrahedronFEMForceField':'tetrahedra',
                             'HyperReducedTriangleFEMForceField':'triangles',
-                            # 'HyperReducedRestShapeSpringsForceField':'points'
+                            'HyperReducedRestShapeSpringsForceField':'points'
                         }
-
 
 import yaml
 
@@ -151,7 +156,7 @@ def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
                         objToAnimate.item = obj
                         objToAnimate.params["dataToWorkOn"] = 'value'
 
-            elif type(toAnimate[tmp]).__name__ == "BaseObject":
+            else :
                 objToAnimate.item = toAnimate[tmp]
 
             if objToAnimate.item and objToAnimate.params["dataToWorkOn"]:
@@ -174,40 +179,45 @@ def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
 
     for item in newParam :
         pathTmp , param = item
-        node = get(rootNode,pathTmp[1:])
-        solver = getNodeSolver(node)
-        print("node.getPathName()",node.getPathName())
-        if node.getPathName() == pathTmp:
-            if 'paramMappedMatrixMapping' in param:
-                # print 'Create new child modelMOR and move node in it'
+        print('pathTmp -----------------> '+pathTmp)
+        try :
+            node = get(rootNode,pathTmp[1:])
+            solver = getNodeSolver(node)
+            print("node.getPathName()",node.getPathName())
+            if node.getPathName() == pathTmp:
+                if 'paramMappedMatrixMapping' in param:
+                    print 'Create new child modelMOR and move node in it'
 
-                myParent = node.getParents()[0]
-                modelMOR = myParent.createChild(node.name+'_MOR')
-                modelMOR.createObject('MechanicalObject', **argMecha)
-                modelMOR.moveChild(node)
+                    myParent = node.getParents()[0]
+                    modelMOR = myParent.createChild(node.name+'_MOR')
+                    modelMOR.moveChild(node)
 
-                for obj in solver:
-                    # print('To move!')
-                    node.removeObject(obj)
-                    node.getParents()[0].addObject(obj)
+                    for obj in solver:
+                        # print('To move!')
+                        node.removeObject(obj)
+                        node.getParents()[0].addObject(obj)
 
-                # print param['paramMappedMatrixMapping']
-                modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
-                # print 'Create MechanicalMatrixMapperMOR in modelMOR'
+                    modelMOR.createObject('MechanicalObject', **argMecha)
 
-                if save:
-                    replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
-                    replaceAndSave.myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
+                    # print param['paramMappedMatrixMapping']
+                    modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
+                    # print 'Create MechanicalMatrixMapperMOR in modelMOR'
 
-                if 'paramMORMapping' in param:
-                    #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
-                    param['paramMORMapping']['output'] = '@./'+node.getMechanicalState().name
                     if save:
-                        replaceAndSave.myModel[node.name].append(('ModelOrderReductionMapping',param['paramMORMapping']))
+                        replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
+                        replaceAndSave.myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
 
-                    node.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
-                    print ("Create ModelOrderReductionMapping in node")
-                # else do error !!
+                    if 'paramMORMapping' in param:
+                        #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
+                        param['paramMORMapping']['output'] = '@./'+node.getMechanicalState().name
+                        if save:
+                            replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
+
+                        node.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
+                        print ("Create ModelOrderReductionMapping in node")
+                    # else do error !!
+        except :
+            print("Problem with path : "+pathTmp[1:])
 
 def saveElements(rootNode,phase,newParam):
     import numpy as np
@@ -215,7 +225,7 @@ def saveElements(rootNode,phase,newParam):
     def save(node,container,valueType, **param):
         global tmp
         elements = container.findData(valueType).value
-        np.savetxt('elmts_'+valueType+'_'+ node.name + '_' + str(tmp)+'.txt', elements,fmt='%i')
+        np.savetxt('reducedFF_'+ node.name + '_' + str(tmp)+'_'+valueType+'_elmts.txt', elements,fmt='%i')
         tmp += 1
         print('save : '+'elmts_'+node.name+' from '+container.name+' with value Type '+valueType)
 

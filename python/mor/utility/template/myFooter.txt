@@ -24,8 +24,8 @@ def createScene(rootNode):
     surfaceMeshFileName = False
 
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
-                        dt=1,
-                        gravity=[0.0,0.0,-9810])
+                        dt=DT,
+                        gravity=GRAVITY)
 
     translate = 300
     rotationBlue = 60.0

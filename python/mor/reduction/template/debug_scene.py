@@ -3,7 +3,11 @@ import imp
 from sys import argv
 
 #   STLIB IMPORT
-from stlib.scene.wrapper import Wrapper
+try:
+	from stlib.scene.wrapper import Wrapper
+except:
+    raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
+                     +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
 from mor.utility import sceneCreation as u

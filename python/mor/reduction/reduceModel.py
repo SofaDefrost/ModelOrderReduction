@@ -22,11 +22,17 @@ import time
 import os
 import sys 
 import math
-from launcher import *
 import errno
 import fileinput
 import datetime
 import glob
+
+try:
+    from launcher import *
+except:
+    raise ImportError("You need to give to PYTHONPATH the path to sofa-launcher in order to use this tool\n"\
+                     +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
+                     +"export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher")
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/../morlib/'
@@ -190,9 +196,6 @@ class PackageBuilder():
             else : print(line),
 
     def copyFileIntoAnother(self,fileToCopy,fileToPasteInto):
-        print("fileToCopy ------->> "+fileToCopy)
-        print("fileToPasteInto ------->> "+fileToPasteInto)
-
         try:
             with open(fileToPasteInto, "a") as myFile:
                 currentFile = open(fileToCopy, "r")
@@ -212,6 +215,11 @@ class PackageBuilder():
 
         if os.path.exists(self.debugDir+stateFileName):
             os.remove(self.debugDir+stateFileName)
+        if gie:
+            for fileName in gie :
+                if os.path.exists(self.debugDir+fileName):
+                    os.remove(self.debugDir+fileName)
+
 
         for res in results:
             self.copyFileIntoAnother(res["directory"]+"/stateFile.state",self.debugDir+stateFileName)
@@ -288,7 +296,9 @@ class ReductionParam():
         self.RIDFilesNames = []
         self.weightsFilesNames = [] 
         self.savedElementsFilesNames = []
-        self.connectivityFilesNames = []
+        self.listActiveNodesFilesNames = []
+        self.massName = ''
+
 
         self.nbrOfModes = -1
         self.periodSaveGIE = 6 #10
@@ -302,7 +312,6 @@ class ReductionParam():
 
     def addParamWrapper(self ,nodeToReduce ,prepareECSW = True ,subTopo = None ,paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
 
-        nodeName = nodeToReduce.split('/')[-1]
         nodeToParse = '@.'+nodeToReduce
 
         defaultParamPrepare = {
@@ -330,8 +339,8 @@ class ReductionParam():
                 'paramForcefield' : {
                     'performECSW': True,
                     'modesPath': self.dataFolder+self.modesFileName,
-                    'RIDPath': self.dataFolder+'RID_'+nodeName+'.txt',
-                    'weightsPath': self.dataFolder+'weight_'+nodeName+'.txt'},
+                    'RIDPath': self.dataFolder,
+                    'weightsPath': self.dataFolder},
 
                 'paramMORMapping' : {
                     'input': '@../MechanicalObject',
@@ -342,8 +351,12 @@ class ReductionParam():
                     'template': 'Vec1d,Vec1d',
                     'object1': '@./MechanicalObject',
                     'object2': '@./MechanicalObject',
-                    'listActiveNodesPath' : self.dataFolder+'conectivity_'+nodeName+'.txt',
-                    'performECSW': True}
+                    'timeInvariantMapping1': True,
+                    'timeInvariantMapping2': True,
+                    'listActiveNodesPath' : self.dataFolder+'listActiveNodes.txt',
+                    'performECSW': True,
+                    'usePrecomputedMass': True,
+                    'precomputedMassPath': self.dataFolder+self.massName}
                 }
 
         if subTopo:
@@ -352,8 +365,8 @@ class ReductionParam():
                 'paramForcefield' : {
                     'performECSW': True,
                     'modesPath': self.dataFolder+self.modesFileName,
-                    'RIDPath': self.dataFolder+'RID_'+subTopoName+'.txt',
-                    'weightsPath': self.dataFolder+'weight_'+subTopoName+'.txt'}
+                    'RIDPath': self.dataFolder,
+                    'weightsPath': self.dataFolder}
             }
 
         if paramForcefield and paramMappedMatrixMapping and paramMORMapping :
@@ -400,7 +413,7 @@ class ReductionParam():
             self.RIDFilesNames.append('RID_'+nodeName+'.txt')
             self.weightsFilesNames.append('weight_'+nodeName+'.txt')
             self.savedElementsFilesNames.append('elmts_'+nodeName+'.txt')
-            self.connectivityFilesNames.append('conectivity_'+nodeName+'.txt')
+            self.listActiveNodesFilesNames.append('listActiveNodes_'+nodeName+'.txt')
 
 class ReduceModel():
     """
@@ -452,7 +465,8 @@ class ReduceModel():
                  addToLib = False,
                  verbose = False,
                  addRigidBodyModes = False,
-                 nbrCPU = 4):
+                 nbrCPU = 4,
+                 phaseToSave = None):
 
         self.originalScene = originalScene
         self.nodesToReducePath = nodesToReduce
@@ -460,12 +474,6 @@ class ReduceModel():
 
         ### Obj Containing all the argument & function about how the shaking will be done and with which actuators
         self.reductionAnimations = ReductionAnimations(listObjToAnimate)
-
-        ### If nothing is indicated to keep in the future package, by default we add all the actuators used to create the reduced model
-        if not toKeep:
-            toKeep = []
-            for obj in listObjToAnimate:
-                toKeep.append(obj.location)
 
         ### Obj Containing all the argument & function about how to create the end package and where 
         self.packageBuilder = PackageBuilder(outputDir,meshes,toKeep,packageName,addToLib)
@@ -484,19 +492,46 @@ class ReduceModel():
             if isinstance(nodePath,tuple):
                 nodeName = nodePath[0].split('/')[-1]
                 modelSubTopoName = nodePath[1].split('/')[-1]
-                self.nodeToReduceNames.append((nodeName,modelSubTopoName))
+                self.nodeToReduceNames.append(nodePath[0])
+                self.nodeToReduceNames.append(nodePath[1])
                 self.subTopoList.append(self.nodesToReducePath.index(nodePath))
                 self.reductionParam.addParamWrapper(nodePath[0], subTopo = nodePath[1])
 
             else :
-                nodeName = nodePath.split('/')[-1]
-                self.nodeToReduceNames.append(nodeName)
+                # nodeName = nodePath.split('/')[-1]
+                self.nodeToReduceNames.append(nodePath)
 
                 self.reductionParam.addParamWrapper(nodePath)
 
+        print(self.nodeToReduceNames)
+        ### If nothing is indicated to keep in the future package, by default we add all the actuators used to create the reduced model
+        if not toKeep:
+            toKeep = []
+            for obj in listObjToAnimate:
+                tmp = obj.location.split('/')[:-1] # remove last / or objName to take only the path to the node we want to keep
+                for i in range(len(tmp)): # keep all node before the one we want to keep
+                    pathToNode = '/'.join(tmp[:i+1]) 
+                    if pathToNode not in toKeep and '/'+pathToNode not in self.nodeToReduceNames:
+                        toKeep.append(pathToNode)
+                toKeep.append(obj.location)
+        else:
+            for obj in toKeep:
+                tmp = obj.split('/')[:-1] # remove last / or objName to take only the path to the node we want to keep
+                for i in range(len(tmp)): # keep all node before the one we want to keep
+                    pathToNode = '/'.join(tmp[:i+1]) 
+                    if pathToNode not in toKeep and '/'+pathToNode not in self.nodeToReduceNames:
+                        toKeep.append(pathToNode)
+                toKeep.append(obj.location)
+
+        self.packageBuilder.toKeep = toKeep
+        # print("TO KEEP",toKeep)
+        # else:
+            # Make an error managment ?
+
         self.reductionParam.setFilesName()
 
-
+        self.phaseToSave = phaseToSave
+        self.phaseToSaveIndex = 0
         self.nbrCPU = nbrCPU
         self.verbose = verbose
 
@@ -525,15 +560,23 @@ class ReduceModel():
         if not phasesToExecute:
             phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
 
+        if not self.phaseToSave:
+            self.phaseToSave = [0]*len(self.reductionAnimations.phaseNumClass[0])
+
         for i in phasesToExecute:
             if i >= self.reductionAnimations.nbPossibility or i < 0 :
                 raise ValueError("phasesToExecute incorrect, select an non-existent phase : "+phasesToExecute)
+            if self.phaseToSave == self.reductionAnimations.phaseNumClass[i]:
+                self.phaseToSaveIndex = self.reductionAnimations.phaseNumClass.index(self.phaseToSave)
+                # print("INDEX -------------------> "+str(self.phaseToSaveIndex))
+
             self.listSofaScene.append({ "ORIGINALSCENE": self.originalScene,
                                         "LISTOBJTOANIMATE": self.reductionAnimations.listObjToAnimate,
                                         "PHASE": self.reductionAnimations.phaseNumClass[i],
                                         "PERIODSAVEGIE" : self.reductionParam.periodSaveGIE,
                                         "PARAMWRAPPER" : self.reductionParam.paramWrapper,
-                                        "nbIterations":self.reductionAnimations.nbIterations})
+                                        "nbIterations":self.reductionAnimations.nbIterations,
+                                        "PHASETOSAVE" : self.phaseToSave})
 
     def performReduction(self,phasesToExecute=None,nbrOfModes=None):
         """
@@ -605,7 +648,7 @@ class ReduceModel():
                 print("     duration: "+str(res["duration"])+" sec")  
 
         self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName)
-        self.packageBuilder.copy(results[0]["directory"]+"/debug_scene.py", self.packageBuilder.debugDir)
+        self.packageBuilder.copy(results[self.phaseToSaveIndex]["directory"]+"/debug_scene.py", self.packageBuilder.debugDir)
 
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
 
@@ -704,23 +747,26 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")
 
-        files = glob.glob(results[0]["directory"]+"/elmts_*.txt")
+        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+"/*_elmts.txt")
         if files:
-            for file in files:
-                idx = files.index(file)
-                files[idx] = file.split('/')[-1]
-            print("FILES ----------->",files)
+            for i,file in enumerate(files):
+                files[i] = file.split('/')[-1]
+            # print("FILES ----------->",files)
             self.reductionParam.savedElementsFilesNames = files
 
         for fileName in self.reductionParam.savedElementsFilesNames :
-            self.packageBuilder.copyFileIntoAnother(results[0]["directory"]+'/'+fileName,self.packageBuilder.debugDir+fileName)
+            self.packageBuilder.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+'/'+fileName,self.packageBuilder.debugDir+fileName)
 
-        files = glob.glob(results[0]["directory"]+"/*_Gie.txt")
+        self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+"/*_reduced.txt")[0]
+        # print("massName -----------------------> ",self.reductionParam.massName)
+        self.packageBuilder.copy(self.reductionParam.massName,self.reductionParam.dataDir)
+
+
+        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+"/*_Gie.txt")
         if files: 
-            for file in files:
-                idx = files.index(file)
-                files[idx] = file.split('/')[-1]
-            print("FILES ----------->",files)
+            for i,file in enumerate(files):
+                files[i] = file.split('/')[-1]
+            # print("FILES ----------->",files)
             self.reductionParam.gieFilesNames = files
         else:
             raise IOError("Missing GIE Files")
@@ -762,62 +808,75 @@ class ReduceModel():
             raise ValueError("nbrOfModes incorrect\n"\
                 +"  nbrOfModes given :"+str(nbrOfModes)+" | nbrOfModes max possible : "+str(nbrOfModesPossible))
 
-
-        files = glob.glob(self.packageBuilder.debugDir+"/elmts_*.txt")
+        # print(files)
+        files = glob.glob(self.packageBuilder.debugDir+"*_elmts.txt")
         if files:
-            for file in files:
-                idx = files.index(file)
-                files[idx] = file.split('/')[-1]
-            print("FILES ----------->",files)
+            for i,file in enumerate(files):
+                files[i] = file.split('/')[-1]
+            # print("FILES ----------->",files)
             self.reductionParam.savedElementsFilesNames = files
 
-        files = glob.glob(self.packageBuilder.debugDir+"/*_Gie.txt")
+        files = glob.glob(self.packageBuilder.debugDir+"*_Gie.txt")
         if files: 
-            for file in files:
-                idx = files.index(file)
-                files[idx] = file.split('/')[-1]
-            print("FILES ----------->",files)
+            for i,file in enumerate(files):
+                files[i] = file.split('/')[-1]
+            # print("FILES ----------->",files)
             self.reductionParam.gieFilesNames = files
 
+
+        for i , gie in enumerate(self.reductionParam.gieFilesNames):
+            tmp = gie.replace('_Gie.txt','')
+            for j , elmts in enumerate(self.reductionParam.savedElementsFilesNames):
+                if tmp in elmts:
+                    tmp = self.reductionParam.savedElementsFilesNames[j]
+                    self.reductionParam.savedElementsFilesNames[j] = self.reductionParam.savedElementsFilesNames[i]
+                    self.reductionParam.savedElementsFilesNames[i] = tmp
+
+        # print(self.reductionParam.savedElementsFilesNames)
+        # print(self.reductionParam.gieFilesNames)
+
+        self.reductionParam.massName = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0].split('/')[-1]
+        # print("massName -----------------------> ",self.reductionParam.massName)
+
+
+        self.reductionParam.RIDFilesNames = []
+        self.reductionParam.weightsFilesNames = []
+        self.reductionParam.listActiveNodesFilesNames = []
         for fileName in self.reductionParam.gieFilesNames :
             if not os.path.isfile(self.packageBuilder.debugDir+fileName):
                 raise IOError("There is no GIE file at "+self.packageBuilder.debugDir+fileName\
                     +"\nPlease give one at this location or indicate the correct location or re-generate one with phase 3")
 
-            index = self.reductionParam.gieFilesNames.index(fileName)
+            self.reductionParam.RIDFilesNames.append(fileName.replace('_Gie','_RID'))
+            self.reductionParam.weightsFilesNames.append(fileName.replace('_Gie','_weight'))
+            self.reductionParam.listActiveNodesFilesNames.append(fileName.replace('_Gie','_listActiveNodes'))
+
+
+        self.listActiveNodesFilesNames = []
+        for i , fileName in enumerate(self.reductionParam.gieFilesNames) :
+
+            # index = self.reductionParam.gieFilesNames.index(fileName)
             readGieFileAndComputeRIDandWeights( self.packageBuilder.debugDir+fileName,
-                                                self.packageBuilder.dataDir+'RID_'+fileName,
-                                                self.packageBuilder.dataDir+'weight_'+fileName,
+                                                self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[i],
+                                                self.packageBuilder.dataDir+self.reductionParam.weightsFilesNames[i],
                                                 self.reductionParam.tolGIE,
                                                 verbose= self.verbose)
-            print(index)
-            print(len(self.reductionParam.savedElementsFilesNames))
-            if index-1 < len(self.reductionParam.savedElementsFilesNames):
-                self.activesNodesLists.append(  convertRIDinActiveNodes(self.packageBuilder.dataDir+'RID_'+fileName,
-                                                                        self.packageBuilder.debugDir+self.reductionParam.savedElementsFilesNames[index-1],
-                                                                        self.packageBuilder.dataDir+'elmts_'+fileName,
-                                                                        verbose= self.verbose))
+            # print(index)
+            # print(len(self.reductionParam.savedElementsFilesNames))
+            # if index-1 < len(self.reductionParam.savedElementsFilesNames):
+            self.activesNodesLists.append(  convertRIDinActiveNodes(self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[i],
+                                                                    self.packageBuilder.debugDir+self.reductionParam.savedElementsFilesNames[i],
+                                                                    self.packageBuilder.dataDir+self.reductionParam.listActiveNodesFilesNames[i],
+                                                                    verbose= self.verbose))
 
-
-        ## !!!!! WON'T WORK ANYMORE WITH CHANGE IN FILE NAME !!!!
-        if self.subTopoList :
-            print('there is at least one subTopo : '+str(self.subTopoList))
-            for i in range(len(self.subTopoList)) :
-                nodeName1 , nodeName2 = self.nodeToReduceNames[i]
-                print ('nodeName1 ', nodeName1)
-                print ('nodeName2 ', nodeName2)
-                print (self.activesNodesLists[i])
-                print ('###################\n\n')
-                print (self.activesNodesLists[i+1])
-                print ('===================\n\n')
-                self.activesNodesLists[i] = list(set().union(self.activesNodesLists[i],self.activesNodesLists[i+1]))
-                print (self.activesNodesLists[i])
-
-                with open(self.packageBuilder.dataDir+'conectivity_'+nodeName1+'.txt', "w") as file:
-                    for item in self.activesNodesLists[i]:
-                      file.write("%i\n" % item)
-                file.close()
-
+        finalListActiveNodes = []
+        for activeNodes in self.activesNodesLists:
+                finalListActiveNodes = list(set().union(finalListActiveNodes,activeNodes))
+        finalListActiveNodes = sorted(finalListActiveNodes)
+        with open(self.packageBuilder.dataDir+'listActiveNodes.txt', "w") as file:
+            for item in finalListActiveNodes:
+              file.write("%i\n" % item)
+        file.close()
 
         filename = "phase3_performECSW.py"
         filesandtemplates = [(open(path+filename).read(), filename)]

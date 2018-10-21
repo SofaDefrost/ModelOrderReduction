@@ -24,7 +24,7 @@ import sys
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 
-def writeHeader(packageName):
+def writeHeader(packageName,nbrOfModes):
     """
     Write a templated Header to the file *packageName*
 
@@ -43,8 +43,9 @@ def writeHeader(packageName):
             myHeader = myfile.read()
 
             myHeader = myHeader.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
+            myHeader = myHeader.replace('NBOFMODES',str(nbrOfModes))
 
-            with open(packageName+'.py', "a") as logFile:
+            with open(packageName+'.py', "w") as logFile:
                 logFile.write(myHeader)
                 logFile.close()
 
@@ -95,29 +96,71 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
     # print myModel
     try:
 
-        with open(packageName+'.py', "a") as logFile:
+        with open(packageName+'.py', "a+") as logFile:
 
             logFile.write("    "+nodeName+'_MOR'+" = attachedTo.createChild(name)\n")
 
             for type , arg in myMORModel:
+                # print(type+' : '+str(arg)+'\n')                    
                 if arg :
+                    if type == "MechanicalObject":
+                        arg['position'] = "[0]*nbrOfModes"
                     myArgs = buildArgStr(arg)
                     myArgs = "    "+nodeName+"_MOR.createObject('" + type +"' "+myArgs+")\n"
                 else :
                     myArgs = "    "+nodeName+"_MOR.createObject('"+type+"')\n"
 
                 # print('for '+type+' '+myArgs+'\n')
+                myArgs = myArgs.replace("'[0]*nbrOfModes'","[0]*nbrOfModes")
                 logFile.write(myArgs)
 
             modelTranslation = None
             modelRotation = None
             for childName , obj in myModel.items():
-                parenNode = ''
-                if childName == nodeName :
-                    parentNode = nodeName+"_MOR"
-                else :
-                    parentNode = nodeName
                 logFile.write('\n\n')
+                parenNode = ''
+                if childName[1:] == nodeName :
+                    print(childName,0)
+                    childName = childName[1:]
+                    parentNode = nodeName+"_MOR"
+                elif childName.find('/'+nodeName+'/') == -1:
+                    print(childName,1)
+                    tmp = filter(None, childName.split('/'))
+                    if len(tmp) > 2: # Add all the parents that haven't been created yet 
+                        for i, node in enumerate(tmp):
+                            if i < len(tmp)-2:
+                                toFind = ''
+                                if i == 0:
+                                    toFind += "    "+tmp[i]+" = attachedTo.createChild('"+tmp[i]+"')\n"
+                                toFind += "    "+tmp[i+1]+" = "+tmp[i]+".createChild('"+tmp[i+1]+"')\n"
+                                logFile.seek(0)
+                                if toFind not in logFile.read():
+                                    # print(toFind)
+                                    logFile.write(toFind)
+                        parentNode = childName.split('/')[-2]
+
+                    else:
+                        parentNode = 'attachedTo'
+
+                    childName = childName.split('/')[-1]
+                else:
+                    print(childName,2)
+                    if childName.split('/')[-2] == nodeName:
+                        parentNode = nodeName
+                    else:
+                        tmp = filter(None, childName.split('/'))
+                        parentNode = tmp[-2]
+                        if len(tmp) > 2:
+                            for i, node in enumerate(tmp):
+                                if i < len(tmp)-2:
+                                    toFind = "    "+tmp[i+1]+" = "+tmp[i]+".createChild('"+tmp[i+1]+"')\n"
+                                    logFile.seek(0)
+                                    if toFind not in logFile.read():
+                                        # print(toFind)
+                                        logFile.write(toFind)
+
+                    childName = childName.split('/')[-1]
+
                 logFile.write("    "+childName+" = "+parentNode+".createChild('"+childName+"')\n")
                 # print('CHILD :'+childName)
                 for type , arg in obj:
@@ -184,7 +227,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
         print "Unexpected error:", sys.exc_info()[0]
         raise
 
-def writeFooter(packageName,nodeName,modelTransform):
+def writeFooter(packageName,nodeName,modelTransform,listplugin,dt,gravity):
     """
     Write a templated Footer to the file *packageName*
 
@@ -204,6 +247,10 @@ def writeFooter(packageName,nodeName,modelTransform):
 
             myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
             myFooter = myFooter.replace('myReducedModel',nodeName)
+            myFooter = myFooter.replace('myReducedModel',str(listplugin))
+            myFooter = myFooter.replace('GRAVITY',str(gravity))
+            myFooter = myFooter.replace('DT',str(dt))
+
             if modelTransform:
                 myFooter = myFooter.replace('arg1',str(modelTransform[0]))
                 myFooter = myFooter.replace('arg2',str(modelTransform[1]))
@@ -246,6 +293,7 @@ def buildArgStr(arg,translation=None):
     """
     myArgs = ''
     for key, val in arg.items():
+        # print(type(val))
         # print('key : '+key+'\narg : '+str(val))
         if isinstance(val,list):
 
@@ -275,7 +323,14 @@ def buildArgStr(arg,translation=None):
             myArgs += ", "+key+" = path + '"+str(val)+"'"
 
         else :
-            myArgs += ", "+key+" = '"+str(val)+"'"
+            if key == "nbModes":
+                myArgs += ", "+key+" = nbrOfModes"
+            elif key == "performECSW":
+                myArgs += ", "+key+" = hyperReduction"
+            elif type(val) != str:
+                myArgs += ", "+key+" = "+str(val)#+"'"
+            else:
+                myArgs += ", "+key+" = '"+str(val)+"'"
 
     # print(myArgs)
     return myArgs

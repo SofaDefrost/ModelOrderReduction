@@ -4,7 +4,11 @@ import sys
 import imp
 
 #   STLIB IMPORT
-from stlib.scene.wrapper import Wrapper
+try:
+    from stlib.scene.wrapper import Wrapper
+except:
+    raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
+                     +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
 from mor.utility import sceneCreation as u
@@ -45,6 +49,10 @@ def createScene(rootNode):
 
     # Add MOR plugin if not found
     u.addPlugin(rootNode,"ModelOrderReduction")
+    pluginName = []
+    plugins = u.searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
+    for plugin in plugins:
+        pluginName.append(plugin.pluginName)
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
@@ -63,6 +71,6 @@ def createScene(rootNode):
 
         nodeName = paramWrapper[0][0].split('/')[-1]
 
-        writeScene.writeHeader(packageName)
+        writeScene.writeHeader(packageName,nbrOfModes)
         modelTransform = writeScene.writeGraphScene(packageName,nodeName,myMORModel,myModel)
-        writeScene.writeFooter(packageName,nodeName,modelTransform)
+        writeScene.writeFooter(packageName,nodeName,modelTransform,pluginName,rootNode.dt,rootNode.gravity[0])
