@@ -18,43 +18,54 @@ sys.path.append(path+'/../python') # TO CHANGE
 
 
 # MOR IMPORT
-from mor.animation import defaultShaking
-from mor.animation import shakingSofia
-from mor.script import utility
-from mor.script import ReduceModel
-from mor.script import ObjToAnimate
+from mor.gui import utility
+from mor.reduction import ReduceModel
+from mor.reduction import ObjToAnimate
 
 #######################################################################
 ####################       PARAMETERS       ###########################
 
 # Select Output Dir and original scene name & path
-#originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-#meshDir = utility.saveMeshFiles('Select the directory containing the mesh of your scene')
-#outputDir = utility.openDirName('Select the directory tha will contain all the results')
+from PyQt4 import QtCore, QtGui
+app = QtGui.QApplication(sys.argv)
 
+originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+meshDir = utility.openFilesNames('Select the meshes & visual of your scene')
+outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
-originalScene = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/liverFine.pyscn'
-meshDir = ['/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liverCoarse.vtu', '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/Mesh/liver-smoothUV.obj']
-outputDir = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/mor'
+# originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/quadruped_snapshotGeneration.py'
+# meshDir = ['/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/sofia_leg.stl',
+# '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/sofia_leg.vtu']
+# meshes = None
+# outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/3TEST'
 
 ### DIAMOND ROBOT PARAM
 # nodesToReduce = ['/modelNode']
-# nord = ObjToAnimate("nord", incr=5,incrPeriod=10,rangeOfAction=40)
-# sud = ObjToAnimate("sud", incr=5,incrPeriod=10,rangeOfAction=40)
-# est = ObjToAnimate("est", incr=5,incrPeriod=10,rangeOfAction=40)
-# ouest = ObjToAnimate("ouest", incr=5,incrPeriod=10,rangeOfAction=40)
+# nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
+# sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
+# est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
+# ouest = ObjToAnimate("modelNode/ouest", incr=5,incrPeriod=10,rangeOfAction=40)
 # listObjToAnimate = [nord,ouest,sud,est]
 # addRigidBodyModes = [0,0,0]
 
 ### STARFISH ROBOT PARAM
 # nodesToReduce =[('/model','/model/modelSubTopo')]
-# centerCavity = ObjToAnimate("centerCavity","defaultShaking", incr=350,incrPeriod=2,rangeOfAction=3500)
-# rearLeftCavity = ObjToAnimate("rearLeftCavity","defaultShaking", incr=200,incrPeriod=2,rangeOfAction=2000)
-# rearRightCavity = ObjToAnimate("rearRightCavity","defaultShaking", incr=200,incrPeriod=2,rangeOfAction=2000)
-# frontLeftCavity = ObjToAnimate("frontLeftCavity","defaultShaking", incr=200,incrPeriod=2,rangeOfAction=2000)
-# frontRightCavity = ObjToAnimate("frontRightCavity","defaultShaking", incr=200,incrPeriod=2,rangeOfAction=2000)
+# centerCavity = ObjToAnimate("model/centerCavity", incr=350,incrPeriod=2,rangeOfAction=3500)
+# rearLeftCavity = ObjToAnimate("model/rearLeftCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
+# rearRightCavity = ObjToAnimate("model/rearRightCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
+# frontLeftCavity = ObjToAnimate("model/frontLeftCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
+# frontRightCavity = ObjToAnimate("model/frontRightCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
 # listObjToAnimate = [centerCavity,rearLeftCavity,rearRightCavity,frontLeftCavity,frontRightCavity]
 # addRigidBodyModes = [1,1,1]
+
+### SOFIA
+# nodesToReduce =['/SofiaLeg']
+# actuator = ObjToAnimate("SofiaLeg_actuator/actuatorState","shakingSofia",incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
+# # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
+# listObjToAnimate = [actuator]
+# addRigidBodyModes = [0,0,0]
+
+####################### TO TEST #######################
 
 ### OCTOPUS PARAM
 # nodesToReduce = ['/octopus']
@@ -76,12 +87,6 @@ outputDir = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/m
 # animationParam["maxPull"] = [30]*4+[15]*4
 # addRigidBodyModes = [0,0,0]
 
-### SOFIA
-# nodesToReduce =['/SofiaLeg']
-# actuator = ObjToAnimate("actuator1","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
-# # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
-# listObjToAnimate = [actuator]
-# addRigidBodyModes = [0,0,0]
 
 ### PNEUNETS PARAM
 # nodesToReduce =['/model']
@@ -89,24 +94,55 @@ outputDir = '/home/olivier/sofa/plugins/ModelOrderReduction/doc/examples/liver/m
 # listObjToAnimate = [cavity]
 # addRigidBodyModes = [0,0,0]
 
-### SOFIA
-nodesToReduce =['/liver']
-print "About to be shaking sofia!!!!!!!!!!!!!!!!!"
-actuator = ObjToAnimate("actuator","shakingSofia",'MechanicalObject',incr=0.20,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.4)
-# # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
-listObjToAnimate = [actuator]
-addRigidBodyModes = [0,0,0]
+### LIVER
+# nodesToReduce =['/liver']
+# actuator = ObjToAnimate("actuator","shakingSofia",'MechanicalObject',incr=0.20,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.4)
+# # # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
+# listObjToAnimate = [actuator]
+# addRigidBodyModes = [0,0,0]
 
+### ARM3D
+# nodesToReduce = ['/node']
+# cav_S0_topright = ObjToAnimate("node/controlledPoints/cav_S0_topright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S0_topleft = ObjToAnimate("node/controlledPoints/cav_S0_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S0_bottomright = ObjToAnimate("node/controlledPoints/cav_S0_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S0_bottomleft = ObjToAnimate("node/controlledPoints/cav_S0_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
+
+# cav_S1_topright = ObjToAnimate("node/controlledPoints/cav_S1_topright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S1_topleft = ObjToAnimate("node/controlledPoints/cav_S1_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S1_bottomright = ObjToAnimate("node/controlledPoints/cav_S1_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S1_bottomleft = ObjToAnimate("node/controlledPoints/cav_S1_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
+
+# cav_S2_topright = ObjToAnimate("node/controlledPoints/cav_S2_topright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S2_topleft = ObjToAnimate("node/controlledPoints/cav_S2_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S2_bottomright = ObjToAnimate("node/controlledPoints/cav_S2_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S2_bottomleft = ObjToAnimate("node/controlledPoints/cav_S2_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
+
+# cav_S3_topright = ObjToAnimate("node/controlledPoints/cav_S3_topright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S3_topleft = ObjToAnimate("node/controlledPoints/cav_S3_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S3_bottomright = ObjToAnimate("node/controlledPoints/cav_S3_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
+# cav_S3_bottomleft = ObjToAnimate("node/controlledPoints/cav_S3_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
+
+# listObjToAnimate = [
+#                     cav_S0_topright,cav_S0_topleft,cav_S0_bottomright,cav_S0_bottomleft,
+#                     cav_S1_topright,cav_S1_topleft,cav_S1_bottomright,cav_S1_bottomleft,
+#                     cav_S2_topright,cav_S2_topleft,cav_S2_bottomright,cav_S2_bottomleft,
+#                     cav_S3_topright,cav_S3_topleft,cav_S3_bottomright,cav_S3_bottomleft
+#                     ]
+# addRigidBodyModes = [0,0,0]
+
+####################################################
 
 
 # Tolerance
-tolModes = 0.0001
+tolModes = 0.001
 tolGIE =  0.05
 
 # Optionnal
 verbose = True
+nbrCPU = 4
 
-packageName = 'liver'
+packageName = 'test'
 addToLib = False
 
 #######################################################################
@@ -116,16 +152,17 @@ reduceMyModel = ReduceModel(    originalScene,
                                 listObjToAnimate,
                                 tolModes,tolGIE,
                                 outputDir,
-                                meshDir,
+                                meshes = meshes,
                                 packageName = packageName,
                                 addToLib = addToLib,
                                 verbose = verbose,
                                 addRigidBodyModes = addRigidBodyModes)
 
+
 #######################################################################
 ####################       EXECUTION        ###########################
 
-#reduceMyModel.performReduction(phasesToExecute=[1]) # phasesToExecute=list(range(8)),nbrOfModes=18)
+# reduceMyModel.performReduction() # phasesToExecute=list(range(8)),nbrOfModes=18)
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
@@ -136,7 +173,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #   add a writeState componant to save the shaking resulting states  #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase1()
+# reduceMyModel.phase1()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -148,7 +185,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #                       the different mode                           #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase2()
+# reduceMyModel.phase2()
 
 
 ####################    SOFA LAUNCHER       ##########################
@@ -165,8 +202,8 @@ reduceMyModel = ReduceModel(    originalScene,
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-reduceMyModel.phase3()
-
+# reduceMyModel.phase3(phasesToExecute=[len(reduceMyModel.reductionAnimations.phaseNumClass)-1])
+# reduceMyModel.phase3()
 
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
@@ -177,4 +214,4 @@ reduceMyModel.phase3()
 #      with it. Additionnally we also compute the Active Nodes       #
 #                                                                    #
 ######################################################################
-reduceMyModel.phase4()
+# reduceMyModel.phase4()
