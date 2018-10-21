@@ -74,26 +74,89 @@ def greyOut(checkBox,items,checked=True):
             # state = item.isEnabled()
             item.setDisabled(not checked)
 
+# def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
+#     '''
+#     openFileName will pop up a dialog window allowing the user to choose a file
+#     and potentially display the path to it 
+#     '''
+#     fileName = QtGui.QFileDialog.getOpenFileName(None, hdialog, '.',filter=filter)
+#     if display:
+#         display.setText(fileName)       
+
+#     return str(fileName)
+
+# def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
+#     '''
+#     openFilesNames will pop up a dialog window allowing the user to choose multiple files
+#     and potentially display there coreponding path
+#     '''
+#     filesName = QtGui.QFileDialog.getOpenFileNames(None,hdialog, '.', filter=filter)
+#     if display:
+#         for fileName in filesName:
+#             display.append(str(fileName))
+#     return filesName
+
+# def openDirName(hdialog,display=None):
+#     '''
+#     openDirName will pop up a dialog window allowing the user to choose a directory
+#     and potentially display the path to it 
+#     '''
+#     fileName = QtGui.QFileDialog.getExistingDirectory(None,hdialog)
+#     if display:
+#         display.setText(fileName)
+#     return str(fileName)
+
+shortcut = []
+
 def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
     '''
     openFileName will pop up a dialog window allowing the user to choose a file
     and potentially display the path to it 
     '''
-    filename = QtGui.QFileDialog.getOpenFileName(None, hdialog, '.',filter=filter)
-    if display:
-        display.setText(filename)       
+    dialog = QtGui.QFileDialog()
+    dialog.setWindowTitle(hdialog)
+    dialog.setFileMode(QtGui.QFileDialog.ExistingFile)
+    dialog.setFilter(filter)
+    if shortcut:
+        dialog.setSidebarUrls(shortcut)
 
-    return str(filename)
+    if dialog.exec_():
+        fileName = str(dialog.selectedFiles()[0])
+    
+    if display:
+        display.setText(fileName)
+
+    tmp = '/'.join(fileName.split('/')[:-1])
+    print(tmp)
+    if tmp not in shortcut:
+        shortcut.append(QtCore.QUrl.fromLocalFile(tmp))
+
+    return fileName
 
 def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
     '''
     openFilesNames will pop up a dialog window allowing the user to choose multiple files
     and potentially display there coreponding path
     '''
-    filesName = QtGui.QFileDialog.getOpenFileNames(None,hdialog, '.', filter=filter)
+    dialog = QtGui.QFileDialog()
+    dialog.setWindowTitle(hdialog)
+    dialog.setFileMode(QtGui.QFileDialog.ExistingFiles)
+    dialog.setFilter(filter)
+    if shortcut:
+        dialog.setSidebarUrls(shortcut)
+
+    if dialog.exec_():
+        filesName = dialog.selectedFiles()
+    
     if display:
         for fileName in filesName:
-            display.append(str(fileName))
+            display.append(str(fileName)+'\n')
+            tmp = '/'.join(str(fileName).split('/')[:-1])
+            print(tmp)
+            if tmp not in shortcut:
+                shortcut.append(QtCore.QUrl.fromLocalFile(tmp))
+
+
     return filesName
 
 def openDirName(hdialog,display=None):
@@ -101,10 +164,23 @@ def openDirName(hdialog,display=None):
     openDirName will pop up a dialog window allowing the user to choose a directory
     and potentially display the path to it 
     '''
-    filename = QtGui.QFileDialog.getExistingDirectory(None,hdialog)
+    dialog = QtGui.QFileDialog()
+    dialog.setWindowTitle(hdialog)
+    dialog.setFileMode(QtGui.QFileDialog.DirectoryOnly)
+
+    if shortcut:
+        dialog.setSidebarUrls(shortcut)
+
+    if dialog.exec_():
+        fileName = str(dialog.selectedFiles()[0])
+    
     if display:
-        display.setText(filename)
-    return str(filename)
+        display.setText(fileName)
+
+    if fileName not in shortcut:
+        shortcut.append(QtCore.QUrl.fromLocalFile(fileName))
+
+    return fileName
 
 def checkExistance(dir):
 

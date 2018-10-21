@@ -239,6 +239,27 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
         self.reset(state=True)
 
+        self.setShortcut()
+
+    def setShortcut(self):
+
+        tab = [path]
+        if self.lineEdit_scene.text():
+            tab.append('/'.join(str(self.lineEdit_scene.text()).split('/')[:-1]))
+        if self.lineEdit_output.text():
+            tab.append('/'.join(str(self.lineEdit_output.text()).split('/')[:-1]))
+
+        meshes = self.lineEdit_mesh.toPlainText().split('\n')
+        for mesh in meshes:
+            tmp = '/'.join(str(mesh).split('/')[:-1])
+            if tmp :
+                if tmp not in tab:
+                    tab.append(tmp)
+
+        for url in tab :
+            if url not in u.shortcut:
+                u.shortcut.append(QtCore.QUrl.fromLocalFile(url))
+
     def test(self):
         newTxt = str(self.lineEdit_NodeToReduce.text())
         self.lineEdit_NodeToReduce.setText(newTxt+'/')
@@ -498,6 +519,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         name = u.openFileName(hdialog,filter)
         self.load(name)
         self.saveFile = name
+        self.setShortcut()
 
     def importScene(self,filePath):
         print('importScene : '+str(self.lineEdit_scene.text()))
