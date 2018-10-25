@@ -29,24 +29,18 @@ from mor.reduction import ObjToAnimate
 from PyQt4 import QtCore, QtGui
 app = QtGui.QApplication(sys.argv)
 
-originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-meshDir = utility.openFilesNames('Select the meshes & visual of your scene')
-outputDir = utility.openDirName('Select the directory tha will contain all the results')
-
-# originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/quadruped_snapshotGeneration.py'
-# meshDir = ['/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/sofia_leg.stl',
-# '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/sofia_leg.vtu']
-# meshes = None
-# outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/3TEST'
+#originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+#meshes = utility.openFilesNames('Select the meshes & visual of your scene')
+#outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 ### DIAMOND ROBOT PARAM
-# nodesToReduce = ['/modelNode']
-# nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
-# sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
-# est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
-# ouest = ObjToAnimate("modelNode/ouest", incr=5,incrPeriod=10,rangeOfAction=40)
-# listObjToAnimate = [nord,ouest,sud,est]
-# addRigidBodyModes = [0,0,0]
+#nodesToReduce = ['/modelNode']
+#nord = ObjToAnimate("modelNode/nord","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
+#sud = ObjToAnimate("modelNode/sud","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
+#est = ObjToAnimate("modelNode/est","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
+#ouest = ObjToAnimate("modelNode/ouest","defaultShaking", incr=5,incrPeriod=10,rangeOfAction=40)
+#listObjToAnimate = [nord,ouest,sud,est]
+#addRigidBodyModes = [0,0,0]
 
 ### STARFISH ROBOT PARAM
 # nodesToReduce =[('/model','/model/modelSubTopo')]
@@ -64,6 +58,14 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
+
+### LIVER
+#nodesToReduce =['/liver']
+#actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
+#listObjToAnimate = [actuator]
+#addRigidBodyModes = [0,0,0]
+
+
 
 ####################### TO TEST #######################
 
@@ -173,7 +175,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #   add a writeState componant to save the shaking resulting states  #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase1()
+reduceMyModel.phase1()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -185,7 +187,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #                       the different mode                           #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase2()
+reduceMyModel.phase2()
 
 
 ####################    SOFA LAUNCHER       ##########################
@@ -203,7 +205,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #                                                                    #
 ######################################################################
 # reduceMyModel.phase3(phasesToExecute=[len(reduceMyModel.reductionAnimations.phaseNumClass)-1])
-# reduceMyModel.phase3()
+reduceMyModel.phase3()
 
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
@@ -214,4 +216,4 @@ reduceMyModel = ReduceModel(    originalScene,
 #      with it. Additionnally we also compute the Active Nodes       #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase4()
+reduceMyModel.phase4()
