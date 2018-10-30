@@ -30,14 +30,8 @@ from PyQt4 import QtCore, QtGui
 app = QtGui.QApplication(sys.argv)
 
 originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-meshDir = utility.openFilesNames('Select the meshes & visual of your scene')
+meshes = utility.openFilesNames('Select the meshes & visual of your scene')
 outputDir = utility.openDirName('Select the directory tha will contain all the results')
-
-# originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/quadruped_snapshotGeneration.py'
-# meshDir = ['/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/sofia_leg.stl',
-# '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/sofia_leg.vtu']
-# meshes = None
-# outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/3TEST'
 
 ### DIAMOND ROBOT PARAM
 # nodesToReduce = ['/modelNode']
@@ -49,7 +43,7 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # addRigidBodyModes = [0,0,0]
 
 ### STARFISH ROBOT PARAM
-# nodesToReduce =[('/model','/model/modelSubTopo')]
+# nodesToReduce =['/model']
 # centerCavity = ObjToAnimate("model/centerCavity", incr=350,incrPeriod=2,rangeOfAction=3500)
 # rearLeftCavity = ObjToAnimate("model/rearLeftCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
 # rearRightCavity = ObjToAnimate("model/rearRightCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
@@ -61,78 +55,8 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 ### SOFIA
 # nodesToReduce =['/SofiaLeg']
 # actuator = ObjToAnimate("SofiaLeg_actuator/actuatorState","shakingSofia",incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
-# # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
-
-####################### TO TEST #######################
-
-### OCTOPUS PARAM
-# nodesToReduce = ['/octopus']
-# animationParam["toAnimate"] = ["actuatorTentacle0","actuatorTentacle1","actuatorTentacle2","actuatorTentacle3","actuatorTentacle04"]
-
-# nbActuator = len(animationParam["toAnimate"])
-# animationParam["increment"] = [5]*nbActuator
-# animationParam["breathTime"] = [10]*nbActuator
-# animationParam["maxPull"] = [60]*nbActuator
-# addRigidBodyModes = [0,0,0]
-
-### TRUNK PARAM 
-# nodesToReduce = ['/trunk']
-# animationParam["toAnimate"] = ["cableL0","cableL1","cableL2","cableL3","cableS0","cableS1","cableS2","cableS3"]
-
-# nbActuator = len(animationParam["toAnimate"])
-# animationParam["increment"] = [6]*4+[3]*4
-# animationParam["breathTime"] = [4]*nbActuator
-# animationParam["maxPull"] = [30]*4+[15]*4
-# addRigidBodyModes = [0,0,0]
-
-
-### PNEUNETS PARAM
-# nodesToReduce =['/model']
-# cavity = ObjToAnimate("cavity", incr=1000,incrPeriod=2000,rangeOfAction=25000)
-# listObjToAnimate = [cavity]
-# addRigidBodyModes = [0,0,0]
-
-### LIVER
-# nodesToReduce =['/liver']
-# actuator = ObjToAnimate("actuator","shakingSofia",'MechanicalObject',incr=0.20,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.4)
-# # # actuator = ObjToAnimate("SofiaLeg_actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
-# listObjToAnimate = [actuator]
-# addRigidBodyModes = [0,0,0]
-
-### ARM3D
-# nodesToReduce = ['/node']
-# cav_S0_topright = ObjToAnimate("node/controlledPoints/cav_S0_topright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S0_topleft = ObjToAnimate("node/controlledPoints/cav_S0_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S0_bottomright = ObjToAnimate("node/controlledPoints/cav_S0_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S0_bottomleft = ObjToAnimate("node/controlledPoints/cav_S0_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
-
-# cav_S1_topright = ObjToAnimate("node/controlledPoints/cav_S1_topright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S1_topleft = ObjToAnimate("node/controlledPoints/cav_S1_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S1_bottomright = ObjToAnimate("node/controlledPoints/cav_S1_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S1_bottomleft = ObjToAnimate("node/controlledPoints/cav_S1_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
-
-# cav_S2_topright = ObjToAnimate("node/controlledPoints/cav_S2_topright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S2_topleft = ObjToAnimate("node/controlledPoints/cav_S2_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S2_bottomright = ObjToAnimate("node/controlledPoints/cav_S2_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S2_bottomleft = ObjToAnimate("node/controlledPoints/cav_S2_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
-
-# cav_S3_topright = ObjToAnimate("node/controlledPoints/cav_S3_topright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S3_topleft = ObjToAnimate("node/controlledPoints/cav_S3_topleft", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S3_bottomright = ObjToAnimate("node/controlledPoints/cav_S3_bottomright", incr=1,incrPeriod=2,rangeOfAction=6)
-# cav_S3_bottomleft = ObjToAnimate("node/controlledPoints/cav_S3_bottomleft", incr=1,incrPeriod=2,rangeOfAction=6)
-
-# listObjToAnimate = [
-#                     cav_S0_topright,cav_S0_topleft,cav_S0_bottomright,cav_S0_bottomleft,
-#                     cav_S1_topright,cav_S1_topleft,cav_S1_bottomright,cav_S1_bottomleft,
-#                     cav_S2_topright,cav_S2_topleft,cav_S2_bottomright,cav_S2_bottomleft,
-#                     cav_S3_topright,cav_S3_topleft,cav_S3_bottomright,cav_S3_bottomleft
-#                     ]
-# addRigidBodyModes = [0,0,0]
-
-####################################################
-
 
 # Tolerance
 tolModes = 0.001
@@ -162,7 +86,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #######################################################################
 ####################       EXECUTION        ###########################
 
-# reduceMyModel.performReduction() # phasesToExecute=list(range(8)),nbrOfModes=18)
+# reduceMyModel.performReduction()
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
@@ -202,7 +126,6 @@ reduceMyModel = ReduceModel(    originalScene,
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase3(phasesToExecute=[len(reduceMyModel.reductionAnimations.phaseNumClass)-1])
 # reduceMyModel.phase3()
 
 ####################    PYTHON SCRIPT       ##########################
