@@ -2,8 +2,11 @@
     ## Visualization
     if surfaceMeshFileName:
         visu = myReducedModel.createChild('Visual')
-
-        visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+        meshType = surfaceMeshFileName.split('.'')[-1]
+        if meshType == 'stl':
+            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+        elif meshType == 'obj':
+            visu.createObject(  'MeshObjLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
 
         visu.createObject(	'OglModel',
                             src='@loader',
@@ -35,7 +38,7 @@ def createScene(rootNode):
     for i in range(3):
 
         MyReducedModel(rootNode,
-                        name="MyReducedModel_blue", 
+                        name="MyReducedModel_blue_"+str(i),
                         rotation=[rotationBlue*i, 0.0, 0.0],
                         translation=[i*translate, 0.0, 0.0],
                         surfaceColor=[0.0, 0.0, 1, 0.5],
@@ -43,7 +46,7 @@ def createScene(rootNode):
     for i in range(3):
 
         MyReducedModel(rootNode,
-                        name="MyReducedModel_white", 
+                        name="MyReducedModel_white_"+str(i),
                         rotation=[0.0, rotationWhite*i, 0.0],
                         translation=[i*translate, translate, -translate],
                         surfaceColor=[0.5, 0.5, 0.5, 0.5],
@@ -52,7 +55,7 @@ def createScene(rootNode):
     for i in range(3):
 
         MyReducedModel(rootNode,
-                        name="MyReducedModel_red", 
+                        name="MyReducedModel_red_"+str(i),
                         rotation=[0.0, 0.0, i*rotationRed],
                         translation=[i*translate, 2*translate, -2*translate],
                         surfaceColor=[1, 0.0, 0.0, 0.5],

@@ -13,6 +13,8 @@ myMORModel = [] # list of tuple (solver_type , param_solver)
 
 pathToUpdate = {}
 
+forcefield = []
+
 tmp = 0
 
 def modifyPath(currentPath,type,initialParam,newParam):
@@ -103,7 +105,7 @@ def MORreplace(node,type,newParam,initialParam):
     for item in newParam :
         path , param = item
         # print(currentPath,path)
-        if currentPath == path :
+        if path in currentPath :
             # print('\n')
 
             #   Change the initial Forcefield by the HyperReduced one with the new argument 
@@ -126,31 +128,35 @@ def MORreplace(node,type,newParam,initialParam):
 
 
                 if save:
-                    myModel[currentPath].append((str(type),initialParam))
+                    # print("------------------> ",currentPath)
+                    if currentPath == path:
+                        if currentPath not in myModel:
+                            myModel[currentPath] = []
+                        myModel[currentPath].append((str(type),initialParam))
+                    elif currentPath[1:] in newParam[0][1]['toKeep']:
+                        if currentPath not in myModel:
+                            myModel[currentPath] = []
 
+                        myModel[currentPath].append((str(type),initialParam))
+                forcefield.append(currentPath+'/'+initialParam.get("name",str(type)))
                 modifyPath(currentPath,type,initialParam,newParam)
                 return type , initialParam
 
-            elif save:
+            elif currentPath == path and save:
                 if type.find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
                     myMORModel.append((str(type),initialParam))
                 else:
                     if currentPath not in myModel:
-                        print("HERE")
                         myModel[currentPath] = []
                     myModel[currentPath].append((str(type),initialParam))
 
     if save:
         # this way we will take the path we want "to keep" and all its parents
         if currentPath[1:] in newParam[0][1]['toKeep']:
-            print(node.name)
-            print(myModel.keys())
             if currentPath not in myModel:
-                print("================ "+currentPath)
                 myModel[currentPath] = []
 
             myModel[currentPath].append((str(type),initialParam))
-            print(str(type),initialParam)
 
         # we don't keep all the children of the node we are reducing, the user as to choose them
         # elif path in currentPath: # By default will take all the children of the node we are reducing

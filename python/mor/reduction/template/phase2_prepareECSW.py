@@ -56,7 +56,7 @@ def createScene(rootNode):
     # Save connectivity list that will allow us after work only on the necessary elements
 
     if phase == phaseToSave:
-        u.saveElements(rootNode,phase,paramWrapper)
+        u.saveElements(rootNode,rootNode.dt,replaceAndSave.forcefield)
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper

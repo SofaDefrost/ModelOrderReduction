@@ -503,7 +503,6 @@ class ReduceModel():
 
                 self.reductionParam.addParamWrapper(nodePath)
 
-        print(self.nodeToReduceNames)
         ### If nothing is indicated to keep in the future package, by default we add all the actuators used to create the reduced model
         if not toKeep:
             toKeep = []

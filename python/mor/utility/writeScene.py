@@ -98,7 +98,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
 
         with open(packageName+'.py', "a+") as logFile:
 
-            logFile.write("    "+nodeName+'_MOR'+" = attachedTo.createChild(name)\n")
+            logFile.write("    "+nodeName+'_MOR'+" = modelRoot.createChild('"+nodeName+'_MOR'+"')\n")
 
             for type , arg in myMORModel:
                 # print(type+' : '+str(arg)+'\n')                    
@@ -131,7 +131,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                             if i < len(tmp)-2:
                                 toFind = ''
                                 if i == 0:
-                                    toFind += "    "+tmp[i]+" = attachedTo.createChild('"+tmp[i]+"')\n"
+                                    toFind += "    "+tmp[i]+" = modelRoot.createChild('"+tmp[i]+"')\n"
                                 toFind += "    "+tmp[i+1]+" = "+tmp[i]+".createChild('"+tmp[i+1]+"')\n"
                                 logFile.seek(0)
                                 if toFind not in logFile.read():
@@ -140,7 +140,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                         parentNode = childName.split('/')[-2]
 
                     else:
-                        parentNode = 'attachedTo'
+                        parentNode = 'modelRoot'
 
                     childName = childName.split('/')[-1]
                 else:
@@ -239,15 +239,15 @@ def writeFooter(packageName,nodeName,modelTransform,listplugin,dt,gravity):
     | packageName | str  | Name of the file were we will write (without any extension) |
     +-------------+------+-------------------------------------------------------------+
     """
-
+    print(packageName,packageName[0].upper()+packageName[1:])
     try:
         print('modelTransform : '+str(modelTransform))
         with open(path+'myFooter.txt', "r") as myfile:
             myFooter = myfile.read()
 
-            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
             myFooter = myFooter.replace('myReducedModel',nodeName)
-            myFooter = myFooter.replace('myReducedModel',str(listplugin))
+            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
+            myFooter = myFooter.replace('PLUGIN',str(listplugin))
             myFooter = myFooter.replace('GRAVITY',str(gravity))
             myFooter = myFooter.replace('DT',str(dt))
 
@@ -327,10 +327,28 @@ def buildArgStr(arg,translation=None):
                 myArgs += ", "+key+" = nbrOfModes"
             elif key == "performECSW":
                 myArgs += ", "+key+" = hyperReduction"
-            elif type(val) != str:
-                myArgs += ", "+key+" = "+str(val)#+"'"
-            else:
+            elif isinstance(val,str):
+            #     if '@' in val:
+            #         if '_MOR' in val:
+            #             tmp = val.split('/')
+            #             toChange = 0
+            #             print(val)
+            #             for i,node in enumerate(tmp):
+            #                 print(node,i)
+            #                 if '_MOR' in node:
+            #                     # print("FOUND")
+            #                     toChange = i
+            #             # print(toChange,tmp[:toChange],tmp[toChange:])
+            #             myArgs += ", "+key+" = '"+'/'.join(tmp[:toChange])+"/"+\
+            #                                     "'+name+'"+"/"+\
+            #                                     '/'.join(tmp[toChange+1:])+"'"
+            #             print(myArgs)
+            #         else:
+            #             myArgs += ", "+key+" = '"+str(val)+"'"
+            #     else:
                 myArgs += ", "+key+" = '"+str(val)+"'"
+            else:
+                myArgs += ", "+key+" = "+str(val)#+"'"
 
     # print(myArgs)
     return myArgs

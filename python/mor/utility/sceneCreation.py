@@ -186,7 +186,7 @@ def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
             print("node.getPathName()",node.getPathName())
             if node.getPathName() == pathTmp:
                 if 'paramMappedMatrixMapping' in param:
-                    print 'Create new child modelMOR and move node in it'
+                    print('Create new child modelMOR and move node in it')
 
                     myParent = node.getParents()[0]
                     modelMOR = myParent.createChild(node.name+'_MOR')
@@ -219,7 +219,7 @@ def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
         except :
             print("Problem with path : "+pathTmp[1:])
 
-def saveElements(rootNode,phase,newParam):
+def saveElements(rootNode,dt,forcefield):
     import numpy as np
 
     def save(node,container,valueType, **param):
@@ -229,36 +229,25 @@ def saveElements(rootNode,phase,newParam):
         tmp += 1
         print('save : '+'elmts_'+node.name+' from '+container.name+' with value Type '+valueType)
 
-    for item in newParam :
-        pathTmp , param = item
-        index = newParam.index(item)
-        node = get(rootNode,pathTmp[1:])
-        # print(pathTmp,node)
-        if node.getPathName() == pathTmp:
-            
-            forcefield = []
-            tmp = node.getForceField(0)
-            i = 0
-            while tmp != None:
-                forcefield.append(tmp)
-                i += 1
-                tmp = node.getForceField(i)
+    # print('--------------------->  ',forcefield)
+    for objPath in forcefield:
+        nodePath = '/'.join(objPath.split('/')[:-1])
+        # print(nodePath,objPath)
+        obj = get(rootNode,objPath[1:])
+        node = get(rootNode,nodePath[1:])
 
-
+        if obj.getClassName() == 'HyperReducedRestShapeSpringsForceField':
+            container = obj
+        else:
             container = getContainer(node)
-            dt = container.getContext().getDt()
 
-            # print('--------------------->  ',forcefield)
+        if obj.getClassName() in forceFieldImplemented and container:
+            valueType = forceFieldImplemented[obj.getClassName()]
 
-            for obj in forcefield:
-                print("TEST " + obj.getClassName())
-                if obj.getClassName() in forceFieldImplemented :
-                    valueType = forceFieldImplemented[obj.getClassName()]
+            # print('--------------------->  ',valueType)
 
-                    print('--------------------->  ',valueType)
-
-                    if valueType:
-                        animate(save, {"node" : node ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
+            if valueType:
+                animate(save, {"node" : node ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
 def createDebug(rootNode,paramWrapper,stateFile="stateFile.state"):
 
