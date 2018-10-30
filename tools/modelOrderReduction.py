@@ -34,13 +34,13 @@ meshes = utility.openFilesNames('Select the meshes & visual of your scene')
 outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 ### DIAMOND ROBOT PARAM
-# nodesToReduce = ['/modelNode']
-# nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
-# sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
-# est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
-# ouest = ObjToAnimate("modelNode/ouest", incr=5,incrPeriod=10,rangeOfAction=40)
-# listObjToAnimate = [nord,ouest,sud,est]
-# addRigidBodyModes = [0,0,0]
+#nodesToReduce = ['/modelNode']
+#nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
+#sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
+#est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
+#ouest = ObjToAnimate("modelNode/ouest", incr=5,incrPeriod=10,rangeOfAction=40)
+#listObjToAnimate = [nord,ouest,sud,est]
+#addRigidBodyModes = [0,0,0]
 
 ### STARFISH ROBOT PARAM
 # nodesToReduce =['/model']
@@ -57,6 +57,13 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # actuator = ObjToAnimate("SofiaLeg_actuator/actuatorState","shakingSofia",incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
+
+### LIVER
+#nodesToReduce =['/liver']
+#actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
+#listObjToAnimate = [actuator]
+#addRigidBodyModes = [0,0,0]
+
 
 # Tolerance
 tolModes = 0.001
@@ -127,6 +134,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #                                                                    #
 ######################################################################
 # reduceMyModel.phase3()
+
 
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
