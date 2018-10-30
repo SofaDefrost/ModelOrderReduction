@@ -35,19 +35,13 @@ grpBox_AnimationParam:
       2: modelNode/sud
 grpBox_Execution:
   Phase 1:
-    checkBox: 'True'
+    checkBox: 'False'
   Phase 2:
-    checkBox: 'True'
+    checkBox: 'False'
   Phase 3:
-    checkBox: 'True'
+    checkBox: 'False'
   Phase 4:
-    checkBox: 'True'
-grpBox_Path:
-  lineEdit_mesh: '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/surface.stl
-
-    /home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/mesh/siliconeV0.vtu'
-  lineEdit_output: /home/felix/SOFA/plugin/ModelOrderReduction/tools/TEST
-  lineEdit_scene: /home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py
+    checkBox: 'False'
 grpBox_ReductionParam:
   checkBox_AddTranslation: 'False'
   lineEdit_NodeToReduce: modelNode
