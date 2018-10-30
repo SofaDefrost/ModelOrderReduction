@@ -28,6 +28,7 @@
 ####################       IMPORT           ###########################
 import os
 import sys
+from os.path import expanduser
 import glob
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
@@ -62,22 +63,26 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
-# var_float = "[\d{0,10}|\\.|\d{0,10}]"
 var_int = '\d{1,10}'
-var_float ="[0-9]{,10}.?[0-9]{,10}"
+var_float ="[0-9]{,10}.?[0-9]{1,10}"
 var_semantic = "[a-z|A-Z|\d|\\-|\\_]{1,20}" # string with max 20 char & min 1 with char from a to z/A to Z/-/_
+var_entry = var_semantic+"\\="+var_semantic # string of 2 var_semantic separated by '='
+var_all = "[^\\*]"
 
-
+# QtGui.QIntValidator()
 existingAnimation = OrderedDict()
-existingAnimation['defaultShaking'] = { 'incr':(var_float,locate('float')),
-                                        'incrPeriod':(var_float,locate('float')),
-                                        'rangeOfAction':(var_float,locate('float'))}
-existingAnimation['shakingSofia'] = {'incr':var_float,
-                                     'incrPeriod':var_float,
-                                     'rangeOfAction':var_float}
-existingAnimation['test'] = {'incr':var_float,
-                             'incrPeriod':var_float,
-                             'rangeOfAction':var_float}
+existingAnimation['defaultShaking'] = { 'incr':(QtGui.QDoubleValidator(),locate('float')),
+                                        'incrPeriod':(QtGui.QDoubleValidator(),locate('float')),
+                                        'rangeOfAction':(QtGui.QDoubleValidator(),locate('float'))}
+existingAnimation['shakingSofia'] = { 'incr':(QtGui.QDoubleValidator(),locate('float')),
+                                      'incrPeriod':(QtGui.QDoubleValidator(),locate('float')),
+                                      'rangeOfAction':(QtGui.QDoubleValidator(),locate('float')),
+                                      'dataToWorkOn':(var_semantic,locate('str')),
+                                      'angle':(QtGui.QDoubleValidator(),locate('float')),
+                                      'rodRadius':(QtGui.QDoubleValidator(),locate('float'))}
+
+preferenceKey = {'verbose':(QtGui.QDoubleValidator(),locate('bool')),
+                 'nbrCPU':(QtGui.QIntValidator(),locate('int'))}
 
 green = '#c4df9b' 
 yellow = '#fff79a'
@@ -86,6 +91,25 @@ red = '#f6989d'
 col_path = 2
 col_parameters = 1
 col_animation = 0
+
+readOnly = True # Set LineEdit animation & NodeToReduce
+
+class Ui_Dialog(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(508, 300)
+        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
+        self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+        self.sl_value = QtWidgets.QSlider(Dialog)
+        self.sl_value.setGeometry(QtCore.QRect(220, 120, 161, 31))
+        self.sl_value.setOrientation(QtCore.Qt.Horizontal)
+        self.sl_value.setObjectName("sl_value")
+        self.buttonBox.accepted.connect(Dialog.accept)
+        self.buttonBox.rejected.connect(Dialog.reject)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
 
 class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
     def __init__(self):
@@ -96,31 +120,16 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         # Create each Object & Widget of the interface as an Derived Attribute of QMainWindow
         # to be able to display them
         self.setupUi(self)
-
         # Create some QRegExp that we will be used to create Validator
         # allowing us to block certain entry for the user
-        var_semantic = "[a-z|A-Z|\d|\\-|\\_]{1,20}" # string with max 20 char & min 1 with char from a to z/A to Z/-/_
-        var_entry = var_semantic+"\\="+var_semantic # string of 2 var_semantic separated by '='
-        var_all = "[^\\*]"
-        defaultShaking_mask = "(incr\\="+var_float+"){1}(incrPeriod\\="+var_float+"){1}(rangeOfAction\\="+var_float+"){1}"
-
         self.exp_var = QtCore.QRegExp("^("+var_semantic+")$")
         self.exp_path = QtCore.QRegExp("^("+var_semantic+"){1}(\\/"+var_semantic+")*$")
         self.exp_all = QtCore.QRegExp("^("+var_all+")+$")
-        # self.exp_var_entry = QtCore.QRegExp("^("+var_entry_spe+"\\,)*("+var_entry_spe+")$")       
-
-        # Add Signals
-        # self.lineEdit_tolModes.textChanged.emit(self.lineEdit_tolModes.text())
-        # self.lineEdit_tolGIE.textChanged.emit(self.lineEdit_tolGIE.text())
-        # self.lineEdit_moduleName.textChanged.emit(self.lineEdit_moduleName.text())
-        # self.lineEdit_NodeToReduce.textChanged.emit(self.lineEdit_NodeToReduce.text())
-        # self.lineEdit_scene.textChanged.emit(self.lineEdit_scene.text())
-        # self.lineEdit_output.textChanged.emit(self.lineEdit_output.text())
         
         # QLineEdit Action
         self.lineEdit_tolModes.textChanged.connect(lambda: u.check_state(self.sender()))
         self.lineEdit_tolGIE.textChanged.connect(lambda: u.check_state(self.sender()))
-        self.lineEdit_moduleName.textChanged.connect(lambda: u.check_state(self.sender()))
+        # self.lineEdit_moduleName.textChanged.connect(lambda: u.check_state(self.sender()))
         self.lineEdit_NodeToReduce.textChanged.connect(lambda: u.check_state(self.sender()))
 
         self.lineEdit_scene.textChanged.connect(lambda: u.check_state(self.sender()))
@@ -140,15 +149,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.btn_removeLine.clicked.connect(lambda: self.removeLine(self.tableWidget_animationParam,self.animationDialog))
         self.btn_launchReduction.clicked.connect(self.execute)
         
-        # QCheckBox Action
-        # self.checkBox_mesh.stateChanged.connect(lambda: u.greyOut(self.checkBox_mesh,[self.lineEdit_mesh,self.btn_mesh]))
-        # self.checkBox_executeAll.stateChanged.connect(lambda: self.executeAll(self.checkBox_executeAll,
-        #                                                                     [   self.checkBox_phase1,
-        #                                                                         self.checkBox_phase2,
-        #                                                                         self.checkBox_phase3,
-        #                                                                         self.checkBox_phase4],
-        #                                                                     checked=False))
-        
+        self.lineEdit_NodeToReduce.leftArrowBtnClicked.connect(lambda: self.left(self.lineEdit_NodeToReduce))
+        self.lineEdit_NodeToReduce.setReadOnly(readOnly)
+
         # QAction Menu Action
         self.actionOpen.triggered.connect(lambda: self.open('Select Config File'))
         self.actionSave_as.triggered.connect(self.saveAs)
@@ -169,6 +172,11 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.lineEdit_NodeToReduce.setValidator(QtGui.QRegExpValidator(self.exp_path))
         self.lineEdit_scene.setValidator(QtGui.QRegExpValidator(self.exp_all))
         self.lineEdit_output.setValidator(QtGui.QRegExpValidator(self.exp_all))
+
+        # Menu
+        self.settings = QtCore.QSettings("ModelOrderReduction", "settings")
+        self.dialogMenu = GenericDialogForm("Preferences",preferenceKey)
+        self.loadSettings()
 
         # Set the different grpBoxes of our application
         # It will ease the way we iterate on them
@@ -193,7 +201,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                     {
                         'lineEdit_output': '',
                         'lineEdit_mesh': '',
-                        'lineEdit_scene': '' #/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py',
+                        'lineEdit_scene': '', #'/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py',
                     },
                 'grpBox_ReductionParam': 
                     {   'lineEdit_NodeToReduce': '',
@@ -213,13 +221,6 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                     {}
                 }
 
-       # 'checkBox_executeAll': 'False', 
-       #                      'checkBox_phase2': 'False',
-       #                      'checkBox_phase4': 'False',
-       #                      'textEdit_preExecutionInfos': '',
-       #                      'checkBox_phase3': 'False',
-       #                      'checkBox_phase1': 'False'
-
         self.mandatoryFields = OrderedDict([
                                 (self.lineEdit_scene,                self.label_scene),
                                 (self.lineEdit_output,               self.label_output),
@@ -237,9 +238,31 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
         self.cfg = None
 
-        self.reset(state=True)
+        self.reset(state=False)
 
         self.setShortcut()
+
+    def loadSettings(self):
+
+        settings = QtCore.QSettings("ModelOrderReduction", "settings")
+        tmp = {}
+        for key , value in preferenceKey.iteritems():
+            # print (settings.value(key, type=str))
+            tmp[key] = settings.value(key, type=str)
+        self.dialogMenu.load(tmp)
+
+    @QtCore.pyqtSlot(bool)
+    def on_actionPreferences_triggered(self, triggered):
+        settings = self.settings
+        # default_config_value = settings.value("test", defaultValue=None, type=str)
+
+        # preference_dialog = PreferencesDialog(default_config_value=default_config_value, parent=self)
+        if self.dialogMenu.exec_():
+            for key , value in self.dialogMenu.currentValues.iteritems():
+                settings.setValue(key, value)
+
+            # this writes the settings to storage
+            del settings
 
     def setShortcut(self):
 
@@ -256,13 +279,38 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                 if tmp not in tab:
                     tab.append(tmp)
 
+        home = expanduser("~")
+        u.shortcut.append(QtCore.QUrl.fromLocalFile(home))
+
         for url in tab :
             if url not in u.shortcut:
                 u.shortcut.append(QtCore.QUrl.fromLocalFile(url))
+        u.lastVisited = '.'
 
-    def test(self):
-        newTxt = str(self.lineEdit_NodeToReduce.text())
-        self.lineEdit_NodeToReduce.setText(newTxt+'/')
+    def right(self,lineEdit):
+        newTxt = str(lineEdit.text())
+        if newTxt:
+            newTxt += '/'
+        lineEdit.setText(newTxt)
+
+        lineEdit.completer().setCompletionPrefix(newTxt)
+        lineEdit.completer().complete()
+
+    def left(self,lineEdit):
+        newTxt = str(lineEdit.text())
+        if newTxt:
+            newTxt = [i for i in newTxt.split('/') if i]
+            if len(newTxt) == 1 :
+                newTxt = ''
+            else:
+                newTxt = '/'.join(newTxt[:-1])+'/'
+                if newTxt[-1] == '/' :
+                    newTxt = newTxt[:-1]
+
+        lineEdit.setText(newTxt)
+
+        lineEdit.completer().setCompletionPrefix(newTxt)
+        # lineEdit.completer().complete()
 
     def setPossiblePath(self):
         tmp = []
@@ -336,8 +384,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             phasesFile = [
                         ["/debug/debug_scene.py","/debug/stateFile.state"],
                         ["/data/modes.txt"],
-                        ["/debug/HyperReducedFEMForceField_","/debug/elmts_"], #["/debug/step2_stateFile.state",
-                        ["/data/RID_","/data/weight_","/data/conectivity_","/reduced_"] # ,"/mesh"
+                        ["/debug/reducedFF_*","/debug/*_elmts.txt"], #["/debug/step2_stateFile.state",
+                        ["/data/*_RID.txt","/data/*_weight.txt","/data/*listActiveNodes.txt","/data/*_reduced.txt","/reduced_*"] # ,"/mesh"
                     ]
 
             def check(file,item):
@@ -376,7 +424,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                 for file in phase:
                     # print(item.text(0))
                     if globing:
-                        files = glob.glob(str(path+file)+"*")
+                        files = glob.glob(str(path+file))
+                        # print(file,files)
                         if files:
                             for file in files:
                                 # print(file)
@@ -410,6 +459,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
             checkExecution(phasesFile[:2],self.phaseItem[:2])
             checkExecution(phasesFile[2:],self.phaseItem[2:],globing=True)
+
+            self.setEnabled()
 
     def resizeEvent(self, event):
         # print("EVENT")
@@ -463,7 +514,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
         self.btn_launchReduction.setEnabled(state)
 
-    def showAnimationDialog(self, row, column):
+    def showAnimationDialog(self, row=None, column=None,dialog=None):
+        if dialog:
+            dialog.exec_()
+            return
         if column == col_parameters :
             dialog = self.animationDialog[row]
             if dialog.exec_():
@@ -478,7 +532,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         for page in self.grpBoxes:
             pageName = str(page.objectName())
             self.loadPage(page,self.resetFileName[pageName])
+        while self.tableWidget_animationParam.rowCount() != 0:
+            self.removeLine(self.tableWidget_animationParam,self.animationDialog)
         self.saveFile = None
+        self.animationDialog = []
 
     def save(self):
         '''
@@ -486,6 +543,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         '''
         if not self.saveFile:
             self.saveAs()
+            if not self.saveFile:
+                return
 
         data = {}
         for page in self.grpBoxes:
@@ -503,23 +562,28 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         '''
         Save As, ask user .yml file to save & correct name if need be 
         '''
-        self.saveFile = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Configuration',filter="yaml file *.yml"))
+        # self.saveFile = u.openFileName('Save Configuration',"yaml file *.yml")
+        self.saveFile = str(QtGui.QFileDialog.getSaveFileName(self,
+            'Save Configuration',filter="yaml file *.yml",
+            options=QtGui.QFileDialog.DontUseNativeDialog))
+        if self.saveFile:
+            if self.saveFile.find('.') == -1 :
+                self.saveFile = self.saveFile+'.yml'
+            if self.saveFile.split('.')[-1] != 'yml':
+                self.saveFile = self.saveFile+'.yml'
 
-        if self.saveFile.find('.') == -1 :
-            self.saveFile = self.saveFile+'.yml'
-        if self.saveFile.split('.')[-1] != 'yml':
-            self.saveFile = self.saveFile+'.yml'
-
-        self.save()
+            self.save()
 
     def open(self,hdialog,filter='(*.yml)'):
         '''
         Open (with ctrl+O) ask user to choose a file then load it
         '''
         name = u.openFileName(hdialog,filter)
-        self.load(name)
-        self.saveFile = name
-        self.setShortcut()
+        if name:
+            # self.reset(state=True)
+            self.load(name)
+            self.saveFile = name
+            self.setShortcut()
 
     def importScene(self,filePath):
         print('importScene : '+str(self.lineEdit_scene.text()))
@@ -543,18 +607,22 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             completer.activated.connect(lambda: self.display(completer,self.lineEdit_NodeToReduce))
 
             # self.lineEdit_NodeToReduce.selectionChanged.connect(completer.complete)
-            self.setEnabled()
+            # self.setEnabled()
 
     def display(self,completer,lineEdit):
-        # lineEdit.blockSignals(True)
-        print('display')
+
         if completer.asChild:
             completer.complete()
-            # print("Previous "+str(lineEdit.text()))
-            # newTxt = str(lineEdit.text())
-            # lineEdit.setText(newTxt+'/')
-            # print("New "+str(lineEdit.text()))
-        # lineEdit.blockSignals(False)
+
+            newTxt = str(lineEdit.text())
+            lineEdit.setText(newTxt)
+
+            if newTxt:
+                if newTxt[-1] != '/':
+                    newTxt += '/'
+
+            lineEdit.completer().setCompletionPrefix(newTxt)
+            lineEdit.completer().complete()
 
     def load(self,name):
         '''
@@ -567,7 +635,11 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         for page in self.grpBoxes:
             # print('PAGE : '+str(page.objectName()))
             pageName = str(page.objectName())
-            self.loadPage(page,cfg[pageName])
+            if cfg.get(pageName):
+                # print("pageName",pageName)
+                self.loadPage(page,cfg[pageName])
+
+        self.checkPhases()
 
     def loadPage(self,page,cfg):
         '''
@@ -601,27 +673,27 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                         child.setValue(cfg[objectName])
                     if type(child).__name__ == 'QTableWidget':
                         # print('----------------->'+objectName)
-                        color = str(self.lineEdit_scene.palette().color(QtGui.QPalette.Background).name())
-                        if color != yellow and color != red:
-                            for row in range(child.rowCount()):
-                                child.removeRow(0)
-                            self.addLine(child,len(cfg[objectName]))
+                        # color = str(self.lineEdit_scene.palette().color(QtGui.QPalette.Background).name())
+                        # if color != yellow and color != red:
+                        for row in range(child.rowCount()):
+                            child.removeRow(0)
 
-                            for row in cfg[objectName]:
-                                for column in cfg[objectName][row]:
-                                    # print(cfg[objectName][row][column])
-                                    if column == 2:
-                                        if cfg[objectName][row][column]:
-                                            child.cellWidget(row,column).setText(cfg[objectName][row][column])
-                                        else :
-                                            child.cellWidget(row,column).setText('')
-                                            u.setBackColor(child.cellWidget(row,column))
-                                    elif column == 0:
-                                        child.cellWidget(row,column).setCurrentIndex(existingAnimation.keys().index(cfg[objectName][row][column]))
-                                    elif column == 1:
-                                        self.animationDialog[row].load(cfg[objectName][row][column])
-                                        u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),self.animationDialog[row].currentValues.iteritems())
-                                        u.setCellColor(self.tableWidget_animationParam,self.animationDialog[row],row,column)
+                        for row in cfg[objectName]:
+                            self.addLine(child,animation=cfg[objectName][row][0])
+                            for column in cfg[objectName][row]:
+                                # print(cfg[objectName][row][column])
+                                if column == 2:
+                                    if cfg[objectName][row][column]:
+                                        child.cellWidget(row,column).setText(cfg[objectName][row][column])
+                                    else :
+                                        child.cellWidget(row,column).setText('')
+                                        u.setBackColor(child.cellWidget(row,column))
+                                elif column == 0:
+                                    child.cellWidget(row,column).setCurrentIndex(existingAnimation.keys().index(cfg[objectName][row][column]))
+                                elif column == 1:
+                                    self.animationDialog[row].load(cfg[objectName][row][column])
+                                    u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),self.animationDialog[row].currentValues.iteritems())
+                                    u.setCellColor(self.tableWidget_animationParam,self.animationDialog[row],row,column)
 
                 elif child in self.mandatoryFields.keys():
                     u.setBackColor(child)
@@ -643,9 +715,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         # print('pageName : '+pageName)
         for child in page.children():
             objectName = str(child.objectName())
-            if type(child).__name__ == "MyLineEdit":
-                print(objectName)
-                print(type(child).__name__)
+            # if type(child).__name__ == "MyLineEdit":
+            #     print(objectName)
+            #     print(type(child).__name__)
             if type(child).__name__ in toSave:
                 # print('--------------->'+child.objectName())
                 if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "MyLineEdit":
@@ -698,121 +770,100 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
         arguments = {}
         
-        # msg = []
-        # for field in self.mandatoryFields.keys():
-        #     color = str(field.palette().color(QtGui.QPalette.Background).name())
-        #     if type(field).__name__ == 'QTableWidget':
-        #         for row in range(field.rowCount()):
-        #             for column in range(field.columnCount()):
-        #                 item = field.cellWidget(row,column)
-        #                 if item:
-        #                     if str(item.palette().color(QtGui.QPalette.Background).name()) in [yellow,red]:
-        #                         color = str(item.palette().color(QtGui.QPalette.Background).name())
-        #                 elif str(field.item(row,column).backgroundColor().name()) in [yellow,red]:
-        #                     color = str(field.item(row,column).backgroundColor().name())
-        #     if color == yellow or color == red:
-        #         msg.append(field)
+        msg = []
+        for field in self.mandatoryFields.keys():
+            color = str(field.palette().color(QtGui.QPalette.Background).name())
+            if type(field).__name__ == 'QTableWidget':
+                for row in range(field.rowCount()):
+                    for column in range(field.columnCount()):
+                        item = field.cellWidget(row,column)
+                        if item:
+                            if str(item.palette().color(QtGui.QPalette.Background).name()) in [yellow,red]:
+                                color = str(item.palette().color(QtGui.QPalette.Background).name())
+                        elif str(field.item(row,column).backgroundColor().name()) in [yellow,red]:
+                            color = str(field.item(row,column).backgroundColor().name())
+            if color == yellow or color == red:
+                msg.append(field)
 
-        # if msg:
-        #     tmp = 'ERROR:\n'
-        #     for field in msg:
-        #         if type(self.mandatoryFields[field]).__name__ == 'FrameLayout':
-        #             tmp += 'Wrong/Missing Entry    ----------->    '+self.mandatoryFields[field].title()+'\n'
-        #         else:
-        #             tmp += 'Wrong/Missing Entry    ----------->    '+self.mandatoryFields[field].text()+'\n'
-        #     # self.textEdit_preExecutionInfos.setText(tmp)
-        #     print(tmp)
-        # else:
-
-        self.grpBoxes = [ self.grpBox_Path,
-                          self.grpBox_AdvancedParam,
-                          self.grpBox_ReductionParam,
-                          self.grpBox_AnimationParam,
-                          self.grpBox_Execution]
-        msg =[]
-
-        # Path Arguments
-        pageName = str(self.grpBox_Path.objectName())
-
-        arguments['originalScene'] = data[pageName]['lineEdit_scene']
-        arguments['outputDir'] = data[pageName]['lineEdit_output']
-
-        if data[pageName]['lineEdit_mesh']:
-            arguments['meshes'] = data[pageName]['lineEdit_mesh'].split('\n')
-        else: u.msg_warning(msg,'No Mesh specified')
-
-        # ReductionParam Arguments
-        pageName = str(self.grpBox_ReductionParam.objectName())
-
-        arguments['nodesToReduce'] = ['/'+data[pageName]['lineEdit_NodeToReduce']]
-
-        if data[pageName]['lineEdit_moduleName']:
-            arguments['packageName'] = data[pageName]['lineEdit_moduleName']
-        else: u.msg_info(msg,'No Module Name, take defaul')
-
-        if data[pageName]['checkBox_AddTranslation'] == 'True' :
-            arguments['addRigidBodyModes'] = [1,1,1]
-        else: 
-            u.msg_info(msg,'No Translation')
-            arguments['addRigidBodyModes'] = [0,0,0]
-
-        # AnimationParam Arguments
-        pageName = str(self.grpBox_AnimationParam.objectName())
-
-        arguments['listObjToAnimate'] = []
-        for row in data[pageName]['tableWidget_animationParam']:
-            animation = data[pageName]['tableWidget_animationParam'][row][0]
-            for key,value in data[pageName]['tableWidget_animationParam'][row][1].iteritems():
-                typ = existingAnimation[animation][key][1]
-                data[pageName]['tableWidget_animationParam'][row][1][key] = typ(value)
-            arguments['listObjToAnimate'].append(ObjToAnimate(  location = data[pageName]['tableWidget_animationParam'][row][2],
-                                                                animFct = data[pageName]['tableWidget_animationParam'][row][0],
-                                                                **data[pageName]['tableWidget_animationParam'][row][1]) )
-
-        # Advanced Arguments
-        pageName = str(self.grpBox_AdvancedParam.objectName())
-
-        arguments['tolModes'] = float(data[pageName]['lineEdit_tolModes'])
-        arguments['tolGIE'] = float(data[pageName]['lineEdit_tolGIE'])
-
-        if data[pageName]['lineEdit_toKeep']:
-            arguments['toKeep'] = data[pageName]['lineEdit_toKeep']
-        else: u.msg_info(msg,'No To Keep Specified, take default')
-
-        if data[pageName]['checkBox_addToLib'] == 'True':
-            arguments['addToLib'] = True
+        if msg:
+            tmp = 'ERROR:\n'
+            for field in msg:
+                if type(self.mandatoryFields[field]).__name__ == 'FrameLayout':
+                    tmp += 'Wrong/Missing Entry    ----------->    '+self.mandatoryFields[field].title()+'\n'
+                else:
+                    tmp += 'Wrong/Missing Entry    ----------->    '+self.mandatoryFields[field].text()+'\n'
+            # self.textEdit_preExecutionInfos.setText(tmp)
+            print(tmp)
         else:
-            u.msg_info(msg,"The Reduced Model won't be added to the library")
-        
 
-        # Preference Arguments
-        # !!!!  add preference  !!!!
-        # if data[pageName]['checkBox_verbose'] == 'True':
-        #     arguments['verbose'] = True
-        # else:
-        #     u.msg_info(msg,'Verbose Set to False')
+            msg =[]
 
-        # if data[pageName]['spinBox_numberCPU']:
-        #     arguments['nbrCPU'] = data[pageName]['spinBox_numberCPU']
-        # !!!!  add preference  !!!!
+            # Path Arguments
+            pageName = str(self.grpBox_Path.objectName())
 
+            arguments['originalScene'] = data[pageName]['lineEdit_scene']
+            arguments['outputDir'] = data[pageName]['lineEdit_output']
 
-        # Execution Arguments
-        pageName = str(self.grpBox_Execution.objectName())
+            if data[pageName]['lineEdit_mesh']:
+                arguments['meshes'] = data[pageName]['lineEdit_mesh'].split('\n')
+            else: u.msg_warning(msg,'No Mesh specified')
 
+            # ReductionParam Arguments
+            pageName = str(self.grpBox_ReductionParam.objectName())
 
-        msg = '\n'.join(msg)
-        # self.textEdit_preExecutionInfos.setText(msg)
-        separator = "---------------------\n\n"
+            arguments['nodesToReduce'] = ['/'+data[pageName]['lineEdit_NodeToReduce']]
 
-        # print(msg)
+            if data[pageName]['lineEdit_moduleName']:
+                arguments['packageName'] = data[pageName]['lineEdit_moduleName']
+            else: u.msg_info(msg,'No Module Name, take defaul')
 
-        if msg.find('ERROR') != -1:
-            pass
-            # self.textEdit_preExecutionInfos.append(separator+'Execution Stopped')
-        else:
-            # for arg in arguments:
-            #     print(arg)
+            if data[pageName]['checkBox_AddTranslation'] == 'True' :
+                arguments['addRigidBodyModes'] = [1,1,1]
+            else:
+                u.msg_info(msg,'No Translation')
+                arguments['addRigidBodyModes'] = [0,0,0]
+
+            # AnimationParam Arguments
+            pageName = str(self.grpBox_AnimationParam.objectName())
+
+            arguments['listObjToAnimate'] = []
+            for row in data[pageName]['tableWidget_animationParam']:
+                animation = data[pageName]['tableWidget_animationParam'][row][0]
+                for key,value in data[pageName]['tableWidget_animationParam'][row][1].iteritems():
+                    typ = existingAnimation[animation][key][1]
+                    data[pageName]['tableWidget_animationParam'][row][1][key] = typ(value)
+                arguments['listObjToAnimate'].append(ObjToAnimate(  location = data[pageName]['tableWidget_animationParam'][row][2],
+                                                                    animFct = data[pageName]['tableWidget_animationParam'][row][0],
+                                                                    **data[pageName]['tableWidget_animationParam'][row][1]) )
+                print(data[pageName]['tableWidget_animationParam'][row][1])
+
+            # Advanced Arguments
+            pageName = str(self.grpBox_AdvancedParam.objectName())
+
+            arguments['tolModes'] = float(data[pageName]['lineEdit_tolModes'])
+            arguments['tolGIE'] = float(data[pageName]['lineEdit_tolGIE'])
+
+            if data[pageName]['lineEdit_toKeep']:
+                arguments['toKeep'] = data[pageName]['lineEdit_toKeep']
+            else: u.msg_info(msg,'No To Keep Specified, take default')
+
+            if data[pageName]['checkBox_addToLib'] == 'True':
+                arguments['addToLib'] = True
+            else:
+                u.msg_info(msg,"The Reduced Model won't be added to the library")
+            
+
+            # Preference Arguments
+            for key , value in self.dialogMenu.currentValues.iteritems():
+                # print(key,type(value))
+                arguments[str(key)] = value
+
+            msg = '\n'.join(msg)
+            # self.textEdit_preExecutionInfos.setText(msg)
+            separator = "---------------------\n"
+
+            print(separator+"EXECUTION INFO :\n"+msg+'\n'+separator)
+            # print(arguments)
             reduceMyModel = ReduceModel(**arguments)
 
             steps = []
@@ -836,25 +887,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                     elif step == 3:
                         reduceMyModel.phase4()
 
-            # if data[pageName]['checkBox_executeAll'] == 'True':
-            #     self.textEdit_preExecutionInfos.append(separator+'Execute All')
-            #     reduceMyModel.performReduction()
-            # else:
-            #     self.textEdit_preExecutionInfos.setText(msg)
-            #     if data[pageName]['checkBox_phase1'] == 'True':
-            #         self.textEdit_preExecutionInfos.append(separator+'Execute Phase 1')
-            #         reduceMyModel.phase1()
-            #     if data[pageName]['checkBox_phase2'] == 'True':
-            #         self.textEdit_preExecutionInfos.append(separator+'Execute Phase 2')
-            #         reduceMyModel.phase2()
-            #     if data[pageName]['checkBox_phase3'] == 'True':
-            #         self.textEdit_preExecutionInfos.append(separator+'Execute Phase 3')
-            #         reduceMyModel.phase3()
-            #     if data[pageName]['checkBox_phase4'] == 'True': 
-            #         self.textEdit_preExecutionInfos.append(separator+'Execute Phase 4')
-            #         reduceMyModel.phase4()
-
-            # self.textEdit_preExecutionInfos.append(separator+'Execution Finished')
+        self.checkPhases()
 
     def executeAll(self,checkBox,items,checked=True):
         '''
@@ -864,13 +897,15 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         u.checkedBoxes(checkBox,items,checked)
         u.greyOut(checkBox,items,checked)
 
-    def addLine(self,tab,number=1):
+    def addLine(self,tab,number=1,animation='defaultShaking'):
 
         for new in range(number):
             tab.insertRow(tab.rowCount())
             row = tab.rowCount()-1
 
             tmp = ui_design.MyLineEdit(tab)
+            tmp.setReadOnly(readOnly)
+
             model = TreeModel(self.cfg,obj=True)
 
             completer = MyCompleter(tmp)
@@ -887,6 +922,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             tmp.clicked.connect(completer.complete)
             tmp.focused.connect(completer.complete)
 
+            completer.activated.connect(lambda: self.display(completer,tmp))
+            # tmp.rightArrowBtnClicked.connect(lambda: self.right(tmp))
+            tmp.leftArrowBtnClicked.connect(lambda:  self.left(tmp))
+
             u.setBackColor(tmp)
             tab.setCellWidget(row,2,tmp)
 
@@ -896,7 +935,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             backgrdColor.setNamedColor(yellow)
             tab.item(row,1).setBackgroundColor(backgrdColor)
             
-            self.animationDialog.append(GenericDialogForm('defaultShaking',existingAnimation['defaultShaking']))
+            self.animationDialog.append(GenericDialogForm(animation,existingAnimation[animation]))
             self.addComboToTab(tab,existingAnimation.keys(),row,0)
 
     def addComboToTab(self,tab,values,row,column):
@@ -918,7 +957,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             self.animationDialog[row] = GenericDialogForm(currentAnimation,existingAnimation[currentAnimation])
             tab.item(row,dialogColumn).setText('')
 
-    def removeLine(self,tab,dialogs,rm=False):
+    def removeLine(self,tab,dialogs):
         '''
         removeLine remove the current selected row or the last one created and also the associated dialog box object 
         '''

@@ -22,7 +22,7 @@ class GenericDialogForm(QtGui.QDialog):
             self.currentValues = {}
 
         self.resize(width, height)
-
+        self.setWindowTitle(self.animation)
         self.setupUi(self)
         self.btn_submit.clicked.connect(self.submitclose)
 
@@ -36,18 +36,26 @@ class GenericDialogForm(QtGui.QDialog):
             label = QtGui.QLabel(self)
             label.setObjectName(_fromUtf8("label_"+str(i)))
             label.setText(attribute)
-            lineEdit = QtGui.QLineEdit(self)
-            lineEdit.setObjectName(_fromUtf8("lineEdit_"+(str(i))))
+            if value[1] == bool:
+                widget = QtGui.QCheckBox(self)
+                widget.setObjectName(_fromUtf8("checkBox_"+(str(i))))
+            else:
+                widget = QtGui.QLineEdit(self)
+                widget.setObjectName(_fromUtf8("lineEdit_"+(str(i))))
+                # Validator
+                widget.textChanged.emit(widget.text())
+                widget.textChanged.connect(lambda: u.check_state(self.sender()))
 
-            # Validator 
-            lineEdit.textChanged.emit(lineEdit.text())
-            lineEdit.textChanged.connect(lambda: u.check_state(self.sender()))
-            lineEdit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("^("+value[0]+")$")))
-            u.setBackColor(lineEdit)
+                if type(value[0]) == str:
+                    widget.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("^("+value[0]+")$")))
+                else:
+                    widget.setValidator(value[0])
 
-            self.row[label] = lineEdit
+            u.setBackColor(widget)
+
+            self.row[label] = widget
             self.formLayout_2.setWidget(i, QtGui.QFormLayout.LabelRole, label)
-            self.formLayout_2.setWidget(i, QtGui.QFormLayout.FieldRole, lineEdit)
+            self.formLayout_2.setWidget(i, QtGui.QFormLayout.FieldRole, widget)
             i += 1
 
         self.btn_submit = QtGui.QPushButton(self)
@@ -66,22 +74,48 @@ class GenericDialogForm(QtGui.QDialog):
         self.accept()
 
     def load(self,data):
-        for label,lineEdit in self.row.iteritems():
-            if data:
-                if data[str(label.text())]:
-                    lineEdit.setText(data[str(label.text())])
+        if data:
+            for label,widget in self.row.iteritems():
+                labelTitle = str(label.text())
+                dataType = self.param[labelTitle][1]
+
+                if dataType == bool:
+                    if data[str(label.text())]:
+                        widget.setCheckState(bool(data[labelTitle]))
+                    else:
+                        widget.setCheckState(False)
                 else:
-                    lineEdit.setText('')
-            else:
-                lineEdit.setText('')
+                    if data[str(label.text())]:
+                        widget.setText(data[labelTitle])
+                    else:
+                        widget.setText('')
+        else:
+            for label,widget in self.row.iteritems():
+                if dataType == bool:
+                    widget.setCheckState(False)
+                else:
+                    widget.setText('')
 
         self.setCurrentValues()
 
     def setCurrentValues(self):
-        for label,lineEdit in self.row.iteritems():
-            self.currentValues[label.text()] = lineEdit.text()
-            self.setState()
+        for label,widget in self.row.iteritems():
+            labelTitle = str(label.text())
+            dataType = self.param[labelTitle][1]
+
+            if dataType == bool:
+                if widget.isChecked():
+                    state = True
+                else:
+                    state = False
+                self.currentValues[label.text()] = state
+            else:
+                self.currentValues[label.text()] = dataType(widget.text())
+
+        self.setState()
 
     def setState(self):
-        if all( lineEdit.palette().color(QtGui.QPalette.Background).name() not in u.Color.wrong for label,lineEdit in self.row.iteritems()):
+        if all( widget.palette().color(QtGui.QPalette.Background).name() not in u.Color.wrong for label,widget in self.row.iteritems()):
             self.state = True
+        else:
+            self.state = False
