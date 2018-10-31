@@ -14,7 +14,27 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#include "initModelOrderReduction.h"
+#include <ModelOrderReduction/initModelOrderReduction.h>
+
+#ifdef MOR_PYTHON
+#include <sofa/helper/system/PluginManager.h>
+using sofa::helper::system::PluginManager;
+using sofa::helper::system::Plugin;
+
+#include <sofa/helper/system/DynamicLibrary.h>
+using sofa::helper::system::DynamicLibrary;
+
+#include <sofa/helper/system/FileSystem.h>
+using sofa::helper::system::FileSystem;
+
+#include <sofa/helper/Utils.h>
+using sofa::helper::Utils;
+
+#include <SofaPython/PythonEnvironment.h>
+using sofa::simulation::PythonEnvironment;
+#endif
+
+#include <fstream>
 
 namespace sofa
 {
@@ -54,19 +74,26 @@ namespace component
 	            std::string modulePath = elem.first;
 	            modulePath.resize( modulePath.find(getModuleName() + std::string(".") + DynamicLibrary::extension) );
 	            modulePath = FileSystem::getParentDirectory( modulePath );
-	            std::cout << "modulePath = " << modulePath << std::endl;
 
-	            std::string configFilePath = modulePath + "/etc/sofa/python.d/" + getModuleName();
+	            std::string configFilePath = modulePath + "/../etc/sofa/python.d/" + getModuleName();
 	            std::ifstream configFile(configFilePath.c_str());
-	            std::string line;
-	            while(std::getline(configFile, line))
+
+	            if (configFile.is_open())
 	            {
-	                if (!FileSystem::isAbsolute(line))
-	                {
-	                    line = modulePath + "/" + line;
-	                }
-	                PythonEnvironment::addPythonModulePath(line);
-	            }
+		            std::string line;
+		            while(std::getline(configFile, line))
+		            {
+		                if (!FileSystem::isAbsolute(line))
+		                {
+		                    line = modulePath + "/" + line;
+		                }
+		                PythonEnvironment::addPythonModulePath(line);
+		            }
+		        }
+		        else
+		        {
+		        	std::cout << "File in configFilePath : " << configFilePath.c_str() << "not found" << std::endl; 
+		        }
 	        }
 	    }
 #endif
@@ -90,7 +117,7 @@ namespace component
 
 	const char* getModuleDescription()
 	{
-		return "TODO: replace this with the description of your plugin";
+		return "The ModelOrderReduction plugin builds reduced models by reducing the computational complexity of the system";
 	}
 
 	const char* getModuleComponentList()

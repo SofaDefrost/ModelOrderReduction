@@ -31,6 +31,12 @@ set(README_FILES
     README.md
     )
 
+# Generate initModelOrderReduction.h from initModelOrderReduction.h.in
+configure_file(src/component/initModelOrderReduction.h.in "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h")
+install(FILES "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h" DESTINATION "include/initModelOrderReduction" COMPONENT headers)
+
+
+# Add all cmake projects within the ModelOrderReduction plugin
 include(src/component/forcefield/Forcefield_Files.cmake)
 include(src/component/mapping/Mapping_Files.cmake)
 include(src/component/loader/Loader_Files.cmake)
@@ -43,6 +49,7 @@ target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics 
 
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>")
 
 
 # Config files and install rules for pythons scripts
