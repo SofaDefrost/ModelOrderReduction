@@ -40,6 +40,36 @@ namespace component
 		{
 			first = false;
 		}
+
+#ifdef MOR_PYTHON
+	    typedef std::map<std::string, Plugin > PluginMap;
+	    typedef PluginMap::iterator PluginIterator;
+
+	    PluginMap&  map = PluginManager::getInstance().getPluginMap();
+	    for( const auto& elem : map)
+	    {
+	        Plugin p = elem.second;
+	        if ( p.getModuleName() == getModuleName() )
+	        {
+	            std::string modulePath = elem.first;
+	            modulePath.resize( modulePath.find(getModuleName() + std::string(".") + DynamicLibrary::extension) );
+	            modulePath = FileSystem::getParentDirectory( modulePath );
+	            std::cout << "modulePath = " << modulePath << std::endl;
+
+	            std::string configFilePath = modulePath + "/etc/sofa/python.d/" + getModuleName();
+	            std::ifstream configFile(configFilePath.c_str());
+	            std::string line;
+	            while(std::getline(configFile, line))
+	            {
+	                if (!FileSystem::isAbsolute(line))
+	                {
+	                    line = modulePath + "/" + line;
+	                }
+	                PythonEnvironment::addPythonModulePath(line);
+	            }
+	        }
+	    }
+#endif
 	}
 
 	const char* getModuleName()
