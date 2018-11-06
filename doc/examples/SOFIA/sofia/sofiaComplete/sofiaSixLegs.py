@@ -223,7 +223,7 @@ def createScene(rootNode):
     # With reduce legs
     SofiaSixLegs(attachedTo=rootNode,
                          name='sofia_reduced',
-                         reduced=True,
+                         reduced=False,
                          rotation=[0,0,0],
                          translation=[-200, 0, -400])
     # Without reduced legs

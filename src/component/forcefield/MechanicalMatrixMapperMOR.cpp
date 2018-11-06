@@ -42,12 +42,14 @@ SOFA_DECL_CLASS(MechanicalMatrixMapperMOR)
 int MechanicalMatrixMapperMORClass = core::RegisterObject("Partially rigidify a mechanical object using a rigid mapping.")
 #ifdef SOFA_WITH_FLOAT
         .add< MechanicalMatrixMapperMOR<Vec3fTypes, Rigid3fTypes> >()
+        .add< MechanicalMatrixMapperMOR<Rigid3fTypes, Rigid3fTypes> >()
         .add< MechanicalMatrixMapperMOR<Vec3fTypes, Vec3fTypes> >()
         .add< MechanicalMatrixMapperMOR<Vec1fTypes, Rigid3fTypes> >()
         .add< MechanicalMatrixMapperMOR<Vec1fTypes, Vec1fTypes> >()
 #endif
 #ifdef SOFA_WITH_DOUBLE
         .add< MechanicalMatrixMapperMOR<Vec3dTypes, Rigid3dTypes> >(true)
+        .add< MechanicalMatrixMapperMOR<Rigid3dTypes, Rigid3dTypes> >(true)
         .add< MechanicalMatrixMapperMOR<Vec3dTypes, Vec3dTypes> >(true)
         .add< MechanicalMatrixMapperMOR<Vec1dTypes, Rigid3dTypes> >(true)
         .add< MechanicalMatrixMapperMOR<Vec1dTypes, Vec1dTypes> >(true)

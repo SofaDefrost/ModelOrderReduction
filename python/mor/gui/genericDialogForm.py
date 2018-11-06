@@ -85,8 +85,8 @@ class GenericDialogForm(QtGui.QDialog):
                     else:
                         widget.setCheckState(False)
                 else:
-                    if data[str(label.text())]:
-                        widget.setText(data[labelTitle])
+                    if data[str(label.text())] != None:
+                        widget.setText(str(data[labelTitle]))
                     else:
                         widget.setText('')
         else:
