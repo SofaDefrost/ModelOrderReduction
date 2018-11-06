@@ -100,7 +100,7 @@ def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
 
     return fileName
 
-def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
+def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk *.obj",display=None):
     '''
     openFilesNames will pop up a dialog window allowing the user to choose multiple files
     and potentially display there coreponding path

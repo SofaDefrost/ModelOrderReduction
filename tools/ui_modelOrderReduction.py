@@ -248,7 +248,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         tmp = {}
         for key , value in preferenceKey.iteritems():
             # print (settings.value(key, type=str))
-            tmp[key] = settings.value(key, type=str)
+            dataType = value[1]
+            tmp[key] = settings.value(key, type=dataType)
         self.dialogMenu.load(tmp)
 
     @QtCore.pyqtSlot(bool)
@@ -851,7 +852,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                 arguments['addToLib'] = True
             else:
                 u.msg_info(msg,"The Reduced Model won't be added to the library")
-            
+
 
             # Preference Arguments
             for key , value in self.dialogMenu.currentValues.iteritems():

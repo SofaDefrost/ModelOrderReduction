@@ -2,7 +2,7 @@
     ## Visualization
     if surfaceMeshFileName:
         visu = myReducedModel.createChild('Visual')
-        meshType = surfaceMeshFileName.split('.'')[-1]
+        meshType = surfaceMeshFileName.split('.')[-1]
         if meshType == 'stl':
             visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
         elif meshType == 'obj':
