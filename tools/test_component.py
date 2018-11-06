@@ -52,4 +52,4 @@ def createScene(rootNode):
                     rotation=[0, 0.0, 0.0],
                     translation=[-400, 60.0, 100.0],
                     surfaceColor=[0.0, 0.0, 1, 0.5],
-                    surfaceMeshFileName=surfaceMeshFileNameSofia)
+surfaceMeshFileName=surfaceMeshFileNameSofia)

@@ -170,8 +170,10 @@ def SofiaSixLegs(
 
         #visual model
         mappedVisualLeg=mappedLeg.createChild('mappedVisaulLeg'+str(i))
-        mappedVisualLeg.createObject(  'OglModel', 
-                            filename=meshPath+'sofia_leg.stl',
+
+        mappedVisualLeg.createObject(  'MeshSTLLoader', name= 'loader', filename=meshPath+'sofia_leg.stl')
+        mappedVisualLeg.createObject(  'OglModel',
+                            src='@loader',
                             template='ExtVec3f',
                             color=surfaceColor,
                             rotation= rotation,

@@ -96,16 +96,22 @@ def Reduced_diamond(
 
     ## Visualization
     if surfaceMeshFileName:
-	    visu = modelNode.createChild('Visual')
 
-	    visu.createObject(	'OglModel', 
-	    					filename=path+'/mesh/'+surfaceMeshFileName,
+        visu = modelNode.createChild('Visual')
+        meshType = surfaceMeshFileName.split('.')[-1]
+        if meshType == 'stl':
+            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+        elif meshType == 'obj':
+            visu.createObject(  'MeshObjLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+
+        visu.createObject(  'OglModel',
+                            src='@loader',
                             template='ExtVec3f',
                             color=surfaceColor,
                             rotation= add(rotation,[90, 0.0, 0.0]),
                             translation = add(translation,[0.0, 0.0, 35]))
 
-	    visu.createObject('BarycentricMapping')
+        visu.createObject('BarycentricMapping')
 
     return modelNode
 
