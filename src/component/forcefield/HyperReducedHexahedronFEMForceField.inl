@@ -68,10 +68,7 @@ using namespace sofa::defaulttype;
 template <class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::init()
 {
-    msg_warning() << "init in hyperreducedhexa...";
-
     HexahedronFEMForceField<DataTypes>::init();
-    msg_warning() << this->getIndexedElements()->size();
     this->initMOR(this->getIndexedElements()->size());
 }
 
@@ -159,15 +156,14 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addDForce (const core::Mech
     it0=this->getIndexedElements()->begin();
     unsigned int nbElementsConsidered;
     if (!d_performECSW.getValue()){
-        nbElementsConsidered = m_RIDsize;
+        nbElementsConsidered = this->getIndexedElements()->size();
     }
     else
     {
-        nbElementsConsidered = this->getIndexedElements()->size();
+        nbElementsConsidered = m_RIDsize;
     }
 
     for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
-    //for(it = this->getIndexedElements()->begin() ; it != this->getIndexedElements()->end() ; ++it, ++i)
     {
         if (!d_performECSW.getValue()){
             i = numElem;
@@ -790,7 +786,6 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::computeRotationLarge( Trans
 template<class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem )
 {
-    msg_warning() << "elem: " << elem;
     defaulttype::Vec<8,Coord> nodes;
 
     for(int w=0; w<8; ++w)
@@ -1011,11 +1006,11 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addKToMatrix(const core::Me
     it0=this->getIndexedElements()->begin();
     unsigned int nbElementsConsidered;
     if (!d_performECSW.getValue()){
-        nbElementsConsidered = m_RIDsize;
+        nbElementsConsidered = this->getIndexedElements()->size();
     }
     else
     {
-        nbElementsConsidered = this->getIndexedElements()->size();
+        nbElementsConsidered = m_RIDsize;
     }
     for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     //for(it = this->getIndexedElements()->begin() ; it != this->getIndexedElements()->end() ; ++it, ++i)
@@ -1117,10 +1112,9 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
     it0=this->getIndexedElements()->begin();
     unsigned int nbElementsConsidered;
     if (!d_performECSW.getValue())
-        nbElementsConsidered = m_RIDsize;
-    else
         nbElementsConsidered = this->getIndexedElements()->size();
-
+    else
+        nbElementsConsidered = m_RIDsize;
     for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     {
         if (!d_performECSW.getValue()){

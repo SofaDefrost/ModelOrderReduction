@@ -65,7 +65,7 @@ def getContainer(node):
     container = None
     for obj in node.getObjects():
         className = obj.getClassName()
-        if className.find('Container') != -1: # className.find('Loader') != -1 or
+        if className.find('Topology') != -1: # className.find('Loader') != -1 or
             # print obj.getName()
             container = obj
     return container

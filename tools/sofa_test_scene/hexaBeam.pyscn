@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+import os
+import Sofa
+
+def createScene(rootNode):
+
+    rootNode.findData('dt').value=0.02
+    rootNode.findData('gravity').value='0 -9810 0'
+    rootNode.createObject('VisualStyle', displayFlags='showBehaviorModels showForceFields')
+    rootNode.createObject('RequiredPlugin', pluginName='ModelOrderReduction')
+    rootNode.createObject('RequiredPlugin', pluginName='SoftRobots')
+    rootNode.createObject('FreeMotionAnimationLoop')
+    rootNode.createObject('GenericConstraintSolver', tolerance="1e-12", maxIterations="10000")
+
+    
+    M1 = rootNode.createChild("M1")
+    M1.createObject('EulerImplicitSolver',rayleighStiffness="0.1", rayleighMass="0.1")
+    M1.createObject('SparseLDLSolver',name='preconditioner')
+    M1.createObject('MechanicalObject')
+    M1.createObject('UniformMass', totalMass="0.1")
+    M1.createObject('RegularGrid', nx="4", ny="4", nz="20", xmin="-9", xmax="-6", ymin="0", ymax="3", zmin="0", zmax="19")
+    M1.createObject('FixedConstraint', indices="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15")
+    M1.createObject('HyperReducedHexahedronFEMForceField', name="FEM", youngModulus="4000", poissonRatio="0.3", method="large",perfro)
+    M1.createObject('GenericConstraintCorrection', solverName='preconditioner')
+    
+    cableNode = M1.createChild('cableNode')
+    cableNode.createObject('MechanicalObject', name="actuatedPoints", template="Vec3d", position="-7.5 1.5 18.5")
+    cableNode.createObject('CableConstraint', name="tipCable", indices="0", pullPoint="-7.5 10 18.5", valueType="displacement")
+    cableNode.createObject('BarycentricMapping', mapForces="false", mapMasses="false")
+    
+
