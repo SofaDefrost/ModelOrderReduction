@@ -23,16 +23,6 @@
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
 //#include "config.h"
 
-#include <sofa/core/behavior/ForceField.h>
-#include <sofa/core/topology/BaseMeshTopology.h>
-#include <SofaBaseTopology/SparseGridTopology.h>
-#include <sofa/helper/vector.h>
-#include <sofa/defaulttype/VecTypes.h>
-#include <sofa/defaulttype/Mat.h>
-#include <sofa/core/behavior/BaseRotationFinder.h>
-#include <sofa/helper/decompose.h>
-#include <sofa/core/behavior/RotationMatrix.h>
-#include <sofa/helper/OptionsGroup.h>
 #include "HyperReducedForceField.h"
 #include <SofaSimpleFem/HexahedronFEMForceField.h>
 
@@ -132,8 +122,6 @@ protected:
 
     using HexahedronFEMForceField<DataTypes>::_coef; ///< coef of each vertices to compute the strain stress matrix
     using HexahedronFEMForceField<DataTypes>::data;
-    //HexahedronFEMForceFieldInternalData<DataTypes> *data;
-    //friend class HexahedronFEMForceFieldInternalData<DataTypes>;
 
 public:
 
@@ -180,132 +168,19 @@ protected:
     {
     }
 public:
-    void setPoissonRatio(Real val) { this->f_poissonRatio.setValue(val); }
-
-    void setYoungModulus(Real val) { this->f_youngModulus.setValue(val); }
-
-    void setMethod(int val)
-    {
-        method = val;
-        switch(val)
-        {
-        case POLAR: f_method.setValue("polar"); break;
-        case SMALL: f_method.setValue("small"); break;
-        default   : f_method.setValue("large");
-        };
-    }
-
-    void setUpdateStiffnessMatrix(bool val) { this->f_updateStiffnessMatrix.setValue(val); }
-
-    void setComputeGlobalMatrix(bool val) { this->f_assembling.setValue(val); }
-
     virtual void init() override;
 
     virtual void addForce (const core::MechanicalParams* mparams, DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv& v) override;
 
     virtual void addDForce (const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx) override;
 
-    virtual SReal getPotentialEnergy(const core::MechanicalParams* /*mparams*/, const DataVecCoord&  /* x */) const override
-    {
-        serr << "Get potentialEnergy not implemented" << sendl;
-        return 0.0;
-    }
-
     // Make other overloaded version of getPotentialEnergy() to show up in subclass.
     using InheritForceField::getPotentialEnergy;
     // getPotentialEnergy is implemented for polar method
-    virtual SReal getPotentialEnergy(const core::MechanicalParams*) const override;
-
-    const Transformation& getElementRotation(const unsigned elemidx);
-
-    void getNodeRotation(Transformation& R, unsigned int nodeIdx)
-    {
-        core::topology::BaseMeshTopology::HexahedraAroundVertex liste_hexa = _mesh->getHexahedraAroundVertex(nodeIdx);
-
-        R[0][0] = R[1][1] = R[2][2] = 1.0 ;
-        R[0][1] = R[0][2] = R[1][0] = R[1][2] = R[2][0] = R[2][1] = 0.0 ;
-
-        unsigned int numHexa=liste_hexa.size();
-
-        for (unsigned int ti=0; ti<numHexa; ti++)
-        {
-            Transformation R0t;
-            R0t.transpose(_initialrotations[liste_hexa[ti]]);
-            Transformation Rcur = getElementRotation(liste_hexa[ti]);
-            R += Rcur * R0t;
-        }
-
-        // on "moyenne"
-        R[0][0] = R[0][0]/numHexa ; R[0][1] = R[0][1]/numHexa ; R[0][2] = R[0][2]/numHexa ;
-        R[1][0] = R[1][0]/numHexa ; R[1][1] = R[1][1]/numHexa ; R[1][2] = R[1][2]/numHexa ;
-        R[2][0] = R[2][0]/numHexa ; R[2][1] = R[2][1]/numHexa ; R[2][2] = R[2][2]/numHexa ;
-
-        defaulttype::Mat<3,3,Real> Rmoy;
-        helper::Decompose<Real>::polarDecomposition( R, Rmoy );
-
-        R = Rmoy;
-    }
-
-    void getRotations(defaulttype::BaseMatrix * rotations,int offset = 0) override
-    {
-        unsigned int nbdof = this->mstate->getSize();
-
-        if (component::linearsolver::RotationMatrix<float> * diag = dynamic_cast<component::linearsolver::RotationMatrix<float> *>(rotations))
-        {
-            Transformation R;
-            for (unsigned int e=0; e<nbdof; ++e)
-            {
-                getNodeRotation(R,e);
-                for(int j=0; j<3; j++)
-                {
-                    for(int i=0; i<3; i++)
-                    {
-                        diag->getVector()[e*9 + j*3 + i] = (float)R[j][i];
-                    }
-                }
-            }
-        }
-        else if (component::linearsolver::RotationMatrix<double> * diag = dynamic_cast<component::linearsolver::RotationMatrix<double> *>(rotations))
-        {
-            Transformation R;
-            for (unsigned int e=0; e<nbdof; ++e)
-            {
-                getNodeRotation(R,e);
-                for(int j=0; j<3; j++)
-                {
-                    for(int i=0; i<3; i++)
-                    {
-                        diag->getVector()[e*9 + j*3 + i] = R[j][i];
-                    }
-                }
-            }
-        }
-        else
-        {
-            for (unsigned int i=0; i<nbdof; ++i)
-            {
-                Transformation t;
-                getNodeRotation(t,i);
-                int e = offset+i*3;
-                rotations->set(e+0,e+0,t[0][0]); rotations->set(e+0,e+1,t[0][1]); rotations->set(e+0,e+2,t[0][2]);
-                rotations->set(e+1,e+0,t[1][0]); rotations->set(e+1,e+1,t[1][1]); rotations->set(e+1,e+2,t[1][2]);
-                rotations->set(e+2,e+0,t[2][0]); rotations->set(e+2,e+1,t[2][1]); rotations->set(e+2,e+2,t[2][2]);
-            }
-        }
-    }
 
     void addKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix) override;
 
-
-    void computeBBox(const core::ExecParams* params, bool onlyVisible) override;
-
     void draw(const core::visual::VisualParams* vparams) override;
-
-    void handleTopologyChange() override
-    {
-        needUpdateTopology = true;
-    }
-
 
 protected:
 
@@ -315,24 +190,15 @@ protected:
         return & (_mesh->getHexahedra());
     }
 
-    virtual void computeElementStiffness( ElementStiffness &K, const MaterialStiffness &M, const helper::fixed_array<Coord,8> &nodes, const int elementIndice, double stiffnessFactor=1.0);
-    Mat33 integrateStiffness( int signx0, int signy0, int signz0, int signx1, int signy1, int signz1, const Real u, const Real v, const Real w, const Mat33& J_1  );
-
-    void computeMaterialStiffness(int i);
-
-    void computeForce( Displacement &F, const Displacement &Depl, const ElementStiffness &K );
-
 
     ////////////// large displacements method
     using HexahedronFEMForceField<DataTypes>::_rotatedInitialElements;   ///< The initials positions in its frame
     using HexahedronFEMForceField<DataTypes>::_rotations;
     using HexahedronFEMForceField<DataTypes>::_initialrotations;
-    void computeRotationLarge( Transformation &r, Coord &edgex, Coord &edgey);
     virtual void accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// polar decomposition method
     void initPolar(int i, const Element&elem);
-    void computeRotationPolar( Transformation &r, defaulttype::Vec<8,Coord> &nodes);
     virtual void accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// small decomposition method
