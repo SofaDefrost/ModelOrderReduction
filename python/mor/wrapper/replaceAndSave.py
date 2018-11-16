@@ -2,10 +2,11 @@
 
 from collections import OrderedDict
 
-forceFieldImplemented = {
+forceFieldImplemented = {   'HexahedronFEMForceField':('HyperReducedHexahedronFEMForceField','hexahedra'),
                             'TetrahedronFEMForceField':('HyperReducedTetrahedronFEMForceField','tetrahedra'),
                             'TriangleFEMForceField':('HyperReducedTriangleFEMForceField','triangles'),
                             'RestShapeSpringsForceField':('HyperReducedRestShapeSpringsForceField','points')
+
                         }
 
 myModel = OrderedDict() # Ordered dic containing has key Sofa.Node.name & has var a tuple of (Sofa_componant_type , param_solver)

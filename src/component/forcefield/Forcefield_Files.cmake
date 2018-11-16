@@ -2,6 +2,8 @@
 list(APPEND HEADER_FILES
 
     src/component/forcefield/HyperReducedForceField.h
+    src/component/forcefield/HyperReducedHexahedronFEMForceField.h
+    src/component/forcefield/HyperReducedHexahedronFEMForceField.inl
     src/component/forcefield/HyperReducedRestShapeSpringsForceField.h
     src/component/forcefield/HyperReducedRestShapeSpringsForceField.inl
     src/component/forcefield/HyperReducedTetrahedronFEMForceField.h
@@ -17,6 +19,7 @@ list(APPEND HEADER_FILES
 
 list(APPEND SOURCE_FILES
 
+    src/component/forcefield/HyperReducedHexahedronFEMForceField.cpp
     src/component/forcefield/HyperReducedRestShapeSpringsForceField.cpp
     src/component/forcefield/HyperReducedTetrahedronFEMForceField.cpp
     src/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.cpp

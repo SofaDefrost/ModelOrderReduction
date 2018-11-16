@@ -138,6 +138,36 @@ public:
 
     }
 
+    template<class DataTypes>
+    void updateGie(const std::vector<unsigned int> indexList, const std::vector<typename DataTypes::Deriv> contrib, const unsigned int numElem){
+        if (d_prepareECSW.getValue())
+        {
+            unsigned int nbNodesPerElement = indexList.size();
+            std::vector<double> GieUnit(d_nbModes.getValue());
+            int numTest = this->getContext()->getTime()/this->getContext()->getDt();
+            if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
+            {
+                numTest = numTest/d_periodSaveGIE.getValue();
+                for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
+                {
+                    GieUnit[modNum] = 0;
+                    for (unsigned int i=0; i<nbNodesPerElement; i++){
+                        GieUnit[modNum] += contrib[i]*typename DataTypes::Deriv(m_modes(3*indexList[i],modNum),m_modes(3*indexList[i]+1,modNum),m_modes(3*indexList[i]+2,modNum));
+                    }
+                }
+                for (unsigned int i = 0 ; i < d_nbModes.getValue() ; i++)
+                {
+                    if ( d_nbModes.getValue()*numTest < d_nbModes.getValue()*d_nbTrainingSet.getValue() )
+                    {
+                        Gie[d_nbModes.getValue()*numTest+i][numElem] = GieUnit[i];
+                    }
+                }
+            }
+        }
+
+    }
+
+
 
     void saveGieFile(unsigned int nbElements){
         if (d_prepareECSW.getValue())

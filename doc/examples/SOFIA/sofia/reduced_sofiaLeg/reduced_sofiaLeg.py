@@ -24,15 +24,18 @@ def newBox(positions,modelPosition,translation,rotation,offset,scale=[1.0,1.0,1.
 def Reduced_SofiaLeg(
                   attachedTo=None,
                   name="Reduced_SofiaLeg",
+                  fixed=False,
+                  framePosition=[0,0,0,0,0,0,1],
                   rotation=[0.0, 0.0, 0.0],
                   translation=[0.0, 0.0, 0.0],
                   scale=[1.0, 1.0, 1.0],
                   surfaceMeshFileName=False,
                   surfaceColor=[1.0, 1.0, 1.0],
                   poissonRatio=None,
-                  youngModulus=300000,
+                  youngModulus=300,
                   totalMass=0.01,
-                  controller=None):
+                  controller=None,
+                  showColor=[1,1,1,1]):
     """
     Object with an elastic deformation law.
 
@@ -59,20 +62,24 @@ def Reduced_SofiaLeg(
 
         totalMass (float):   The mass is distributed according to the geometry of the object.
     """
+    FramesNode= attachedTo.createChild('frames')
+    FramesNode.createObject('MechanicalObject', template='Rigid',name='frame', position=framePosition, showObject='1', showObjectScale=25)
+    if (fixed):
+        FramesNode.createObject('FixedConstraint', indices=0)
+    #FramesNode1.createObject('UniformMass', showAxisSizeFactor='0.01',totalMass=0.1)
+    FramesNode.createObject('MechanicalMatrixMapperMOR', template = 'Rigid,Rigid', object1 = '@./frame', object2 = '@./frame', nodeToParse="@./mappedLeg", performECSW = 'False')
 
+    
     SofiaLeg_MOR = attachedTo.createChild(name)
-    SofiaLeg_MOR.createObject('EulerImplicit' , firstOrder = '0', name = 'odesolver',rayleighStiffness=0.1,rayleighMass=0.1)
-    SofiaLeg_MOR.createObject('SparseLDLSolver' , name = 'preconditioner')
     SofiaLeg_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0', template = 'Vec1d')
-    SofiaLeg_MOR.createObject('MechanicalMatrixMapperMOR', nodeToParse = '@./SofiaLeg', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_SofiaLeg.txt', template = 'Vec1d,Vec1d', performECSW = 'True')
+    SofiaLeg_MOR.createObject('MechanicalMatrixMapperMOR', nodeToParse = '@./SofiaLeg/mappedLeg', object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_SofiaLeg.txt', template = 'Vec1d,Vec1d', performECSW = 'False')
 
 
     SofiaLeg = SofiaLeg_MOR.createChild('SofiaLeg')
     SofiaLeg.createObject('MeshVTKLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + '/mesh/sofia_leg.vtu')
     SofiaLeg.createObject('TetrahedronSetTopologyContainer' , position = '@loader.position', createTriangleArray = '1', name = 'container', tetrahedra = '@loader.tetrahedra', checkConnexity = '1')
-    SofiaLeg.createObject('MechanicalObject' , showIndices = 'false', showIndicesScale = '4e-5', name = 'tetras', template = 'Vec3d', position = '@loader.position')
-    SofiaLeg.createObject('UniformMass' , totalmass = totalMass)
-    SofiaLeg.createObject('HyperReducedTetrahedronFEMForceField' , RIDPath = path + '/data/RID_SofiaLeg.txt', name = 'HyperReducedFEMForceField_SofiaLeg', weightsPath = path + '/data/weight_SofiaLeg.txt', youngModulus = youngModulus, modesPath = path + '/data/modes.txt', performECSW = 'True', poissonRatio = '0.45', nbModes = '6')
+    SofiaLeg.createObject('MechanicalObject' , showIndices = 'false', showIndicesScale = '4e-5', showObject='1', showObjectScale=2.5, showColor=showColor, name = 'tetras', template = 'Vec3d', position = '@loader.position')
+
     SofiaLeg.createObject('BoxROI', name='boxROICollision', orientedBox= newBox(
                                                                     [[-25.0, -41.0, 0],[25.0, -42, 0],[25.0, -39, 0]], [0.0, 0.0, 0.0],
                                                                     translation,rotation,[0, 0, -7.0],scale) + multiply(scale[2],[2.0]).tolist()
@@ -82,26 +89,16 @@ def Reduced_SofiaLeg(
                                                     drawPoints='0', computeEdges='0',computeTriangles='0', computeTetrahedra='0',
                                                     computeHexahedra='0', computeQuad='0',drawSize=5, drawBoxes=False)
     SofiaLeg.createObject('BoxROI' , name= 'boxROIMiddle' , orientedBox= newBox([[-2.5, -8.5, 0], [2.5, -8.5, 0], [2.5, -3.5, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[18.0]).tolist(),drawBoxes=False)
-    SofiaLeg.createObject('RestShapeSpringsForceField' , external_points = [0, 1, 2], points = '@boxROIMiddle.indices', name = 'actuatorSpring', stiffness = '1e12', external_rest_shape = '@../../'+name+'_actuator/actuatorState')
     SofiaLeg.createObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + '/data/modes.txt', output = '@./tetras')
 
 
-    SofiaLeg_actuator = attachedTo.createChild(name+'_actuator')
-    SofiaLeg_actuator.createObject('MechanicalObject' , position = '@../'+name+'/SofiaLeg/boxROIMiddle.pointsInROI', name = 'actuatorState', template = 'Vec3d')
-
-    ## Visualization
-    if surfaceMeshFileName:
-        visu = SofiaLeg.createChild('Visual')
-
-        visu.createObject(	'OglModel', 
-                            filename=meshPath+surfaceMeshFileName,
-                            template='ExtVec3f',
-                            color=surfaceColor,
-                            rotation= add(rotation,[0.0, 0.0, 0.0]),
-                            translation = add(translation,[0.0, 0.0, 0.0]),
-                            scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-
-        visu.createObject('BarycentricMapping')
+    mappedLeg = SofiaLeg.createChild('mappedLeg')   
+    FramesNode.addChild(mappedLeg)
+    mappedLeg.createObject('Mesh', position='@../loader.position', tetrahedra='@../loader.tetrahedra')
+    mappedLeg.createObject('MechanicalObject', template='Vec3d', name='mappedLeg', showObject='1', showObjectScale=5, showColor=[0,1,1,1])
+    mappedLeg.createObject('UniformMass', showAxisSizeFactor='0.01',totalMass=0.1)
+    mappedLeg.createObject('HyperReducedTetrahedronFEMForceField' , RIDPath = path + '/data/RID_SofiaLeg.txt', name = 'HyperReducedFEMForceField_SofiaLeg', weightsPath = path + '/data/weight_SofiaLeg.txt', youngModulus = youngModulus, modesPath = path + '/data/modes.txt', performECSW = 'False', poissonRatio = '0.45', nbModes = '6')
+    mappedLeg.createObject('DeformableOnRigidFrameMapping', input2='@../../../frames/frame', input1='@../tetras', output='@./mappedLeg', globalToLocalCoords='0', index=0)
 
     if controller != None:
         myController = SofiaLegController(SofiaLeg_actuator)
@@ -109,7 +106,7 @@ def Reduced_SofiaLeg(
 
         return SofiaLeg_MOR , myController
 
-    return SofiaLeg_MOR
+    return SofiaLeg_MOR, FramesNode
 
 def createScene(rootNode):
     from stlib.scene import MainHeader
