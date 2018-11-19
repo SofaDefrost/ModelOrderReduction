@@ -20,7 +20,7 @@ def createScene(rootNode):
     M1.createObject('UniformMass', totalMass="0.1")
     M1.createObject('RegularGrid', nx="4", ny="4", nz="20", xmin="-9", xmax="-6", ymin="0", ymax="3", zmin="0", zmax="19")
     M1.createObject('FixedConstraint', indices="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15")
-    M1.createObject('HyperReducedHexahedronFEMForceField', name="FEM", youngModulus="4000", poissonRatio="0.3", method="large",perfro)
+    M1.createObject('HexahedronFEMForceField', name="FEM", youngModulus="4000", poissonRatio="0.3", method="large")
     M1.createObject('GenericConstraintCorrection', solverName='preconditioner')
     
     cableNode = M1.createChild('cableNode')

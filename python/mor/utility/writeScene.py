@@ -116,6 +116,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
 
             modelTranslation = None
             modelRotation = None
+            modelScale = None
             for childName , obj in myModel.items():
                 logFile.write('\n\n')
                 parenNode = ''
