@@ -23,7 +23,7 @@
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
 //#include "config.h"
 
-#include "HyperReducedForceField.h"
+#include "HyperReducedHelper.h"
 #include <SofaSimpleFem/HexahedronFEMForceField.h>
 
 namespace sofa
@@ -63,10 +63,10 @@ namespace forcefield
 */
 
 template<class DataTypes>
-class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedForceField
+class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
 {
 public:
-    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(HexahedronFEMForceField, DataTypes), HyperReducedForceField);
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(HexahedronFEMForceField, DataTypes), HyperReducedHelper);
 
     typedef typename core::behavior::ForceField<DataTypes> InheritForceField;
     typedef typename DataTypes::VecCoord VecCoord;
@@ -144,22 +144,22 @@ public:
 
     // Reduced Order Variables
 
-    using HyperReducedForceField::d_prepareECSW;
-    using HyperReducedForceField::d_nbModes;
-    using HyperReducedForceField::d_modesPath;
-    using HyperReducedForceField::d_nbTrainingSet;
-    using HyperReducedForceField::d_periodSaveGIE;
+    using HyperReducedHelper::d_prepareECSW;
+    using HyperReducedHelper::d_nbModes;
+    using HyperReducedHelper::d_modesPath;
+    using HyperReducedHelper::d_nbTrainingSet;
+    using HyperReducedHelper::d_periodSaveGIE;
 
-    using HyperReducedForceField::d_performECSW;
-    using HyperReducedForceField::d_RIDPath;
-    using HyperReducedForceField::d_weightsPath;
+    using HyperReducedHelper::d_performECSW;
+    using HyperReducedHelper::d_RIDPath;
+    using HyperReducedHelper::d_weightsPath;
 
-    using HyperReducedForceField::Gie;
-    using HyperReducedForceField::weights;
-    using HyperReducedForceField::reducedIntegrationDomain;
+    using HyperReducedHelper::Gie;
+    using HyperReducedHelper::weights;
+    using HyperReducedHelper::reducedIntegrationDomain;
 
-    using HyperReducedForceField::m_modes;
-    using HyperReducedForceField::m_RIDsize;
+    using HyperReducedHelper::m_modes;
+    using HyperReducedHelper::m_RIDsize;
 
 
 protected:

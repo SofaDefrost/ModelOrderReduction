@@ -14,8 +14,8 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef HYPERREDUCEDFORCEFIELD_H
-#define HYPERREDUCEDFORCEFIELD_H
+#ifndef HYPERREDUCEDHELPER_H
+#define HYPERREDUCEDHELPER_H
 
 #include <sofa/core/behavior/BaseMechanicalState.h>
 #include <sofa/core/objectmodel/Event.h>
@@ -48,11 +48,11 @@ namespace forcefield
 
 using sofa::component::loader::MatrixLoader;
 
-class HyperReducedForceField : public virtual core::objectmodel::BaseObject
+class HyperReducedHelper : public virtual core::objectmodel::BaseObject
 {
 public:
 
-    SOFA_CLASS(HyperReducedForceField,core::objectmodel::BaseObject);
+    SOFA_CLASS(HyperReducedHelper,core::objectmodel::BaseObject);
 //class HyperReducedForceField
 //{
 public:
@@ -76,7 +76,7 @@ public:
     unsigned int m_RIDsize;
 
 public:
-    HyperReducedForceField()
+    HyperReducedHelper()
         : d_prepareECSW(initData(&d_prepareECSW,false,"prepareECSW","Save data necessary for the construction of the reduced model"))
         , d_nbModes(initData(&d_nbModes,unsigned(3),"nbModes","Number of modes when preparing the ECSW method only"))
         , d_modesPath(initData(&d_modesPath,std::string("modes.txt"),"modesPath","Path to the file containing the modes (useful only for preparing ECSW)"))
@@ -211,4 +211,4 @@ public:
 } // namespace sofa
 
 
-#endif // HYPERREDUCEDFORCEFIELD_H
+#endif // HYPERREDUCEDHELPER_H

@@ -24,7 +24,7 @@
 #include <sofa/core/objectmodel/Data.h>
 #include <sofa/helper/vector.h>
 #include <SofaEigen2Solver/EigenSparseMatrix.h>
-#include "HyperReducedForceField.h"
+#include "HyperReducedHelper.h"
 #include <SofaDeformable/RestShapeSpringsForceField.h>
 namespace sofa
 {
@@ -54,12 +54,12 @@ namespace forcefield
 * An external MechanicalState reference can also be passed to the ForceField as rest shape position.
 */
 template<class DataTypes>
-class HyperReducedRestShapeSpringsForceField : public virtual RestShapeSpringsForceField<DataTypes>, public HyperReducedForceField
+class HyperReducedRestShapeSpringsForceField : public virtual RestShapeSpringsForceField<DataTypes>, public HyperReducedHelper
 {
 public:
-    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedRestShapeSpringsForceField, DataTypes), SOFA_TEMPLATE(RestShapeSpringsForceField, DataTypes), HyperReducedForceField);
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedRestShapeSpringsForceField, DataTypes), SOFA_TEMPLATE(RestShapeSpringsForceField, DataTypes), HyperReducedHelper);
 
-    typedef HyperReducedForceField Inherit;
+    typedef HyperReducedHelper Inherit;
     typedef typename DataTypes::VecCoord VecCoord;
     typedef typename DataTypes::VecDeriv VecDeriv;
     typedef typename DataTypes::Coord Coord;
@@ -78,22 +78,22 @@ public:
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
 
-    using HyperReducedForceField::d_prepareECSW;
-    using HyperReducedForceField::d_nbModes;
-    using HyperReducedForceField::d_modesPath;
-    using HyperReducedForceField::d_nbTrainingSet;
-    using HyperReducedForceField::d_periodSaveGIE;
+    using HyperReducedHelper::d_prepareECSW;
+    using HyperReducedHelper::d_nbModes;
+    using HyperReducedHelper::d_modesPath;
+    using HyperReducedHelper::d_nbTrainingSet;
+    using HyperReducedHelper::d_periodSaveGIE;
 
-    using HyperReducedForceField::d_performECSW;
-    using HyperReducedForceField::d_RIDPath;
-    using HyperReducedForceField::d_weightsPath;
+    using HyperReducedHelper::d_performECSW;
+    using HyperReducedHelper::d_RIDPath;
+    using HyperReducedHelper::d_weightsPath;
 
-    using HyperReducedForceField::Gie;
-    using HyperReducedForceField::weights;
-    using HyperReducedForceField::reducedIntegrationDomain;
+    using HyperReducedHelper::Gie;
+    using HyperReducedHelper::weights;
+    using HyperReducedHelper::reducedIntegrationDomain;
 
-    using HyperReducedForceField::m_modes;
-    using HyperReducedForceField::m_RIDsize;
+    using HyperReducedHelper::m_modes;
+    using HyperReducedHelper::m_RIDsize;
 
 
     using RestShapeSpringsForceField<DataTypes>::points;

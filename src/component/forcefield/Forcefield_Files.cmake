@@ -1,7 +1,7 @@
 
 list(APPEND HEADER_FILES
 
-    src/component/forcefield/HyperReducedForceField.h
+    src/component/forcefield/HyperReducedHelper.h
     src/component/forcefield/HyperReducedHexahedronFEMForceField.h
     src/component/forcefield/HyperReducedHexahedronFEMForceField.inl
     src/component/forcefield/HyperReducedRestShapeSpringsForceField.h
