@@ -66,7 +66,7 @@ template<class DataTypes>
 class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedForceField
 {
 public:
-    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(core::behavior::ForceField, DataTypes), HyperReducedForceField);
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(HexahedronFEMForceField, DataTypes), HyperReducedForceField);
 
     typedef typename core::behavior::ForceField<DataTypes> InheritForceField;
     typedef typename DataTypes::VecCoord VecCoord;

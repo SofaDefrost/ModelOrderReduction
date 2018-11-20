@@ -15,8 +15,8 @@
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP
-#include "HyperReducedTriangleFEMForceField.inl"
 
+#include "HyperReducedTriangleFEMForceField.inl"
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/defaulttype/Vec3Types.h>
 

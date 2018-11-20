@@ -49,18 +49,18 @@ namespace component
 
 	const char* getModuleVersion()
 	{
-		return "0.2";
+        return "1.0";
 	}
 
 	const char* getModuleLicense()
 	{
-		return "LGPL";
+        return "GPL";
 	}
 
 
 	const char* getModuleDescription()
 	{
-		return "TODO: replace this with the description of your plugin";
+        return "This plugin allows to replace your SOFA simulation by a reduced surrogate that can run at high frame rate.";
 	}
 
 	const char* getModuleComponentList()
