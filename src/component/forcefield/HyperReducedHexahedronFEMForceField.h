@@ -1,23 +1,18 @@
 /******************************************************************************
-*       SOFA, Simulation Open-Framework Architecture, development version     *
-*                (c) 2006-2018 INRIA, USTL, UJF, CNRS, MGH                    *
+*            Model Order Reduction plugin for SOFA                            *
+*                         version 1.0                                         *
+*                       Copyright © Inria                                     *
+*                       All rights reserved                                   *
+*                       2018                                                  *
 *                                                                             *
-* This program is free software; you can redistribute it and/or modify it     *
-* under the terms of the GNU Lesser General Public License as published by    *
-* the Free Software Foundation; either version 2.1 of the License, or (at     *
-* your option) any later version.                                             *
+* This software is under the GNU General Public License v2 (GPLv2)            *
+*            https://www.gnu.org/licenses/licenses.en.html                    *
 *                                                                             *
-* This program is distributed in the hope that it will be useful, but WITHOUT *
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       *
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License *
-* for more details.                                                           *
 *                                                                             *
-* You should have received a copy of the GNU Lesser General Public License    *
-* along with this program. If not, see <http://www.gnu.org/licenses/>.        *
-*******************************************************************************
-* Authors: The SOFA Team and external contributors (see Authors.txt)          *
 *                                                                             *
-* Contact information: contact@sofa-framework.org                             *
+* Authors: Olivier Goury, Felix Vanneste                                      *
+*                                                                             *
+* Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
@@ -36,31 +31,10 @@ namespace forcefield
 {
 
 
-/** Compute Finite Element forces based on hexahedral elements.
-*
-* Corotational hexahedron from
-* @Article{NMPCPF05,
-*   author       = "Nesme, Matthieu and Marchal, Maud and Promayon, Emmanuel and Chabanas, Matthieu and Payan, Yohan and Faure, Fran\c{c}ois",
-*   title        = "Physically Realistic Interactive Simulation for Biological Soft Tissues",
-*   journal      = "Recent Research Developments in Biomechanics",
-*   volume       = "2",
-*   year         = "2005",
-*   keywords     = "surgical simulation physical animation truth cube",
-*   url          = "http://www-evasion.imag.fr/Publications/2005/NMPCPF05"
-* }
-*
-* WARNING: indices ordering is different than in topology node
-*
-*     Y  7---------6
-*     ^ /         /|
-*     |/    Z    / |
-*     3----^----2  |
-*     |   /     |  |
-*     |  4------|--5
-*     | /       | /
-*     |/        |/
-*     0---------1-->X
+/** This forceField is the HyperReduced version of HexahedronFEMForceField.
+*   At the moment, it is only implemented for the "large" method (i.e not for small, polar or svd).
 */
+
 
 template<class DataTypes>
 class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
