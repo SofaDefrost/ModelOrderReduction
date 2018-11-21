@@ -244,7 +244,6 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
     {
         // compute force on element
         this->computeForce( F, D, _plasticStrains[elementIndex], materialsStiffnesses[elementIndex], strainDisplacements[elementIndex] );
-
         std::vector<Deriv> contrib;
         std::vector<unsigned int> indexList;
         contrib.resize(4);
@@ -252,16 +251,12 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
         for(int i=0; i<12; i+=3){
             contrib[i/3] = rotations[elementIndex] * Deriv( F[i], F[i+1],  F[i+2] );
             indexList[i/3] = index[i/3];
-            if (d_performECSW.getValue())
+            if (!d_performECSW.getValue())
                 f[indexList[i/3]] +=  contrib[i/3];
             else
                 f[indexList[i/3]] +=  weights(elementIndex)*contrib[i/3];
         }
-
         this->updateGie<DataTypes>(indexList, contrib, elementIndex);
-
-
-
     }
     else if( _plasticMaxThreshold.getValue() <= 0 )
     {
