@@ -30,15 +30,15 @@ def createScene(rootNode):
                         dt=DT,
                         gravity=GRAVITY)
     rootNode.VisualStyle.displayFlags="showForceFields"
-    translate = 300
-    rotationBlue = 60.0
-    rotationWhite = 80
-    rotationRed = 70
     
     MyReducedModel(rootNode,
                         name="MyReducedModel",
                         surfaceMeshFileName=surfaceMeshFileName)
-
+#    translate = 300
+#    rotationBlue = 60.0
+#    rotationWhite = 80
+#    rotationRed = 70
+#
 #    for i in range(3):
 #
 #        MyReducedModel(rootNode,
