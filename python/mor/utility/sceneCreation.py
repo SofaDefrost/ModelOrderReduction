@@ -27,7 +27,8 @@ except:
 
 from mor.wrapper import replaceAndSave
 
-forceFieldImplemented = {   'HyperReducedHexahedronFEMForceField':'hexahedra',
+forceFieldImplemented = {   'HyperReducedTetrahedronHyperelasticityFEMForceField':'tetrahedra',
+                            'HyperReducedHexahedronFEMForceField':'hexahedra',
                             'HyperReducedTetrahedronFEMForceField':'tetrahedra',
                             'HyperReducedTriangleFEMForceField':'triangles',
                             'HyperReducedRestShapeSpringsForceField':'points'
@@ -221,7 +222,7 @@ def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
 
 def saveElements(rootNode,dt,forcefield):
     import numpy as np
-
+    print('--------------------->  Gonna Try to Save the Elements')
     def save(node,container,valueType, **param):
         global tmp
         elements = container.findData(valueType).value
@@ -244,7 +245,7 @@ def saveElements(rootNode,dt,forcefield):
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
 
-            # print('--------------------->  ',valueType)
+            print('--------------------->  ',valueType)
 
             if valueType:
                 animate(save, {"node" : node ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
