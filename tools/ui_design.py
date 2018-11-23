@@ -21,6 +21,7 @@ import sys
 
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
+pathToIcon = path+'/../python/mor/gui/icons/'
 sys.path.append(path+'/../python') # TO CHANGE
 
 from mor.gui import FrameLayout
@@ -56,7 +57,7 @@ class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
         super(MyLineEdit, self).__init__(value)
 
         self.leftArrowBtn = QtGui.QToolButton(self)
-        self.leftArrowBtn.setIcon(QtGui.QIcon('leftArrow.png'))
+        self.leftArrowBtn.setIcon(QtGui.QIcon(pathToIcon+'leftArrow.png'))
         self.leftArrowBtn.setStyleSheet('border: 0px; padding: 0px;')
         self.leftArrowBtn.setCursor(QtCore.Qt.ArrowCursor)
         self.leftArrowBtn.clicked.connect(self.leftArrowBtnClicked.emit)

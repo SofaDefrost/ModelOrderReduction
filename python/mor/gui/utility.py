@@ -100,7 +100,7 @@ def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
 
     return fileName
 
-def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
+def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk *.obj",display=None):
     '''
     openFilesNames will pop up a dialog window allowing the user to choose multiple files
     and potentially display there coreponding path
@@ -109,15 +109,23 @@ def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk",display=None):
     if shortcut:
         QtGui.QFileDialog.setSidebarUrls(QtGui.QFileDialog(),shortcut)
 
-    filesName = QtGui.QFileDialog.getOpenFileNames(None,hdialog,
+    tmp = QtGui.QFileDialog.getOpenFileNames(None,hdialog,
         directory=lastVisited,filter=filter,
         options=QtGui.QFileDialog.DontUseNativeDialog)
 
+    filesName = []
+    for fileName in tmp:
+        filesName.append(str(fileName))
+
+    if display and fileName:
+        tmp = ''
+        for fileName in filesName:
+            tmp += fileName+'\n'
+        display.setText(tmp)
+
     if display and filesName:
         for fileName in filesName:
-            display.append(str(fileName))
-
-            tmp = '/'.join(str(fileName).split('/')[:-1])
+            tmp = '/'.join(fileName.split('/')[:-1])
             lastVisited = tmp
             if tmp not in shortcut:
                 shortcut.append(QtCore.QUrl.fromLocalFile(tmp))

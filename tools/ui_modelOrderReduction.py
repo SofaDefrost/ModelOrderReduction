@@ -43,6 +43,7 @@ from pydoc import locate
 
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
+pathToIcon = path+'/../python/mor/gui/icons/'
 sys.path.append(path+'/../python') # TO CHANGE
 
 from mor.reduction import ReduceModel
@@ -334,7 +335,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         btn.setObjectName(_fromUtf8("button"))
 
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap('icon.png'))
+        icon.addPixmap(QtGui.QPixmap(pathToIcon+'icon.png'))
         btn.setIcon(icon)
         btn.setFixedWidth(30)
         btn.setStyleSheet("border:0px")
@@ -852,7 +853,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                 arguments['addToLib'] = True
             else:
                 u.msg_info(msg,"The Reduced Model won't be added to the library")
-            
+
 
             # Preference Arguments
             for key , value in self.dialogMenu.currentValues.iteritems():
