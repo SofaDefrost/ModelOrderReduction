@@ -837,8 +837,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                 arguments['listObjToAnimate'].append(ObjToAnimate(  location = data[pageName]['tableWidget_animationParam'][row][2],
                                                                     animFct = data[pageName]['tableWidget_animationParam'][row][0],
                                                                     **data[pageName]['tableWidget_animationParam'][row][1]) )
-                print(data[pageName]['tableWidget_animationParam'][row][1])
-
+    
             # Advanced Arguments
             pageName = str(self.grpBox_AdvancedParam.objectName())
 
