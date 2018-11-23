@@ -19,9 +19,8 @@ surfaceMeshFileName = 'sofia_leg.stl'
 def createScene(rootNode):
     MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
                         dt=0.01,
-                        gravity=[0, -9810, 0],
-                        displayFlags='showVisualModels')
-
+                        gravity=[0, -9810, 0])
+    rootNode.VisualStyle.displayFlags='showVisualModels'
     rootNode.createObject('FreeMotionAnimationLoop'); 
     rootNode.createObject('LCPConstraintSolver', mu=str(1), tolerance="1.0e-15", maxIt="10000");
     rootNode.createObject('CollisionPipeline', verbose="0");
