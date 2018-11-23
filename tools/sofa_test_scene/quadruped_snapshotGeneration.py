@@ -43,7 +43,7 @@ def createScene(rootNode):
 #                model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0', translation='-80 55 0')
                 model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0')
                 #model.createObject('UniformMass', totalmass='0.035')
-                model.createObject('UniformMass', totalmass='0.200')
+                model.createObject('UniformMass', totalMass='0.200')
                 model.createObject('TetrahedronFEMForceField', template='Vec3d', name='FEM', method='large', poissonRatio='0.05',  youngModulus='70', drawAsEdges="1")
 		  
 		model.createObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes='true') 
@@ -126,9 +126,15 @@ def createScene(rootNode):
                 
                 
 		##########################################
-                # Visualization                          
-                modelVisu = model.createChild('visu')                
-                modelVisu.createObject('OglModel', filename=path+"quadriped_collision.stl", template='ExtVec3f', color='0.7 0.7 0.7 0.6')
+                # Visualization  
+                modelVisu = model.createChild('visu')
+                modelVisu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+"quadriped_collision.stl")
+
+                modelVisu.createObject(  'OglModel',
+                                    src='@loader',
+                                    template='ExtVec3f',
+                                    color='0.7 0.7 0.7 0.6')
+
                 modelVisu.createObject('BarycentricMapping')
 
                 planeNode = rootNode.createChild('Plane')

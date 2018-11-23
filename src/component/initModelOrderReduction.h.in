@@ -26,6 +26,8 @@
 #define SOFA_MODELORDERREDUCTION_API  SOFA_IMPORT_DYNAMIC_LIBRARY
 #endif
 
+#cmakedefine MOR_PYTHON
+
 /** \mainpage
   This is a the starting page of the plugin documentation, defined in file initModelOrderReduction.h
   */

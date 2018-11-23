@@ -122,16 +122,21 @@ def Reduced_starfish(
 
     ## Visualization
     if surfaceMeshFileName:
-	    visu = model.createChild('Visual')
+        visu = model.createChild('Visual')
+        meshType = surfaceMeshFileName.split('.')[-1]
+        if meshType == 'stl':
+            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+        elif meshType == 'obj':
+            visu.createObject(  'MeshObjLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
 
-	    visu.createObject(	'OglModel', 
-	    					filename=path+'/mesh/'+surfaceMeshFileName,
+        visu.createObject(  'OglModel',
+                            src='@loader',
                             template='ExtVec3f',
                             color=surfaceColor,
                             rotation= add(rotation,[0.0, 0.0, 0.0]),
                             translation = add(translation,[0.0, 0.0, 0.0]))
 
-	    visu.createObject('BarycentricMapping')
+        visu.createObject('BarycentricMapping')
 
     return model
 
