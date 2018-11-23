@@ -13,9 +13,7 @@ list(APPEND HEADER_FILES
     src/component/forcefield/HyperReducedTriangleFEMForceField.h
     src/component/forcefield/HyperReducedTriangleFEMForceField.inl
     src/component/forcefield/MechanicalMatrixMapperMOR.h
-    src/component/forcefield/MechanicalMatrixMapperMOR.inl
-    src/component/forcefield/MooneyRivlin.h
-    src/component/forcefield/NeoHookean.h)
+    src/component/forcefield/MechanicalMatrixMapperMOR.inl)
 
 list(APPEND SOURCE_FILES
 

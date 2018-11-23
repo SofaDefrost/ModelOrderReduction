@@ -420,7 +420,6 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addKToMatrix(const core::Me
         nbElementsConsidered = m_RIDsize;
     }
     for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
-    //for(it = this->getIndexedElements()->begin() ; it != this->getIndexedElements()->end() ; ++it, ++i)
     {
         if (!d_performECSW.getValue()){
             e = numElem;
