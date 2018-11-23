@@ -222,10 +222,10 @@ def createScene(rootNode):
         isAStaticObject = True,
         uniformScale = 10)
 
-    # With reduce legs
+    # With reduced legs
     SofiaSixLegs(attachedTo=rootNode,
                          name='sofia_reduced',
-                         reduced=False,
+                         reduced=True,
                          rotation=[0,0,0],
                          translation=[-200, 0, -400])
     # Without reduced legs
