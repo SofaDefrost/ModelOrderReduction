@@ -47,7 +47,6 @@ class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual Tetra
   public:
     SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedTetrahedronHyperelasticityFEMForceField, DataTypes), SOFA_TEMPLATE(TetrahedronHyperelasticityFEMForceField, DataTypes), HyperReducedHelper);
 
-    typedef core::behavior::ForceField<DataTypes> Inherited;
     typedef typename DataTypes::VecCoord VecCoord;
     typedef typename DataTypes::VecDeriv VecDeriv;
     typedef typename DataTypes::Coord Coord;
@@ -81,7 +80,7 @@ class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual Tetra
 
 public :
 	
-	typename sofa::component::fem::MaterialParameters<DataTypes> globalParameters;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::globalParameters;
 
 
  protected :
@@ -113,7 +112,7 @@ public :
 
     using HyperReducedHelper::m_modes;
     using HyperReducedHelper::m_RIDsize;
-    Eigen::VectorXi reducedIntegrationDomainWithEdges;
+    Eigen::Matrix<unsigned int, Eigen::Dynamic, 1> reducedIntegrationDomainWithEdges;
 
     unsigned int m_RIDedgeSize;
 
@@ -126,19 +125,13 @@ protected:
    virtual   ~HyperReducedTetrahedronHyperelasticityFEMForceField();
 public:
 
-  //  virtual void parse(core::objectmodel::BaseObjectDescription* arg);
-
     virtual void init();
     
     virtual void addForce(const core::MechanicalParams* mparams /* PARAMS FIRST */, DataVecDeriv& d_f, const DataVecCoord& d_x, const DataVecDeriv& d_v);
     virtual void addDForce(const core::MechanicalParams* mparams /* PARAMS FIRST */, DataVecDeriv& d_df, const DataVecDeriv& d_dx);
-    virtual SReal getPotentialEnergy(const core::MechanicalParams*, const DataVecCoord&) const;
     virtual void addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset);
 
     void draw(const core::visual::VisualParams* vparams);
-
-    Mat<3,3,double> getPhi( int tetrahedronIndex);
-
 
   protected:
 
@@ -146,8 +139,6 @@ public:
 
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_myMaterial;
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_tetrahedronHandler;
-
-    void testDerivatives();
 
     void updateTangentMatrix();
 };

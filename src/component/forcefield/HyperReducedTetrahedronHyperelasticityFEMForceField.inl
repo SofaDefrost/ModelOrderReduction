@@ -77,7 +77,7 @@ template <class DataTypes> void HyperReducedTetrahedronHyperelasticityFEMForceFi
     reducedIntegrationDomainWithEdges.resize(m_topology->getNbEdges());
     int nbEdgesStored = 0;
     unsigned int i;
-    for (int iECSW = 0; iECSW<m_RIDsize; iECSW++)
+    for (unsigned int iECSW = 0; iECSW<m_RIDsize; iECSW++)
     {
         i = reducedIntegrationDomain(iECSW);
         BaseMeshTopology::EdgesInTetrahedron te=m_topology->getEdgesInTetrahedron(i);
@@ -224,6 +224,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
     }
     for( unsigned int tetNum = 0 ; tetNum<nbElementsConsidered ;++tetNum)
     {
+
         if (!d_performECSW.getValue()){
             i = tetNum;
         }
@@ -231,7 +232,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
         {
             i = reducedIntegrationDomain(tetNum);
         }
-
 
         tetInfo=&tetrahedronInf[i];
         const Tetrahedron &ta= m_topology->getTetrahedron(i);
@@ -257,7 +257,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
                 }
             }
         }
-
         /// compute the right Cauchy-Green deformation matrix
         for (k=0;k<3;++k) {
             for (l=k;l<3;++l) {
@@ -266,7 +265,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
                                                  tetInfo->m_deformationGradient(2,k)*tetInfo->m_deformationGradient(2,l));
             }
         }
-
         if(globalParameters.anisotropyDirection.size()>0)
         {
             tetInfo->m_fiberDirection=globalParameters.anisotropyDirection[0];
@@ -275,20 +273,19 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
             tetInfo->lambda=(Real)sqrt(aDotCDota);
         }
         Coord areaVec = cross( dp[1], dp[2] );
-
         tetInfo->J = dot( areaVec, dp[0] ) * tetInfo->m_volScale;
         tetInfo->trC = (Real)( tetInfo->deformationTensor(0,0) + tetInfo->deformationTensor(1,1) + tetInfo->deformationTensor(2,2));
         tetInfo->m_SPKTensorGeneral.clear();
         m_myMaterial->deriveSPKTensor(tetInfo,globalParameters,tetInfo->m_SPKTensorGeneral);
         std::vector<Deriv> contrib;
         std::vector<unsigned int> indexList;
-
-
+        contrib.resize(4);
+        indexList.resize(4);
         for(l=0;l<4;++l)
         {
-            contrib[l] = -tetInfo->m_deformationGradient*(tetInfo->m_SPKTensorGeneral*tetInfo->m_shapeVector[l])*tetInfo->m_restVolume;
+            contrib[l] =  -tetInfo->m_deformationGradient*(tetInfo->m_SPKTensorGeneral*tetInfo->m_shapeVector[l])*tetInfo->m_restVolume;
             indexList[l] = ta[l];
-            if (!d_prepareECSW.getValue())
+            if (!d_performECSW.getValue())
                 f[ta[l]] += contrib[l];
             else
                 f[ta[l]] += weights(i)*contrib[l];
@@ -325,7 +322,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::updateTange
 
     if (d_performECSW.getValue())
     {
-        for(int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
+        for(unsigned int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
         {
             i = reducedIntegrationDomain(iECSW);
 
@@ -522,13 +519,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
     d_df.endEdit();
 }
 
-template<class DataTypes>
-SReal HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::getPotentialEnergy(const core::MechanicalParams*, const DataVecCoord&) const
-{
-    msg_error() << "ERROR("<<this->getClassName()<<"): getPotentialEnergy( const MechanicalParams*, const DataVecCoord& ) not implemented.";
-    return 0.0;
-}
-
 template <class DataTypes>
 void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset)
 {
@@ -605,155 +595,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatri
     m_edgeInfo.endEdit();
 }
 
-template<class DataTypes>
-Mat<3,3,double> HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::getPhi(int TetrahedronIndex)
-{
-    helper::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation>& tetrahedronInf = *(m_tetrahedronInfo.beginEdit());
-    typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation *tetInfo;
-	tetInfo=&tetrahedronInf[TetrahedronIndex];
-    return tetInfo->m_deformationGradient;
-
-}
-
-template<class DataTypes>
-void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::testDerivatives()
-{
-    DataVecCoord d_pos;
-    VecCoord &pos = *d_pos.beginEdit();
-    pos =  this->mstate->read(core::ConstVecCoordId::position())->getValue();
-
-    // perturbate original state:
-    srand( 0 );
-    for (unsigned int idx=0; idx<pos.size(); idx++) {
-            for (unsigned int d=0; d<3; d++) pos[idx][d] += (Real)0.01 * ((Real)rand()/(Real)(RAND_MAX - 0.5));
-    }
-
-    DataVecDeriv d_force1;
-    VecDeriv &force1 = *d_force1.beginEdit();
-    force1.resize( pos.size() );
-
-    DataVecDeriv d_deltaPos;
-    VecDeriv &deltaPos = *d_deltaPos.beginEdit();
-    deltaPos.resize( pos.size() );
-
-    DataVecDeriv d_deltaForceCalculated;
-    VecDeriv &deltaForceCalculated = *d_deltaForceCalculated.beginEdit();
-    deltaForceCalculated.resize( pos.size() );
-
-    DataVecDeriv d_force2;
-    VecDeriv &force2 = *d_force2.beginEdit();
-    force2.resize( pos.size() );
-
-    Coord epsilon, zero;
-    Real cs = (Real)0.00001;
-    Real errorThresh = (Real)200.0*cs*cs;
-    Real errorNorm;
-    Real avgError=0.0;
-    int count=0;
-
-    helper::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation> &tetrahedronInf = *(m_tetrahedronInfo.beginEdit());
-
-    for (unsigned int moveIdx=0; moveIdx<pos.size(); moveIdx++)
-    {
-        for (unsigned int i=0; i<pos.size(); i++)
-        {
-                deltaForceCalculated[i] = zero;
-                force1[i] = zero;
-                force2[i] = zero;
-        }
-
-        d_force1.setValue(force1);
-        d_pos.setValue(pos);
-
-        //this->addForce( force1, pos, force1 );
-        this->addForce( core::MechanicalParams::defaultInstance() /* PARAMS FIRST */, d_force1, d_pos, d_force1 );
-
-        // get current energy around
-        Real energy1 = 0;
-        BaseMeshTopology::TetrahedraAroundVertex vTetras = m_topology->getTetrahedraAroundVertex( moveIdx );
-        for(unsigned int i = 0; i < vTetras.size(); ++i)
-        {
-            energy1 += tetrahedronInf[vTetras[i]].m_strainEnergy * tetrahedronInf[vTetras[i]].m_restVolume;
-        }
-        // generate random delta
-        epsilon[0]= cs * ((Real)rand()/(Real)(RAND_MAX - 0.5));
-        epsilon[1]= cs * ((Real)rand()/(Real)(RAND_MAX - 0.5));
-        epsilon[2]= cs * ((Real)rand()/(Real)(RAND_MAX - 0.5));
-        deltaPos[moveIdx] = epsilon;
-        // calc derivative
-        this->addDForce( core::MechanicalParams::defaultInstance() /* PARAMS FIRST */, d_deltaForceCalculated, d_deltaPos );
-        deltaPos[moveIdx] = zero;
-        // calc factual change
-        pos[moveIdx] = pos[moveIdx] + epsilon;
-
-        DataVecCoord d_force2;
-        d_force2.setValue(force2);
-        //this->addForce( force2, pos, force2 );
-        this->addForce( core::MechanicalParams::defaultInstance() /* PARAMS FIRST */, d_force2, d_pos, d_force2 );
-
-        pos[moveIdx] = pos[moveIdx] - epsilon;
-        // check first derivative:
-        Real energy2 = 0;
-        for(unsigned int i = 0; i < vTetras.size(); ++i)
-        {
-                energy2 += tetrahedronInf[vTetras[i]].m_strainEnergy * tetrahedronInf[vTetras[i]].m_restVolume;
-        }
-        Coord forceAtMI = force1[moveIdx];
-        Real deltaEnergyPredicted = -dot( forceAtMI, epsilon );
-        Real deltaEnergyFactual = (energy2 - energy1);
-        Real energyError = fabs( deltaEnergyPredicted - deltaEnergyFactual );
-        if (energyError > 0.05*fabs(deltaEnergyFactual))
-        { // allow up to 5% error
-            printf("Error energy %i = %f%%\n", moveIdx, 100.0*energyError/fabs(deltaEnergyFactual) );
-        }
-
-        // check 2nd derivative for off-diagonal elements:
-        BaseMeshTopology::EdgesAroundVertex vEdges = m_topology->getEdgesAroundVertex( moveIdx );
-        for (unsigned int eIdx=0; eIdx<vEdges.size(); eIdx++)
-        {
-            BaseMeshTopology::Edge edge = m_topology->getEdge( vEdges[eIdx] );
-            unsigned int testIdx = edge[0];
-            if (testIdx==moveIdx) testIdx = edge[1];
-            Coord deltaForceFactual = force2[testIdx] - force1[testIdx];
-            Coord deltaForcePredicted = deltaForceCalculated[testIdx];
-            Coord error = deltaForcePredicted - deltaForceFactual;
-            errorNorm = error.norm();
-            errorThresh = (Real) 0.05 * deltaForceFactual.norm(); // allow up to 5% error
-
-            if (deltaForceFactual.norm() > 0.0)
-            {
-                    avgError += (Real)100.0*errorNorm/deltaForceFactual.norm();
-                    count++;
-            }
-            if (errorNorm > errorThresh)
-            {
-                    printf("Error move %i test %i = %f%%\n", moveIdx, testIdx, 100.0*errorNorm/deltaForceFactual.norm() );
-            }
-        }
-        // check 2nd derivative for diagonal elements:
-        unsigned int testIdx = moveIdx;
-        Coord deltaForceFactual = force2[testIdx] - force1[testIdx];
-        Coord deltaForcePredicted = deltaForceCalculated[testIdx];
-        Coord error = deltaForcePredicted - deltaForceFactual;
-        errorNorm = error.norm();
-        errorThresh = (Real)0.05 * deltaForceFactual.norm(); // allow up to 5% error
-        if (errorNorm > errorThresh)
-        {
-                printf("Error move %i test %i = %f%%\n", moveIdx, testIdx, 100.0*errorNorm/deltaForceFactual.norm() );
-        }
-    }
-
-    m_tetrahedronInfo.endEdit();
-    printf( "testDerivatives passed!\n" );
-    avgError /= (Real)count;
-    printf( "Average error = %.2f%%\n", avgError );
-
-    d_pos.endEdit();
-    d_force1.endEdit();
-    d_force2.endEdit();
-    d_deltaPos.endEdit();
-    d_deltaForceCalculated.endEdit();
-}
 
 
 template<class DataTypes>
@@ -771,7 +612,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::draw(const 
 
     std::vector< Vector3 > points[4];
     int i;
-    for(int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
+    for(unsigned int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
     {
         i = reducedIntegrationDomain(iECSW);
 
