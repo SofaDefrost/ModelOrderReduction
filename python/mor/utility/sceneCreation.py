@@ -27,7 +27,8 @@ except:
 
 from mor.wrapper import replaceAndSave
 
-forceFieldImplemented = {   'HyperReducedTetrahedronHyperelasticityFEMForceField':'tetrahedra',
+forceFieldImplemented = {   'HyperReducedTetrahedralCorotationalFEMForceField':'tetrahedra',
+                            'HyperReducedTetrahedronHyperelasticityFEMForceField':'tetrahedra',
                             'HyperReducedHexahedronFEMForceField':'hexahedra',
                             'HyperReducedTetrahedronFEMForceField':'tetrahedra',
                             'HyperReducedTriangleFEMForceField':'triangles',

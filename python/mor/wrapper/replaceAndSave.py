@@ -2,7 +2,8 @@
 
 from collections import OrderedDict
 
-forceFieldImplemented = {   'TetrahedronHyperelasticityFEMForceField':('HyperReducedTetrahedronHyperelasticityFEMForceField','tetrahedra'),
+forceFieldImplemented = {   'TetrahedralCorotationalFEMForceField':('HyperReducedTetrahedralCorotationalFEMForceField','tetrahedra'),
+                            'TetrahedronHyperelasticityFEMForceField':('HyperReducedTetrahedronHyperelasticityFEMForceField','tetrahedra'),
                             'HexahedronFEMForceField':('HyperReducedHexahedronFEMForceField','hexahedra'),
                             'TetrahedronFEMForceField':('HyperReducedTetrahedronFEMForceField','tetrahedra'),
                             'TriangleFEMForceField':('HyperReducedTriangleFEMForceField','triangles'),
