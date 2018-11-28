@@ -22,6 +22,7 @@ def convertRIDinActiveNodes(RIDFileName,connectivityFileName,listActiveNodesFile
 
     fRID = open(RIDFileName,'r')
     if verbose : print "Reading file :",RIDFileName
+    fRID.readline()
     RIDlist = []
     for line in fRID:
         lineSplit = line.split();
