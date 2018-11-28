@@ -16,14 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
-//#include "config.h"
-#include <SofaDeformable/config.h>
-#include <sofa/defaulttype/RGBAColor.h>
 
-#include <sofa/core/behavior/ForceField.h>
-#include <sofa/core/objectmodel/Data.h>
-#include <sofa/helper/vector.h>
-#include <SofaEigen2Solver/EigenSparseMatrix.h>
 #include "HyperReducedHelper.h"
 #include <SofaDeformable/RestShapeSpringsForceField.h>
 namespace sofa
@@ -106,17 +99,7 @@ public:
     using RestShapeSpringsForceField<DataTypes>::springColor;
     using RestShapeSpringsForceField<DataTypes>::restMState;
 
-//    Data< helper::vector< unsigned int > > points; ///< points controlled by the rest shape springs
-//    Data< VecReal > stiffness; ///< stiffness values between the actual position and the rest shape position
-//    Data< VecReal > angularStiffness; ///< angularStiffness assigned when controlling the rotation of the points
-//    Data< helper::vector< CPos > > pivotPoints; ///< global pivot points used when translations instead of the rigid mass centers
-//    Data< helper::vector< unsigned int > > external_points; ///< points from the external Mechancial State that define the rest shape springs
-//    Data< bool > recompute_indices; ///< Recompute indices (should be false for BBOX)
-//    Data< bool > drawSpring; ///< draw Spring
-//    Data< defaulttype::RGBAColor > springColor; ///< spring color. (default=[0.0,1.0,0.0,1.0])
-
-//    SingleLink<HyperReducedRestShapeSpringsForceField<DataTypes>, sofa::core::behavior::MechanicalState< DataTypes >, BaseLink::FLAG_STOREPATH|BaseLink::FLAG_STRONGLINK> restMState;
-    linearsolver::EigenBaseSparseMatrix<typename DataTypes::Real> matS;
+    using RestShapeSpringsForceField<DataTypes>::matS;
 
 protected:
     HyperReducedRestShapeSpringsForceField();
@@ -126,8 +109,6 @@ public:
     void bwdInit() override ;
     virtual void parse(core::objectmodel::BaseObjectDescription *arg) override ;
     virtual void reinit() override ;
-    virtual void init() override ;
-
 
     /// Add the forces.
     virtual void addForce(const core::MechanicalParams* mparams, DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv& v) override;
@@ -150,22 +131,14 @@ public:
 
     virtual void draw(const core::visual::VisualParams* vparams) override;
 
-    const DataVecCoord* getExtPosition() const;
-    const VecIndex& getIndices() const { return m_indices; }
-    const VecIndex& getExtIndices() const { return (useRestMState ? m_ext_indices : m_indices); }
-
-    virtual void updateForceMask() override;
-
 protected :
 
-    void recomputeIndices();
+    using RestShapeSpringsForceField<DataTypes>::m_indices;
+    using RestShapeSpringsForceField<DataTypes>::k;
+    using RestShapeSpringsForceField<DataTypes>::m_ext_indices;
+    using RestShapeSpringsForceField<DataTypes>::m_pivots;
 
-    VecIndex m_indices;
-    VecReal k;
-    VecIndex m_ext_indices;
-    helper::vector<CPos> m_pivots;
-
-    SReal lastUpdatedStep;
+    using RestShapeSpringsForceField<DataTypes>::lastUpdatedStep;
 
 private :
 
