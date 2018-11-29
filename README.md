@@ -18,31 +18,31 @@ You can also explore the *examples* directory in the repository *doc/examples/* 
 
 ## Prerequisite
 
-
-- [Python 2.7.X](https://www.python.org/downloads/)
-
-
-- [Cheetah](http://cheetahtemplate.org/)
-
-
-- [PyQt](https://wiki.python.org/moin/PyQt) *(optional)*
-
-
 - SOFA Plugin Dependencies
 
-
-	[STLIB](https://github.com/SofaDefrost/STLIB) with branch *stdlib_wrapper*
-
-
-	*optional:*
-
-	[SoftRobots](https://github.com/SofaDefrost/SoftRobots) with branch *Documentation*
+	- [STLIB](https://github.com/SofaDefrost/STLIB)
 
 
-- Sofa Launcher
+	- *optional:*
 
-	```
-	export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher
-	```
+	 	- [SoftRobots](https://github.com/SofaDefrost/SoftRobots)
 
-More informations in [requirement](https://modelorderreduction.readthedocs.io/en/latest/usage/install/requirement.html) section of our doc
+- Package dependencies
+
+	- [Python 2.7.X](https://www.python.org/downloads/)
+
+	- For the GUI:
+
+		- [PyQt4](https://wiki.python.org/moin/PyQt) *(optional)*
+
+		- [yaml](https://pypi.org/project/PyYAML/)
+
+	- Sofa Launcher (to reduce) :
+
+		- [Cheetah](http://cheetahtemplate.org/)
+
+		```
+		export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher
+		```
+
+More informations in **[requirement](https://modelorderreduction.readthedocs.io/en/latest/usage/install/requirement.html)** section of our doc
