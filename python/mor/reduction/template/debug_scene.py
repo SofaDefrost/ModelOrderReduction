@@ -24,4 +24,8 @@ def createScene(rootNode):
     else:	
         stateFileName="stateFile.state"
     originalScene.createScene(rootNode)
+
+    path , param = paramWrapper[0]  
+    pathToNode = path[1:]
+
     u.createDebug(rootNode,paramWrapper,stateFileName)

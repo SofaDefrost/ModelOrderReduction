@@ -57,7 +57,7 @@ def createScene(rootNode):
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
 
-    u.modifyGraphScene(rootNode,nbrOfModes,paramWrapper,save=True) # 2
+    u.modifyGraphScene(rootNode,nbrOfModes,paramWrapper)
 
     # We collect all the informations during 1 & 2 to be able to create with
     # writeGraphScene a SOFA scene containing only our reduced model that we can instanciate

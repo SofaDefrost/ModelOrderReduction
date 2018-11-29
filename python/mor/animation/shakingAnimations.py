@@ -25,9 +25,11 @@ def rotationPoint(Pos0, angle, brasLevier):
 lastTime = 0
 def defaultShaking( objToAnimate, dt, factor, **param):
     """
-    *increase* a value of a Sofa object until it reach its *maximum*
+    **Default animation function** 
 
-    For this objToAnimate.params arguments which is a dic will need 3 keys:
+    The animation consist on *increasing* a value of a Sofa object until it reach its *maximum*
+
+    To use it the **params** parameters of :py:class:`.ObjToAnimate` which is a dictionnary will need 4 keys:
 
     **Keys:**
 
@@ -49,36 +51,43 @@ def defaultShaking( objToAnimate, dt, factor, **param):
     time = factor * objToAnimate.duration
     period = dt * objToAnimate.params['incrPeriod']
 
-    # print("lastTime : "+str(lastTime))
-    # print("currentTime - startTime : "+str(time))
+    argList = ['dataToWorkOn','incrPeriod','incr','rangeOfAction']
+    
+    if not all(objToAnimate.params["dataToWorkOn"]):
+        
+        raise('Missing parameter')
 
-    if (time == dt):
-        writeCurrent = True
+    else:
 
-    # TODO will bug if period of 1 !!
-    if (time-(lastTime + period + dt) >= 0.000001): #{time > (lastTime + period + dt)):
-        lastTime += period
+        if (time == dt):
+            writeCurrent = True
 
-    if ( abs(time-(lastTime + period + dt)) <= 0.000001 ):
-        writeCurrent = True
+        # TODO will bug if period of 1 !!
+        if (time-(lastTime + period + dt) >= 0.000001): #{time > (lastTime + period + dt)):
+            lastTime += period
 
-    if (writeCurrent):
+        if ( abs(time-(lastTime + period + dt)) <= 0.000001 ):
+            writeCurrent = True
 
-        print("For Actuator : "+objToAnimate.location)
+        if (writeCurrent):
 
-        actualValue = objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value[0][0]
-        actualValue = upDateValue(actualValue,objToAnimate.params['rangeOfAction'],objToAnimate.params['incr'])
-        objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value = actualValue
+            print("For Actuator : "+objToAnimate.location)
 
-        print ("Updated Value :"+str(actualValue)+'\n')
+            actualValue = objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value[0][0]
+            actualValue = upDateValue(actualValue,objToAnimate.params['rangeOfAction'],objToAnimate.params['incr'])
+            objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value = actualValue
+
+            print ("Updated Value :"+str(actualValue)+'\n')
 
 def shakingSofia( objToAnimate, dt, factor, **param):
     """
-    was made specifically to shake the Sofia Leg and can be an example as an custom shaking animation
+    **Animation function made specifically to shake the leg of 
+    the** `6-legged Robot <https://modelorderreduction.readthedocs.io/en/latest/usage/examples/Sofia/sofia.html>`_
+    
+    It's an example of what can be a custom shaking animation.
+    The animation consist on taking a position in entry, rotate it, and then update it in the component.
 
-    It take a position, rotate it and update it in the component
-
-    For this shaking, objToAnimate.params arguments will need 3 keys:
+    To use it the **params** parameters of :py:class:`.ObjToAnimate` which is a dictionnary will need 6 keys:
 
     **Keys:**
 
@@ -115,7 +124,7 @@ def shakingSofia( objToAnimate, dt, factor, **param):
 
 def shakingInverse( objToAnimate, dt, factor, **param):
     """
-    TODO
+    **TODO**
     """
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
     # print("currentTime - startTime : "+str(factor * objToAnimate.duration))

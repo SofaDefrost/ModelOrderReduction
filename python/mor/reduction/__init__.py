@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Set of Function/Class to perform Model Reduction
+**Set of Function/Class to perform Model Reduction**
 
 **Content:**
 
@@ -8,6 +8,7 @@ Set of Function/Class to perform Model Reduction
     :toctree: _autosummary
 
     mor.reduction.reduceModel
+    mor.reduction.script
 
 """
 __all__=["reduceModel,script"]

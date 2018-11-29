@@ -167,7 +167,7 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
     if verbose: print "===> Success readGieFileAndComputeRIDandWeights.py\n"
 
 
-# ##########################################################################################
+##########################################################################################
 
 if __name__ == '__main__':  # if we're running file directly and not importing it
     if len(argv) < 5:

@@ -15,7 +15,12 @@
 #                                                                             #
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
+'''
+**Utility to construct and modify a SOFA scene**
 
+
+------------------------------------------------------------------
+'''
 import sys
 
 try:
@@ -73,15 +78,18 @@ def getContainer(node):
 
 def searchObjectClassInGraphScene(node,toFind):
     '''
-        Args:
-        node (Sofa.node):     Sofa node in wich we are working
+    **Search in the Graph scene recursively for all the node
+    with the same className as toFind**
 
-        toFind (str):  className we want to find
 
-        Description:
+    +----------+-----------+----------------------------------+
+    | argument | type      | definition                       |
+    +==========+===========+==================================+
+    | node     | Sofa.node | Sofa node in wich we are working |
+    +----------+-----------+----------------------------------+
+    | toFind   | str       | className we want to find        |
+    +----------+-----------+----------------------------------+
 
-            Search in the Graph scene recursively for all the node
-            with the same className as toFind
     '''
     class Namespace(object):
         pass
@@ -105,6 +113,9 @@ def searchObjectClassInGraphScene(node,toFind):
     return tmp.results
 
 def searchPlugin(rootNode,pluginName):
+    '''
+    **Search if a plugin if used in a SOFA scene**
+    '''
     found = False
     plugins = searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
     for plugin in plugins:
@@ -114,37 +125,46 @@ def searchPlugin(rootNode,pluginName):
     return found
 
 def addPlugin(rootNode,pluginName):
+
     if not searchPlugin(rootNode,pluginName):
         rootNode.createObject('RequiredPlugin', pluginName=pluginName)
 
-def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
+def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     '''
-        FOR all node find to animate animate only the one moving -> phase 1/0
+    **Add/or not animations defined by** :py:class:`.ObjToAnimate` **to the** 
+    `AnimationManager <https://stlib.readthedocs.io/en/latest/_autosummary/splib.animation.html#splib-animation-animationmanager>`_
+    **of the** `STLIB <https://github.com/SofaDefrost/STLIB>`_ **SOFA plugin**
 
-        If DEFAULT :
-          - SEARCH here for the obj to animate & its valueToIncrement
-        Else :
-          - GIVE obj name to work with & its valueToIncrement
+    +------------------+---------------------------------+----------------------------------------------------------------------------+
+    | argument         | type                            | definition                                                                 |
+    +==================+=================================+============================================================================+
+    | node             | Sofa.node                       | from which node will search & add animation                                |
+    +------------------+---------------------------------+----------------------------------------------------------------------------+
+    | phase            | list(int)                       || list of 0/1 that according to its index will activate/desactivate         |
+    |                  |                                 || a :py:class:`.ObjToAnimate` contained in *listObjToAnimate*               |
+    +------------------+---------------------------------+----------------------------------------------------------------------------+
+    | timeExe          | sc                              || correspond to the total SOFA execution duration the animation will occure,|
+    |                  |                                 || determined with *nbIterations* (of :py:class:`.ReductionAnimations`)      |
+    |                  |                                 || multiply by the *dt* of the current scene                                 |
+    +------------------+---------------------------------+----------------------------------------------------------------------------+
+    | dt               | sc                              | time step of our SOFA scene                                                |
+    +------------------+---------------------------------+----------------------------------------------------------------------------+
+    | listObjToAnimate | list(:py:class:`.ObjToAnimate`) | list conaining all the ObjToAnimate that will be use to shake our model    |
+    +------------------+---------------------------------+----------------------------------------------------------------------------+
 
-        give to animate :
-          - the obj to work with & its valueToIncrement
-          if DEFAULT :
-              - the animation function will be defaultShaking
-              - the general param lis(range,period,increment)
-          else :
-              - give the new animation function
-              - param lis(...)
+    Thanks to the location parameters of an :py:class:`.ObjToAnimate`, we find the component or Sofa.node it will animate.
+    *If its a Sofa.node we search something to animate by default CableConstraint/SurfacePressureConstraint.*
+
     '''
-    # Search node to animate
 
     toAnimate = []
     for obj in listObjToAnimate:
-        node = get(rootNode,obj.location)
-        print(node.name)
-        toAnimate.append(node)
+        nodeFound = get(node,obj.location)
+        print(nodeFound.name)
+        toAnimate.append(nodeFound)
 
     if len(toAnimate) != len(listObjToAnimate):
-        raise Exception("All Obj/Node to animate haven't benn found")
+        raise Exception("All Obj/Node to animate haven't been found")
 
     tmp = 0
     for objToAnimate in listObjToAnimate:
@@ -160,7 +180,7 @@ def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
             else :
                 objToAnimate.item = toAnimate[tmp]
 
-            if objToAnimate.item and objToAnimate.params["dataToWorkOn"]:
+            if objToAnimate.item :
                 objToAnimate.duration = timeExe
 
                 animate(objToAnimate.animFct, {'objToAnimate':objToAnimate,'dt':dt}, objToAnimate.duration)
@@ -171,32 +191,53 @@ def addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate):
 
         tmp += 1
 
-def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
+def modifyGraphScene(node,nbrOfModes,newParam):
+    '''
+    **Modify the current scene to be able to reduce it**
 
+    +------------+-----------+---------------------------------------------------------------------+
+    | argument   | type      | definition                                                          |
+    +============+===========+=====================================================================+
+    | node       | Sofa.node | from which node will search & modify the graph                      |
+    +------------+-----------+---------------------------------------------------------------------+
+    | nbrOfModes | int       || Number of modes choosed in :py:meth:`.phase3` or :py:meth:`.phase4`|
+    |            |           || where this function will be called                                 |
+    +------------+-----------+---------------------------------------------------------------------+
+    | newParam   | dic       || Contains numerous argument to modify/replace some component        |
+    |            |           || of the SOFA scene. *more details see* :py:class:`.ReductionParam`  |
+    +------------+-----------+---------------------------------------------------------------------+
+
+    For more detailed about the modification & why they are made see here
+
+    '''
     modesPositionStr = '0'
     for i in range(1,nbrOfModes):
         modesPositionStr = modesPositionStr + ' 0'
     argMecha = {'template':'Vec1d','position':modesPositionStr}
 
+    save = False
+    if 'save' in newParam[0][1]:
+        save = True
+
     for item in newParam :
         pathTmp , param = item
         print('pathTmp -----------------> '+pathTmp)
         try :
-            node = get(rootNode,pathTmp[1:])
-            solver = getNodeSolver(node)
-            print("node.getPathName()",node.getPathName())
-            if node.getPathName() == pathTmp:
+            currentNode = get(node,pathTmp[1:])
+            solver = getNodeSolver(currentNode)
+            print("node.getPathName()",currentNode.getPathName())
+            if currentNode.getPathName() == pathTmp:
                 if 'paramMappedMatrixMapping' in param:
                     print('Create new child modelMOR and move node in it')
 
-                    myParent = node.getParents()[0]
-                    modelMOR = myParent.createChild(node.name+'_MOR')
-                    modelMOR.moveChild(node)
+                    myParent = currentNode.getParents()[0]
+                    modelMOR = myParent.createChild(currentNode.name+'_MOR')
+                    modelMOR.moveChild(currentNode)
 
                     for obj in solver:
                         # print('To move!')
-                        node.removeObject(obj)
-                        node.getParents()[0].addObject(obj)
+                        currentNode.removeObject(obj)
+                        currentNode.getParents()[0].addObject(obj)
 
                     modelMOR.createObject('MechanicalObject', **argMecha)
 
@@ -210,17 +251,34 @@ def modifyGraphScene(rootNode,nbrOfModes,newParam,save=False):
 
                     if 'paramMORMapping' in param:
                         #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
-                        param['paramMORMapping']['output'] = '@./'+node.getMechanicalState().name
+                        param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name
                         if save:
                             replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
 
-                        node.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
+                        currentNode.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
                         print ("Create ModelOrderReductionMapping in node")
                     # else do error !!
         except :
             print("Problem with path : "+pathTmp[1:])
 
-def saveElements(rootNode,dt,forcefield):
+def saveElements(node,dt,forcefield):
+    '''
+    **Depending on the forcefield will go search for the right kind
+    of elements (tetrahedron/triangles...) to save**
+
+    +------------+-----------+-------------------------------------------------------------------------+
+    | argument   | type      | definition                                                              |
+    +============+===========+=========================================================================+
+    | node       | Sofa.node | from which node will search to save elements                            |
+    +------------+-----------+-------------------------------------------------------------------------+
+    | dt         | sc        | time step of our SOFA scene                                             |
+    +------------+-----------+-------------------------------------------------------------------------+
+    | forcefield | list(str) || list of path to the forcefield working on the elements we want to save | 
+    |            |           || see :py:obj:`.forcefield`                                              | 
+    +------------+-----------+-------------------------------------------------------------------------+
+
+
+    '''
     import numpy as np
     print('--------------------->  Gonna Try to Save the Elements')
     def save(node,container,valueType, **param):
@@ -234,13 +292,13 @@ def saveElements(rootNode,dt,forcefield):
     for objPath in forcefield:
         nodePath = '/'.join(objPath.split('/')[:-1])
         # print(nodePath,objPath)
-        obj = get(rootNode,objPath[1:])
-        node = get(rootNode,nodePath[1:])
+        obj = get(node,objPath[1:])
+        currentNode = get(node,nodePath[1:])
 
         if obj.getClassName() == 'HyperReducedRestShapeSpringsForceField':
             container = obj
         else:
-            container = getContainer(node)
+            container = getContainer(currentNode)
 
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
@@ -248,21 +306,30 @@ def saveElements(rootNode,dt,forcefield):
             print('--------------------->  ',valueType)
 
             if valueType:
-                animate(save, {"node" : node ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
+                animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
-def createDebug(rootNode,paramWrapper,stateFile="stateFile.state"):
+def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
+    '''
+    **Will, from our original scene, remove all unnecessary component and add a ReadState component
+    in order to see what happen during** :py:meth:`.phase1` or :py:meth:`.phase3`
 
-    nodeName = []
-    nodes = []
-    for item in paramWrapper :
-        path , param = item
-        node = get(rootNode,path[1:])
-        solver = getNodeSolver(node)
-        removeObjects(solver)
+    +------------+-----------+--------------------------------------------------------------+
+    | argument   | type      | definition                                                   |
+    +============+===========+==============================================================+
+    | rootNode   | Sofa.root | root node of the SOFA scene                                  |
+    +------------+-----------+--------------------------------------------------------------+
+    | pathToNode | str       | Path to the only node we will keep to create our debug scene |
+    +------------+-----------+--------------------------------------------------------------+
+    | stateFile  | str       | file that will be read by default by the ReadState component |
+    +------------+-----------+--------------------------------------------------------------+
 
-        nodeName.append(node.name)
-        nodes.append(node)
+    '''
 
+    node = get(rootNode,pathToNode)
+    nodeName = node.name
+
+    solver = getNodeSolver(node)
+    removeObjects(solver)
 
     for obj in rootNode.getObjects():
         rootNode.removeObject(obj)
@@ -273,11 +340,10 @@ def createDebug(rootNode,paramWrapper,stateFile="stateFile.state"):
     for child in rootNode.getChildren():
         rootNode.removeChild(child)
 
-    for node in nodes:
-        for child in node.getChildren():
-            if not (child.name in nodeName):
-                # print '--------------------------> remove   '+child.name
-                node.removeChild(child)
+    for child in node.getChildren():
+        if not (child.name in nodeName):
+            # print '--------------------------> remove   '+child.name
+            node.removeChild(child)
 
-    nodes[0].createObject('ReadState', filename=stateFile)
-    rootNode.addChild(nodes[0])
+    node.createObject('ReadState', filename=stateFile)
+    rootNode.addChild(node)

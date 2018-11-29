@@ -16,7 +16,9 @@
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
 """
-Set of functions to create a reusable SOFA component out of a SOFA scene
+**Set of functions to create a reusable SOFA component out of a SOFA scene**
+
+------------------------------------------------------------------
 """
 
 import os
@@ -26,16 +28,18 @@ path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 
 def writeHeader(packageName,nbrOfModes):
     """
-    Write a templated Header to the file *packageName*
+    **Write a templated Header to a file**
 
     **Arg:**
 
-    +-------------+------+------------------------------------+
-    | argument    | type | definition                         |
-    +=============+======+====================================+
-    | packageName | str  | Name of the file were we           |
-    |             |      | will write (without any extension) |
-    +-------------+------+------------------------------------+    
+    +-------------+------+----------------------------------------------------+
+    | argument    | type | definition                                         |
+    +=============+======+====================================================+
+    | packageName | str  | Name of the file were we                           |
+    |             |      | will write (without any extension)                 |
+    +-------------+------+----------------------------------------------------+
+    | nbrOfModes  | int  | Maximum number of nodes set as a default parameter |
+    +-------------+------+----------------------------------------------------+
     """
     try:
     
@@ -59,24 +63,24 @@ def writeHeader(packageName,nbrOfModes):
 
 def writeGraphScene(packageName,nodeName,myMORModel,myModel):
     """
-    With 2 lists describing the 2 Sofa.Node containing the components for our reduced model,
+    **Write a SOFA scene from lists**
 
-    this function will write each component with there initial parameters and clean or add parameters
-    
+    With 2 lists describing the 2 Sofa.Node containing the components for our reduced model,
+    this function will write each component with their initial parameters and clean or add parameters
     in order to have in the end a reduced model component reusable as a function with arguments as :
 
         .. sourcecode:: python
 
-            def MyReducedModel(     attachedTo=None,
-                                    name="MyReducedModel",
-                                    rotation=[0.0, 0.0, 0.0],
-                                    translation=[0.0, 0.0, 0.0],
-                                    scale=[1.0, 1.0, 1.0],
-                                    surfaceMeshFileName=False,
-                                    surfaceColor=[1.0, 1.0, 1.0],
-                                    poissonRatio=None,
-                                    youngModulus=None,
-                                    totalMass=None)
+            def MyReducedModel(
+                              attachedTo=None,
+                              name="MyReducedModel",
+                              rotation=[0.0, 0.0, 0.0],
+                              translation=[0.0, 0.0, 0.0],
+                              scale=[1.0, 1.0, 1.0],
+                              surfaceMeshFileName=False,
+                              surfaceColor=[1.0, 1.0, 1.0],
+                              nbrOfModes=nbrOfModes,
+                              hyperReduction=True):
 
     **Args:**
 
@@ -88,12 +92,14 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
     | nodeName    | str         | Name of the Sofa.Node we reduce                             |
     +-------------+-------------+-------------------------------------------------------------+
     | myMORModel  | list        | list of tuple (solver_type , param_solver)                  |
+    |             |             | *more details see* :py:obj:`.myMORModel`                    | 
     +-------------+-------------+-------------------------------------------------------------+
     | myModel     | OrderedDict || Ordered dic containing has key Sofa.Node.name &            |
-    |             |             || has var a tuple of (Sofa_componant_type , param_solver)    |
+    |             |             || has var a tuple of (Sofa_componant_type , param)           |
+    |             |             || *more details see* :py:obj:`.myModel`                      |
     +-------------+-------------+-------------------------------------------------------------+
+
     """
-    # print myModel
     try:
 
         with open(packageName+'.py', "a+") as logFile:
@@ -230,15 +236,31 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
 
 def writeFooter(packageName,nodeName,modelTransform,listplugin,dt,gravity):
     """
-    Write a templated Footer to the file *packageName*
+    **Write a templated Footer to a file**
+    
+    This footer will finalize the component created 
+    by :py:func:`.writeHeader` & :py:func:`.writeGraphScene` allowing the user to test it rapidly
+    while keeping its original root configuration (listplugin/dt/gravity) 
 
     **Args:**
 
-    +-------------+------+-------------------------------------------------------------+
-    | argument    | type | definition                                                  |
-    +=============+======+=============================================================+
-    | packageName | str  | Name of the file were we will write (without any extension) |
-    +-------------+------+-------------------------------------------------------------+
+    +----------------+------+---------------------------------------------------------------+
+    | argument       | type | definition                                                    |
+    +================+======+===============================================================+
+    | packageName    | str  || Name of the file were we will write (without any extension)  |
+    |                |      ||that will also be the name for the new component              |
+    +----------------+------+---------------------------------------------------------------+
+    | nodeName       | str  | Name of the Sofa.Node we reduce                               |
+    +----------------+------+---------------------------------------------------------------+
+    | modelTransform | str  | Initial transformation of the model                           |
+    +----------------+------+---------------------------------------------------------------+
+    | listplugin     | str  | Initial scene plugin list                                     |
+    +----------------+------+---------------------------------------------------------------+
+    | dt             | str  | Initial scene plugin dt                                       |
+    +----------------+------+---------------------------------------------------------------+
+    | gravity        | str  | Initial scene plugin gravity                                  |
+    +----------------+------+---------------------------------------------------------------+
+
     """
     print(packageName,packageName[0].upper()+packageName[1:])
     try:
@@ -274,7 +296,9 @@ def writeFooter(packageName,nodeName,modelTransform,listplugin,dt,gravity):
 
 def buildArgStr(arg,translation=None):
     """
-    According to the case it will add translation,rotation,scale arguments
+    **According to the case it will add translation,rotation,scale arguments**
+
+    Allowing to move easily in a scene the created component
 
     **Args:**
 

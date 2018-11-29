@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Set of class and functions to modify the SOFA scene 
-during its construction or save it to make a reusable
-component
+**Set of functions to modify the SOFA scene during its construction**
 
 **Content:**
 
