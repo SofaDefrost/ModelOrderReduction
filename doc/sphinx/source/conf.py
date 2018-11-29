@@ -219,7 +219,11 @@ class Mock(MagicMock):
 MOCK_MODULES = ['Sofa',
                 'stlib','splib',
                 'SofaPython','Quaternion','SofaPython.Quaternion',  # Needed for numerics
-                'PythonScriptController', 'Sofa.PythonScriptController'] # for AnimationManagerController but doesn't work...
+                'PythonScriptController', 'Sofa.PythonScriptController',
+                'PyQt4',
+                'launcher',
+                'yaml',
+                'numpy'] # for AnimationManagerController but doesn't work...
 
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
