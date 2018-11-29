@@ -54,7 +54,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.autosummary',
-    #'sphinx.ext.intersphinx',
+    'sphinx.ext.intersphinx',
     #'sphinx.ext.ifconfig',
     #'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
@@ -233,9 +233,11 @@ autodoc_mock_imports= [ "math", # Standard import
 
 autoclass_content = 'both' # When auto doc a class it will automatically add the special method __init__ doc
 
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
-
+# Add mappings
+intersphinx_mapping = {
+    'stlib': ('https://stlib.readthedocs.io/en/latest/index.html', None),
+    'python': ('http://docs.python.org/3', None),
+}
 
 # Breathe 
 breathe_projects_source = { 
