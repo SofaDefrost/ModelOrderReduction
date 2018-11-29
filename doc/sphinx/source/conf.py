@@ -217,7 +217,7 @@ class Mock(MagicMock):
             return MagicMock()
 
 MOCK_MODULES = ['Sofa',
-                'stlib',
+                'stlib','splib',
                 'SofaPython','Quaternion','SofaPython.Quaternion',  # Needed for numerics
                 'PythonScriptController', 'Sofa.PythonScriptController'] # for AnimationManagerController but doesn't work...
 
@@ -225,7 +225,7 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 autodoc_mock_imports= [ "math", # Standard import
                         "Sofa",
-                        "stlib","wrapper","scene","stlib"]
+                        "stlib","wrapper","scene","splib"]
 
 autoclass_content = 'both' # When auto doc a class it will automatically add the special method __init__ doc
 
@@ -252,3 +252,5 @@ breathe_doxygen_config_options = {
     'HIDE_UNDOC_MEMBERS' : 'YES',
     'HIDE_UNDOC_CLASSES' : 'YES',
     'HIDE_SCOPE_NAMES' : 'YES'}
+
+add_function_parentheses = False
