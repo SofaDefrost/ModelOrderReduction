@@ -253,8 +253,8 @@ End of example you can now go test the results in the folder you have designed a
 
 Links to additional information about the plugin:
 
-Publication in IEEE Transactions On Robotics: **https://hal.inria.fr/hal-01834483**
+**[Publication in IEEE Transactions On Robotics](https://hal.inria.fr/hal-01834483)**
 
-Plugin website: **https://project.inria.fr/modelorderreduction/**
+**[Plugin website](https://project.inria.fr/modelorderreduction/)**
 
-Plugin doc : **https://modelorderreduction.readthedocs.io/en/latest/index.html**
+**[Plugin doc](https://modelorderreduction.readthedocs.io/en/latest/index.html)**

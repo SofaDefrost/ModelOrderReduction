@@ -40,7 +40,7 @@ import datetime
 import glob
 
 try:
-    from launcher import *
+    from launcher import ParallelLauncher, startSofa
 except:
     raise ImportError("You need to give to PYTHONPATH the path to sofa-launcher in order to use this tool\n"\
                      +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
@@ -59,7 +59,7 @@ class ObjToAnimate():
     +----------+-----------+---------------------------------------------------------------------------------------+
     | argument | type      | definition                                                                            |
     +==========+===========+=======================================================================================+
-    | location | Str       | Name of the Sofa Node where our obj to animate is                                     |
+    | location | Str       | Path to obj/node we want to animate                                                   |
     +----------+-----------+---------------------------------------------------------------------------------------+
     | animFct  | Str       || Name of our function we want to use to animate.                                      |
     |          |           || During execution of the Sofa Scene, it will import the module                        |
