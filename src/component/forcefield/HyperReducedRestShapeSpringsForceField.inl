@@ -52,15 +52,6 @@ using core::visual::VisualParams;
 
 template<class DataTypes>
 HyperReducedRestShapeSpringsForceField<DataTypes>::HyperReducedRestShapeSpringsForceField()
-//    : points(initData(&points, "points", "points controlled by the rest shape springs"))
-//    , stiffness(initData(&stiffness, "stiffness", "stiffness values between the actual position and the rest shape position"))
-//    , angularStiffness(initData(&angularStiffness, "angularStiffness", "angularStiffness assigned when controlling the rotation of the points"))
-//    , pivotPoints(initData(&pivotPoints, "pivot_points", "global pivot points used when translations instead of the rigid mass centers"))
-//    , external_points(initData(&external_points, "external_points", "points from the external Mechancial State that define the rest shape springs"))
-//    , recompute_indices(initData(&recompute_indices, true, "recompute_indices", "Recompute indices (should be false for BBOX)"))
-//    , drawSpring(initData(&drawSpring,false,"drawSpring","draw Spring"))
-//    , springColor(initData(&springColor, defaulttype::RGBAColor(0.0,1.0,0.0,1.0), "springColor","spring color. (default=[0.0,1.0,0.0,1.0])"))
-//    , restMState(initLink("external_rest_shape", "rest_shape can be defined by the position of an external Mechanical State"))
 {
 }
 
@@ -76,50 +67,11 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::parse(core::objectmodel:
     Inherit::parse(arg) ;
 }
 
-template <class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::init()
-{
-    //this->initMOR(m_indices.size()); //--> move to bwdInit
-}
-
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
 {
-    ForceField<DataTypes>::init();
-
-    if (stiffness.getValue().empty())
-    {
-        msg_info() << "No stiffness is defined, assuming equal stiffness on each node, k = 100.0 ";
-
-        VecReal stiffs;
-        stiffs.push_back(100.0);
-        stiffness.setValue(stiffs);
-    }
-
-    if (restMState.get() == NULL)
-    {
-        useRestMState = false;
-      
-        if(!restMState.empty())
-            msg_warning() << "external_rest_shape in node " << this->getContext()->getName() << " not found";
-    }
-    else
-    {
-        useRestMState = true;
-    }
-
-    k = stiffness.getValue();
-
-    recomputeIndices();
-
+    RestShapeSpringsForceField<DataTypes>::bwdInit();
     this->initMOR(m_indices.size());
-    msg_info() << "---------------------------------------> BWDINIT";
-
-    BaseMechanicalState* state = this->getContext()->getMechanicalState();
-    assert(state);
-    matS.resize(state->getMatrixSize(),state->getMatrixSize());
-    lastUpdatedStep = -1.0;
-
 }
 
 template<class DataTypes>
@@ -136,59 +88,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::reinit()
     k = stiffness.getValue();
 }
 
-template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::recomputeIndices()
-{
-    m_indices.clear();
-    m_ext_indices.clear();
-
-    for (unsigned int i = 0; i < points.getValue().size(); i++)
-        m_indices.push_back(points.getValue()[i]);
-
-    for (unsigned int i = 0; i < external_points.getValue().size(); i++)
-        m_ext_indices.push_back(external_points.getValue()[i]);
-
-    m_pivots = pivotPoints.getValue();
-
-    if (m_indices.size()==0)
-    {
-        for (unsigned int i = 0; i < (unsigned)this->mstate->getSize(); i++)
-        {
-            m_indices.push_back(i);
-        }
-    }
-
-    if (m_ext_indices.size()==0)
-    {
-        if (useRestMState)
-        {
-            for (unsigned int i = 0; i < (unsigned)restMState->getSize(); i++)
-            {
-                m_ext_indices.push_back(i);
-            }
-        }
-        else
-        {
-            for (unsigned int i = 0; i < (unsigned)this->mstate->getSize(); i++)
-            {
-                m_ext_indices.push_back(i);
-            }
-        }
-    }
-
-    if (m_indices.size() > m_ext_indices.size())
-    {
-        msg_error() << "The dimention of the source and the targeted points are different ";
-        m_indices.clear();
-    }
-}
-
-
-template<class DataTypes>
-const typename HyperReducedRestShapeSpringsForceField<DataTypes>::DataVecCoord* HyperReducedRestShapeSpringsForceField<DataTypes>::getExtPosition() const
-{
-    return (useRestMState ? restMState->read(VecCoordId::position()) : this->mstate->read(VecCoordId::restPosition()));
-}
 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const MechanicalParams*  mparams , DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv&  v )
@@ -204,110 +103,93 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
     }
     WriteAccessor< DataVecDeriv > f1 = f;
     ReadAccessor< DataVecCoord > p1 = x;
-    ReadAccessor< DataVecCoord > p0 = *getExtPosition();
+    ReadAccessor< DataVecCoord > p0 = *this->getExtPosition();
 
     f1.resize(p1.size());
 
     if (recompute_indices.getValue())
     {
-        recomputeIndices();
+        this->recomputeIndices();
     }
 
-    //Springs_dir.resize(m_indices.size() );
+    unsigned int i;
     if ( k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];
-        if (d_performECSW.getValue()){
-            for(unsigned int i = 0 ; i<m_RIDsize ;++i)
-            {
-                const unsigned int index = m_indices[reducedIntegrationDomain(i)];
-
-                unsigned int ext_index = m_indices[reducedIntegrationDomain(i)];
-                if(useRestMState)
-                    ext_index= m_ext_indices[reducedIntegrationDomain(i)];
-
-                Deriv dx = p1[index] - p0[ext_index];
-
-                f1[index] -=  weights(reducedIntegrationDomain(i))* dx * k0 ;
-            }
-
-        }
+        unsigned int nbElementsConsidered;
+        if (!d_performECSW.getValue())
+            nbElementsConsidered = m_indices.size();
         else
+            nbElementsConsidered = m_RIDsize;
+
+        for (unsigned int point = 0 ; point<nbElementsConsidered ;++point)
         {
-            for (size_t numElem=0; numElem<m_indices.size(); numElem++)
-            {
-                const unsigned int index = m_indices[numElem];
-                unsigned int ext_index = m_indices[numElem];
-                if(useRestMState)
-                    ext_index= m_ext_indices[numElem];
+            if (!d_performECSW.getValue())
+                i = point;
+            else
+                i = reducedIntegrationDomain(point);
 
-                Deriv dx = p1[index] - p0[ext_index];
-                f1[index] -=  dx * k0 ;
-                if (d_prepareECSW.getValue())
-                {
-                    int numTest = this->getContext()->getTime()/this->getContext()->getDt();
-                    if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
-                    {
-                        numTest = numTest/d_periodSaveGIE.getValue();
-                        for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
-                        {
+            const unsigned int index = m_indices[i];
 
-                            GieUnit[modNum] = 0;
-                            GieUnit[modNum] -= (dx * k0)*Deriv(m_modes(3*index,modNum),m_modes(3*index+1,modNum),m_modes(3*index+2,modNum));
-                        }
-                        for (unsigned int i = 0 ; i < d_nbModes.getValue() ; i++)
-                        {
-                            if ( d_nbModes.getValue()*numTest < d_nbModes.getValue()*d_nbTrainingSet.getValue() )
-                            {
-                                Gie[d_nbModes.getValue()*numTest+i][numElem] = GieUnit[i];
-                            }
-                        }
-                    }
-                }
-            }
+            unsigned int ext_index = m_indices[i];
+            if(useRestMState)
+                ext_index= m_ext_indices[i];
+
+            Deriv dx = p1[index] - p0[ext_index];
+            std::vector<Deriv> contrib;
+            std::vector<unsigned int> indexList;
+            contrib.resize(1);
+            indexList.resize(1);
+            contrib[0] = -dx * k0;
+            indexList[0] = index;
+            if (!d_performECSW.getValue())
+                f1[index] +=  contrib[0] ;
+            else
+                f1[index] +=  weights(i)* contrib[0] ;
+            this->updateGie<DataTypes>(indexList, contrib, i);
         }
-        this->saveGieFile(m_indices.size());
     }
     else
     {
-        if (d_performECSW.getValue()){
-            for(unsigned int i = 0 ; i<m_RIDsize ;++i)
-            {
-                const unsigned int index = m_indices[reducedIntegrationDomain(i)];
-
-                unsigned int ext_index = m_indices[reducedIntegrationDomain(i)];
-                if(useRestMState)
-                    ext_index= m_ext_indices[reducedIntegrationDomain(i)];
-
-                Deriv dx = p1[index] - p0[ext_index];
-
-                f1[index] -=  weights(reducedIntegrationDomain(i))* dx * k[reducedIntegrationDomain(i)] ;
-            }
-
-        }
+        unsigned int nbElementsConsidered;
+        if (!d_performECSW.getValue())
+            nbElementsConsidered = m_indices.size();
         else
+            nbElementsConsidered = m_RIDsize;
+
+        for (unsigned int point = 0 ; point<nbElementsConsidered ;++point)
         {
-            for (unsigned int i=0; i<m_indices.size(); i++)
-            {
-                const unsigned int index = m_indices[i];
-                unsigned int ext_index = m_indices[i];
-                if(useRestMState)
-                    ext_index= m_ext_indices[i];
+            if (!d_performECSW.getValue())
+                i = point;
+            else
+                i = reducedIntegrationDomain(point);
 
-                Deriv dx = p1[index] - p0[ext_index];
-                f1[index] -=  dx * k[i];
+            const unsigned int index = m_indices[i];
 
-            }
+            unsigned int ext_index = m_indices[i];
+            if(useRestMState)
+                ext_index= m_ext_indices[i];
+
+            Deriv dx = p1[index] - p0[ext_index];
+            std::vector<Deriv> contrib;
+            std::vector<unsigned int> indexList;
+            contrib.resize(1);
+            indexList.resize(1);
+            contrib[0] = -dx * k[i];
+            indexList[0] = index;
+            if (!d_performECSW.getValue())
+                f1[index] +=  contrib[0] ;
+            else
+                f1[index] +=  weights(i)* contrib[0] ;
+            this->updateGie<DataTypes>(indexList, contrib, i);
         }
     }
+    this->saveGieFile(m_indices.size());
 }
 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx)
 {
-    //  remove to be able to build in parallel
-    // 	const VecIndex& indices = points.getValue();
-    // 	const VecReal& k = stiffness.getValue();
     msg_info() << "--------------------------------> addDForce";
 
     WriteAccessor< DataVecDeriv > df1 = df;
@@ -369,7 +251,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
     vparams->drawTool()->saveLastState();
     vparams->drawTool()->setLightingEnabled(false);
 
-    ReadAccessor< DataVecCoord > p0 = *getExtPosition();
+    ReadAccessor< DataVecCoord > p0 = *this->getExtPosition();
     ReadAccessor< DataVecCoord > p  = this->mstate->read(VecCoordId::position());
 
     const VecIndex& indices = m_indices;
@@ -542,13 +424,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addSubKToMatrix(const Me
             }
         }
     }
-}
-
-template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::updateForceMask()
-{
-    for (unsigned int i=0; i<m_indices.size(); i++)
-        this->mstate->forceMask.insertEntry(m_indices[i]);
 }
 
 

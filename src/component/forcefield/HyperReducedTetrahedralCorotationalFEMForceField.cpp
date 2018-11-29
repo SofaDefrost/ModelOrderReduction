@@ -14,12 +14,14 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGSFORCEFIELD_CPP
+#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_CPP
 
-#include "HyperReducedRestShapeSpringsForceField.inl"
-
-#include <sofa/core/visual/DrawTool.h>
+#include "HyperReducedTetrahedralCorotationalFEMForceField.inl"
+#include <sofa/defaulttype/Vec3Types.h>
+#include <SofaBaseMechanics/MechanicalObject.h>
 #include <sofa/core/ObjectFactory.h>
+//#include <typeinfo>
+
 
 namespace sofa
 {
@@ -33,23 +35,23 @@ namespace forcefield
 using namespace sofa::defaulttype;
 
 
-SOFA_DECL_CLASS(HyperReducedRestShapeSpringsForceField)
+SOFA_DECL_CLASS(HyperReducedTetrahedralCorotationalFEMForceField)
 
-
-int HyperReducedRestShapeSpringsForceFieldClass = core::RegisterObject("Simple elastic springs applied to given degrees of freedom between their current and rest shape position")
+// Register in the Factory
+int HyperReducedTetrahedralCorotationalFEMForceFieldClass = core::RegisterObject("Corotational FEM Tetrahedral finite elements")
 #ifndef SOFA_FLOAT
-        .add< HyperReducedRestShapeSpringsForceField<Vec3dTypes> >()
+        .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3dTypes> >()
 #endif
 #ifndef SOFA_DOUBLE
-        .add< HyperReducedRestShapeSpringsForceField<Vec3fTypes> >()
+        .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3fTypes> >()
 #endif
         ;
 
 #ifndef SOFA_FLOAT
-template class SOFA_DEFORMABLE_API HyperReducedRestShapeSpringsForceField<Vec3dTypes>;
+template class SOFA_GENERAL_SIMPLE_FEM_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3dTypes>;
 #endif
 #ifndef SOFA_DOUBLE
-template class SOFA_DEFORMABLE_API HyperReducedRestShapeSpringsForceField<Vec3fTypes>;
+template class SOFA_GENERAL_SIMPLE_FEM_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3fTypes>;
 #endif
 
 } // namespace forcefield
@@ -57,3 +59,4 @@ template class SOFA_DEFORMABLE_API HyperReducedRestShapeSpringsForceField<Vec3fT
 } // namespace component
 
 } // namespace sofa
+

@@ -70,12 +70,12 @@ def SofiaLeg(
     leg.createObject('MeshVTKLoader' ,name = 'loader', scale3d = scale, translation = translation, rotation = rotation, filename = meshPath+volumeMeshFileName)
     leg.createObject('TetrahedronSetTopologyContainer' ,name = 'container',  position = '@loader.position',tetrahedra = '@loader.tetrahedra', checkConnexity = '1', createTriangleArray = '1')
     leg.createObject('MechanicalObject' , name = 'tetras', showIndices = 'false', showIndicesScale = '4e-5', template = 'Vec3d', position = '@loader.position')
-    leg.createObject('UniformMass' , totalMass = totalMass)
+    leg.createObject('UniformMass' , totalmass = totalMass)
     leg.createObject('TetrahedronFEMForceField' , youngModulus = youngModulus, poissonRatio = poissonRatio)
-    leg.createObject('LinearSolverConstraintCorrection', solverName='preconditioner')
+
     #To fix the Top part of the leg
     leg.createObject('BoxROI' , name= 'boxROITop' , orientedBox= newBox([[-12.0, 53.0, 0], [12.0, 53.0, 0], [12.0, 64.0, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[16.0]).tolist(),drawBoxes=False)
-    #leg.createObject('RestShapeSpringsForceField' , name = 'fixedTopForceField', points = '@boxROITop.indices', stiffness = '1e12')
+    leg.createObject('RestShapeSpringsForceField' , name = 'fixedTopForceField', points = '@boxROITop.indices', stiffness = '1e12')
     
     #Box to add collisions only on the tip of the leg
     leg.createObject('BoxROI', name='boxROICollision', orientedBox= newBox(
@@ -89,7 +89,7 @@ def SofiaLeg(
 
     #To Actuate our leg we select some elements in the middle of our leg, add a Spring to them, then add an external_rest_shape that will allow us 
     leg.createObject('BoxROI' , name= 'boxROIMiddle' , orientedBox= newBox([[-2.5, -8.5, 0], [2.5, -8.5, 0], [2.5, -3.5, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[18.0]).tolist(),drawBoxes=False)
-    #leg.createObject('RestShapeSpringsForceField' , external_points = [0, 1, 2], points = '@boxROIMiddle.indices', name = 'actuatorSpring', stiffness = '1e12', external_rest_shape = '@../'+name+'_actuator/actuatorState')
+    leg.createObject('RestShapeSpringsForceField' , external_points = [0, 1, 2], points = '@boxROIMiddle.indices', name = 'actuatorSpring', stiffness = '1e12', external_rest_shape = '@../'+name+'_actuator/actuatorState')
 
     SofiaLeg_actuator = attachedTo.createChild(name+'_actuator')
     SofiaLeg_actuator.createObject('MechanicalObject' , name = 'actuatorState', position = '@../'+name+'/boxROIMiddle.pointsInROI', template = 'Vec3d', showObject = False)

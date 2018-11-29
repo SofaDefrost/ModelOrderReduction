@@ -47,6 +47,10 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
 
     if x0Found :
         snapshot = np.transpose(snapshot)
+        if np.isnan(np.sum(np.sum(snapshot))):
+            print "NAN PRESENT IN THE POSITIONS! THE SIMULATION WENT WRONG DURING THE SHAKING! MAKE SURE YOUR SIMULATION IS STABLE!"
+            return -1
+
         nbDOFs, nbSnap = np.shape(snapshot)
         snapshotDiff = np.zeros((nbDOFs,nbSnap))
         translationModes = np.zeros((nbDOFs,3))

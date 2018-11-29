@@ -172,7 +172,7 @@ public:
     void saveGieFile(unsigned int nbElements){
         if (d_prepareECSW.getValue())
         {
-            int numTest = this->getContext()->getTime()/this->getContext()->getDt();
+            unsigned int numTest = this->getContext()->getTime()/this->getContext()->getDt();
             if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
             {
                 numTest = numTest/d_periodSaveGIE.getValue();

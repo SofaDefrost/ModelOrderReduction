@@ -21,17 +21,8 @@
 #if !defined(__GNUC__) || (__GNUC__ > 3 || (_GNUC__ == 3 && __GNUC_MINOR__ > 3))
 #pragma once
 #endif
-#include <SofaMiscFem/HyperelasticMaterial.h>
-#include <SofaMiscFem/initMiscFEM.h>
-#include <sofa/core/behavior/ForceField.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
-#include <sofa/defaulttype/Vec.h>
-#include <sofa/defaulttype/Mat.h>
-#include <sofa/defaulttype/MatSym.h>
-#include <sofa/core/topology/BaseMeshTopology.h>
-#include <SofaBaseTopology/TopologyData.h>
-#include <string>
-#include <map>
+#include "HyperReducedHelper.h"
+#include <SofaMiscFem/TetrahedronHyperelasticityFEMForceField.h>
 
 namespace sofa
 {
@@ -51,12 +42,11 @@ using namespace sofa::core::topology;
 /** Compute Finite Element forces based on tetrahedral elements.
 */
 template<class DataTypes>
-class HyperReducedTetrahedronHyperelasticityFEMForceField : public core::behavior::ForceField<DataTypes>
+class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual TetrahedronHyperelasticityFEMForceField<DataTypes>, public HyperReducedHelper
 {
   public:
-    SOFA_CLASS(SOFA_TEMPLATE(HyperReducedTetrahedronHyperelasticityFEMForceField, DataTypes), SOFA_TEMPLATE(core::behavior::ForceField, DataTypes));
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedTetrahedronHyperelasticityFEMForceField, DataTypes), SOFA_TEMPLATE(TetrahedronHyperelasticityFEMForceField, DataTypes), HyperReducedHelper);
 
-    typedef core::behavior::ForceField<DataTypes> Inherited;
     typedef typename DataTypes::VecCoord VecCoord;
     typedef typename DataTypes::VecDeriv VecDeriv;
     typedef typename DataTypes::Coord Coord;
@@ -90,154 +80,65 @@ class HyperReducedTetrahedronHyperelasticityFEMForceField : public core::behavio
 
 public :
 	
-	typename sofa::component::fem::MaterialParameters<DataTypes> globalParameters;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::globalParameters;
 
-	
-	class MatrixList
-	{
-	public:
-		Matrix3 data[6];
-	};
-
-
-    /// data structure stored for each tetrahedron
-	class TetrahedronRestInformation : public fem::StrainInformation<DataTypes>
-    {
-    public:
-        /// shape vector at the rest configuration
-        Coord m_shapeVector[4];
-        /// fiber direction in rest configuration
-        Coord m_fiberDirection;
-        /// rest volume
-        Real m_restVolume;
-        /// current tetrahedron volume
-        Real m_volScale;
-        Real m_volume;
-        /// volume/ restVolume
-        MatrixSym m_SPKTensorGeneral;
-        /// deformation gradient = gradPhi
-        Matrix3 m_deformationGradient;
-        /// right Cauchy-Green deformation tensor C (gradPhi^T gradPhi)
-        Real m_strainEnergy;
-
-        /// Output stream
-        inline friend ostream& operator<< ( ostream& os, const TetrahedronRestInformation& /*eri*/ ) {  return os;  }
-        /// Input stream
-        inline friend istream& operator>> ( istream& in, TetrahedronRestInformation& /*eri*/ ) { return in; }
-
-        TetrahedronRestInformation() {}
-    };
-	
-    /// data structure stored for each edge
-    class EdgeInformation
-    {
-    public:
-        /// store the stiffness edge matrix
-        Matrix3 DfDx;
-
-        /// Output stream
-        inline friend ostream& operator<< ( ostream& os, const EdgeInformation& /*eri*/ ) {  return os;  }
-        /// Input stream
-        inline friend istream& operator>> ( istream& in, EdgeInformation& /*eri*/ ) { return in; }
-
-        EdgeInformation() {}
-    };
 
  protected :
-    core::topology::BaseMeshTopology* m_topology;
-    VecCoord  m_initialPoints;	/// the intial positions of the points
-    bool m_updateMatrix;
-    bool  m_meshSaved ;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_topology;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_initialPoints;	/// the intial positions of the points
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_updateMatrix;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_meshSaved ;
 
-    Data<bool> d_stiffnessMatrixRegularizationWeight;
-    Data<string> d_materialName; /// the name of the material
-    Data<SetParameterArray> d_parameterSet;
-    Data<SetAnisotropyDirectionArray> d_anisotropySet;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::d_stiffnessMatrixRegularizationWeight;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::d_materialName; /// the name of the material
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::d_parameterSet;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::d_anisotropySet;
 
-    // Reduced order model boolean parameters
-    Data< bool > d_prepareECSW;
-    Data<unsigned int> d_nbModes;
-    Data<unsigned int> d_nbTrainingSet;
-    Data<unsigned int> d_periodSaveGIE;
+    // Reduced Order Variables
 
-    Data< bool > d_performECSW;
-    Data<std::string> d_modesPath;
-    Data<std::string> d_RIDPath;
-    Data<std::string> d_weightsPath;
+    using HyperReducedHelper::d_prepareECSW;
+    using HyperReducedHelper::d_nbModes;
+    using HyperReducedHelper::d_modesPath;
+    using HyperReducedHelper::d_nbTrainingSet;
+    using HyperReducedHelper::d_periodSaveGIE;
 
-    // Reduced order model variables
-    Eigen::MatrixXd m_modes;
-    std::vector<std::vector<double> > Gie;
-    Eigen::VectorXd weights;
-    Eigen::VectorXi reducedIntegrationDomain;
-    Eigen::VectorXi reducedIntegrationDomainWithEdges;
+    using HyperReducedHelper::d_performECSW;
+    using HyperReducedHelper::d_RIDPath;
+    using HyperReducedHelper::d_weightsPath;
 
-    unsigned int m_RIDsize;
+    using HyperReducedHelper::Gie;
+    using HyperReducedHelper::weights;
+    using HyperReducedHelper::reducedIntegrationDomain;
+
+    using HyperReducedHelper::m_modes;
+    using HyperReducedHelper::m_RIDsize;
+    Eigen::Matrix<unsigned int, Eigen::Dynamic, 1> reducedIntegrationDomainWithEdges;
+
     unsigned int m_RIDedgeSize;
 
-    TetrahedronData<sofa::helper::vector<TetrahedronRestInformation> > m_tetrahedronInfo;
-    EdgeData<sofa::helper::vector<EdgeInformation> > m_edgeInfo;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_tetrahedronInfo;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_edgeInfo;
    
-public:
-
-    void setMaterialName(const string name) {
-        d_materialName.setValue(name);
-    }
-    void setparameter(const vector<Real> param) {
-        d_parameterSet.setValue(param);
-    }
-    void setdirection(const vector<Coord> direction) {
-        d_anisotropySet.setValue(direction);
-    }
-
-    class TetrahedronHandler : public TopologyDataHandler<Tetrahedron,sofa::helper::vector<TetrahedronRestInformation> >
-    {
-    public:
-      typedef typename HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation TetrahedronRestInformation;
-      TetrahedronHandler(HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>* ff,
-                         TetrahedronData<sofa::helper::vector<TetrahedronRestInformation> >* data )
-        :TopologyDataHandler<Tetrahedron,sofa::helper::vector<TetrahedronRestInformation> >(data)
-        ,ff(ff)
-      {
-
-      }
-
-      void applyCreateFunction(unsigned int, TetrahedronRestInformation &t, const Tetrahedron &,
-                               const sofa::helper::vector<unsigned int> &, const sofa::helper::vector<double> &);
-
-    protected:
-      HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>* ff;
-    };
-
 protected:
    HyperReducedTetrahedronHyperelasticityFEMForceField();
    
    virtual   ~HyperReducedTetrahedronHyperelasticityFEMForceField();
 public:
 
-  //  virtual void parse(core::objectmodel::BaseObjectDescription* arg);
-
     virtual void init();
     
     virtual void addForce(const core::MechanicalParams* mparams /* PARAMS FIRST */, DataVecDeriv& d_f, const DataVecCoord& d_x, const DataVecDeriv& d_v);
     virtual void addDForce(const core::MechanicalParams* mparams /* PARAMS FIRST */, DataVecDeriv& d_df, const DataVecDeriv& d_dx);
-    virtual SReal getPotentialEnergy(const core::MechanicalParams*, const DataVecCoord&) const;
     virtual void addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset);
 
     void draw(const core::visual::VisualParams* vparams);
-
-    Mat<3,3,double> getPhi( int tetrahedronIndex);
-
 
   protected:
 
     /// the array that describes the complete material energy and its derivatives
 
-    fem::HyperelasticMaterial<DataTypes> *m_myMaterial;
-    TetrahedronHandler* m_tetrahedronHandler;
-
-    void testDerivatives();
-    void saveMesh( const char *filename );
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_myMaterial;
+    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_tetrahedronHandler;
 
     void updateTangentMatrix();
 };
