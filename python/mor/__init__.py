@@ -3,8 +3,8 @@
 .. autosummary::
     :toctree: _autosummary
 
-    mor.animation
     mor.reduction
+    mor.animation
     mor.wrapper
     mor.utility
     mor.gui

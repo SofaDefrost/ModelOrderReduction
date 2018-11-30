@@ -235,7 +235,7 @@ autoclass_content = 'both' # When auto doc a class it will automatically add the
 
 # Add mappings
 intersphinx_mapping = {
-    'stlib': ('https://stlib.readthedocs.io/en/latest/index.html', None),
+    'stlib': ('https://stlib.readthedocs.io/en/latest/', None),
     'python': ('http://docs.python.org/3', None),
 }
 

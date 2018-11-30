@@ -133,7 +133,7 @@ def addPlugin(rootNode,pluginName):
 def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     '''
     **Add/or not animations defined by** :py:class:`.ObjToAnimate` **to the** 
-    `AnimationManager <https://stlib.readthedocs.io/en/latest/_autosummary/splib.animation.html#splib-animation-animationmanager>`_
+    :py:obj:`splib.animation.AnimationManagerController` **thanks to** :py:func:`splib.animation.animate`
     **of the** `STLIB <https://github.com/SofaDefrost/STLIB>`_ **SOFA plugin**
 
     +------------------+---------------------------------+----------------------------------------------------------------------------+
@@ -274,11 +274,15 @@ def saveElements(node,dt,forcefield):
     +------------+-----------+-------------------------------------------------------------------------+
     | dt         | sc        | time step of our SOFA scene                                             |
     +------------+-----------+-------------------------------------------------------------------------+
-    | forcefield | list(str) || list of path to the forcefield working on the elements we want to save | 
-    |            |           || see :py:obj:`.forcefield`                                              | 
+    | forcefield | list(str) || list of path to the forcefield working on the elements we want to save |
+    |            |           || see :py:obj:`.forcefield`                                              |
     +------------+-----------+-------------------------------------------------------------------------+
 
+    After determining what to save we will add an animation with a *duration* of 0 that will
+    be executed only once when the scene is launched saving the elements.
 
+    To do that we use :py:func:`splib.animation.animate`
+    **of the** `STLIB <https://github.com/SofaDefrost/STLIB>`_ **SOFA plugin**
     '''
     import numpy as np
     print('--------------------->  Gonna Try to Save the Elements')

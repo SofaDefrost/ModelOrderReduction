@@ -149,7 +149,7 @@ def MORreplace(node,type,newParam,initialParam):
     | initialParam | dic       | Contains all the initial argument of the SOFA component being instanciated     |
     +--------------+-----------+--------------------------------------------------------------------------------+
 
-    This function work thanks to the :py:class:`~stlib.scene.Wrapper` of the
+    This function work thanks to the :py:class:`stlib.scene.Wrapper` of the
     `STLIB <https://github.com/SofaDefrost/STLIB>`_ SOFA plugin that will call this function BEFORE creating any 
     SOFA component enabling us to replace/modify the SOFA component before its creation
 

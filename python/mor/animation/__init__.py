@@ -19,6 +19,9 @@ Each function has to have 3 mandatory arguments:
 |              |                           ||  ``factor = (currentTime-startTime) / duration``                    |
 +--------------+---------------------------+----------------------------------------------------------------------+
 
+the animation implemented in :py:mod:`mor.animation` will be added
+to the templated scene thanks to the :py:func:`splib.animation.animate`
+
 **Content:**
 
 .. autosummary::
