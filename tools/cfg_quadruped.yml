@@ -1,6 +1,5 @@
 grpBox_AdvancedParam:
   checkBox_addToLib: 'False'
-  lineEdit_toKeep: ''
   lineEdit_tolGIE: '0.05'
   lineEdit_tolModes: '0.001'
 grpBox_AnimationParam:

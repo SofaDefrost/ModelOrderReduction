@@ -1,6 +1,5 @@
 grpBox_AdvancedParam:
   checkBox_addToLib: 'False'
-  lineEdit_toKeep: ''
   lineEdit_tolGIE: '0.05'
   lineEdit_tolModes: '0.001'
 grpBox_AnimationParam:
@@ -8,30 +7,30 @@ grpBox_AnimationParam:
     0:
       0: defaultShaking
       1:
-        incr: '5'
-        incrPeriod: '10'
-        rangeOfAction: '40'
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
       2: modelNode/nord
     1:
       0: defaultShaking
       1:
-        incr: '5'
-        incrPeriod: '10'
-        rangeOfAction: '40'
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
       2: modelNode/est
     2:
       0: defaultShaking
       1:
-        incr: '5'
-        incrPeriod: '10'
-        rangeOfAction: '40'
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
       2: modelNode/ouest
     3:
       0: defaultShaking
       1:
-        incr: '5'
-        incrPeriod: '10'
-        rangeOfAction: '40'
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
       2: modelNode/sud
 grpBox_Execution:
   Phase 1:

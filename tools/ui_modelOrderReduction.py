@@ -28,6 +28,7 @@
 ####################       IMPORT           ###########################
 import os
 import sys
+import webbrowser
 from os.path import expanduser
 import glob
 from PyQt4 import QtCore, QtGui
@@ -145,7 +146,6 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         # QPushButton Action
         self.btn_scene.clicked.connect(lambda: u.openFileName('Select the SOFA scene you want to reduce',display=self.lineEdit_scene))
         self.btn_output.clicked.connect(lambda: u.openDirName('Select the directory tha will contain all the results',display=self.lineEdit_output))
-        self.btn_mesh.clicked.connect(lambda: u.openFilesNames('Select the meshes & visual of your scene',display=self.lineEdit_mesh))
         self.btn_addLine.clicked.connect(lambda: self.addLine(self.tableWidget_animationParam))
         self.btn_removeLine.clicked.connect(lambda: self.removeLine(self.tableWidget_animationParam,self.animationDialog))
         self.btn_launchReduction.clicked.connect(self.execute)
@@ -158,6 +158,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.actionSave_as.triggered.connect(self.saveAs)
         self.actionSave.triggered.connect(self.save)
         self.actionReset.triggered.connect(self.reset)
+        self.actionDoc.triggered.connect(lambda: self.openLink("https://modelorderreduction.readthedocs.io/en/latest/"))
+        self.actionWebsite.triggered.connect(lambda: self.openLink("https://project.inria.fr/modelorderreduction/"))
+        self.actionGithub.triggered.connect(lambda: self.openLink("https://github.com/SofaDefrost/ModelOrderReduction"))
 
         # Add frame_layout Action
         self.listLayout = [self.layout_path,self.layout_aniamationParam,self.layout_reductionParam,
@@ -200,9 +203,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.resetFileName = {
                 'grpBox_Path':
                     {
-                        'lineEdit_output': '',
-                        'lineEdit_mesh': '',
-                        'lineEdit_scene': '', #'/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py',
+                        'lineEdit_output': '', # '/home/felix/SOFA/plugin/ModelOrderReduction/tools/test'
+                        'lineEdit_scene': '', #'/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py'
                     },
                 'grpBox_ReductionParam': 
                     {   'lineEdit_NodeToReduce': '',
@@ -214,7 +216,6 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                         'checkBox_addToLib': 'False', 
                         'lineEdit_tolModes': '0.001',
                         'lineEdit_tolGIE': '0.05',
-                        'lineEdit_toKeep': ''
                     },
                 'grpBox_AnimationParam':
                     {},
@@ -242,6 +243,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.reset(state=False)
 
         self.setShortcut()
+        self.resizeTab()
+
+    def openLink(self,url):
+        webbrowser.open(url)
 
     def loadSettings(self):
 
@@ -273,13 +278,6 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             tab.append('/'.join(str(self.lineEdit_scene.text()).split('/')[:-1]))
         if self.lineEdit_output.text():
             tab.append('/'.join(str(self.lineEdit_output.text()).split('/')[:-1]))
-
-        meshes = self.lineEdit_mesh.toPlainText().split('\n')
-        for mesh in meshes:
-            tmp = '/'.join(str(mesh).split('/')[:-1])
-            if tmp :
-                if tmp not in tab:
-                    tab.append(tmp)
 
         home = expanduser("~")
         u.shortcut.append(QtCore.QUrl.fromLocalFile(home))
@@ -387,7 +385,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                         ["/debug/debug_scene.py","/debug/stateFile.state"],
                         ["/data/modes.txt"],
                         ["/debug/reducedFF_*","/debug/*_elmts.txt"], #["/debug/step2_stateFile.state",
-                        ["/data/*_RID.txt","/data/*_weight.txt","/data/*listActiveNodes.txt","/data/*_reduced.txt","/reduced_*"] # ,"/mesh"
+                        ["/data/*_RID.txt","/data/*_weight.txt","/data/*listActiveNodes.txt","/data/*_reduced.txt","/reduced_*"]
                     ]
 
             def check(file,item):
@@ -465,43 +463,56 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             self.setEnabled()
 
     def resizeEvent(self, event):
-        # print("EVENT")
-
-        # height = 145
-        # for layout in self.listLayout:
-        #     # print(str(layout._title_frame._title.text())+" HEIGHT = "+str(layout.height())+' Collapse : '+str(layout._is_collasped))
-        #     if layout._is_collasped:
-        #         height += 30
-        #     else:
-        #         height += layout.height()
-        #     # print(str(layout._title_frame._title.text())+" HEIGHT = "+str(layout.height())+" WIDTH = "+str(self.width())+' Collapse : '+str(layout._is_collasped))
-
-        # if height > 600:
-        #     height += 65
-        # else:
-        #     height += 20
 
         height = 600+65
-
+        # print(self.width(),self.height())
         self.setMaximumSize(800,height)
-        self.setMinimumSize(600, 320) #290)
+        self.setMinimumSize(630, 320) #290)
         QtGui.QMainWindow.resizeEvent(self, event)
+
+    def resizeTab(self):
+        # print('---------------> resizeTab')
+        nbrRow = self.tableWidget_animationParam.rowCount() #grpBox_AnimationParam.width(),grpBox_AnimationParam.height())
+
+        defaultHeight = 34
+        defaultWidth = 537
+        maxWidth = 800 - (600-defaultWidth)
+        sizeHeader = self.tableWidget_animationParam.horizontalHeader().height()
+
+        if nbrRow == 0:
+            nbrRow = 1
+            sizeForRow = defaultHeight
+            width = defaultWidth
+        else:
+            sizeForRow = self.tableWidget_animationParam.sizeHintForRow(0)
+            width = self.tableWidget_animationParam.width()
+            
+        if nbrRow > 4:
+            nbrRow = 4
+
+        # print(self.tableWidget_animationParam.width())
+        size = QtCore.QSize(width,sizeForRow*nbrRow+sizeHeader)
+
+        # print(self.tableWidget_animationParam.size(),size,sizeHeader)
+        self.tableWidget_animationParam.setMinimumSize(size)
+        size.setWidth(maxWidth)
+        self.tableWidget_animationParam.setMaximumSize(size)
 
     def resizeHeight(self,offset=145):
         # print("resizeHeight ------------------>")
 
         height = offset
         for layout in self.listLayout:
-            # print(str(layout._title_frame._title.text())+" HEIGHT = "+str(layout.height())+' Collapse : '+str(layout._is_collasped))
+
             if layout._is_collasped:
                 if layout.height() > 30 :
                     layout.resize(layout.width(),30)
                 height += 30
             else:
                 height += layout.height()
-            # print(str(layout._title_frame._title.text())+" HEIGHT = "+str(layout.height())+" WIDTH = "+str(self.width())+' Collapse : '+str(layout._is_collasped))
 
-        self.scrollArea.resize(self.scrollArea.width(),height)
+
+        # self.scrollArea.resize(self.scrollArea.width(),height)
         if height > 600:
             self.resize(self.width(),600+65)
         else:
@@ -697,6 +708,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                                     u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),self.animationDialog[row].currentValues.iteritems())
                                     u.setCellColor(self.tableWidget_animationParam,self.animationDialog[row],row,column)
 
+                        # print(self.tableWidget_animationParam.width(),self.tableWidget_animationParam.height())
+
                 elif child in self.mandatoryFields.keys():
                     u.setBackColor(child)
                     if type(child).__name__ == 'QTableWidget':
@@ -806,14 +819,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             arguments['originalScene'] = data[pageName]['lineEdit_scene']
             arguments['outputDir'] = data[pageName]['lineEdit_output']
 
-            if data[pageName]['lineEdit_mesh']:
-                arguments['meshes'] = data[pageName]['lineEdit_mesh'].split('\n')
-            else: u.msg_warning(msg,'No Mesh specified')
-
             # ReductionParam Arguments
             pageName = str(self.grpBox_ReductionParam.objectName())
 
-            arguments['nodesToReduce'] = ['/'+data[pageName]['lineEdit_NodeToReduce']]
+            arguments['nodeToReduce'] = '/'+data[pageName]['lineEdit_NodeToReduce']
 
             if data[pageName]['lineEdit_moduleName']:
                 arguments['packageName'] = data[pageName]['lineEdit_moduleName']
@@ -843,10 +852,6 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
             arguments['tolModes'] = float(data[pageName]['lineEdit_tolModes'])
             arguments['tolGIE'] = float(data[pageName]['lineEdit_tolGIE'])
-
-            if data[pageName]['lineEdit_toKeep']:
-                arguments['toKeep'] = data[pageName]['lineEdit_toKeep']
-            else: u.msg_info(msg,'No To Keep Specified, take default')
 
             if data[pageName]['checkBox_addToLib'] == 'True':
                 arguments['addToLib'] = True
@@ -939,6 +944,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             self.animationDialog.append(GenericDialogForm(animation,existingAnimation[animation]))
             self.addComboToTab(tab,existingAnimation.keys(),row,0)
 
+        self.resizeTab()
+
     def addComboToTab(self,tab,values,row,column):
         '''
         addComboToTab will add a QComboBox to an QTableWidget[row][column] and fill it with different value 
@@ -965,6 +972,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         row = u.removeLine(tab)
         if row:
             dialogs.remove(dialogs[row])
+
+        self.resizeTab()
+
 
 ###################################################################################################
 

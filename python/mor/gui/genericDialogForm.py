@@ -11,7 +11,7 @@ except AttributeError:
         return s
 
 class GenericDialogForm(QtGui.QDialog):
-    def __init__(self,animation,param,currentValues=None,height = 137,width = 300):
+    def __init__(self,animation,param,currentValues=None,heightFields = 35,heightMargin = 10,maxWidth = 1000):
         QtGui.QDialog.__init__(self)
 
         self.state = False
@@ -21,7 +21,12 @@ class GenericDialogForm(QtGui.QDialog):
         if not currentValues:
             self.currentValues = {}
 
-        self.resize(width, height)
+        self.heightFields = heightFields
+        self.heightMargin = heightMargin
+        self.maxWidth = maxWidth
+
+        self.resize(self.maxWidth/3,self.heightFields+self.heightMargin)
+
         self.setWindowTitle(self.animation)
         self.setupUi(self)
         self.btn_submit.clicked.connect(self.submitclose)
@@ -63,8 +68,8 @@ class GenericDialogForm(QtGui.QDialog):
         self.btn_submit.setText("Ok")
         self.formLayout_2.setWidget(i, QtGui.QFormLayout.FieldRole, self.btn_submit)
 
-        self.setFixedHeight(self.height()) 
-        self.setMaximumWidth(1000)
+        self.setFixedHeight((len(self.param)+1)*self.heightFields+self.heightMargin)
+        self.setMaximumWidth(self.maxWidth)
         self.setMinimumWidth(self.width())
 
 
