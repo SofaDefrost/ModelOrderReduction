@@ -58,8 +58,8 @@ def createScene(rootNode):
         translation=[0.0, 0.0, 35],
         totalMass=0.5,
         withConstrain=False,
-        # surfaceMeshFileName=meshPath+'surface.stl',
-        # surfaceColor=[0.7, 0.7, 0.7, 0.7],
+        surfaceMeshFileName=meshPath+'surface.stl',
+        surfaceColor=[0.7, 0.7, 0.7, 0.7],
         poissonRatio=0.45,
         youngModulus=450)
     

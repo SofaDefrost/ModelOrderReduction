@@ -98,17 +98,14 @@ def SofiaLeg(
 
         meshType = surfaceMeshFileName.split('.')[-1]
         if meshType == 'stl':
-            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=meshPath+surfaceMeshFileName)
+            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=meshPath+surfaceMeshFileName, rotation= rotation, translation = translation,scale3d = scale)
         elif meshType == 'obj':
-            visu.createObject(  'MeshObjLoader', name= 'loader', filename=meshPath+surfaceMeshFileName)
+            visu.createObject(  'MeshObjLoader', name= 'loader', filename=meshPath+surfaceMeshFileName, rotation= rotation, translation = translation,scale3d = scale)
 
         visu.createObject(  'OglModel',
                             src='@loader',
                             template='ExtVec3f',
-                            color=surfaceColor,
-                            rotation= rotation,
-                            translation = translation,
-                            scale3d = scale)
+                            color=surfaceColor)
 
         visu.createObject('BarycentricMapping')
 
