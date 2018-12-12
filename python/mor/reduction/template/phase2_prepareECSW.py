@@ -30,12 +30,11 @@ nbTrainingSet = $NBTRAININGSET
 paramWrapper = $PARAMWRAPPER
 phaseToSave = $PHASETOSAVE
 
-for item in paramWrapper:
-    path, param = item
-    param['nbrOfModes'] = $NBROFMODES
-    if phase == phaseToSave:
-        if 'paramMappedMatrixMapping' in param:
-            param['paramMappedMatrixMapping']['saveReducedMass'] = True
+path, param = paramWrapper
+param['nbrOfModes'] = $NBROFMODES
+if phase == phaseToSave:
+    if 'paramMappedMatrixMapping' in param:
+        param['paramMappedMatrixMapping']['saveReducedMass'] = True
 
 ###############################################################################
 

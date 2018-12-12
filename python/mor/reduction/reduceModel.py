@@ -38,6 +38,7 @@ import errno
 import fileinput
 import datetime
 import glob
+import shutil
 
 try:
     from launcher import ParallelLauncher, startSofa
@@ -68,14 +69,14 @@ class ObjToAnimate():
     | item     | Sofa.Node/||pointer to Sofa node/obj in which we are working on (will be set during execution)    |
     |          | Sofa.Obj  ||                                                                                      |
     +----------+-----------+---------------------------------------------------------------------------------------+
-    | duration | sc        || Total time in second of the animation (put by default to -1                          |
-    |          |           || & will be calculated & set later during the execution)                               |
+    | duration | seconde   || Total time in second of the animation (put by default to -1                          |
+    |          |(in float) || & will be calculated & set later during the execution)                               |
     +----------+-----------+---------------------------------------------------------------------------------------+
     | **params | undefined || You can put in addition whatever parameters you will need                            |
     |          |           || for your specific animation function, they will be passed                            |
     |          |           || to the *animFct* you have chosen during execution                                    |
     |          |           || See :py:mod:`.animation` for the specific parameters                                 |
-    |          |           || you need to give to each aniamtion function                                          |
+    |          |           || you need to give to each animation function                                          |
     +----------+-----------+---------------------------------------------------------------------------------------+
 
     **Example**
@@ -84,7 +85,7 @@ class ObjToAnimate():
 
         .. sourcecode:: python
 
-            ObjToAnimate( "/myNodeToReduce/myComponentToAnimate",
+            ObjToAnimate( "myNodeToReduce/myComponentToAnimate",
                           "defaultShaking",
                           incr= 5, incrPeriod= 10, rangeOfAction= 40,
                           dataToWorkOn= NameOfDataFieldsToWorkOn)
@@ -93,7 +94,7 @@ class ObjToAnimate():
         
         .. sourcecode:: python
 
-            ObjToAnimate( "/myNodeToReduce/myComponentToAnimate",
+            ObjToAnimate( "myNodeToReduce/myComponentToAnimate",
                           incr=5,incrPeriod=10,rangeOfAction=40)
 
     '''
@@ -118,6 +119,10 @@ class ReductionAnimations():
 
         # A list of what you want to animate in your scene and with which parameters
         self.listObjToAnimate = listObjToAnimate
+
+        self.listOfLocation = []
+        for obj in self.listObjToAnimate:
+            self.listOfLocation.append(obj.location)
 
         self.nbActuator = len(self.listObjToAnimate) 
         self.nbPossibility = 2**self.nbActuator
@@ -167,12 +172,11 @@ class PackageBuilder():
     """
     **Contain all the parameters & functions related to building the package**
     """
-    def __init__(self,outputDir,meshes,toKeep,packageName = None ,addToLib = False):
+    def __init__(self,outputDir,packageName = None ,addToLib = False):
 
         self.outputDir = outputDir
-        self.meshes = meshes
+        self.meshes = []
 
-        self.toKeep = toKeep
         self.addToLibBool = addToLib
 
         if packageName :
@@ -294,6 +298,9 @@ class PackageBuilder():
 
         shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir+'/'+self.packageName+'.py')
 
+        with open(result['directory']+'/meshFiles.txt', "r") as meshFiles:
+            self.meshes = meshFiles.read().splitlines()
+
         self.checkExistance(self.meshDir)
 
         if self.meshes:
@@ -368,7 +375,7 @@ class ReductionParam():
         self.periodSaveGIE = 6 #10
         self.nbTrainingSet = -1
 
-        self.paramWrapper = []
+        self.paramWrapper = None
 
     def setNbTrainingSet(self,rangeOfAction,incr):
         '''
@@ -377,7 +384,7 @@ class ReductionParam():
 
         self.nbTrainingSet = rangeOfAction/incr
 
-    def addParamWrapper(self ,nodeToReduce ,prepareECSW = True ,subTopo = None ,paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
+    def addParamWrapper(self ,nodeToReduce ,prepareECSW = True, paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
         '''
         TODO
         '''
@@ -429,49 +436,20 @@ class ReductionParam():
                     'precomputedMassPath': self.dataFolder+self.massName}
                 }
 
-        if subTopo:
-            subTopoName = subTopo.split('/')[-1]
-            paramsubTopo = {
-                'paramForcefield' : {
-                    'performECSW': True,
-                    'modesPath': self.dataFolder+self.modesFileName,
-                    'RIDPath': self.dataFolder,
-                    'weightsPath': self.dataFolder}
-            }
-
         if paramForcefield and paramMappedMatrixMapping and paramMORMapping :
-            print('plop')
+            pass
         else:
             if prepareECSW:
-                if subTopo:
-                    self.paramWrapper.append(   (nodeToReduce ,
-                                           {'subTopo' : subTopoName,
-                                            'paramForcefield': defaultParamPrepare['paramForcefield'].copy(),
-                                            'paramMORMapping': defaultParamPrepare['paramMORMapping'].copy(),
-                                            'paramMappedMatrixMapping': defaultParamPrepare['paramMappedMatrixMapping'].copy()} ) )
-
-                    self.paramWrapper.append(  (subTopo ,{'paramForcefield': defaultParamPrepare['paramForcefield'].copy()} ) )
-                else:
-                    self.paramWrapper.append(   (nodeToReduce ,
-                                           {'paramForcefield': defaultParamPrepare['paramForcefield'].copy(),
-                                            'paramMORMapping': defaultParamPrepare['paramMORMapping'].copy(),
-                                            'paramMappedMatrixMapping': defaultParamPrepare['paramMappedMatrixMapping'].copy()} ) )
+                self.paramWrapper = (   (nodeToReduce ,
+                                       {'paramForcefield': defaultParamPrepare['paramForcefield'].copy(),
+                                        'paramMORMapping': defaultParamPrepare['paramMORMapping'].copy(),
+                                        'paramMappedMatrixMapping': defaultParamPrepare['paramMappedMatrixMapping'].copy()} ) )
 
             else :
-                if subTopo:
-                    self.paramWrapper.append(   (nodeToReduce ,
-                                           {'subTopo' : subTopoName,
-                                            'paramForcefield': defaultParamPerform['paramForcefield'].copy(),
-                                            'paramMORMapping': defaultParamPerform['paramMORMapping'].copy(),
-                                            'paramMappedMatrixMapping': defaultParamPerform['paramMappedMatrixMapping'].copy()} ) )
-
-                    self.paramWrapper.append(  (subTopo ,{'paramForcefield': paramsubTopo['paramForcefield'].copy()} ) )
-                else:
-                    self.paramWrapper.append(   (nodeToReduce ,
-                                           {'paramForcefield': defaultParamPerform['paramForcefield'].copy(),
-                                            'paramMORMapping': defaultParamPerform['paramMORMapping'].copy(),
-                                            'paramMappedMatrixMapping': defaultParamPerform['paramMappedMatrixMapping'].copy()} ) )
-
+                self.paramWrapper = (   (nodeToReduce ,
+                                       {'paramForcefield': defaultParamPerform['paramForcefield'].copy(),
+                                        'paramMORMapping': defaultParamPerform['paramMORMapping'].copy(),
+                                        'paramMappedMatrixMapping': defaultParamPerform['paramMappedMatrixMapping'].copy()} ) )
 
         return self.paramWrapper
 
@@ -480,13 +458,13 @@ class ReductionParam():
         TODO
         '''
 
-        for path , param in self.paramWrapper :
-            nodeName = path.split('/')[-1]
-            self.gieFilesNames.append('HyperReducedFEMForceField_'+nodeName+'_Gie.txt')
-            self.RIDFilesNames.append('RID_'+nodeName+'.txt')
-            self.weightsFilesNames.append('weight_'+nodeName+'.txt')
-            self.savedElementsFilesNames.append('elmts_'+nodeName+'.txt')
-            self.listActiveNodesFilesNames.append('listActiveNodes_'+nodeName+'.txt')
+        path , param = self.paramWrapper
+        nodeName = path.split('/')[-1]
+        self.gieFilesNames.append('HyperReducedFEMForceField_'+nodeName+'_Gie.txt')
+        self.RIDFilesNames.append('RID_'+nodeName+'.txt')
+        self.weightsFilesNames.append('weight_'+nodeName+'.txt')
+        self.savedElementsFilesNames.append('elmts_'+nodeName+'.txt')
+        self.listActiveNodesFilesNames.append('listActiveNodes_'+nodeName+'.txt')
 
 class ReduceModel():
     """
@@ -497,7 +475,7 @@ class ReduceModel():
     +===================+=================================+===========================================================================================+
     | originalScene     | str                             | absolute path to original scene                                                           |
     +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
-    | nodesToReduce     | list(str)                       | list of paths to models to reduce                                                         |
+    | nodeToReduce      | str                             | Paths to models to reduce                                                                 |
     +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
     | listObjToAnimate  | list(:py:class:`.ObjToAnimate`) | list conaining all the ObjToAnimate that will be use to shake our model                   |
     +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
@@ -507,13 +485,7 @@ class ReduceModel():
     +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
     | outputDir         | str                             | absolute path to output directiry in which all results will be stored                     |
     +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
-    | meshes            | str                             || absolute path to the differents mesh files                                               |
-    |                   |                                 || they will be copied at the end into of the reduction process into a new mesh directory   |
-    +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
     | packageName       | str                             | Which name will have the final componant ( & package if the option addToLib is activated) |
-    +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
-    | toKeep            | str                             || Indicate which Sofa.node to keep for our reduced component.                              |
-    |                   |                                 || by default will keep all the node used for animation                                     |
     +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
     | addToLib          | Bool                            | If ``True`` will add in the python library of this plugin the finalized reduced component |
     +-------------------+---------------------------------+-------------------------------------------------------------------------------------------+
@@ -530,14 +502,12 @@ class ReduceModel():
     """
     def __init__(self,
                  originalScene,
-                 nodesToReduce,
+                 nodeToReduce,
                  listObjToAnimate,
                  tolModes,
                  tolGIE,
                  outputDir,
-                 meshes = None,
                  packageName = 'myReducedModel',
-                 toKeep = None,
                  addToLib = False,
                  verbose = False,
                  addRigidBodyModes = False,
@@ -545,14 +515,14 @@ class ReduceModel():
                  phaseToSave = None):
 
         self.originalScene = originalScene
-        self.nodesToReducePath = nodesToReduce
+        self.nodeToReduce = nodeToReduce
 
 
         ### Obj Containing all the argument & function about how the shaking will be done and with which actuators
         self.reductionAnimations = ReductionAnimations(listObjToAnimate)
 
         ### Obj Containing all the argument & function about how to create the end package and where 
-        self.packageBuilder = PackageBuilder(outputDir,meshes,toKeep,packageName,addToLib)
+        self.packageBuilder = PackageBuilder(outputDir,packageName,addToLib)
 
         ### Obj Containing all the argument & function about the actual reduction
         self.reductionParam = ReductionParam(tolModes,tolGIE,addRigidBodyModes,self.packageBuilder.dataDir)
@@ -562,46 +532,7 @@ class ReduceModel():
                                                 listObjToAnimate[0].params['incr'])
 
 
-        self.nodeToReduceNames = []
-        self.subTopoList = []
-        for nodePath in self.nodesToReducePath :
-            if isinstance(nodePath,tuple):
-                nodeName = nodePath[0].split('/')[-1]
-                modelSubTopoName = nodePath[1].split('/')[-1]
-                self.nodeToReduceNames.append(nodePath[0])
-                self.nodeToReduceNames.append(nodePath[1])
-                self.subTopoList.append(self.nodesToReducePath.index(nodePath))
-                self.reductionParam.addParamWrapper(nodePath[0], subTopo = nodePath[1])
-
-            else :
-                # nodeName = nodePath.split('/')[-1]
-                self.nodeToReduceNames.append(nodePath)
-
-                self.reductionParam.addParamWrapper(nodePath)
-
-        ### If nothing is indicated to keep in the future package, by default we add all the actuators used to create the reduced model
-        if not toKeep:
-            toKeep = []
-            for obj in listObjToAnimate:
-                tmp = obj.location.split('/')[:-1] # remove last / or objName to take only the path to the node we want to keep
-                for i in range(len(tmp)): # keep all node before the one we want to keep
-                    pathToNode = '/'.join(tmp[:i+1]) 
-                    if pathToNode not in toKeep and '/'+pathToNode not in self.nodeToReduceNames:
-                        toKeep.append(pathToNode)
-                toKeep.append(obj.location)
-        else:
-            for obj in toKeep:
-                tmp = obj.split('/')[:-1] # remove last / or objName to take only the path to the node we want to keep
-                for i in range(len(tmp)): # keep all node before the one we want to keep
-                    pathToNode = '/'.join(tmp[:i+1]) 
-                    if pathToNode not in toKeep and '/'+pathToNode not in self.nodeToReduceNames:
-                        toKeep.append(pathToNode)
-                toKeep.append(obj.location)
-
-        self.packageBuilder.toKeep = toKeep
-        # print("TO KEEP",toKeep)
-        # else:
-            # Make an error managment ?
+        self.reductionParam.addParamWrapper(self.nodeToReduce)
 
         self.reductionParam.setFilesName()
 
@@ -832,7 +763,6 @@ class ReduceModel():
         for i in range(len(phasesToExecute)):
             self.listSofaScene[i]['NBROFMODES'] = nbrOfModes
             self.listSofaScene[i]['NBTRAININGSET'] = self.reductionParam.nbTrainingSet
-            # self.listSofaScene[i]["PARAMWRAPPER"] = self.paramWrapper
 
         filenames = ["phase2_prepareECSW.py","phase1_snapshots.py","debug_scene.py"]
         filesandtemplates = []
@@ -991,25 +921,19 @@ class ReduceModel():
         filename = "phase3_performECSW.py"
         filesandtemplates = [(open(path+filename).read(), filename)]
 
-        self.reductionParam.paramWrapper = []
-        for nodePath in self.nodesToReducePath :
-            if isinstance(nodePath,tuple):
-                self.reductionParam.addParamWrapper(nodePath[0], subTopo = nodePath[1], prepareECSW = False)
-            else :
-                self.reductionParam.addParamWrapper(nodePath, prepareECSW = False)
+        self.reductionParam.addParamWrapper(self.nodeToReduce, prepareECSW = False)
 
         finalScene = {}
         finalScene["ORIGINALSCENE"] = self.originalScene
         finalScene["PARAMWRAPPER"] = self.reductionParam.paramWrapper
         finalScene['NBROFMODES'] = nbrOfModes
         finalScene["nbIterations"] = 1
-        finalScene["TOKEEP"] = self.packageBuilder.toKeep
+        finalScene["ANIMATIONPATHS"] = self.reductionAnimations.listOfLocation
         finalScene["PACKAGENAME"] = self.packageBuilder.packageName
 
         results = startSofa([finalScene], filesandtemplates, launcher=ParallelLauncher(1))
-
         self.packageBuilder.finalizePackage(results[0])
 
-        print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
-        print('The reduction is now finished !')
-        return self.packageBuilder.outputDir+'/'+self.packageBuilder.packageName+'.py'
+        # print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
+        # print('The reduction is now finished !')
+        # return self.packageBuilder.outputDir+'/'+self.packageBuilder.packageName+'.py'

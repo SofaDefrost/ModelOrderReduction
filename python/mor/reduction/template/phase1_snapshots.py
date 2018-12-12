@@ -60,7 +60,7 @@ def createScene(rootNode):
     # Now that all the animation are defined we need to record there results
     # for that we take the parent node normally given as an argument in paramWrapper
 
-    path, param = paramWrapper[0]
+    path, param = paramWrapper
     myParent = get(rootNode,path[1:])
 
     # We need rest_position and because its normally always the same we record it one time

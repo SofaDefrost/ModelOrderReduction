@@ -72,7 +72,7 @@ def getContainer(node):
     container = None
     for obj in node.getObjects():
         className = obj.getClassName()
-        if className.find('Topology') != -1: # className.find('Loader') != -1 or
+        if className.find('TopologyContainer') != -1: # className.find('Loader') != -1 or
             # print obj.getName()
             container = obj
     return container
@@ -217,50 +217,49 @@ def modifyGraphScene(node,nbrOfModes,newParam):
     argMecha = {'template':'Vec1d','position':modesPositionStr}
 
     save = False
-    if 'save' in newParam[0][1]:
+    if 'save' in newParam[1]:
         save = True
 
-    for item in newParam :
-        pathTmp , param = item
-        print('pathTmp -----------------> '+pathTmp)
-        try :
-            currentNode = get(node,pathTmp[1:])
-            solver = getNodeSolver(currentNode)
-            print("node.getPathName()",currentNode.getPathName())
-            if currentNode.getPathName() == pathTmp:
-                if 'paramMappedMatrixMapping' in param:
-                    print('Create new child modelMOR and move node in it')
+    pathTmp , param = newParam
+    print('pathTmp -----------------> '+pathTmp)
+    try :
+        currentNode = get(node,pathTmp[1:])
+        solver = getNodeSolver(currentNode)
+        print("node.getPathName()",currentNode.getPathName())
+        if currentNode.getPathName() == pathTmp:
+            if 'paramMappedMatrixMapping' in param:
+                print('Create new child modelMOR and move node in it')
 
-                    myParent = currentNode.getParents()[0]
-                    modelMOR = myParent.createChild(currentNode.name+'_MOR')
-                    modelMOR.moveChild(currentNode)
+                myParent = currentNode.getParents()[0]
+                modelMOR = myParent.createChild(currentNode.name+'_MOR')
+                modelMOR.moveChild(currentNode)
 
-                    for obj in solver:
-                        # print('To move!')
-                        currentNode.removeObject(obj)
-                        currentNode.getParents()[0].addObject(obj)
+                for obj in solver:
+                    # print('To move!')
+                    currentNode.removeObject(obj)
+                    currentNode.getParents()[0].addObject(obj)
 
-                    modelMOR.createObject('MechanicalObject', **argMecha)
+                modelMOR.createObject('MechanicalObject', **argMecha)
 
-                    # print param['paramMappedMatrixMapping']
-                    modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
-                    # print 'Create MechanicalMatrixMapperMOR in modelMOR'
+                # print param['paramMappedMatrixMapping']
+                modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
+                # print 'Create MechanicalMatrixMapperMOR in modelMOR'
 
+                if save:
+                    replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
+                    replaceAndSave.myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
+
+                if 'paramMORMapping' in param:
+                    #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
+                    param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name
                     if save:
-                        replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
-                        replaceAndSave.myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
+                        replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
 
-                    if 'paramMORMapping' in param:
-                        #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
-                        param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name
-                        if save:
-                            replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
-
-                        currentNode.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
-                        print ("Create ModelOrderReductionMapping in node")
-                    # else do error !!
-        except :
-            print("Problem with path : "+pathTmp[1:])
+                    currentNode.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
+                    print ("Create ModelOrderReductionMapping in node")
+                # else do error !!
+    except :
+        print("Problem with path : "+pathTmp[1:])
 
 def saveElements(node,dt,forcefield):
     '''
