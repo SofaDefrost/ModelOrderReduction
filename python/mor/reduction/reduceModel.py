@@ -382,7 +382,7 @@ class ReductionParam():
         TODO
         '''
 
-        self.nbTrainingSet = rangeOfAction/incr
+        self.nbTrainingSet = int(rangeOfAction/incr)
 
     def addParamWrapper(self ,nodeToReduce ,prepareECSW = True, paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
         '''
@@ -762,7 +762,6 @@ class ReduceModel():
 
         for i in range(len(phasesToExecute)):
             self.listSofaScene[i]['NBROFMODES'] = nbrOfModes
-            self.listSofaScene[i]['NBTRAININGSET'] = self.reductionParam.nbTrainingSet
 
         filenames = ["phase2_prepareECSW.py","phase1_snapshots.py","debug_scene.py"]
         filesandtemplates = []

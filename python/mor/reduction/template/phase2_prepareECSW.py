@@ -26,15 +26,11 @@ phase.append($item)
 #end for
 nbrOfModes = $NBROFMODES
 periodSaveGIE = $PERIODSAVEGIE
-nbTrainingSet = $NBTRAININGSET
 paramWrapper = $PARAMWRAPPER
 phaseToSave = $PHASETOSAVE
 
 path, param = paramWrapper
 param['nbrOfModes'] = $NBROFMODES
-if phase == phaseToSave:
-    if 'paramMappedMatrixMapping' in param:
-        param['paramMappedMatrixMapping']['saveReducedMass'] = True
 
 ###############################################################################
 
@@ -56,6 +52,7 @@ def createScene(rootNode):
 
     if phase == phaseToSave:
         u.saveElements(rootNode,rootNode.dt,replaceAndSave.forcefield)
+        param['paramMappedMatrixMapping']['saveReducedMass'] = True
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper

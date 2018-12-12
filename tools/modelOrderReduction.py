@@ -29,11 +29,8 @@ from mor.reduction import ObjToAnimate
 from PyQt4 import QtCore, QtGui
 app = QtGui.QApplication(sys.argv)
 
-# originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-# outputDir = utility.openDirName('Select the directory tha will contain all the results')
-
-originalScene = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/liverFine.pyscn'
-outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/test1'
+originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 ### DIAMOND ROBOT PARAM
 # nodesToReduce = '/modelNode'
@@ -61,10 +58,10 @@ outputDir = '/home/felix/SOFA/plugin/ModelOrderReduction/tools/test1'
 # addRigidBodyModes = [0,0,0]
 
 ### LIVER
-nodesToReduce ='/liver'
-actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
-listObjToAnimate = [actuator]
-addRigidBodyModes = [0,0,0]
+# nodesToReduce ='/liver'
+# actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
+# listObjToAnimate = [actuator]
+# addRigidBodyModes = [0,0,0]
 
 
 # Tolerance
@@ -146,4 +143,4 @@ reduceMyModel = ReduceModel(    originalScene,
 #      with it. Additionnally we also compute the Active Nodes       #
 #                                                                    #
 ######################################################################
-reduceMyModel.phase4()
+# reduceMyModel.phase4()

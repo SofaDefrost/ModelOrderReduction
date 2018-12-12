@@ -25,7 +25,7 @@ def createScene(rootNode):
         stateFileName="stateFile.state"
     originalScene.createScene(rootNode)
 
-    path , param = paramWrapper[0]  
+    path , param = paramWrapper
     pathToNode = path[1:]
 
-    u.createDebug(rootNode,paramWrapper,stateFileName)
+    u.createDebug(rootNode,pathToNode,stateFileName)
