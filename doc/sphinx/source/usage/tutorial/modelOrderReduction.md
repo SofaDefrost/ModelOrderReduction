@@ -226,7 +226,7 @@ We launch again a set of sofa scene with the sofa launcher with the same previou
 
 This scene take the previous one and add the model order reduction component:
 - HyperReducedFEMForceField
-- MappedMatrixForceFieldAndMass
+- MechanicalMatrixMapperMOR
 - ModelOrderReductionMapping and produce an Hyper Reduced description of the model
 
 

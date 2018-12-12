@@ -51,7 +51,7 @@ sudo apt-get install python-cheetah python-pyqt4 python-yaml
 <span style="color:red">*then add to your .bashrc* </span>
 
 ```
-export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher
+export PYTHONPATH=$PYTHONPATH:/PathToYourSofaSrcFolder/tools/sofa-launcher
 ```
 
 ------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher
 	For that you have to add to your *.bashrc* in the end the following line:
 
 	```
-	export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher
+	export PYTHONPATH=$PYTHONPATH:/PathToYourSofaSrcFolder/tools/sofa-launcher
 	```
 
 	- [Cheetah](http://cheetahtemplate.org/)
