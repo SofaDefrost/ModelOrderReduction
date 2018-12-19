@@ -19,6 +19,7 @@ Reduction Process Tutoriel
 			You can click on it and follow the tutorial
 
 .. toctree::
-	:maxdepth: 2
+    :maxdepth: 2
 
-	modelOrderReduction
+    modelOrderReduction
+    gui_modelOrderReduction

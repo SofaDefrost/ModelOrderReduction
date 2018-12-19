@@ -2,8 +2,6 @@ Components
 ============
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   components/forcefield
-   components/loader
-   components/mapping
+    api/library_root
