@@ -38,6 +38,7 @@ import errno
 import fileinput
 import datetime
 import glob
+import shutil
 
 try:
     from launcher import ParallelLauncher, startSofa
@@ -262,7 +263,7 @@ class PackageBuilder():
         except:
             raise
 
-    def copyAndCleanState(self,results,periodSaveGIE,stateFileName,gie=None):
+    def copyAndCleanState(self,results,periodSaveGIE,stateFileName,velocityFileName,gie=None):
         '''
         TODO
         '''
@@ -271,6 +272,8 @@ class PackageBuilder():
 
         if os.path.exists(self.debugDir+stateFileName):
             os.remove(self.debugDir+stateFileName)
+        if os.path.exists(self.debugDir+velocityFileName):
+            os.remove(self.debugDir+velocityFileName)
         if gie:
             for fileName in gie :
                 if os.path.exists(self.debugDir+fileName):
@@ -279,6 +282,7 @@ class PackageBuilder():
 
         for res in results:
             self.copyFileIntoAnother(res["directory"]+"/stateFile.state",self.debugDir+stateFileName)
+            self.copyFileIntoAnother(res["directory"]+"/stateFileVelocity.state",self.debugDir+velocityFileName)
 
             if gie:
                 for fileName in gie :
@@ -354,6 +358,7 @@ class ReductionParam():
         self.dataFolder = '/'+dataDir.split('/')[-2]+'/'
 
         self.stateFileName = "stateFile.state"
+        self.velocityFileName = "stateFileVelocity.state"
         self.modesFileName = "modes.txt"
 
         self.gieFilesNames = []
@@ -744,7 +749,7 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")  
 
-        self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName)
+        self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName,self.reductionParam.velocityFileName)
         self.packageBuilder.copy(results[self.phaseToSaveIndex]["directory"]+"/debug_scene.py", self.packageBuilder.debugDir)
 
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))

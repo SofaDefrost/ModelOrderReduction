@@ -17,6 +17,7 @@ from mor.utility import sceneCreation as u
 
 # Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
+import os
 originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
 
 # Animation parameters
@@ -52,18 +53,18 @@ def createScene(rootNode):
     else:
         AnimationManager(rootNode)
 
-    # Now that we have the AnimationManager & a list of the node we want to animate
+    # Now that we have the AnimationManager & a list of the nodes we want to animate
     # we can add an animation to then according to the arguments in listObjToAnimate
 
     u.addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate)
 
-    # Now that all the animation are defined we need to record there results
+    # Now that all the animations are defined we need to record their results
     # for that we take the parent node normally given as an argument in paramWrapper
 
     path, param = paramWrapper[0]
     myParent = get(rootNode,path[1:])
 
-    # We need rest_position and because its normally always the same we record it one time
+    # We need rest_position and because it is normally always the same we record it one time
     # during the first phase with the argument writeX0 put to True
     if phase == phaseToSave:
         myParent.createObject('WriteState', filename="stateFile.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
@@ -71,3 +72,8 @@ def createScene(rootNode):
     else :
         myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="0", writeV="0")
+
+    # add option or always true ?
+    # if saveVelocity == 1:
+    myParent.createObject('WriteState', filename="stateFileVelocity.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
+                                          writeX = "0", writeX0 = "0", writeV = "1")
