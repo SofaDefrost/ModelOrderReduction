@@ -17,7 +17,6 @@ from mor.utility import sceneCreation as u
 
 # Our Original Scene IMPORT
 originalScene = '$ORIGINALSCENE'
-import os
 originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
 
 # Animation parameters
@@ -73,7 +72,5 @@ def createScene(rootNode):
         myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="0", writeV="0")
 
-    # add option or always true ?
-    # if saveVelocity == 1:
     myParent.createObject('WriteState', filename="stateFileVelocity.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                           writeX = "0", writeX0 = "0", writeV = "1")

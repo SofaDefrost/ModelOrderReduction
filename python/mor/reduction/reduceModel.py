@@ -263,7 +263,7 @@ class PackageBuilder():
         except:
             raise
 
-    def copyAndCleanState(self,results,periodSaveGIE,stateFileName,velocityFileName,gie=None):
+    def copyAndCleanState(self,results,periodSaveGIE,stateFileName,velocityFileName, gie=None):
         '''
         TODO
         '''
@@ -272,7 +272,7 @@ class PackageBuilder():
 
         if os.path.exists(self.debugDir+stateFileName):
             os.remove(self.debugDir+stateFileName)
-        if os.path.exists(self.debugDir+velocityFileName):
+        if velocityFileName is not None and os.path.exists(self.debugDir+velocityFileName):
             os.remove(self.debugDir+velocityFileName)
         if gie:
             for fileName in gie :
@@ -282,7 +282,8 @@ class PackageBuilder():
 
         for res in results:
             self.copyFileIntoAnother(res["directory"]+"/stateFile.state",self.debugDir+stateFileName)
-            self.copyFileIntoAnother(res["directory"]+"/stateFileVelocity.state",self.debugDir+velocityFileName)
+            if velocityFileName is not None:
+                self.copyFileIntoAnother(res["directory"]+"/stateFileVelocity.state",self.debugDir+velocityFileName)
 
             if gie:
                 for fileName in gie :
@@ -348,7 +349,7 @@ class ReductionParam():
 
     """
 
-    def __init__(self,tolModes,tolGIE,addRigidBodyModes,dataDir):
+    def __init__(self,tolModes,tolGIE,addRigidBodyModes,dataDir, saveVelocitySnapshots):
 
         self.tolModes = tolModes
         self.tolGIE = tolGIE
@@ -358,8 +359,11 @@ class ReductionParam():
         self.dataFolder = '/'+dataDir.split('/')[-2]+'/'
 
         self.stateFileName = "stateFile.state"
-        self.velocityFileName = "stateFileVelocity.state"
         self.modesFileName = "modes.txt"
+        if not saveVelocitySnapshots:
+            self.velocityFileName = None
+        else:
+            self.velocityFileName = "velocityStateFile.state"
 
         self.gieFilesNames = []
         self.RIDFilesNames = []
@@ -540,6 +544,7 @@ class ReduceModel():
                  tolModes,
                  tolGIE,
                  outputDir,
+                 saveVelocitySnapshots = None, 
                  meshes = None,
                  packageName = 'myReducedModel',
                  toKeep = None,
@@ -560,7 +565,7 @@ class ReduceModel():
         self.packageBuilder = PackageBuilder(outputDir,meshes,toKeep,packageName,addToLib)
 
         ### Obj Containing all the argument & function about the actual reduction
-        self.reductionParam = ReductionParam(tolModes,tolGIE,addRigidBodyModes,self.packageBuilder.dataDir)
+        self.reductionParam = ReductionParam(tolModes,tolGIE,addRigidBodyModes,self.packageBuilder.dataDir,saveVelocitySnapshots)
 
         ### With the previous parameters (listObjToAnimate/nbPossibility) we can set our training set number
         self.reductionParam.setNbTrainingSet(   listObjToAnimate[0].params['rangeOfAction'],
