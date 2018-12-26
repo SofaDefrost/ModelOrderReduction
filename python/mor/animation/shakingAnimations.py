@@ -123,7 +123,6 @@ def shakingSofia( objToAnimate, dt, factor, **param):
 
 def shakingInverse( objToAnimate, dt, factor, **param):
     """
-    **TODO**
     """
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
     # print("currentTime - startTime : "+str(factor * objToAnimate.duration))

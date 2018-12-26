@@ -251,21 +251,24 @@ exhale_args = {
     "containmentFolder":     "./api",
     "rootFileName":          "library_root.rst",
     "rootFileTitle":         "Library API",
-    "doxygenStripFromPath":  "..",
+    "doxygenStripFromPath":  "../../../src/component",
     # Suggested optional arguments
     "createTreeView":        True,
     # TIP: if using the sphinx-bootstrap-theme, you need
     # "treeViewIsBootstrap": True,
-    "exhaleExecutesDoxygen": True,
-    "exhaleDoxygenStdin":    "INPUT = ../../../src/component",
     # "verboseBuild":True
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin":    textwrap.dedent('''
+        INPUT = ../../../src/component
+        FILE_PATTERNS = *.h
+        ''')
 }
 
-# Tell sphinx what the primary language being documented is.
-primary_domain = 'cpp'
+# # Tell sphinx what the primary language being documented is.
+# primary_domain = 'cpp'
 
-# Tell sphinx what the pygments highlight language should be.
-highlight_language = 'cpp'
+# # Tell sphinx what the pygments highlight language should be.
+# highlight_language = 'cpp'
 
 ###############################################################################
 # -- To Build Breath doc with ReadTheDocs--------------------------------------

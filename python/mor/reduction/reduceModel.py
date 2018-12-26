@@ -136,7 +136,6 @@ class ReductionAnimations():
 
     def setNbIteration(self,nbIterations=None):
         '''
-        TODO
         '''
 
         if nbIterations :
@@ -151,7 +150,6 @@ class ReductionAnimations():
 
     def generateListOfPhase(self,nbPossibility,nbActuator):
         '''
-        TODO
         '''
 
         phaseNum = [[0] * nbActuator for i in range(nbPossibility)]
@@ -191,7 +189,6 @@ class PackageBuilder():
 
     def copy(self, src, dest):
         '''
-        TODO
         '''
 
         try:
@@ -205,7 +202,6 @@ class PackageBuilder():
 
     def checkExistance(self,dir):
         '''
-        TODO
         '''
 
         if not os.path.exists(os.path.dirname(dir)):
@@ -217,7 +213,6 @@ class PackageBuilder():
 
     def checkNodeNbr(self,modeFileName):
         '''
-        TODO
         '''
 
         nbrOfModes = -1 
@@ -237,7 +232,6 @@ class PackageBuilder():
 
     def cleanStateFile(self,periodSaveGIE,stateFileName):
         '''
-        TODO
         '''
 
         counter = 1
@@ -250,7 +244,6 @@ class PackageBuilder():
 
     def copyFileIntoAnother(self,fileToCopy,fileToPasteInto):
         '''
-        TODO
         '''
 
         try:
@@ -268,7 +261,6 @@ class PackageBuilder():
 
     def copyAndCleanState(self,results,periodSaveGIE,stateFileName,gie=None):
         '''
-        TODO
         '''
 
         self.checkExistance(self.debugDir)
@@ -293,7 +285,6 @@ class PackageBuilder():
 
     def finalizePackage(self,result):
         '''
-        TODO
         '''
 
         shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir+'/'+self.packageName+'.py')
@@ -313,7 +304,6 @@ class PackageBuilder():
 
     def addToLib(self):
         '''
-        TODO
         '''
 
         self.copy(self.outputDir, pathToReducedModel+self.packageName+'/')
@@ -379,14 +369,12 @@ class ReductionParam():
 
     def setNbTrainingSet(self,rangeOfAction,incr):
         '''
-        TODO
         '''
 
         self.nbTrainingSet = int(rangeOfAction/incr)
 
     def addParamWrapper(self ,nodeToReduce ,prepareECSW = True, paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
         '''
-        TODO
         '''
 
         nodeToParse = '@.'+nodeToReduce
@@ -455,7 +443,6 @@ class ReductionParam():
 
     def setFilesName(self):
         '''
-        TODO
         '''
 
         path , param = self.paramWrapper

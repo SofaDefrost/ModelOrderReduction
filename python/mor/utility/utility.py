@@ -18,8 +18,6 @@
 """
 **Utilities functions used mainly by the reduceModel classes**
 
-DOC TO DO
-
 ------------------------------------------------------------------
 """
 import time, sys
