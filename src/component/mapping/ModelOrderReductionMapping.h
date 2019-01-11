@@ -168,16 +168,7 @@ public:
 
 
 #if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_MAPPING_MODELORDERREDUCTIONMAPPING_CPP)
-
-#ifdef SOFA_WITH_DOUBLE
-extern template class SOFA_BASE_MECHANICS_API ModelOrderReductionMapping< sofa::defaulttype::Vec1dTypes, sofa::defaulttype::Vec3dTypes >;
-#endif
-
-#ifdef SOFA_WITH_FLOAT
-extern template class SOFA_BASE_MECHANICS_API ModelOrderReductionMapping< sofa::defaulttype::Vec1fTypes, sofa::defaulttype::Vec3fTypes >;
-#endif
-
-
+extern template class SOFA_BASE_MECHANICS_API ModelOrderReductionMapping< sofa::defaulttype::Vec1Types, sofa::defaulttype::Vec3Types >;
 #endif
 
 } // namespace mapping

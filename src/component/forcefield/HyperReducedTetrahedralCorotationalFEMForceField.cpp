@@ -39,20 +39,10 @@ SOFA_DECL_CLASS(HyperReducedTetrahedralCorotationalFEMForceField)
 
 // Register in the Factory
 int HyperReducedTetrahedralCorotationalFEMForceFieldClass = core::RegisterObject("Corotational FEM Tetrahedral finite elements")
-#ifndef SOFA_FLOAT
-        .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3dTypes> >()
-#endif
-#ifndef SOFA_DOUBLE
-        .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3fTypes> >()
-#endif
+        .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types> >()
         ;
 
-#ifndef SOFA_FLOAT
-template class SOFA_GENERAL_SIMPLE_FEM_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3dTypes>;
-#endif
-#ifndef SOFA_DOUBLE
-template class SOFA_GENERAL_SIMPLE_FEM_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3fTypes>;
-#endif
+template class SOFA_GENERAL_SIMPLE_FEM_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types>;
 
 } // namespace forcefield
 

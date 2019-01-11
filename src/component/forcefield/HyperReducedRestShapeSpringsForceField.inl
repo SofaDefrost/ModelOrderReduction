@@ -85,7 +85,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::reinit()
         stiffs.push_back(100.0);
         stiffness.setValue(stiffs);
     }
-    k = stiffness.getValue();
 }
 
 
@@ -113,6 +112,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
     }
 
     unsigned int i;
+    const VecReal &k = stiffness.getValue();
     if ( k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];
@@ -196,6 +196,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const Mechanic
     ReadAccessor< DataVecDeriv > dx1 = dx;
     Real kFactor = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
 
+    const VecReal &k = stiffness.getValue();
     if (k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];
@@ -315,6 +316,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
 
     unsigned int curIndex = 0;
 
+    const VecReal &k = stiffness.getValue();
     if (k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];
@@ -391,6 +393,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addSubKToMatrix(const Me
 
     unsigned int curIndex = 0;
 
+    const VecReal &k = stiffness.getValue();
     if (k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];

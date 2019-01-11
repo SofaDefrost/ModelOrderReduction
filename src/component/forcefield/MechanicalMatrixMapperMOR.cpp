@@ -40,20 +40,11 @@ using namespace sofa::defaulttype;
 SOFA_DECL_CLASS(MechanicalMatrixMapperMOR)
 
 int MechanicalMatrixMapperMORClass = core::RegisterObject("Partially rigidify a mechanical object using a rigid mapping.")
-#ifdef SOFA_WITH_FLOAT
-        .add< MechanicalMatrixMapperMOR<Vec3fTypes, Rigid3fTypes> >()
-        .add< MechanicalMatrixMapperMOR<Rigid3fTypes, Rigid3fTypes> >()
-        .add< MechanicalMatrixMapperMOR<Vec3fTypes, Vec3fTypes> >()
-        .add< MechanicalMatrixMapperMOR<Vec1fTypes, Rigid3fTypes> >()
-        .add< MechanicalMatrixMapperMOR<Vec1fTypes, Vec1fTypes> >()
-#endif
-#ifdef SOFA_WITH_DOUBLE
-        .add< MechanicalMatrixMapperMOR<Vec3dTypes, Rigid3dTypes> >(true)
-        .add< MechanicalMatrixMapperMOR<Rigid3dTypes, Rigid3dTypes> >(true)
-        .add< MechanicalMatrixMapperMOR<Vec3dTypes, Vec3dTypes> >(true)
-        .add< MechanicalMatrixMapperMOR<Vec1dTypes, Rigid3dTypes> >(true)
-        .add< MechanicalMatrixMapperMOR<Vec1dTypes, Vec1dTypes> >(true)
-#endif
+        .add< MechanicalMatrixMapperMOR<Vec3Types, Rigid3Types> >()
+        .add< MechanicalMatrixMapperMOR<Rigid3Types, Rigid3Types> >()
+        .add< MechanicalMatrixMapperMOR<Vec3Types, Vec3Types> >()
+        .add< MechanicalMatrixMapperMOR<Vec1Types, Rigid3Types> >()
+        .add< MechanicalMatrixMapperMOR<Vec1Types, Vec1Types> >()
         ;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,18 +52,10 @@ int MechanicalMatrixMapperMORClass = core::RegisterObject("Partially rigidify a 
 // This goes with the extern template declaration in the .h. Declaring extern template
 // avoid the code generation of the template for each compilation unit.
 // see: http://www.stroustrup.com/C++11FAQ.html#extern-templates
-#ifdef SOFA_WITH_DOUBLE
-template class MechanicalMatrixMapperMOR<Vec3dTypes, Rigid3dTypes>;
-template class MechanicalMatrixMapperMOR<Vec3dTypes, Vec3dTypes>;
-template class MechanicalMatrixMapperMOR<Vec1dTypes, Rigid3dTypes>;
-template class MechanicalMatrixMapperMOR<Vec1dTypes, Vec1dTypes>;
-#endif
-#ifdef SOFA_WITH_FLOAT
-template class MechanicalMatrixMapperMOR<Vec3fTypes, Rigid3fTypes>;
-template class MechanicalMatrixMapperMOR<Vec3fTypes, Vec3fTypes>;
-template class MechanicalMatrixMapperMOR<Vec1fTypes, Rigid3fTypes>;
-template class MechanicalMatrixMapperMOR<Vec1fTypes, Vec1fTypes>;
-#endif
+template class MechanicalMatrixMapperMOR<Vec3Types, Rigid3Types>;
+template class MechanicalMatrixMapperMOR<Vec3Types, Vec3Types>;
+template class MechanicalMatrixMapperMOR<Vec1Types, Rigid3Types>;
+template class MechanicalMatrixMapperMOR<Vec1Types, Vec1Types>;
 
 } // namespace interactionforcefield
 
