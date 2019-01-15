@@ -32,8 +32,8 @@ set(README_FILES
     )
 
 # Generate initModelOrderReduction.h from initModelOrderReduction.h.in
-configure_file(src/component/initModelOrderReduction.h.in "${CMAKE_CURRENT_SOURCE_DIR}/src/component/initModelOrderReduction.h")
 configure_file(src/component/initModelOrderReduction.h.in "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h")
+install(FILES "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h" DESTINATION "include/ModelOrderReduction" COMPONENT headers)
 
 
 # Add all cmake projects within the ModelOrderReduction plugin
@@ -45,9 +45,9 @@ include(src/component/loader/Loader_Files.cmake)
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction SofaMiscFem)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>")
@@ -86,4 +86,4 @@ sofa_create_package(ModelOrderReduction ${PROJECT_VERSION} ${PROJECT_NAME} Model
 
 
 # Allows to use CPack (for the future)
-#include(CPack)
+include(CPack)
