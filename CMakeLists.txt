@@ -19,9 +19,9 @@ option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappin
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
 
-set(HEADER_FILES
-    src/component/initModelOrderReduction.h
-	)
+# set(HEADER_FILES
+#     src/component/initModelOrderReduction.h
+# 	)
 
 set(SOURCE_FILES
     src/component/initModelOrderReduction.cpp
