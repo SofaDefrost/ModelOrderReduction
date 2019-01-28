@@ -19,9 +19,9 @@ option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappin
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
 
-set(HEADER_FILES
-    src/component/initModelOrderReduction.h
-	)
+# set(HEADER_FILES
+#     src/component/initModelOrderReduction.h
+# 	)
 
 set(SOURCE_FILES
     src/component/initModelOrderReduction.cpp
@@ -33,7 +33,7 @@ set(README_FILES
 
 # Generate initModelOrderReduction.h from initModelOrderReduction.h.in
 configure_file(src/component/initModelOrderReduction.h.in "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h")
-install(FILES "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h" DESTINATION "include/initModelOrderReduction" COMPONENT headers)
+install(FILES "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h" DESTINATION "include/ModelOrderReduction" COMPONENT headers)
 
 
 # Add all cmake projects within the ModelOrderReduction plugin
@@ -45,6 +45,7 @@ include(src/component/loader/Loader_Files.cmake)
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 target_link_libraries(${PROJECT_NAME} SofaCore SofaConstraint SofaBaseMechanics SofaUserInteraction SofaMiscFem)
 
 
