@@ -42,7 +42,7 @@ int HyperReducedTetrahedralCorotationalFEMForceFieldClass = core::RegisterObject
         .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types> >()
         ;
 
-template class SOFA_GENERAL_SIMPLE_FEM_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types>;
+template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types>;
 
 } // namespace forcefield
 

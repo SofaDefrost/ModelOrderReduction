@@ -40,7 +40,7 @@ int HyperReducedTriangleFEMForceFieldClass = core::RegisterObject("Triangular fi
         .add< HyperReducedTriangleFEMForceField<Vec3Types> >()
         ;
 
-template class SOFA_MISC_FEM_API HyperReducedTriangleFEMForceField<Vec3Types>;
+template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<Vec3Types>;
 
 } // namespace forcefield
 
