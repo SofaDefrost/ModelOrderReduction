@@ -16,6 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_MAPPING_MODELORDERREDUCTIONMAPPING_H
 #define SOFA_COMPONENT_MAPPING_MODELORDERREDUCTIONMAPPING_H
+#include <ModelOrderReduction/initModelOrderReduction.h>
 
 #include <vector>
 
@@ -168,7 +169,7 @@ public:
 
 
 #if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_MAPPING_MODELORDERREDUCTIONMAPPING_CPP)
-extern template class SOFA_BASE_MECHANICS_API ModelOrderReductionMapping< sofa::defaulttype::Vec1Types, sofa::defaulttype::Vec3Types >;
+extern template class SOFA_MODELORDERREDUCTION_API ModelOrderReductionMapping< sofa::defaulttype::Vec1Types, sofa::defaulttype::Vec3Types >;
 #endif
 
 } // namespace mapping

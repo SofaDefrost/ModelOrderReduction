@@ -39,7 +39,7 @@ int HyperReducedHexahedronFEMForceFieldClass = core::RegisterObject("Hexahedral 
         .add< HyperReducedHexahedronFEMForceField<Vec3Types> >()
         ;
 
-template class SOFA_SIMPLE_FEM_API HyperReducedHexahedronFEMForceField<Vec3Types>;
+template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<Vec3Types>;
 
 } // namespace forcefield
 
