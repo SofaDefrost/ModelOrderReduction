@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import os
 import imp
+import platform
 
-#	STLIB IMPORT
+#   STLIB IMPORT
 try:
     from splib.animation import AnimationManager , animate
     from stlib.scene.wrapper import Wrapper
@@ -15,9 +17,14 @@ from mor import animation
 from mor.reduction import ObjToAnimate
 from mor.utility import sceneCreation as u
 
+slash = '/'
+if platform.platform() == "Windows":
+    slash = "\\"
+
 # Our Original Scene IMPORT
-originalScene = '$ORIGINALSCENE'
-originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
+originalScene = r'$ORIGINALSCENE'
+originalScene = os.path.normpath(originalScene)
+originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
 
 # Animation parameters
 listObjToAnimate = []

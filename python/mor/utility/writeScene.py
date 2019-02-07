@@ -23,6 +23,11 @@
 
 import os
 import sys
+import platform
+
+slash = '/'
+if "Windows" in platform.platform():
+    slash ='\\'
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 
@@ -57,7 +62,56 @@ def writeHeader(packageName,nbrOfModes):
 
     except:
         print "Unexpected error:", sys.exc_info()[0]
+        raise
+
+
+def writeFooter(packageName,nodeName,listplugin,dt,gravity):
+    """
+    **Write a templated Footer to a file**
+    
+    This footer will finalize the component created 
+    by :py:func:`.writeHeader` & :py:func:`.writeGraphScene` allowing the user to test it rapidly
+    while keeping its original root configuration (listplugin/dt/gravity) 
+
+    **Args:**
+
+    +----------------+------+---------------------------------------------------------------+
+    | argument       | type | definition                                                    |
+    +================+======+===============================================================+
+    | packageName    | str  || Name of the file were we will write (without any extension)  |
+    |                |      ||that will also be the name for the new component              |
+    +----------------+------+---------------------------------------------------------------+
+    | nodeName       | str  | Name of the Sofa.Node we reduce                               |
+    +----------------+------+---------------------------------------------------------------+
+    | listplugin     | str  | Initial scene plugin list                                     |
+    +----------------+------+---------------------------------------------------------------+
+    | dt             | str  | Initial scene plugin dt                                       |
+    +----------------+------+---------------------------------------------------------------+
+    | gravity        | str  | Initial scene plugin gravity                                  |
+    +----------------+------+---------------------------------------------------------------+
+
+    """
+    print(packageName,packageName[0].upper()+packageName[1:])
+    try:
+        with open(path+'myFooter.txt', "r") as myfile:
+            myFooter = myfile.read()
+
+            myFooter = myFooter.replace('myReducedModel',nodeName)
+            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
+            myFooter = myFooter.replace('PLUGIN',str(listplugin))
+            myFooter = myFooter.replace('GRAVITY',str(gravity))
+            myFooter = myFooter.replace('DT',str(dt))
+
+
+            with open(packageName+'.py', "a") as logFile:
+                logFile.write(myFooter)
+
+            # print(myFooter)
+
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
         raise   
+
 
 def writeGraphScene(packageName,nodeName,myMORModel,myModel):
     """
@@ -179,7 +233,10 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                             if arg['filename'] not in filesName:
                                 filesName.append(arg['filename'])
 
-                            arg['filename'] = '/mesh/'+arg['filename'].split('/')[-1]
+                            filename = os.path.normpath(arg['filename'])
+                            filename = filename.split(slash)[-1]
+
+                            arg['filename'] = slash+'mesh'+slash+filename
 
                             if 'translation' not in arg:
                                 arg['translation'] = [0.0,0.0,0.0]
@@ -247,52 +304,6 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
         print "Unexpected error:", sys.exc_info()[0]
         raise
 
-def writeFooter(packageName,nodeName,listplugin,dt,gravity):
-    """
-    **Write a templated Footer to a file**
-    
-    This footer will finalize the component created 
-    by :py:func:`.writeHeader` & :py:func:`.writeGraphScene` allowing the user to test it rapidly
-    while keeping its original root configuration (listplugin/dt/gravity) 
-
-    **Args:**
-
-    +----------------+------+---------------------------------------------------------------+
-    | argument       | type | definition                                                    |
-    +================+======+===============================================================+
-    | packageName    | str  || Name of the file were we will write (without any extension)  |
-    |                |      ||that will also be the name for the new component              |
-    +----------------+------+---------------------------------------------------------------+
-    | nodeName       | str  | Name of the Sofa.Node we reduce                               |
-    +----------------+------+---------------------------------------------------------------+
-    | listplugin     | str  | Initial scene plugin list                                     |
-    +----------------+------+---------------------------------------------------------------+
-    | dt             | str  | Initial scene plugin dt                                       |
-    +----------------+------+---------------------------------------------------------------+
-    | gravity        | str  | Initial scene plugin gravity                                  |
-    +----------------+------+---------------------------------------------------------------+
-
-    """
-    print(packageName,packageName[0].upper()+packageName[1:])
-    try:
-        with open(path+'myFooter.txt', "r") as myfile:
-            myFooter = myfile.read()
-
-            myFooter = myFooter.replace('myReducedModel',nodeName)
-            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
-            myFooter = myFooter.replace('PLUGIN',str(listplugin))
-            myFooter = myFooter.replace('GRAVITY',str(gravity))
-            myFooter = myFooter.replace('DT',str(dt))
-
-
-            with open(packageName+'.py', "a") as logFile:
-                logFile.write(myFooter)
-
-            # print(myFooter)
-
-    except:
-        print "Unexpected error:", sys.exc_info()[0]
-        raise   
 
 def buildArgStr(arg,translation=None):
     """
@@ -345,7 +356,8 @@ def buildArgStr(arg,translation=None):
                     myArgs += ", "+key+" = "+str(val)
 
         elif key.find('Path') != -1 or key.find('filename') != -1:
-            myArgs += ", "+key+" = path + '"+str(val)+"'"
+            # add 'r' before val to avoid special char due to windows path
+            myArgs += ", "+key+" = path + r'"+str(val)+"'"
 
         else :
             if key == "nbModes":
