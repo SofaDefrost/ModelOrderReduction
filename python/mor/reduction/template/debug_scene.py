@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 import imp
+import platform
 from sys import argv
 
 #   STLIB IMPORT
@@ -12,8 +14,14 @@ except:
 # MOR IMPORT
 from mor.utility import sceneCreation as u
 
-originalScene = '$ORIGINALSCENE'
-originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
+slash = '/'
+if "Windows" in platform.platform():
+    slash = "\\"
+
+# Our Original Scene IMPORT
+originalScene = r'$ORIGINALSCENE'
+originalScene = os.path.normpath(originalScene)
+originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
 
 paramWrapper = $PARAMWRAPPER
 
