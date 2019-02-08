@@ -64,7 +64,7 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # addRigidBodyModes = [0,0,0]
 
 ### HEXABEAM
-#nodesToReduce =['/M1']
+#nodesToReduce ='/M1'
 #actuator = ObjToAnimate("M1/cableNode", incr=1,incrPeriod=5,rangeOfAction=5)
 #listObjToAnimate = [actuator]
 #addRigidBodyModes = [0,0,0]
