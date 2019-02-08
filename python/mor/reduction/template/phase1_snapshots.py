@@ -18,7 +18,7 @@ from mor.reduction import ObjToAnimate
 from mor.utility import sceneCreation as u
 
 slash = '/'
-if platform.platform() == "Windows":
+if "Windows" in platform.platform():
     slash = "\\"
 
 # Our Original Scene IMPORT

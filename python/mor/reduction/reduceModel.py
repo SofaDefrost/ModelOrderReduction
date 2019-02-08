@@ -656,7 +656,6 @@ class ReduceModel():
         for filename in filenames:                
             filesandtemplates.append( (open(path+filename).read(), filename) )
 
-
         results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(self.nbrCPU))
 
         if self.verbose:
@@ -869,7 +868,7 @@ class ReduceModel():
         # print(self.reductionParam.savedElementsFilesNames)
         # print(self.reductionParam.gieFilesNames)
         tmp = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0]
-        tmp = os.path.normpath(tmp[0])
+        tmp = os.path.normpath(tmp)
         self.reductionParam.massName = tmp.split(slash)[-1]
         # print("massName -----------------------> ",self.reductionParam.massName)
 

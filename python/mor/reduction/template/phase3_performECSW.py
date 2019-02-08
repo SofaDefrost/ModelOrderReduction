@@ -17,7 +17,7 @@ from mor.utility import writeScene
 from mor.wrapper import replaceAndSave
 
 slash = '/'
-if platform.platform() == "Windows":
+if "Windows" in platform.platform():
     slash = "\\"
 
 # Our Original Scene IMPORT
