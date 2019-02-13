@@ -16,7 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
-//#include "config.h"
+#include <ModelOrderReduction/initModelOrderReduction.h>
 
 #include "HyperReducedHelper.h"
 #include <SofaSimpleFem/HexahedronFEMForceField.h>
@@ -183,7 +183,7 @@ protected:
 };
 
 #if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
-extern template class SOFA_SIMPLE_FEM_API HyperReducedHexahedronFEMForceField<defaulttype::Vec3Types>;
+extern template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<defaulttype::Vec3Types>;
 #endif
 
 } // namespace forcefield

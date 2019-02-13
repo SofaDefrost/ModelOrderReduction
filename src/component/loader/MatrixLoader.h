@@ -16,6 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_LOADER_MATRIXLOADER_H
 #define SOFA_COMPONENT_LOADER_MATRIXLOADER_H
+#include <ModelOrderReduction/initModelOrderReduction.h>
 
 #include <iostream>
 #include <vector>

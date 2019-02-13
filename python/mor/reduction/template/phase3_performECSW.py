@@ -2,6 +2,7 @@
 import os
 import sys
 import imp
+import platform
 
 #   STLIB IMPORT
 try:
@@ -15,9 +16,14 @@ from mor.utility import sceneCreation as u
 from mor.utility import writeScene
 from mor.wrapper import replaceAndSave
 
+slash = '/'
+if "Windows" in platform.platform():
+    slash = "\\"
+
 # Our Original Scene IMPORT
-originalScene = '$ORIGINALSCENE'
-originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
+originalScene = r'$ORIGINALSCENE'
+originalScene = os.path.normpath(originalScene)
+originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
 
 # Scene parameters
 nbrOfModes = $NBROFMODES

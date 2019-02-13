@@ -40,7 +40,7 @@ int HyperReducedRestShapeSpringsForceFieldClass = core::RegisterObject("Simple e
         .add< HyperReducedRestShapeSpringsForceField<Vec3Types> >()
         ;
 
-template class SOFA_DEFORMABLE_API HyperReducedRestShapeSpringsForceField<Vec3Types>;
+template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<Vec3Types>;
 
 } // namespace forcefield
 

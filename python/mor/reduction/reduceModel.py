@@ -39,6 +39,7 @@ import fileinput
 import datetime
 import glob
 import shutil
+import platform
 
 try:
     from launcher import ParallelLauncher, startSofa
@@ -50,6 +51,10 @@ except:
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 pathToReducedModel = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])+'/../morlib/'
 # print('pathToReducedModel : '+pathToReducedModel)
+
+slash = '/'
+if "Windows" in platform.platform():
+    slash ='\\'
 
 class ObjToAnimate():
     '''
@@ -183,21 +188,20 @@ class PackageBuilder():
             if os.path.isdir(pathToReducedModel+self.packageName) and addToLib:
                 raise Exception('A Package named %s already exist in the MOR lib !\nPlease choose another name for this new package' % packageName)
 
-        self.dataDir = self.outputDir+'/data/'
-        self.debugDir = self.outputDir+'/debug/'
-        self.meshDir = self.outputDir+'/mesh/'
+        self.dataDir = self.outputDir+slash+'data'+slash
+        self.debugDir = self.outputDir+slash+'debug'+slash
+        self.meshDir = self.outputDir+slash+'mesh'+slash
 
     def copy(self, src, dest):
         '''
         '''
-
         try:
             shutil.copytree(src, dest)
-        except OSError as e:
+        except:
             # If the error was caused because the source wasn't a directory
-            if e.errno == errno.ENOTDIR:
+            try:
                 shutil.copy(src, dest)
-            else:
+            except:
                 print('Directory not copied. Error: %s' % e)
 
     def checkExistance(self,dir):
@@ -274,11 +278,11 @@ class PackageBuilder():
 
 
         for res in results:
-            self.copyFileIntoAnother(res["directory"]+"/stateFile.state",self.debugDir+stateFileName)
+            self.copyFileIntoAnother(res["directory"]+slash+"stateFile.state",self.debugDir+stateFileName)
 
             if gie:
                 for fileName in gie :
-                    self.copyFileIntoAnother(res["directory"]+'/'+fileName,self.debugDir+fileName)
+                    self.copyFileIntoAnother(res["directory"]+slash+fileName,self.debugDir+fileName)
 
 
         self.cleanStateFile(periodSaveGIE,stateFileName)
@@ -287,9 +291,9 @@ class PackageBuilder():
         '''
         '''
 
-        shutil.move(result['directory']+'/'+self.packageName+'.py', self.outputDir+'/'+self.packageName+'.py')
+        shutil.move(result['directory']+slash+self.packageName+'.py', self.outputDir+slash+self.packageName+'.py')
 
-        with open(result['directory']+'/meshFiles.txt', "r") as meshFiles:
+        with open(result['directory']+slash+'meshFiles.txt', "r") as meshFiles:
             self.meshes = meshFiles.read().splitlines()
 
         self.checkExistance(self.meshDir)
@@ -306,7 +310,7 @@ class PackageBuilder():
         '''
         '''
 
-        self.copy(self.outputDir, pathToReducedModel+self.packageName+'/')
+        self.copy(self.outputDir, pathToReducedModel+self.packageName+slash)
 
         try:
             with open(path+'myInit.txt', "r") as myfile:
@@ -315,7 +319,7 @@ class PackageBuilder():
                 myInit = myInit.replace('MyReducedModel',self.packageName[0].upper()+self.packageName[1:])
                 myInit = myInit.replace('myReducedModel',self.packageName)
 
-                with open(pathToReducedModel+self.packageName+'/__init__.py', "a") as logFile:
+                with open(pathToReducedModel+self.packageName+slash+'__init__.py', "a") as logFile:
                     logFile.write(myInit)
 
                 # print(myInit)
@@ -348,7 +352,7 @@ class ReductionParam():
 
         self.addRigidBodyModes = addRigidBodyModes
         self.dataDir = dataDir
-        self.dataFolder = '/'+dataDir.split('/')[-2]+'/'
+        self.dataFolder = slash+dataDir.split(slash)[-2]+slash
 
         self.stateFileName = "stateFile.state"
         self.modesFileName = "modes.txt"
@@ -446,7 +450,7 @@ class ReductionParam():
         '''
 
         path , param = self.paramWrapper
-        nodeName = path.split('/')[-1]
+        nodeName = path.split(slash)[-1]
         self.gieFilesNames.append('HyperReducedFEMForceField_'+nodeName+'_Gie.txt')
         self.RIDFilesNames.append('RID_'+nodeName+'.txt')
         self.weightsFilesNames.append('weight_'+nodeName+'.txt')
@@ -501,14 +505,14 @@ class ReduceModel():
                  nbrCPU = 4,
                  phaseToSave = None):
 
-        self.originalScene = originalScene
+        self.originalScene = os.path.normpath(originalScene)
         self.nodeToReduce = nodeToReduce
-
 
         ### Obj Containing all the argument & function about how the shaking will be done and with which actuators
         self.reductionAnimations = ReductionAnimations(listObjToAnimate)
 
         ### Obj Containing all the argument & function about how to create the end package and where 
+        outputDir = os.path.normpath(outputDir)
         self.packageBuilder = PackageBuilder(outputDir,packageName,addToLib)
 
         ### Obj Containing all the argument & function about the actual reduction
@@ -652,7 +656,6 @@ class ReduceModel():
         for filename in filenames:                
             filesandtemplates.append( (open(path+filename).read(), filename) )
 
-
         results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(self.nbrCPU))
 
         if self.verbose:
@@ -663,7 +666,7 @@ class ReduceModel():
                 print("     duration: "+str(res["duration"])+" sec")  
 
         self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName)
-        self.packageBuilder.copy(results[self.phaseToSaveIndex]["directory"]+"/debug_scene.py", self.packageBuilder.debugDir)
+        self.packageBuilder.copy(results[self.phaseToSaveIndex]["directory"]+slash+"debug_scene.py", self.packageBuilder.debugDir)
 
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
 
@@ -764,25 +767,27 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")
 
-        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+"/*_elmts.txt")
+        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_elmts.txt")
         if files:
             for i,file in enumerate(files):
-                files[i] = file.split('/')[-1]
+                file = os.path.normpath(file)
+                files[i] = file.split(slash)[-1]
             # print("FILES ----------->",files)
             self.reductionParam.savedElementsFilesNames = files
 
         for fileName in self.reductionParam.savedElementsFilesNames :
-            self.packageBuilder.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+'/'+fileName,self.packageBuilder.debugDir+fileName)
+            self.packageBuilder.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+slash+fileName,self.packageBuilder.debugDir+fileName)
 
-        self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+"/*_reduced.txt")[0]
+        self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
         # print("massName -----------------------> ",self.reductionParam.massName)
         self.packageBuilder.copy(self.reductionParam.massName,self.reductionParam.dataDir)
 
 
-        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+"/*_Gie.txt")
+        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_Gie.txt")
         if files: 
             for i,file in enumerate(files):
-                files[i] = file.split('/')[-1]
+                file = os.path.normpath(file)
+                files[i] = file.split(slash)[-1]
             # print("FILES ----------->",files)
             self.reductionParam.gieFilesNames = files
         else:
@@ -838,14 +843,16 @@ class ReduceModel():
         files = glob.glob(self.packageBuilder.debugDir+"*_elmts.txt")
         if files:
             for i,file in enumerate(files):
-                files[i] = file.split('/')[-1]
+                file = os.path.normpath(file)
+                files[i] = file.split(slash)[-1]
             # print("FILES ----------->",files)
             self.reductionParam.savedElementsFilesNames = files
 
         files = glob.glob(self.packageBuilder.debugDir+"*_Gie.txt")
         if files: 
             for i,file in enumerate(files):
-                files[i] = file.split('/')[-1]
+                file = os.path.normpath(file)
+                files[i] = file.split(slash)[-1]
             # print("FILES ----------->",files)
             self.reductionParam.gieFilesNames = files
 
@@ -860,8 +867,9 @@ class ReduceModel():
 
         # print(self.reductionParam.savedElementsFilesNames)
         # print(self.reductionParam.gieFilesNames)
-
-        self.reductionParam.massName = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0].split('/')[-1]
+        tmp = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0]
+        tmp = os.path.normpath(tmp)
+        self.reductionParam.massName = tmp.split(slash)[-1]
         # print("massName -----------------------> ",self.reductionParam.massName)
 
 

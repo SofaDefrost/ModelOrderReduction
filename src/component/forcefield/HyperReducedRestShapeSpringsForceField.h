@@ -16,6 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
+#include <ModelOrderReduction/initModelOrderReduction.h>
 
 #include "HyperReducedHelper.h"
 #include <SofaDeformable/RestShapeSpringsForceField.h>
@@ -146,7 +147,7 @@ private :
 
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGSFORCEFIELD_CPP)
 
-extern template class SOFA_DEFORMABLE_API HyperReducedRestShapeSpringsForceField<sofa::defaulttype::Vec3Types>;
+extern template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<sofa::defaulttype::Vec3Types>;
 
 #endif
 

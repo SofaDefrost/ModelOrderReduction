@@ -16,6 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_H
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_H
+#include <ModelOrderReduction/initModelOrderReduction.h>
 
 #include "HyperReducedHelper.h"
 #include <SofaGeneralSimpleFem/TetrahedralCorotationalFEMForceField.h>
@@ -161,10 +162,7 @@ protected:
 };
 
 #if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_CPP)
-
-extern template class SOFA_GENERAL_SIMPLE_FEM_API HyperReducedTetrahedralCorotationalFEMForceField<sofa::defaulttype::Vec3Types>;
-
-
+extern template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedralCorotationalFEMForceField<sofa::defaulttype::Vec3Types>;
 #endif // defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_CPP)
 
 

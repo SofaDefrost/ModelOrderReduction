@@ -40,7 +40,7 @@ static int ModelOrderReductionMappingClass = core::RegisterObject("Reduced model
         .add< ModelOrderReductionMapping< Vec1Types, Vec3Types > >(true)
         ;
 
-template class SOFA_BASE_MECHANICS_API ModelOrderReductionMapping< Vec1Types, Vec3Types >;
+template class SOFA_MODELORDERREDUCTION_API ModelOrderReductionMapping< Vec1Types, Vec3Types >;
 
 } // namespace mapping
 

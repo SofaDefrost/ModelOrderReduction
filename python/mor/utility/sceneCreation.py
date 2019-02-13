@@ -75,6 +75,7 @@ def getContainer(node):
         if className.find('TopologyContainer') != -1: # className.find('Loader') != -1 or
             # print obj.getName()
             container = obj
+    print(container)
     return container
 
 def searchObjectClassInGraphScene(node,toFind):
@@ -221,11 +222,11 @@ def modifyGraphScene(node,nbrOfModes,newParam):
         save = True
 
     pathTmp , param = newParam
-    print('pathTmp -----------------> '+pathTmp)
+    # print('pathTmp -----------------> '+pathTmp)
     try :
         currentNode = get(node,pathTmp[1:])
         solver = getNodeSolver(currentNode)
-        print("node.getPathName()",currentNode.getPathName())
+        # print("node.getPathName()",currentNode.getPathName())
         if currentNode.getPathName() == pathTmp:
             if 'paramMappedMatrixMapping' in param:
                 print('Create new child modelMOR and move node in it')
@@ -284,7 +285,7 @@ def saveElements(node,dt,forcefield):
     **of the** `STLIB <https://github.com/SofaDefrost/STLIB>`_ **SOFA plugin**
     '''
     import numpy as np
-    print('--------------------->  Gonna Try to Save the Elements')
+    # print('--------------------->  Gonna Try to Save the Elements')
     def save(node,container,valueType, **param):
         global tmp
         elements = container.findData(valueType).value
@@ -301,13 +302,16 @@ def saveElements(node,dt,forcefield):
 
         if obj.getClassName() == 'HyperReducedRestShapeSpringsForceField':
             container = obj
+        elif obj.getClassName() == 'HyperReducedHexahedronFEMForceField':
+            container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
         else:
             container = getContainer(currentNode)
 
+        # print(container)
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
 
-            print('--------------------->  ',valueType)
+            # print('--------------------->  ',valueType)
 
             if valueType:
                 animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
