@@ -220,8 +220,8 @@ def MORreplace(node,type,newParam,initialParam):
         # this way we will take the path we want "to keep" and all its parents
         if newParam[1]['animationPaths']:
             for path in newParam[1]['animationPaths']:
-+               # If the animationPaths contain the name of the obj 
-+               currentObjPath = currentPath + '/' + initialParam.get("name",str(type))
+                # If the animationPaths contain the name of the obj 
+                currentObjPath = currentPath + '/' + initialParam.get("name",str(type))
                 if currentPath.find(path) != -1 or currentObjPath.find(path) != -1:
                     if currentPath not in myModel:
                         myModel[currentPath] = []
