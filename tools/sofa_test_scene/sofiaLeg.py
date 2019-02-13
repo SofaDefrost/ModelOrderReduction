@@ -10,7 +10,7 @@ meshPath = path + '/mesh/'
 def TRSinOrigin(positions,modelPosition,translation,rotation,scale=[1.0,1.0,1.0]):
     posOrigin = subtract(positions , modelPosition)
     if any(isinstance(el, list) for el in positions):
-        posOriginTRS = transformPositions(posOrigin,translation,rotation,scale=scale)
+        posOriginTRS = transformPositions(posOrigin,translation,scale=scale,eulerRotation=rotation)
     else:
         posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation,scale=scale))
     return add(posOriginTRS,modelPosition).tolist()
