@@ -22,6 +22,8 @@
 ------------------------------------------------------------------
 '''
 import sys
+import yaml
+from Sofa import getCategories
 
 try:
     from splib.animation import animate
@@ -40,7 +42,6 @@ forceFieldImplemented = {   'HyperReducedTetrahedralCorotationalFEMForceField':'
                             'HyperReducedRestShapeSpringsForceField':'points'
                         }
 
-import yaml
 
 tmp = 0
 
@@ -63,8 +64,9 @@ def getNodeSolver(node):
     solver = []
     for obj in node.getObjects():
         className = obj.getClassName()
-        if className.find('Solver') != -1 or className == 'EulerImplicit' or className == 'GenericConstraintCorrection':
-            # print obj.getName()
+        categories = getCategories(obj.getClassName())
+        solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
+        if any(x in solverCategories for x in categories):
             solver.append(obj)
     return solver
 
@@ -72,7 +74,7 @@ def getContainer(node):
     container = None
     for obj in node.getObjects():
         className = obj.getClassName()
-        if className.find('TopologyContainer') != -1: # className.find('Loader') != -1 or
+        if className.find('TopologyContainer') != -1:
             # print obj.getName()
             container = obj
     print(container)
@@ -162,7 +164,7 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     toAnimate = []
     for obj in listObjToAnimate:
         nodeFound = get(node,obj.location)
-        print(nodeFound.name)
+        # print(nodeFound.name)
         toAnimate.append(nodeFound)
 
     if len(toAnimate) != len(listObjToAnimate):
