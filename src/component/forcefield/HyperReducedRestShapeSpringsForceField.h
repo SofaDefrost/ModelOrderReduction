@@ -116,15 +116,6 @@ public:
 
     virtual void addDForce(const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx) override;
 
-    virtual SReal getPotentialEnergy(const core::MechanicalParams* mparams, const DataVecCoord& x) const override
-    {
-        SOFA_UNUSED(mparams);
-        SOFA_UNUSED(x);
-
-        msg_error() << "Get potentialEnergy not implemented";
-        return 0.0;
-    }
-
     /// Brings ForceField contribution to the global system stiffness matrix.
     virtual void addKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix ) override;
 
@@ -132,7 +123,12 @@ public:
 
     virtual void draw(const core::visual::VisualParams* vparams) override;
 
+    const DataVecCoord* getExtPosition() const;
+    const VecIndex& getExtIndices() const { return (useRestMState ? m_ext_indices : m_indices); }
+
 protected :
+    void recomputeIndices();
+    bool checkOutOfBoundsIndices();
 
     using RestShapeSpringsForceField<DataTypes>::m_indices;
     using RestShapeSpringsForceField<DataTypes>::m_ext_indices;
