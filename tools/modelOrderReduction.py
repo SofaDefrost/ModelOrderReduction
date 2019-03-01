@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
     README
-
     to use this python script you need :
-
         - bla
-
         - & blabla
 '''
 
@@ -101,7 +98,7 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
-#                           PHASE 1                                  #
+#            PHASE 1 : Snapshot Database Computation                 #
 #                                                                    #
 #      We modify the original scene to do the first step of MOR :    #
 #   we add animation to each actuators we want for our model         #
@@ -113,7 +110,7 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
-#                           PHASE 2                                  #
+#  PHASE 2 : Computation of the reduced basis with SVD decomposition #
 #                                                                    #
 #      With the previous result we combine all the generated         #
 #       state files into one to be able to extract from it           #
@@ -125,7 +122,8 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
-#                           PHASE 3                                  #
+#            PHASE 3 : Reduced Snapshot Computation                  #
+#     to store projected FEM internal forces  contributions          #
 #                                                                    #
 #      We launch again a set of sofa scene with the sofa launcher    #
 #      with the same previous arguments but with a different scene   #
@@ -142,7 +140,8 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
-#                           PHASE 4                                  #
+# PHASE 4 :  Computation of the reduced integration domain           #
+#                in terms of elements and nodes                      #
 #                                                                    #
 #      Final step : we gather again all the results of the           #
 #      previous scenes into one and then compute the RID and Weigts  #

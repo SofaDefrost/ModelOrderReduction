@@ -576,22 +576,22 @@ class Ui_MainWindow(object):
 
         # Phase Description
 
-        phase1Info = (  "Phase 1 Description\n\n"
+        phase1Info = (  "Snapshot Database Computation\n\n"
                         "We modify the original scene to do the first step of MOR :\n"
                         "     - We add animation to each actuators we want for our model\n"
                         "     - And add a writeState componant to save the shaking resulting states")
 
-        phase2Info = (  "Phase 2 Description\n\n"
+        phase2Info = (  "Computation of the reduced basis with SVD decomposition\n\n"
                         "With the previous result we combine all the generated state files into one to be able to extract from it the different mode")
 
-        phase3Info = (  "Phase 3 Description\n\n"
+        phase3Info = (  "Reduced Snapshot Computation to store projected FEM internal forces contributions\n\n"
                         "We launch again a set of sofa scene with the sofa launcher with the same previous arguments but with a different scene\n"
                         "This scene take the previous one and add the model order reduction component:\n"
                         "    - HyperReducedFEMForceField\n"
                         "    - MechanicalMatrixMapperMOR\n"
                         "    - ModelOrderReductionMapping and produce an Hyper Reduced description of the model")
 
-        phase4Info = (  "Phase 4 Description\n\n"
+        phase4Info = (  "Computation of the reduced integration domain in terms of elements and nodes\n\n"
                         "Final step :\n"
                         "   - We gather again all the results of the previous scenes into one and then compute the RID and Weigts with it.\n"
                         "   - Additionnally we also compute the Active Nodes\n")
@@ -610,16 +610,16 @@ class Ui_MainWindow(object):
 
         # Frame Layout
 
-        self.phase1 = FrameLayout(self.grpBox_Execution,title="Phase 1")
+        self.phase1 = FrameLayout(self.grpBox_Execution,title="Phase 1: Snapshot Database Computation")
         self.phase1.setObjectName('Phase 1')
 
-        self.phase2 = FrameLayout(self.grpBox_Execution,title="Phase 2")
+        self.phase2 = FrameLayout(self.grpBox_Execution,title="Phase 2: Computation of the reduced basis")
         self.phase2.setObjectName('Phase 2')
 
-        self.phase3 = FrameLayout(self.grpBox_Execution,title="Phase 3")
+        self.phase3 = FrameLayout(self.grpBox_Execution,title="Phase 3: Reduced Snapshot Computation")
         self.phase3.setObjectName('Phase 3')
 
-        self.phase4 = FrameLayout(self.grpBox_Execution,title="Phase 4")
+        self.phase4 = FrameLayout(self.grpBox_Execution,title="Phase 4: Computation of the reduced integration domain")
         self.phase4.setObjectName('Phase 4')
 
         # TextBrowser
