@@ -9,7 +9,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 def TRSinOrigin(positions,modelPosition,translation,rotation):
     posOrigin = subtract(positions , modelPosition)
     if any(isinstance(el, list) for el in positions):
-        posOriginTRS = transformPositions(posOrigin,translation,rotation)
+        posOriginTRS = transformPositions(posOrigin,translation,eulerRotation=rotation)
     else:
         posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation))
     return add(posOriginTRS,modelPosition).tolist()

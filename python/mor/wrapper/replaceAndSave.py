@@ -21,17 +21,16 @@ list of tuple (type,argument) each one coresponding to a component
 
 .. py:attribute:: pathToUpdate
 
-    TODO
 
 .. py:attribute:: forcefield
 
-    TODO
 ----------------------------------------------
 
 **Methods**
 
 '''
 from collections import OrderedDict
+from Sofa import getCategories
 
 forceFieldImplemented = {   'TetrahedralCorotationalFEMForceField':('HyperReducedTetrahedralCorotationalFEMForceField','tetrahedra'),
                             'TetrahedronHyperelasticityFEMForceField':('HyperReducedTetrahedronHyperelasticityFEMForceField','tetrahedra'),
@@ -67,9 +66,10 @@ def modifyPath(currentPath,type,initialParam,newParam):
     We do that with :py:obj:`.pathToUpdate` 
     
     '''
-
+    return_bool = False
+    initialParam_copy = initialParam.copy()
     # print(currentPath,type)#,initialParam,newParam)
-    for key , value in initialParam.iteritems():
+    for key , value in initialParam_copy.iteritems():
         if isinstance(value, str):
             if '@' in value:
                 # print(value)
@@ -85,7 +85,7 @@ def modifyPath(currentPath,type,initialParam,newParam):
                             tmp_value = currentPath.split('/')
                             tmp_value.insert(i,nodeName+'_MOR')
                             tmp_value = '/'.join(tmp_value)
-                            pathToObj = tmp_value[1:]+'/'+initialParam.get("name",str(type))
+                            pathToObj = tmp_value[1:]+'/'+initialParam_copy.get("name",str(type))
 
                     if '@../' in value and currentPath == path:
 
@@ -93,8 +93,9 @@ def modifyPath(currentPath,type,initialParam,newParam):
                         tmp_value = value.split('/')
                         tmp_value.insert(1,'..')
                         tmp_value = '/'.join(tmp_value)
-                        initialParam[key] = tmp_value
+                        initialParam_copy[key] = tmp_value
                         pathToUpdate[pathToObj] = (key,tmp_value)
+                        return_bool = True
 
                     elif value.find(path+'/') != -1 or value.find(path+'.') != -1:
                         # here if linked to node in reduction we need to add the new node we created "nodeName_MOR"
@@ -108,12 +109,14 @@ def modifyPath(currentPath,type,initialParam,newParam):
                                 tmp_value = value.split('/')
                                 tmp_value.insert(i,nodeName+'_MOR')
                                 tmp_value = '/'.join(tmp_value)
-                                initialParam[key] = tmp_value
+                                initialParam_copy[key] = tmp_value
 
                                 pathToUpdate[pathToObj] = (key,tmp_value)
+                                return_bool = True
+
 
                 else:
-                    pathToObj = currentPath[1:]+'/'+initialParam.get("name",str(type))
+                    pathToObj = currentPath[1:]+'/'+initialParam_copy.get("name",str(type))
 
 
                     if value.find(path+'/') != -1 or value.find(path+'.') != -1:
@@ -128,9 +131,14 @@ def modifyPath(currentPath,type,initialParam,newParam):
                                 tmp_value = value.split('/')
                                 tmp_value.insert(i,nodeName+'_MOR')
                                 tmp_value = '/'.join(tmp_value)
-                                initialParam[key] = tmp_value
+                                initialParam_copy[key] = tmp_value
 
                                 pathToUpdate[pathToObj] = (key,tmp_value)
+
+                                return_bool = True
+
+    if return_bool:
+        return initialParam_copy
 
 def MORreplace(node,type,newParam,initialParam):
     '''
@@ -176,32 +184,41 @@ def MORreplace(node,type,newParam,initialParam):
         # print('\n')
 
         #   Change the initial Forcefield by the HyperReduced one with the new argument
-        if str(type) in forceFieldImplemented :
-            type , valueType = forceFieldImplemented[type]
-            # print str(type)
+        # print('----------->',getCategories(type))
+        if "ForceField" in getCategories(type):
+            if type in forceFieldImplemented :
+                type , valueType = forceFieldImplemented[type]
+                # print str(type)
 
-            name = 'reducedFF_'+ node.name + '_' + str(tmp)
-            tmp += 1    
-            initialParam['name'] = name
-            initialParam['nbModes'] = param['nbrOfModes']
+                name = 'reducedFF_'+ node.name + '_' + str(tmp)
+                tmp += 1    
+                initialParam['name'] = name
+                initialParam['nbModes'] = param['nbrOfModes']
 
-            for key in param['paramForcefield']:
-                initialParam[key] = param['paramForcefield'][key]
+                for key in param['paramForcefield']:
+                    initialParam[key] = param['paramForcefield'][key]
 
-            # We've already put the path to the "data" folder we now have to add the right file
-            if param['paramForcefield'].get('performECSW') == True: 
-                initialParam['RIDPath'] += name + '_RID.txt'
-                initialParam['weightsPath'] += name + '_weight.txt'
+                # We've already put the path to the "data" folder we now have to add the right file
+                if param['paramForcefield'].get('performECSW') == True: 
+                    initialParam['RIDPath'] += name + '_RID.txt'
+                    initialParam['weightsPath'] += name + '_weight.txt'
 
 
-            if save:
-                if currentPath not in myModel:
-                        myModel[currentPath] = []
-                myModel[currentPath].append((str(type),initialParam))
+                saveParam = modifyPath(currentPath,type,initialParam,newParam)
+                if save:
+                    if currentPath not in myModel:
+                            myModel[currentPath] = []
+                    if saveParam:
+                        myModel[currentPath].append((str(type),saveParam))
+                    else:
+                        myModel[currentPath].append((str(type),initialParam))
 
-            forcefield.append(currentPath+'/'+initialParam.get("name",str(type)))
-            modifyPath(currentPath,type,initialParam,newParam)
-            return type , initialParam
+                forcefield.append(currentPath+'/'+initialParam.get("name",str(type)))
+                return type , initialParam
+            else:
+                print("[WARNING]        No HyperReducedForceField exist for "+type)
+        
+        saveParam = modifyPath(currentPath,type,initialParam,newParam)
 
         if save:
             if currentPath == path :
@@ -210,13 +227,22 @@ def MORreplace(node,type,newParam,initialParam):
                 else:
                     if currentPath not in myModel:
                         myModel[currentPath] = []
-                    myModel[currentPath].append((str(type),initialParam))
+                    if saveParam:
+                        myModel[currentPath].append((str(type),saveParam))
+                    else:
+                        myModel[currentPath].append((str(type),initialParam))
+
             else:
                 if currentPath not in myModel:
                     myModel[currentPath] = []
 
-                myModel[currentPath].append((str(type),initialParam))
+                if saveParam:
+                    myModel[currentPath].append((str(type),saveParam))
+                else:
+                    myModel[currentPath].append((str(type),initialParam))
     elif save:
+        saveParam = modifyPath(currentPath,type,initialParam,newParam)
+
         # this way we will take the path we want "to keep" and all its parents
         if newParam[1]['animationPaths']:
             for path in newParam[1]['animationPaths']:
@@ -226,6 +252,9 @@ def MORreplace(node,type,newParam,initialParam):
                     if currentPath not in myModel:
                         myModel[currentPath] = []
 
-                    myModel[currentPath].append((str(type),initialParam))
+                    if saveParam:
+                        myModel[currentPath].append((str(type),saveParam))
+                    else:
+                        myModel[currentPath].append((str(type),initialParam))
 
     modifyPath(currentPath,type,initialParam,newParam)
