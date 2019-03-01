@@ -82,10 +82,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BIN
 # Config files and install rules for pythons scripts
 if(SofaPython_FOUND)
     target_link_libraries(${PROJECT_NAME} SofaPython)
-    sofa_set_python_directory(${PROJECT_NAME} "python")
+    sofa_set_python_directory(${PROJECT_NAME} "python" "python")
 endif()
 
 # Move all resources when install: examples, doc and python files
+install(FILES "README.md" "LICENSE" DESTINATION .)
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc/")
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/doc/ModelOrderReduction.pdf DESTINATION doc/ COMPONENT resources)	
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/")
