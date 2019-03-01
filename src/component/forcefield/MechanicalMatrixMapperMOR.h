@@ -47,6 +47,7 @@ public:
     Data< bool > performECSW;
     sofa::core::objectmodel::DataFileName listActiveNodesPath;
     Data <sofa::helper::vector<unsigned int>> listActiveNodes;
+    int nbActiveNodesAtStart;
     Data< bool > timeInvariantMapping1;
     Data< bool > timeInvariantMapping2;
     Eigen::SparseMatrix<double> constantJ1;

@@ -78,6 +78,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
         }
         listActiveNodesFile.close();
         msg_info(this) << "list of Active nodes : " << listActiveNodesInit ;
+        nbActiveNodesAtStart = listActiveNodesInit.size();
     }
     listActiveNodes.endEdit();
     if (usePrecomputedMass.getValue() == true)
@@ -133,7 +134,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptim
         }
 
         m_nbInteractionForceFieldsMOR = currentNbInteractionFFs;
-        if (!mousePick)
+        if (!mousePick && (nbActiveNodesAtStart < listActiveNodesUpdate.size()))
         {
             listActiveNodesUpdate.pop_back();
         }
