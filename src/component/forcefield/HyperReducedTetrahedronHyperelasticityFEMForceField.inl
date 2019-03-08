@@ -290,7 +290,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
             else
                 f[ta[l]] += weights(i)*contrib[l];
         }
-        this->updateGie<DataTypes>(indexList, contrib, i);
+        this->template updateGie<DataTypes>(indexList, contrib, i);
 
     }
 

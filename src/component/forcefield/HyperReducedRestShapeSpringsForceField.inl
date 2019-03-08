@@ -261,7 +261,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
             else
                 f1[index] +=  weights(i)* contrib[0] ;
 
-            this->updateGie<DataTypes>(indexList, contrib, i);
+            this->template updateGie<DataTypes>(indexList, contrib, i);
         }
     }
     else
@@ -296,7 +296,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
                 f1[index] +=  contrib[0] ;
             else
                 f1[index] +=  weights(i)* contrib[0] ;
-            this->updateGie<DataTypes>(indexList, contrib, i);
+            this->template updateGie<DataTypes>(indexList, contrib, i);
         }
     }
     this->saveGieFile(m_indices.size());
