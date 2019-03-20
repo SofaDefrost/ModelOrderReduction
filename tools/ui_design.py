@@ -207,7 +207,7 @@ class Ui_MainWindow(object):
         self.layout_execution = FrameLayout(self.centralwidget,title="Execution")
         self.layout_execution.setObjectName('Execution')
 
-        self.groupBoxExecution(fontTitle,fontLineEdit)
+        self.groupBoxExecution(fontTitle,fontLineEdit,fontButton)
 
         self.layout_execution.addWidget(self.grpBox_Execution)
         self.scrollArea_layout.addWidget(self.layout_execution) #, 0, QtCore.Qt.AlignTop)
@@ -572,7 +572,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_1.addWidget(self.tableWidget_animationParam)
         self.verticalLayout_1.addLayout(self.layout_addRemoveRow)
 
-    def groupBoxExecution(self,fontTitle,fontLineEdit):
+    def groupBoxExecution(self,fontTitle,fontLineEdit,fontButton):
 
         # Phase Description
 
@@ -647,6 +647,23 @@ class Ui_MainWindow(object):
         textBrowser.setText(phase4Info)
         self.phase4.addWidget(textBrowser)
 
+        # Button
+
+        self.btn_debug1 = QtGui.QPushButton(self.phase1)
+        self.btn_debug1.setFont(fontButton)
+        self.btn_debug1.setObjectName(_fromUtf8("btn_debug1"))
+        self.phase1.addWidget(self.btn_debug1)
+
+        self.btn_debug2 = QtGui.QPushButton(self.phase3)
+        self.btn_debug2.setFont(fontButton)
+        self.btn_debug2.setObjectName(_fromUtf8("btn_debug2"))
+        self.phase3.addWidget(self.btn_debug2)
+
+        self.btn_results = QtGui.QPushButton(self.phase4)
+        self.btn_results.setFont(fontButton)
+        self.btn_results.setObjectName(_fromUtf8("btn_results"))
+        self.phase4.addWidget(self.btn_results)
+
         ################################
 
         # Add Contents to Layout
@@ -696,6 +713,9 @@ class Ui_MainWindow(object):
 
         ##########################      GROUPBOX EXECUTION     ###############################
 
+        self.btn_debug1.setText(_translate("MainWindow", "launch debug phase", None))
+        self.btn_debug2.setText(_translate("MainWindow", "launch debug phase", None))
+        self.btn_results.setText(_translate("MainWindow", "launch result", None))
 
         ##########################      LAUNCH REDUCTION     #################################
 

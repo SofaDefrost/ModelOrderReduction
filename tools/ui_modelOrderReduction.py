@@ -34,6 +34,9 @@ import glob
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
 
+from subprocess import Popen, PIPE, call
+
+
 # import ui_design  # This file holds our MainWindow and all design related things
 import ui_design
 
@@ -149,6 +152,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.btn_addLine.clicked.connect(lambda: self.addLine(self.tableWidget_animationParam))
         self.btn_removeLine.clicked.connect(lambda: self.removeLine(self.tableWidget_animationParam,self.animationDialog))
         self.btn_launchReduction.clicked.connect(self.execute)
+        self.btn_debug1.clicked.connect(lambda: self.executeSofaScene(str(self.lineEdit_output.text())+"/debug/debug_scene.py"))
+        self.btn_debug2.clicked.connect(lambda: self.executeSofaScene(str(self.lineEdit_output.text())+"/debug/debug_scene.py",param=["--argv",str(self.lineEdit_output.text())+"/debug/step2_stateFile.state"]))
+        self.btn_results.clicked.connect(lambda: self.executeSofaScene(str(self.lineEdit_output.text())+"/reduced_"+str(self.lineEdit_moduleName.text())+".py"))
         
         self.lineEdit_NodeToReduce.leftArrowBtnClicked.connect(lambda: self.left(self.lineEdit_NodeToReduce))
         self.lineEdit_NodeToReduce.setReadOnly(readOnly)
@@ -203,8 +209,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.resetFileName = {
                 'grpBox_Path':
                     {
-                        'lineEdit_output': '', # '/home/felix/SOFA/plugin/ModelOrderReduction/tools/test'
-                        'lineEdit_scene': '', #'/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py'
+                        'lineEdit_output': '',
+                        'lineEdit_scene': ''
                     },
                 'grpBox_ReductionParam': 
                     {   'lineEdit_NodeToReduce': '',
@@ -244,6 +250,16 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
         self.setShortcut()
         self.resizeTab()
+
+    def executeSofaScene(self,sofaScene,param=[]):
+
+        try:
+            arg = ["runSofa"]+[sofaScene]+param
+            # print(arg)
+            a = Popen(arg,stdout=PIPE, stderr=PIPE)
+        except:
+            print("Unable to find runSofa, please add the runSofa location to your PATH and restart sofa-launcher.")
+
 
     def openLink(self,url):
         webbrowser.open(url)
