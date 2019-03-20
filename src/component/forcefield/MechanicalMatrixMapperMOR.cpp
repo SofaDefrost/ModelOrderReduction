@@ -14,6 +14,9 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
+#define SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP
+
+
 #include "MechanicalMatrixMapperMOR.inl"
 #include <sofa/defaulttype/Vec3Types.h>
 #include <sofa/defaulttype/RigidTypes.h>
