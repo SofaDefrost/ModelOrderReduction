@@ -30,7 +30,7 @@ originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
 outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 ### DIAMOND ROBOT PARAM
-# nodesToReduce = '/modelNode'
+# nodeToReduce = '/modelNode'
 # nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
 # sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
 # est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
@@ -39,7 +39,7 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # addRigidBodyModes = [0,0,0]
 
 ### STARFISH ROBOT PARAM
-# nodesToReduce ='/model'
+# nodeToReduce ='/model'
 # centerCavity = ObjToAnimate("model/centerCavity", incr=350,incrPeriod=2,rangeOfAction=3500)
 # rearLeftCavity = ObjToAnimate("model/rearLeftCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
 # rearRightCavity = ObjToAnimate("model/rearRightCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
@@ -49,19 +49,19 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # addRigidBodyModes = [1,1,1]
 
 ### SOFIA
-# nodesToReduce ='/SofiaLeg'
+# nodeToReduce ='/SofiaLeg'
 # actuator = ObjToAnimate("SofiaLeg_actuator/actuatorState","shakingSofia",incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
 
 ### LIVER
-# nodesToReduce ='/liver'
+# nodeToReduce ='/liver'
 # actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
 
 ### HEXABEAM
-#nodesToReduce ='/M1'
+#nodeToReduce ='/M1'
 #actuator = ObjToAnimate("M1/cableNode", incr=1,incrPeriod=5,rangeOfAction=5)
 #listObjToAnimate = [actuator]
 #addRigidBodyModes = [0,0,0]
@@ -81,7 +81,7 @@ addToLib = False
 #######################################################################
 ####################      INITIALIZATION     ##########################
 reduceMyModel = ReduceModel(    originalScene,  
-                                nodesToReduce,
+                                nodeToReduce,
                                 listObjToAnimate,
                                 tolModes,tolGIE,
                                 outputDir,
