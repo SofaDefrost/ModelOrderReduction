@@ -68,7 +68,6 @@ install(FILES "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderRed
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 target_link_libraries(${PROJECT_NAME}
     SofaCore # SofaFramework
     SofaBaseMechanics SofaBaseTopology # SofaBase
