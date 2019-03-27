@@ -17,7 +17,7 @@ sys.path.append(path+'/../python') # TO CHANGE
 # MOR IMPORT
 from mor.gui import utility
 from mor.reduction import ReduceModel
-from mor.reduction import ObjToAnimate
+from mor.reduction.container import ObjToAnimate
 
 #######################################################################
 ####################       PARAMETERS       ###########################

@@ -45,20 +45,29 @@ import yaml
 from collections import OrderedDict
 from pydoc import locate
 
+# GUI Tools
+from widget import MyCompleter
+from widget import TreeModel
+from widget import GenericDialogForm
+import utility as u
+
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
-pathToIcon = path+'/../python/mor/gui/icons/'
-sys.path.append(path+'/../python') # TO CHANGE
+pathToIcon = path+'/icons/'
+
+try:
+    import imp
+    imp.find_module('mor')
+except:
+    sys.path.append(path+'/../../') # TEMPORARY
+    # raise ImportError("You need to give to PYTHONPATH the path to the python folder\n"\
+    #                  +"of the modelorderreduction plugin in order to use this utility\n"\
+    #                  +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
+    #                  +"export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher")
 
 from mor.reduction import ReduceModel
-from mor.reduction import ObjToAnimate
-
-from mor.gui import MyCompleter
-from mor.gui import TreeModel
-from mor.gui import GenericDialogForm
-from mor.gui import utility as u
+from mor.reduction.container import ObjToAnimate
 from mor.utility import graphScene
-
 
 #######################################################################
 
@@ -99,24 +108,7 @@ col_animation = 0
 
 readOnly = True # Set LineEdit animation & NodeToReduce
 
-class Ui_Dialog(object):
-    def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(508, 300)
-        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
-        self.sl_value = QtWidgets.QSlider(Dialog)
-        self.sl_value.setGeometry(QtCore.QRect(220, 120, 161, 31))
-        self.sl_value.setOrientation(QtCore.Qt.Horizontal)
-        self.sl_value.setObjectName("sl_value")
-        self.buttonBox.accepted.connect(Dialog.accept)
-        self.buttonBox.rejected.connect(Dialog.reject)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
-
-class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
+class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
     def __init__(self):
 
         # Init of inherited class 
@@ -253,13 +245,15 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
     def executeSofaScene(self,sofaScene,param=[]):
 
-        try:
-            arg = ["runSofa"]+[sofaScene]+param
-            # print(arg)
-            a = Popen(arg,stdout=PIPE, stderr=PIPE)
-        except:
-            print("Unable to find runSofa, please add the runSofa location to your PATH and restart sofa-launcher.")
-
+        if os.path.isfile(sofaScene):
+            try:
+                arg = ["runSofa"]+[sofaScene]+param
+                # print(arg)
+                a = Popen(arg,stdout=PIPE, stderr=PIPE)
+            except:
+                print("Unable to find runSofa, please add the runSofa location to your PATH and restart sofa-launcher.")
+        else:
+            print("ERROR    the file you try to launch doesn't exist, you have to execute the phase first")
 
     def openLink(self,url):
         webbrowser.open(url)
@@ -991,13 +985,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
         self.resizeTab()
 
-
-###################################################################################################
-
 def main():
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
-    form = ExampleApp()  # We set the form to be our ExampleApp (design)
-    form.show()  # Show the form
+    gui_mor = UI_mor()  # We set the form to be our ExampleApp (design)
+    gui_mor.show()  # Show the form
     app.exec_()  # and execute the app
 
 if __name__ == '__main__':  # if we're running file directly and not importing it

@@ -14,7 +14,7 @@ except:
 
 # MOR IMPORT
 from mor import animation
-from mor.reduction import ObjToAnimate
+from mor.reduction.container import ObjToAnimate
 from mor.utility import sceneCreation as u
 
 slash = '/'

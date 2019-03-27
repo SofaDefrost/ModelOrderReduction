@@ -21,10 +21,9 @@ import sys
 
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
-pathToIcon = path+'/../python/mor/gui/icons/'
-sys.path.append(path+'/../python') # TO CHANGE
+pathToIcon = path+'/icons/'
 
-from mor.gui import FrameLayout
+from widget import FrameLayout
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

@@ -25,6 +25,13 @@ obj:
 import os
 import yaml
 
+try:
+    from launcher import *
+except:
+    raise ImportError("You need to give to PYTHONPATH the path to sofa-launcher in order to use this tool\n"\
+                     +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
+                     +"export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher")
+
 def getGraphScene(node,getObj=False):
     '''
     **This function will iterate over the SOFA graph scene from a node
@@ -126,13 +133,6 @@ def importScene(filePath):
     | filePath | str  | Absolute path to the SOFA scene |
     +----------+------+---------------------------------+
     '''
-    try:
-        from launcher import *
-    except:
-        raise ImportError("You need to give to PYTHONPATH the path to sofa-launcher in order to use this tool\n"\
-                         +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
-                         +"export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher")
-
     numiterations = 1
     filename = "importScene.py"
     path = os.path.dirname(os.path.abspath(__file__))+'/template/'

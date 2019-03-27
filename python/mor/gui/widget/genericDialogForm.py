@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
+import os, sys
 from PyQt4 import QtCore, QtGui
 
 from collections import OrderedDict
+
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(path+'/../')
+
 import utility as u
 
 try:

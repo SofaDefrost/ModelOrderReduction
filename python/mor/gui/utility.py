@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
+import os,sys
 from PyQt4 import QtCore, QtGui
 
 class Color():

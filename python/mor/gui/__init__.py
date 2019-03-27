@@ -7,16 +7,12 @@
 .. autosummary::
     :toctree: _autosummary
 
-    mor.gui.completer
-    mor.gui.frameLayout
-    mor.gui.genericDialogForm
-    mor.gui.treeModel
+    mor.gui.ui_design
+    mor.gui.ui_mor
     mor.gui.utility
+    mor.gui.widget
 
 """
-__all__=["completer","frameLayout","genericDialogForm","treeModel","utility"]
+__all__=["ui_design","ui_mor","utility","widget"]
 
-from frameLayout import FrameLayout
-from completer import MyCompleter
-from treeModel import TreeModel
-from genericDialogForm import GenericDialogForm
+from ui_mor import UI_mor
