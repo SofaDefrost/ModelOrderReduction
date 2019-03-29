@@ -16,7 +16,7 @@
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
 """
-**Set of class simplifying and allowing to perform ModelReduction**
+**Main class performing ModelReduction**
 
 **Content:**
 

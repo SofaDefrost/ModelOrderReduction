@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+**Class Containing all the parameters & functions related to the animation of the reduction**
+'''
 import math
 
 class ReductionAnimations():

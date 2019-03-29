@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+**Class Containing all the parameters & functions related to building the package**
+'''
 import os, sys
 import platform
 import fileinput

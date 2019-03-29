@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+'''
+**Class allowing us to store in 1 object all the information about a specific animation**
+'''
 
 class ObjToAnimate():
     '''

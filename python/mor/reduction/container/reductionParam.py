@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+**Class Containing all the parameters related to the reduction**
+'''
 import platform
 
 slash = '/'
