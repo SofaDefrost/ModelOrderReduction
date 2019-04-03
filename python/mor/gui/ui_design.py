@@ -15,7 +15,14 @@
 #                                                                             #
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
+'''
+**Module describing the visual of MOR GUI**
+'''
+
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QLineEdit
+from PyQt4.QtCore import QObject
+
 import os
 import sys
 
@@ -43,17 +50,15 @@ color_frame = '#fff79a'
 color_mainWindow = '#f2f1f0'
 color_grpBox = '#f2f1f0'
 
-def setBackground(obj,color):
-    obj.setStyleSheet("background-color: "+color+";")
 
-class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
+class LineEdit(QLineEdit):
     clicked = QtCore.pyqtSignal() # signal when the text entry is left clicked
     focused = QtCore.pyqtSignal() # signal when the text entry is focused
     leftArrowBtnClicked = QtCore.pyqtSignal(bool)
 
     def __init__(self, value):
 
-        super(MyLineEdit, self).__init__(value)
+        super(LineEdit, self).__init__(value)
 
         self.leftArrowBtn = QtGui.QToolButton(self)
         self.leftArrowBtn.setIcon(QtGui.QIcon(pathToIcon+'leftArrow.png'))
@@ -74,7 +79,7 @@ class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
         else: super().mousePressEvent(event)
 
     def focusInEvent(self,event):
-        super(MyLineEdit, self).focusInEvent(event)
+        super(LineEdit, self).focusInEvent(event)
         self.focused.emit()
 
     def resizeEvent(self, event):
@@ -83,7 +88,7 @@ class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
         self.leftArrowBtn.move(self.rect().right() - frameWidth - buttonSize.width() + 5,
                          (self.rect().bottom() - buttonSize.height() + 10 )/2)
 
-        super(MyLineEdit, self).resizeEvent(event)
+        super(LineEdit, self).resizeEvent(event)
 
 class Ui_MainWindow(object):
 
@@ -322,7 +327,6 @@ class Ui_MainWindow(object):
 
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-
     def groupBoxScene(self,fontTitle,fontLabel,fontLineEdit,fontButton):
 
         # Container
@@ -415,7 +419,7 @@ class Ui_MainWindow(object):
         self.lineEdit_moduleName.setPlaceholderText(_fromUtf8(""))
         self.lineEdit_moduleName.setObjectName(_fromUtf8("lineEdit_moduleName"))
 
-        self.lineEdit_NodeToReduce = MyLineEdit(self.grpBox_ReductionParam)
+        self.lineEdit_NodeToReduce = LineEdit(self.grpBox_ReductionParam)
         self.lineEdit_NodeToReduce.setFont(fontLineEdit)
         self.lineEdit_NodeToReduce.setObjectName(_fromUtf8("lineEdit_NodeToReduce"))
 

@@ -16,42 +16,34 @@
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
 '''
-    README
-
-    to use this python script you need :
-
-        - bla
-
-        - & blabla
+**Module describing all the functionnalities of MOR GUI**
 '''
 #######################################################################
 ####################       IMPORT           ###########################
-import os
-import sys
+import os, sys
 import webbrowser
-from os.path import expanduser
 import glob
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import *
+import yaml
 
+
+from collections import OrderedDict
+from pydoc import locate
 from subprocess import Popen, PIPE, call
 
 
-# import ui_design  # This file holds our MainWindow and all design related things
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QMainWindow
+
+
+# This file holds our MainWindow and all design related things
 import ui_design
 
-
-import yaml
-from collections import OrderedDict
-from pydoc import locate
-
 # GUI Tools
-from widget import MyCompleter
+from widget import Completer
 from widget import TreeModel
 from widget import GenericDialogForm
 import utility as u
 
-# MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
 pathToIcon = path+'/icons/'
 
@@ -63,8 +55,9 @@ except:
     # raise ImportError("You need to give to PYTHONPATH the path to the python folder\n"\
     #                  +"of the modelorderreduction plugin in order to use this utility\n"\
     #                  +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
-    #                  +"export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher")
+    #                  +"export PYTHONPATH=/PathToYourMOR/python")
 
+# MOR IMPORT
 from mor.reduction import ReduceModel
 from mor.reduction.container import ObjToAnimate
 from mor.utility import graphScene
@@ -106,9 +99,11 @@ col_path = 2
 col_parameters = 1
 col_animation = 0
 
-readOnly = True # Set LineEdit animation & NodeToReduce
+# Set LineEdit animation & NodeToReduce
+readOnly = True
 
-class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
+
+class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
     def __init__(self):
 
         # Init of inherited class 
@@ -289,7 +284,7 @@ class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         if self.lineEdit_output.text():
             tab.append('/'.join(str(self.lineEdit_output.text()).split('/')[:-1]))
 
-        home = expanduser("~")
+        home = os.path.expanduser("~")
         u.shortcut.append(QtCore.QUrl.fromLocalFile(home))
 
         for url in tab :
@@ -617,12 +612,12 @@ class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             model = TreeModel(self.cfg)
             # print(model.rootItem.itemData)
 
-            completer = MyCompleter(self.lineEdit_NodeToReduce)
+            completer = Completer(self.lineEdit_NodeToReduce)
             completer.setModel(model)
             completer.setCompletionColumn(0)
             completer.setCompletionRole(QtCore.Qt.DisplayRole)
             completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-            completer.setCompletionMode(QCompleter.PopupCompletion)
+            completer.setCompletionMode(QtGui.QCompleter.PopupCompletion)
             # print(model.dumpObjectTree())
             self.lineEdit_NodeToReduce.setCompleter(completer)
             self.lineEdit_NodeToReduce.clicked.connect(completer.complete)
@@ -680,7 +675,7 @@ class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                             self.phaseItem[index][0].setCheckState(True)
                         elif cfg[objectName]['checkBox'] == 'False':
                             self.phaseItem[index][0].setCheckState(False)
-                    if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "MyLineEdit":
+                    if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "LineEdit":
                         # print('----------------->'+objectName)
                         child.setText(cfg[objectName])
                     if type(child).__name__ == 'QTextEdit':
@@ -733,19 +728,19 @@ class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         '''
         BuildDic will build a Dictionnary that will describe the state of a 'page' of our application
         '''
-        toSave = ['QLineEdit','QTextEdit','QCheckBox','QTableWidget','QSpinBox','MyLineEdit']
+        toSave = ['QLineEdit','QTextEdit','QCheckBox','QTableWidget','QSpinBox','LineEdit']
         if not pageName:
             pageName=str(page.objectName())
         data[pageName] = {}
         # print('pageName : '+pageName)
         for child in page.children():
             objectName = str(child.objectName())
-            # if type(child).__name__ == "MyLineEdit":
+            # if type(child).__name__ == "LineEdit":
             #     print(objectName)
             #     print(type(child).__name__)
             if type(child).__name__ in toSave:
                 # print('--------------->'+child.objectName())
-                if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "MyLineEdit":
+                if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "LineEdit":
                     data[pageName][objectName] = str(child.text())
                     # print('----------------->'+str(child.text()))
                 if type(child).__name__ == 'QTextEdit':
@@ -919,12 +914,12 @@ class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             tab.insertRow(tab.rowCount())
             row = tab.rowCount()-1
 
-            tmp = ui_design.MyLineEdit(tab)
+            tmp = ui_design.LineEdit(tab)
             tmp.setReadOnly(readOnly)
 
             model = TreeModel(self.cfg,obj=True)
 
-            completer = MyCompleter(tmp)
+            completer = Completer(tmp)
             completer.setModel(model)
             completer.setCompletionColumn(0)
             completer.setCompletionRole(QtCore.Qt.DisplayRole)
@@ -945,9 +940,9 @@ class UI_mor(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             u.setBackColor(tmp)
             tab.setCellWidget(row,2,tmp)
 
-            item = QTableWidgetItem()
+            item = QtGui.QTableWidgetItem()
             tab.setItem(row,1,item)
-            backgrdColor = QColor()
+            backgrdColor = QtGui.QColor()
             backgrdColor.setNamedColor(yellow)
             tab.item(row,1).setBackgroundColor(backgrdColor)
             

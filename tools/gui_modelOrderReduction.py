@@ -8,7 +8,7 @@ from PyQt4 import QtGui
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path+'/../python/') # TO CHANGE
 
-from mor.gui import UI_mor
+from mor.gui.ui_mor import UI_mor
 
 def main():
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
