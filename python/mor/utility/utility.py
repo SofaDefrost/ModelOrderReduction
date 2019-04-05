@@ -20,7 +20,8 @@
 
 ------------------------------------------------------------------
 """
-import time, sys
+import os, sys
+import time
 import math
 import numpy as np
 import shutil
@@ -46,3 +47,43 @@ def update_progress(progress):
         text =  text+"\n"
     sys.stdout.write(text)
     sys.stdout.flush()
+
+def copy(src, dest):
+    '''
+    '''
+    try:
+        shutil.copytree(src, dest)
+    except:
+        # If the error was caused because the source wasn't a directory
+        try:
+            shutil.copy(src, dest)
+        except:
+            print('Directory not copied. Error: %s' % e)
+
+def checkExistance(dir):
+    '''
+    '''
+
+    if not os.path.exists(os.path.dirname(dir)):
+        try:
+            os.makedirs(os.path.dirname(dir))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+def copyFileIntoAnother(fileToCopy,fileToPasteInto):
+    '''
+    '''
+
+    try:
+        with open(fileToPasteInto, "a") as myFile:
+            currentFile = open(fileToCopy, "r")
+            myFile.write(currentFile.read())
+            currentFile.close()
+
+    except IOError:
+        print("IOError : there is no "+fileToCopy+" , check the template log to find why.\nHere some clue for its probable origin :"\
+                        +"    - Your animation arguments are incorrect and it hasn't find anything to animate")
+
+    except:
+        raise

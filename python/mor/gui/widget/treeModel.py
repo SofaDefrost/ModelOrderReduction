@@ -1,7 +1,25 @@
 # -*- coding: utf-8 -*-
-from PyQt4 import QtCore, QtGui
+'''
+**Class allowing to save elements in a Model Tree**
 
-class TreeModel(QtCore.QAbstractItemModel):
+We use it to store the hierarchy of a SOFA scene 
+in order to use it as input of the :py:class:`.Completer`
+
+To init our :py:class:`.TreeModel`,
+we get a SOFA Model Tree a scene thanks to :py:func:`.getGraphScene` and give 
+and give it as input to our :py:class:`.TreeModel` Class
+
+.. sourcecode:: python
+
+    cfg = graphScene.importScene(filePath)
+
+    model = TreeModel(cfg)
+'''
+from PyQt4 import QtCore
+from PyQt4.QtCore import QAbstractItemModel
+
+
+class TreeModel(QAbstractItemModel):
     def __init__(self, data, parent=None , obj = False):
         super(TreeModel, self).__init__(parent)
 

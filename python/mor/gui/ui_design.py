@@ -15,16 +15,22 @@
 #                                                                             #
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
+'''
+**Module describing the visual of MOR GUI**
+'''
+
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QLineEdit
+from PyQt4.QtCore import QObject
+
 import os
 import sys
 
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
-pathToIcon = path+'/../python/mor/gui/icons/'
-sys.path.append(path+'/../python') # TO CHANGE
+pathToIcon = path+'/icons/'
 
-from mor.gui import FrameLayout
+from widget import FrameLayout
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -44,17 +50,15 @@ color_frame = '#fff79a'
 color_mainWindow = '#f2f1f0'
 color_grpBox = '#f2f1f0'
 
-def setBackground(obj,color):
-    obj.setStyleSheet("background-color: "+color+";")
 
-class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
+class LineEdit(QLineEdit):
     clicked = QtCore.pyqtSignal() # signal when the text entry is left clicked
     focused = QtCore.pyqtSignal() # signal when the text entry is focused
     leftArrowBtnClicked = QtCore.pyqtSignal(bool)
 
     def __init__(self, value):
 
-        super(MyLineEdit, self).__init__(value)
+        super(LineEdit, self).__init__(value)
 
         self.leftArrowBtn = QtGui.QToolButton(self)
         self.leftArrowBtn.setIcon(QtGui.QIcon(pathToIcon+'leftArrow.png'))
@@ -75,7 +79,7 @@ class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
         else: super().mousePressEvent(event)
 
     def focusInEvent(self,event):
-        super(MyLineEdit, self).focusInEvent(event)
+        super(LineEdit, self).focusInEvent(event)
         self.focused.emit()
 
     def resizeEvent(self, event):
@@ -84,7 +88,7 @@ class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
         self.leftArrowBtn.move(self.rect().right() - frameWidth - buttonSize.width() + 5,
                          (self.rect().bottom() - buttonSize.height() + 10 )/2)
 
-        super(MyLineEdit, self).resizeEvent(event)
+        super(LineEdit, self).resizeEvent(event)
 
 class Ui_MainWindow(object):
 
@@ -207,7 +211,7 @@ class Ui_MainWindow(object):
         self.layout_execution = FrameLayout(self.centralwidget,title="Execution")
         self.layout_execution.setObjectName('Execution')
 
-        self.groupBoxExecution(fontTitle,fontLineEdit)
+        self.groupBoxExecution(fontTitle,fontLineEdit,fontButton)
 
         self.layout_execution.addWidget(self.grpBox_Execution)
         self.scrollArea_layout.addWidget(self.layout_execution) #, 0, QtCore.Qt.AlignTop)
@@ -323,7 +327,6 @@ class Ui_MainWindow(object):
 
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-
     def groupBoxScene(self,fontTitle,fontLabel,fontLineEdit,fontButton):
 
         # Container
@@ -416,7 +419,7 @@ class Ui_MainWindow(object):
         self.lineEdit_moduleName.setPlaceholderText(_fromUtf8(""))
         self.lineEdit_moduleName.setObjectName(_fromUtf8("lineEdit_moduleName"))
 
-        self.lineEdit_NodeToReduce = MyLineEdit(self.grpBox_ReductionParam)
+        self.lineEdit_NodeToReduce = LineEdit(self.grpBox_ReductionParam)
         self.lineEdit_NodeToReduce.setFont(fontLineEdit)
         self.lineEdit_NodeToReduce.setObjectName(_fromUtf8("lineEdit_NodeToReduce"))
 
@@ -572,26 +575,26 @@ class Ui_MainWindow(object):
         self.verticalLayout_1.addWidget(self.tableWidget_animationParam)
         self.verticalLayout_1.addLayout(self.layout_addRemoveRow)
 
-    def groupBoxExecution(self,fontTitle,fontLineEdit):
+    def groupBoxExecution(self,fontTitle,fontLineEdit,fontButton):
 
         # Phase Description
 
-        phase1Info = (  "Phase 1 Description\n\n"
+        phase1Info = (  "Snapshot Database Computation\n\n"
                         "We modify the original scene to do the first step of MOR :\n"
                         "     - We add animation to each actuators we want for our model\n"
                         "     - And add a writeState componant to save the shaking resulting states")
 
-        phase2Info = (  "Phase 2 Description\n\n"
+        phase2Info = (  "Computation of the reduced basis with SVD decomposition\n\n"
                         "With the previous result we combine all the generated state files into one to be able to extract from it the different mode")
 
-        phase3Info = (  "Phase 3 Description\n\n"
+        phase3Info = (  "Reduced Snapshot Computation to store projected FEM internal forces contributions\n\n"
                         "We launch again a set of sofa scene with the sofa launcher with the same previous arguments but with a different scene\n"
                         "This scene take the previous one and add the model order reduction component:\n"
                         "    - HyperReducedFEMForceField\n"
                         "    - MechanicalMatrixMapperMOR\n"
                         "    - ModelOrderReductionMapping and produce an Hyper Reduced description of the model")
 
-        phase4Info = (  "Phase 4 Description\n\n"
+        phase4Info = (  "Computation of the reduced integration domain in terms of elements and nodes\n\n"
                         "Final step :\n"
                         "   - We gather again all the results of the previous scenes into one and then compute the RID and Weigts with it.\n"
                         "   - Additionnally we also compute the Active Nodes\n")
@@ -610,16 +613,16 @@ class Ui_MainWindow(object):
 
         # Frame Layout
 
-        self.phase1 = FrameLayout(self.grpBox_Execution,title="Phase 1")
+        self.phase1 = FrameLayout(self.grpBox_Execution,title="Phase 1: Snapshot Database Computation")
         self.phase1.setObjectName('Phase 1')
 
-        self.phase2 = FrameLayout(self.grpBox_Execution,title="Phase 2")
+        self.phase2 = FrameLayout(self.grpBox_Execution,title="Phase 2: Computation of the reduced basis")
         self.phase2.setObjectName('Phase 2')
 
-        self.phase3 = FrameLayout(self.grpBox_Execution,title="Phase 3")
+        self.phase3 = FrameLayout(self.grpBox_Execution,title="Phase 3: Reduced Snapshot Computation")
         self.phase3.setObjectName('Phase 3')
 
-        self.phase4 = FrameLayout(self.grpBox_Execution,title="Phase 4")
+        self.phase4 = FrameLayout(self.grpBox_Execution,title="Phase 4: Computation of the reduced integration domain")
         self.phase4.setObjectName('Phase 4')
 
         # TextBrowser
@@ -646,6 +649,23 @@ class Ui_MainWindow(object):
         textBrowser.setFont(fontLineEdit)
         textBrowser.setText(phase4Info)
         self.phase4.addWidget(textBrowser)
+
+        # Button
+
+        self.btn_debug1 = QtGui.QPushButton(self.phase1)
+        self.btn_debug1.setFont(fontButton)
+        self.btn_debug1.setObjectName(_fromUtf8("btn_debug1"))
+        self.phase1.addWidget(self.btn_debug1)
+
+        self.btn_debug2 = QtGui.QPushButton(self.phase3)
+        self.btn_debug2.setFont(fontButton)
+        self.btn_debug2.setObjectName(_fromUtf8("btn_debug2"))
+        self.phase3.addWidget(self.btn_debug2)
+
+        self.btn_results = QtGui.QPushButton(self.phase4)
+        self.btn_results.setFont(fontButton)
+        self.btn_results.setObjectName(_fromUtf8("btn_results"))
+        self.phase4.addWidget(self.btn_results)
 
         ################################
 
@@ -696,6 +716,9 @@ class Ui_MainWindow(object):
 
         ##########################      GROUPBOX EXECUTION     ###############################
 
+        self.btn_debug1.setText(_translate("MainWindow", "launch debug phase", None))
+        self.btn_debug2.setText(_translate("MainWindow", "launch debug phase", None))
+        self.btn_results.setText(_translate("MainWindow", "launch result", None))
 
         ##########################      LAUNCH REDUCTION     #################################
 

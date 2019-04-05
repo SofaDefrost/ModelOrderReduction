@@ -47,6 +47,7 @@ public:
     Data< bool > performECSW;
     sofa::core::objectmodel::DataFileName listActiveNodesPath;
     Data <sofa::helper::vector<unsigned int>> listActiveNodes;
+    int nbActiveNodesAtStart;
     Data< bool > timeInvariantMapping1;
     Data< bool > timeInvariantMapping2;
     Eigen::SparseMatrix<double> constantJ1;
@@ -74,6 +75,12 @@ protected:
 
 };
 
+#if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP)
+extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec3Types, sofa::defaulttype::Rigid3Types>;
+extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec3Types, sofa::defaulttype::Vec3Types>;
+extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec1Types, sofa::defaulttype::Rigid3Types>;
+extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec1Types, sofa::defaulttype::Vec1Types>;
+#endif // defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP)
 
 } // namespace interactionforcefield
 

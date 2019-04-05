@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-import sys
+'''
+**Sets of utility Fct used by the GUI**
+'''
+import os,sys
 from PyQt4 import QtCore, QtGui
 
 class Color():
@@ -11,6 +14,9 @@ class Color():
 
 	wrong = [bad,intermediate]
 	color = [good,bad,intermediate,blank]
+
+def setBackground(obj,color):
+    obj.setStyleSheet("background-color: "+color+";")
 
 def msg_warning(msg,info):
     msg.append("WARNING    "+info)

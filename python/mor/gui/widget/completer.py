@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-from PyQt4 import QtCore, QtGui
+'''
+**Class used to create an auto-completion help**
+'''
+from PyQt4.QtGui import QCompleter
+from PyQt4.QtCore import Qt
 counter = 0
 
-class MyCompleter(QtGui.QCompleter):
+class Completer(QCompleter):
     asChild = False
 
     def splitPath(self, path):
@@ -11,16 +15,16 @@ class MyCompleter(QtGui.QCompleter):
     def pathFromIndex(self, index):
         global counter
         self.asChild = False
-        if self.model().data(index.child(0,0), QtCore.Qt.DisplayRole):
+        if self.model().data(index.child(0,0), Qt.DisplayRole):
             self.asChild = True
 
-        # print(str(counter)+' , '+str(self.model().data(index, QtCore.Qt.DisplayRole)))
+        # print(str(counter)+' , '+str(self.model().data(index, Qt.DisplayRole)))
         counter += 1
 
         result = []
         while index.isValid():
             # print('index.isValid')
-            result = [self.model().data(index, QtCore.Qt.DisplayRole)] + result
+            result = [self.model().data(index, Qt.DisplayRole)] + result
             # print('result : ',result)
             index = index.parent()
 

@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
     README
-
     to use this python script you need :
-
         - bla
-
         - & blabla
 '''
 
@@ -20,7 +17,7 @@ sys.path.append(path+'/../python') # TO CHANGE
 # MOR IMPORT
 from mor.gui import utility
 from mor.reduction import ReduceModel
-from mor.reduction import ObjToAnimate
+from mor.reduction.container import ObjToAnimate
 
 #######################################################################
 ####################       PARAMETERS       ###########################
@@ -33,7 +30,7 @@ originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
 outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 ### DIAMOND ROBOT PARAM
-# nodesToReduce = '/modelNode'
+# nodeToReduce = '/modelNode'
 # nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
 # sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
 # est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
@@ -42,7 +39,7 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # addRigidBodyModes = [0,0,0]
 
 ### STARFISH ROBOT PARAM
-# nodesToReduce ='/model'
+# nodeToReduce ='/model'
 # centerCavity = ObjToAnimate("model/centerCavity", incr=350,incrPeriod=2,rangeOfAction=3500)
 # rearLeftCavity = ObjToAnimate("model/rearLeftCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
 # rearRightCavity = ObjToAnimate("model/rearRightCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
@@ -52,19 +49,19 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # addRigidBodyModes = [1,1,1]
 
 ### SOFIA
-# nodesToReduce ='/SofiaLeg'
+# nodeToReduce ='/SofiaLeg'
 # actuator = ObjToAnimate("SofiaLeg_actuator/actuatorState","shakingSofia",incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
 
 ### LIVER
-# nodesToReduce ='/liver'
+# nodeToReduce ='/liver'
 # actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
 
 ### HEXABEAM
-#nodesToReduce ='/M1'
+#nodeToReduce ='/M1'
 #actuator = ObjToAnimate("M1/cableNode", incr=1,incrPeriod=5,rangeOfAction=5)
 #listObjToAnimate = [actuator]
 #addRigidBodyModes = [0,0,0]
@@ -84,7 +81,7 @@ addToLib = False
 #######################################################################
 ####################      INITIALIZATION     ##########################
 reduceMyModel = ReduceModel(    originalScene,  
-                                nodesToReduce,
+                                nodeToReduce,
                                 listObjToAnimate,
                                 tolModes,tolGIE,
                                 outputDir,
@@ -101,7 +98,7 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
-#                           PHASE 1                                  #
+#            PHASE 1 : Snapshot Database Computation                 #
 #                                                                    #
 #      We modify the original scene to do the first step of MOR :    #
 #   we add animation to each actuators we want for our model         #
@@ -113,7 +110,7 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
-#                           PHASE 2                                  #
+#  PHASE 2 : Computation of the reduced basis with SVD decomposition #
 #                                                                    #
 #      With the previous result we combine all the generated         #
 #       state files into one to be able to extract from it           #
@@ -125,7 +122,8 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    SOFA LAUNCHER       ##########################
 #                                                                    #
-#                           PHASE 3                                  #
+#            PHASE 3 : Reduced Snapshot Computation                  #
+#     to store projected FEM internal forces  contributions          #
 #                                                                    #
 #      We launch again a set of sofa scene with the sofa launcher    #
 #      with the same previous arguments but with a different scene   #
@@ -142,7 +140,8 @@ reduceMyModel = ReduceModel(    originalScene,
 
 ####################    PYTHON SCRIPT       ##########################
 #                                                                    #
-#                           PHASE 4                                  #
+# PHASE 4 :  Computation of the reduced integration domain           #
+#                in terms of elements and nodes                      #
 #                                                                    #
 #      Final step : we gather again all the results of the           #
 #      previous scenes into one and then compute the RID and Weigts  #

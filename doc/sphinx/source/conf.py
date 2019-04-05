@@ -205,35 +205,83 @@ texinfo_documents = [
 from unittest import *
 from mock import MagicMock
 
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return MagicMock()
+# class Mock(MagicMock):
+#     __all__ = ['QApplication','pyqtSignal','pyqtSlot','QObject','QAbstractItemModel','QModelIndex','QTabWidget',
+#         'QWebPage','QTableView','QWebView','QAbstractTableModel','Qt','QWidget','QPushButton','QDoubleSpinBox',
+#         'QListWidget','QDialog','QSize','QTableWidget','QMainWindow','QTreeWidget',
+#         'QAbstractItemDelegate','QColor','QGraphicsItemGroup','QGraphicsItem','QGraphicsPathItem',
+#         'QGraphicsTextItem','QGraphicsRectItem','QGraphicsScene','QGraphicsView',]
+
+#     def __init__(self, *args, **kwargs):
+#         super(Mock, self).__init__()
+
+
+#     @classmethod
+#     def __getattr__(cls, name):
+#         if name in ('__file__', '__path__'):
+#             return os.devnull
+#         else:
+#             return Mock
+
+#     @classmethod
+#     def __setattr__(*args, **kwargs):
+#         pass
+
+#     def __setitem__(self, *args, **kwargs):
+#         return
+
+#     def __getitem__(self, *args, **kwargs):
+#         return Mock
+
+# class Mock(MagicMock):
+#     @classmethod
+#     def __getattr__(cls, name):
+#             return MagicMock()
 
 MOCK_MODULES = ['Sofa',
                 'stlib','splib',
                 'SofaPython','Quaternion','SofaPython.Quaternion',  # Needed for numerics
                 'PythonScriptController', 'Sofa.PythonScriptController',
-                'PyQt4',
                 'launcher',
                 'yaml',
-                'numpy'] # for AnimationManagerController but doesn't work...
+                'numpy',
+                'PyQt4',"PyQt4.QtCore","PyQt4.QtGui"] # for AnimationManagerController but doesn't work...
+
+MOCK_CLASSES = [
+    # classes you are inheriting from
+    "QAbstractItemModel",
+    "QDialog",
+    "QCompleter",
+    "QWidget",
+    "QLineEdit",
+    "QMainWindow"
+]
+
+MockingClass = type('MockingClass', (), {}) 
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        if name in MOCK_CLASSES:
+            # print("---------------------------->  "+name)
+            return object #MockingClass
+        return MagicMock()
 
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
-autodoc_mock_imports= [ "math", # Standard import
-                        "Sofa",
-                        "stlib","wrapper","scene","splib"]
+# sys.modules["QtCore.QAbstractItemModel"] = mock.Mock(TreeModel=object)
+# autodoc_mock_imports= [ "math", # Standard import
+#                         "Sofa",
+#                         "stlib","wrapper","scene","splib","QtCore","QtGui"]
+                        # "QtCore","QAbstractItemModel","QtCore.QAbstractItemModel"]
 
 autoclass_content = 'both' # When auto doc a class it will automatically add the special method __init__ doc
+add_function_parentheses = False
 
 # Add mappings
 intersphinx_mapping = {
     'stlib': ('https://stlib.readthedocs.io/en/latest/', None),
     'python': ('http://docs.python.org/3', None),
 }
-
-add_function_parentheses = False
 
 ###########################################################
 # -- To Build EXHALE --------------------------------------

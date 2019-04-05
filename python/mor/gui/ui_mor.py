@@ -16,46 +16,51 @@
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
 '''
-    README
-
-    to use this python script you need :
-
-        - bla
-
-        - & blabla
+**Module describing all the functionnalities of MOR GUI**
 '''
 #######################################################################
 ####################       IMPORT           ###########################
-import os
-import sys
+import os, sys
 import webbrowser
-from os.path import expanduser
 import glob
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import *
-
-# import ui_design  # This file holds our MainWindow and all design related things
-import ui_design
-
-
 import yaml
+
+
 from collections import OrderedDict
 from pydoc import locate
+from subprocess import Popen, PIPE, call
+
+
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QMainWindow
+
+
+# This file holds our MainWindow and all design related things
+import ui_design
+
+# GUI Tools
+from widget import Completer
+from widget import TreeModel
+from widget import GenericDialogForm
+import utility as u
+
+path = os.path.dirname(os.path.abspath(__file__))
+pathToIcon = path+'/icons/'
+
+try:
+    import imp
+    imp.find_module('mor')
+except:
+    sys.path.append(path+'/../../') # TEMPORARY
+    # raise ImportError("You need to give to PYTHONPATH the path to the python folder\n"\
+    #                  +"of the modelorderreduction plugin in order to use this utility\n"\
+    #                  +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
+    #                  +"export PYTHONPATH=/PathToYourMOR/python")
 
 # MOR IMPORT
-path = os.path.dirname(os.path.abspath(__file__))
-pathToIcon = path+'/../python/mor/gui/icons/'
-sys.path.append(path+'/../python') # TO CHANGE
-
 from mor.reduction import ReduceModel
-from mor.reduction import ObjToAnimate
-
-from mor.gui import MyCompleter
-from mor.gui import TreeModel
-from mor.gui import GenericDialogForm
-from mor.gui import utility as u
+from mor.reduction.container import ObjToAnimate
 from mor.utility import graphScene
-
 
 #######################################################################
 
@@ -94,26 +99,11 @@ col_path = 2
 col_parameters = 1
 col_animation = 0
 
-readOnly = True # Set LineEdit animation & NodeToReduce
+# Set LineEdit animation & NodeToReduce
+readOnly = True
 
-class Ui_Dialog(object):
-    def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(508, 300)
-        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
-        self.sl_value = QtWidgets.QSlider(Dialog)
-        self.sl_value.setGeometry(QtCore.QRect(220, 120, 161, 31))
-        self.sl_value.setOrientation(QtCore.Qt.Horizontal)
-        self.sl_value.setObjectName("sl_value")
-        self.buttonBox.accepted.connect(Dialog.accept)
-        self.buttonBox.rejected.connect(Dialog.reject)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
+class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
     def __init__(self):
 
         # Init of inherited class 
@@ -149,6 +139,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.btn_addLine.clicked.connect(lambda: self.addLine(self.tableWidget_animationParam))
         self.btn_removeLine.clicked.connect(lambda: self.removeLine(self.tableWidget_animationParam,self.animationDialog))
         self.btn_launchReduction.clicked.connect(self.execute)
+        self.btn_debug1.clicked.connect(lambda: self.executeSofaScene(str(self.lineEdit_output.text())+"/debug/debug_scene.py"))
+        self.btn_debug2.clicked.connect(lambda: self.executeSofaScene(str(self.lineEdit_output.text())+"/debug/debug_scene.py",param=["--argv",str(self.lineEdit_output.text())+"/debug/step2_stateFile.state"]))
+        self.btn_results.clicked.connect(lambda: self.executeSofaScene(str(self.lineEdit_output.text())+"/reduced_"+str(self.lineEdit_moduleName.text())+".py"))
         
         self.lineEdit_NodeToReduce.leftArrowBtnClicked.connect(lambda: self.left(self.lineEdit_NodeToReduce))
         self.lineEdit_NodeToReduce.setReadOnly(readOnly)
@@ -203,8 +196,8 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.resetFileName = {
                 'grpBox_Path':
                     {
-                        'lineEdit_output': '', # '/home/felix/SOFA/plugin/ModelOrderReduction/tools/test'
-                        'lineEdit_scene': '', #'/home/felix/SOFA/plugin/ModelOrderReduction/tools/sofa_test_scene/diamondRobot.py'
+                        'lineEdit_output': '',
+                        'lineEdit_scene': ''
                     },
                 'grpBox_ReductionParam': 
                     {   'lineEdit_NodeToReduce': '',
@@ -245,6 +238,18 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         self.setShortcut()
         self.resizeTab()
 
+    def executeSofaScene(self,sofaScene,param=[]):
+
+        if os.path.isfile(sofaScene):
+            try:
+                arg = ["runSofa"]+[sofaScene]+param
+                # print(arg)
+                a = Popen(arg,stdout=PIPE, stderr=PIPE)
+            except:
+                print("Unable to find runSofa, please add the runSofa location to your PATH and restart sofa-launcher.")
+        else:
+            print("ERROR    the file you try to launch doesn't exist, you have to execute the phase first")
+
     def openLink(self,url):
         webbrowser.open(url)
 
@@ -279,7 +284,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         if self.lineEdit_output.text():
             tab.append('/'.join(str(self.lineEdit_output.text()).split('/')[:-1]))
 
-        home = expanduser("~")
+        home = os.path.expanduser("~")
         u.shortcut.append(QtCore.QUrl.fromLocalFile(home))
 
         for url in tab :
@@ -607,12 +612,12 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             model = TreeModel(self.cfg)
             # print(model.rootItem.itemData)
 
-            completer = MyCompleter(self.lineEdit_NodeToReduce)
+            completer = Completer(self.lineEdit_NodeToReduce)
             completer.setModel(model)
             completer.setCompletionColumn(0)
             completer.setCompletionRole(QtCore.Qt.DisplayRole)
             completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-            completer.setCompletionMode(QCompleter.PopupCompletion)
+            completer.setCompletionMode(QtGui.QCompleter.PopupCompletion)
             # print(model.dumpObjectTree())
             self.lineEdit_NodeToReduce.setCompleter(completer)
             self.lineEdit_NodeToReduce.clicked.connect(completer.complete)
@@ -670,7 +675,7 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
                             self.phaseItem[index][0].setCheckState(True)
                         elif cfg[objectName]['checkBox'] == 'False':
                             self.phaseItem[index][0].setCheckState(False)
-                    if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "MyLineEdit":
+                    if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "LineEdit":
                         # print('----------------->'+objectName)
                         child.setText(cfg[objectName])
                     if type(child).__name__ == 'QTextEdit':
@@ -723,19 +728,19 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
         '''
         BuildDic will build a Dictionnary that will describe the state of a 'page' of our application
         '''
-        toSave = ['QLineEdit','QTextEdit','QCheckBox','QTableWidget','QSpinBox','MyLineEdit']
+        toSave = ['QLineEdit','QTextEdit','QCheckBox','QTableWidget','QSpinBox','LineEdit']
         if not pageName:
             pageName=str(page.objectName())
         data[pageName] = {}
         # print('pageName : '+pageName)
         for child in page.children():
             objectName = str(child.objectName())
-            # if type(child).__name__ == "MyLineEdit":
+            # if type(child).__name__ == "LineEdit":
             #     print(objectName)
             #     print(type(child).__name__)
             if type(child).__name__ in toSave:
                 # print('--------------->'+child.objectName())
-                if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "MyLineEdit":
+                if type(child).__name__ == 'QLineEdit' or type(child).__name__ == "LineEdit":
                     data[pageName][objectName] = str(child.text())
                     # print('----------------->'+str(child.text()))
                 if type(child).__name__ == 'QTextEdit':
@@ -909,12 +914,12 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             tab.insertRow(tab.rowCount())
             row = tab.rowCount()-1
 
-            tmp = ui_design.MyLineEdit(tab)
+            tmp = ui_design.LineEdit(tab)
             tmp.setReadOnly(readOnly)
 
             model = TreeModel(self.cfg,obj=True)
 
-            completer = MyCompleter(tmp)
+            completer = Completer(tmp)
             completer.setModel(model)
             completer.setCompletionColumn(0)
             completer.setCompletionRole(QtCore.Qt.DisplayRole)
@@ -935,9 +940,9 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
             u.setBackColor(tmp)
             tab.setCellWidget(row,2,tmp)
 
-            item = QTableWidgetItem()
+            item = QtGui.QTableWidgetItem()
             tab.setItem(row,1,item)
-            backgrdColor = QColor()
+            backgrdColor = QtGui.QColor()
             backgrdColor.setNamedColor(yellow)
             tab.item(row,1).setBackgroundColor(backgrdColor)
             
@@ -975,13 +980,10 @@ class ExampleApp(QtGui.QMainWindow, ui_design.Ui_MainWindow):
 
         self.resizeTab()
 
-
-###################################################################################################
-
 def main():
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
-    form = ExampleApp()  # We set the form to be our ExampleApp (design)
-    form.show()  # Show the form
+    gui_mor = UI_mor()  # We set the form to be our ExampleApp (design)
+    gui_mor.show()  # Show the form
     app.exec_()  # and execute the app
 
 if __name__ == '__main__':  # if we're running file directly and not importing it
