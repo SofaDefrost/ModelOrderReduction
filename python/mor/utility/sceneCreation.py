@@ -232,22 +232,17 @@ def modifyGraphScene(node,nbrOfModes,newParam):
         if currentNode.getPathName() == pathTmp:
             if 'paramMappedMatrixMapping' in param:
                 print('Create new child modelMOR and move node in it')
-
                 myParent = currentNode.getParents()[0]
                 modelMOR = myParent.createChild(currentNode.name+'_MOR')
-                modelMOR.moveChild(currentNode)
-
+                modelMOR.moveChild(currentNode,currentNode.getParents()[0])
                 for obj in solver:
                     # print('To move!')
                     currentNode.removeObject(obj)
                     currentNode.getParents()[0].addObject(obj)
-
                 modelMOR.createObject('MechanicalObject', **argMecha)
-
                 # print param['paramMappedMatrixMapping']
                 modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
                 # print 'Create MechanicalMatrixMapperMOR in modelMOR'
-
                 if save:
                     replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
                     replaceAndSave.myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
