@@ -97,7 +97,14 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools/")
 endif()
 
 # Install rules for the library and headers; CMake package configurations files
-sofa_create_package(ModelOrderReduction ${PROJECT_VERSION} ${PROJECT_NAME} ModelOrderReduction)
+sofa_generate_package(
+    NAME ${PROJECT_NAME}
+    TARGETS ${PROJECT_NAME}
+    VERSION ${PROJECT_VERSION}
+    INCLUDE_SOURCE_DIR "src/component"
+    INCLUDE_INSTALL_DIR "component"
+    RELOCATABLE "plugins"
+    )
 
 # if(SOFA_BUILD_TESTS)
 #     add_subdirectory(src/component/ModelOrderReduction_test)
