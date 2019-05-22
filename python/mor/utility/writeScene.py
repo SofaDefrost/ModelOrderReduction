@@ -172,16 +172,15 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                 # print('for '+type+' '+myArgs+'\n')
                 myArgs = myArgs.replace("'[0]*nbrOfModes'","[0]*nbrOfModes")
                 logFile.write(myArgs)
-
             modelTranslation = None
             modelRotation = None
             modelScale = None
             for childName , obj in myModel.items():
                 logFile.write('\n\n')
-                parenNode = ''
-                if childName[1:] == nodeName :
+                parentNode = ''
+                if childName.split('/')[-1] == nodeName :
                     print(childName,0)
-                    childName = childName[1:]
+                    childName = childName.split('/')[-1]
                     parentNode = nodeName+"_MOR"
                 elif childName.find('/'+nodeName+'/') == -1:
                     print(childName,1)
@@ -224,7 +223,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                 logFile.write("    "+childName+" = "+parentNode+".createChild('"+childName+"')\n")
                 # print('CHILD :'+childName)
                 for type , arg in obj:
-                    # print(type+' : '+str(arg)+'\n')
+                    #print(type+' : '+str(arg)+'\n')
                     if arg :
                         # print(type+' : '+str(arg)+'\n')
                         tmpList = ['MeshGmshLoader','MeshVTKLoader','MeshSTLLoader','MeshObjLoader']
@@ -274,6 +273,8 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                                 p3 = [pointMax[0],pointMin[1],pointMin[2]]
                                 points = [p1,p2,p3]
                                 # newPoints[2] , newPoints[1] = newPoints[1] , newPoints[2]
+                                if (modelTranslation == None):
+                                    modelTranslation ='[0.0, 0.0, 0.0]'
                                 myArgs= ", name= '"+arg['name']+"' , orientedBox= newBox("+str(points)+" , "+str(modelTranslation)+",translation,rotation,"+str([0,0,tr])+",scale) + multiply(scale[2],"+str([depth])+").tolist(),drawBoxes=True"
                             # elif "orientedBox" in arg :      
                             #     myArgs= ", orientedBox= add("+str(translation)+" , PositionsTRS(subtract("+str(arg['orientedBox'])+" , "+str(translation)+"),translation,rotation))"

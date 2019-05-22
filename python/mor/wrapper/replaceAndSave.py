@@ -151,7 +151,7 @@ def MORreplace(node,type,newParam,initialParam):
     +--------------+-----------+--------------------------------------------------------------------------------+
     | type         | undefined | Type of the Sofa.object                                                        |
     +--------------+-----------+--------------------------------------------------------------------------------+
-    | newParam     | dic       || Contains numerous argument to modify/replace some componen tof the SOFA scene.|
+    | newParam     | dic       || Contains numerous argument to modify/replace some component of the SOFA scene.|
     |              |           || *more details see* :py:class:`.ReductionParam`                                |
     +--------------+-----------+--------------------------------------------------------------------------------+
     | initialParam | dic       | Contains all the initial argument of the SOFA component being instanciated     |
