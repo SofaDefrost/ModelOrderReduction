@@ -254,7 +254,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord
 
     }
 
-    this->updateGie<DataTypes>(indexList, contrib, elementIndex);
+    this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
 
     // store for re-use in matrix-vector products
     if(implicit)

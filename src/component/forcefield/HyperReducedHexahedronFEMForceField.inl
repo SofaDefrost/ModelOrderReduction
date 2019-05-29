@@ -311,7 +311,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WData
             f[indexList[w]] += weights(i)*contrib[w];
         }
     }
-    this->updateGie<DataTypes>(indexList, contrib, i);
+    this->template updateGie<DataTypes>(indexList, contrib, i);
 
 
 
