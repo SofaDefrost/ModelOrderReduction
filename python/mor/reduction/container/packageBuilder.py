@@ -71,7 +71,7 @@ class PackageBuilder():
                 counter += 1
             else : print(line),
 
-    def copyAndCleanState(self,results,periodSaveGIE,stateFileName,gie=None):
+    def copyAndCleanState(self,results,periodSaveGIE,stateFileName,velocityFileName=None,gie=None):
         '''
         '''
 
@@ -79,6 +79,8 @@ class PackageBuilder():
 
         if os.path.exists(self.debugDir+stateFileName):
             os.remove(self.debugDir+stateFileName)
+        if velocityFileName and os.path.exists(self.debugDir+velocityFileName):
+            os.remove(self.debugDir+velocityFileName)
         if gie:
             for fileName in gie :
                 if os.path.exists(self.debugDir+fileName):
@@ -88,6 +90,8 @@ class PackageBuilder():
         for res in results:
             u.copyFileIntoAnother(res["directory"]+slash+"stateFile.state",self.debugDir+stateFileName)
 
+            if velocityFileName is not None:
+                u.copyFileIntoAnother(res["directory"]+"/stateFileVelocity.state",self.debugDir+velocityFileName)
             if gie:
                 for fileName in gie :
                     u.copyFileIntoAnother(res["directory"]+slash+fileName,self.debugDir+fileName)

@@ -79,5 +79,9 @@ def createScene(rootNode):
         myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="0", writeV="0")
 
-    myParent.createObject('WriteState', filename="stateFileVelocity.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
-                                          writeX = "0", writeX0 = "0", writeV = "1")
+    # If you want to save also the velocity uncomment the what is below.
+    # Then after if you give to **ReduceModel** *saveVelocitySnapshots = True* as parameter
+    # all the different velocity saved will be added to one file as the stateFile
+
+    # myParent.createObject('WriteState', filename="stateFileVelocity.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
+    #                                       writeX = "0", writeX0 = "0", writeV = "1")

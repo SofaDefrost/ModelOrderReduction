@@ -39,6 +39,16 @@ except:
                      +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
                      +"export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher")
 
+path = os.path.dirname(os.path.abspath(__file__))
+pathToTemplate = path+'/template/'
+pathToReducedModel = path+'/../../morlib/'
+sys.path.insert(0,path+'/../../')
+
+from mor.utility import utility as u
+from mor.reduction.container import ObjToAnimate
+from mor.reduction.container import ReductionAnimations
+from mor.reduction.container import PackageBuilder
+from mor.reduction.container import ReductionParam
 
 slash = '/'
 if "Windows" in platform.platform():
@@ -90,7 +100,8 @@ class ReduceModel():
         verbose = False,
         addRigidBodyModes = False,
         nbrCPU = 4,
-        phaseToSave = None):
+        phaseToSave = None,
+        saveVelocitySnapshots = None):
 
         self.originalScene = os.path.normpath(originalScene)
         self.nodeToReduce = nodeToReduce
@@ -252,7 +263,7 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")  
 
-        self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName)
+        self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName,self.reductionParam.velocityFileName)
         u.copy(results[self.phaseToSaveIndex]["directory"]+slash+"debug_scene.py", self.packageBuilder.debugDir)
 
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
