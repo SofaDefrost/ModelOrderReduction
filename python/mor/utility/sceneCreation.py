@@ -234,7 +234,9 @@ def modifyGraphScene(node,nbrOfModes,newParam):
                 print('Create new child modelMOR and move node in it')
                 myParent = currentNode.getParents()[0]
                 modelMOR = myParent.createChild(currentNode.name+'_MOR')
-                modelMOR.moveChild(currentNode,currentNode.getParents()[0])
+                for parents in currentNode.getParents():
+                    parents.removeChild(currentNode)
+                modelMOR.addChild(currentNode)
                 for obj in solver:
                     # print('To move!')
                     currentNode.removeObject(obj)
