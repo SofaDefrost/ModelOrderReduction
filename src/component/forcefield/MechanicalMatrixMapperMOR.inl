@@ -92,8 +92,13 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
         JtMJ = denseJtMJ.sparseView();
 
     }
-    m_nbInteractionForceFieldsMOR = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get()->interactionForceField.size();
-
+    if(MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get() != NULL){
+        m_nbInteractionForceFieldsMOR = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get()->interactionForceField.size();
+    }
+    else
+    {
+        msg_error() << " failed to initialized -> missing/wrong link " <<  MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.getName() << " : " <<  MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.getLinkedPath();
+    }
 
 }
 

@@ -50,8 +50,8 @@ class ReductionParam():
     def addParamWrapper(self ,nodeToReduce ,prepareECSW = True, paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
         '''
         '''
-
-        nodeToParse = '@.'+nodeToReduce
+        ndtSplit = nodeToReduce.split(slash)
+        nodeToParse = '@./' + ndtSplit[-1]
 
         defaultParamPrepare = {
                 'paramForcefield' : {
