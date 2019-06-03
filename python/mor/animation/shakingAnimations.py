@@ -62,8 +62,7 @@ def defaultShaking( objToAnimate, dt, factor, **param):
         if (time == dt):
             writeCurrent = True
 
-        # TODO will bug if period of 1 !!
-        if (time-(lastTime + period + dt) >= 0.000001): #{time > (lastTime + period + dt)):
+        if (time-(lastTime + period + dt) >= 0.000001): # (time > (lastTime + period + dt)):
             lastTime += period
 
         if ( abs(time-(lastTime + period + dt)) <= 0.000001 ):
@@ -124,7 +123,6 @@ def shakingSofia( objToAnimate, dt, factor, **param):
 
 def shakingInverse( objToAnimate, dt, factor, **param):
     """
-    **TODO**
     """
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
     # print("currentTime - startTime : "+str(factor * objToAnimate.duration))

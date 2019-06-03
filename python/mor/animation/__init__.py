@@ -9,7 +9,7 @@ Each function has to have 3 mandatory arguments:
 +==============+===========================+======================================================================+
 | objToAnimate | :py:class:`.ObjToAnimate` | the obj containing all the information/arguments about the animation |
 +--------------+---------------------------+----------------------------------------------------------------------+
-| dt           | sc                        | Time sept of the Sofa scene                                          |
+| dt           | seconde (in float)        | Time step of the Sofa scene                                          |
 +--------------+---------------------------+----------------------------------------------------------------------+
 | factor       | float                     ||  Argument given by the Animation class from STLIB.                  |
 |              |                           ||  It indicate where we are in the animation sequence:                |

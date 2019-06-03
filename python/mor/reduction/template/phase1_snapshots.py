@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import os
 import imp
+import platform
 
-#	STLIB IMPORT
+#   STLIB IMPORT
 try:
     from splib.animation import AnimationManager , animate
     from stlib.scene.wrapper import Wrapper
@@ -12,12 +14,17 @@ except:
 
 # MOR IMPORT
 from mor import animation
-from mor.reduction import ObjToAnimate
+from mor.reduction.container import ObjToAnimate
 from mor.utility import sceneCreation as u
 
+slash = '/'
+if "Windows" in platform.platform():
+    slash = "\\"
+
 # Our Original Scene IMPORT
-originalScene = '$ORIGINALSCENE'
-originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
+originalScene = r'$ORIGINALSCENE'
+originalScene = os.path.normpath(originalScene)
+originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
 
 # Animation parameters
 listObjToAnimate = []
@@ -60,7 +67,7 @@ def createScene(rootNode):
     # Now that all the animations are defined we need to record their results
     # for that we take the parent node normally given as an argument in paramWrapper
 
-    path, param = paramWrapper[0]
+    path, param = paramWrapper
     myParent = get(rootNode,path[1:])
 
     # We need rest_position and because it is normally always the same we record it one time

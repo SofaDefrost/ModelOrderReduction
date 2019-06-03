@@ -11,7 +11,7 @@ meshPath = path + '/mesh/'
 def TRSinOrigin(positions,modelPosition,translation,rotation,scale=[1.0,1.0,1.0]):
     posOrigin = subtract(positions , modelPosition)
     if any(isinstance(el, list) for el in positions):
-        posOriginTRS = transformPositions(posOrigin,translation,rotation,scale=scale)
+        posOriginTRS = transformPositions(posOrigin,translation,eulerRotation=rotation,scale=scale)
     else:
         posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation,scale=scale))
     return add(posOriginTRS,modelPosition).tolist()
@@ -119,7 +119,7 @@ def createScene(rootNode):
     from stlib.scene import MainHeader
     surfaceMeshFileName = 'sofia_leg.stl'
 
-    MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=["SofaPython","ModelOrderReduction"],
                         dt=0.01,
                         gravity=[0, -9810, 0])
 

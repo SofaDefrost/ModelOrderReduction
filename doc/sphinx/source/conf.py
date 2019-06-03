@@ -17,20 +17,6 @@ import sys
 
 sys.path.append(os.getcwd()+"/../../../python")
 
-
-# -- To Build Breath doc with ReadTheDocs--------------------------------------
-
-import subprocess, os
-
-read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
-
-if read_the_docs_build:
-
-    subprocess.call('cd .. ; doxygen', shell=True)
-    html_extra_path = ['../build/html']
-
-# -- Project information -----------------------------------------------------
-
 project = u'ModelOrderReduction'
 copyright = u'2018, Defrost Team'
 author = u'Defrost Team'
@@ -61,9 +47,10 @@ extensions = [
     'sphinx.ext.githubpages',
 
     # C++ / Breathe
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.todo',
-    # 'breathe',
+    # 'sphinx.ext.ifconfig',
+    # 'sphinx.ext.todo',
+    'breathe',
+    'exhale'
 
     # Generate pdf
     # 'rst2pdf.pdfbuilder'
@@ -119,8 +106,16 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-html_theme = "sphinx_rtd_theme"
-html_theme_path = ["_themes", ]
+# html_theme = "sphinx_rtd_theme"
+# html_theme_path = ["_themes", ]
+
+# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if not on_rtd:  # only import and set the theme if we're building docs locally
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -207,31 +202,80 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
-import sys
 from unittest import *
 from mock import MagicMock
 
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return MagicMock()
+# class Mock(MagicMock):
+#     __all__ = ['QApplication','pyqtSignal','pyqtSlot','QObject','QAbstractItemModel','QModelIndex','QTabWidget',
+#         'QWebPage','QTableView','QWebView','QAbstractTableModel','Qt','QWidget','QPushButton','QDoubleSpinBox',
+#         'QListWidget','QDialog','QSize','QTableWidget','QMainWindow','QTreeWidget',
+#         'QAbstractItemDelegate','QColor','QGraphicsItemGroup','QGraphicsItem','QGraphicsPathItem',
+#         'QGraphicsTextItem','QGraphicsRectItem','QGraphicsScene','QGraphicsView',]
+
+#     def __init__(self, *args, **kwargs):
+#         super(Mock, self).__init__()
+
+
+#     @classmethod
+#     def __getattr__(cls, name):
+#         if name in ('__file__', '__path__'):
+#             return os.devnull
+#         else:
+#             return Mock
+
+#     @classmethod
+#     def __setattr__(*args, **kwargs):
+#         pass
+
+#     def __setitem__(self, *args, **kwargs):
+#         return
+
+#     def __getitem__(self, *args, **kwargs):
+#         return Mock
+
+# class Mock(MagicMock):
+#     @classmethod
+#     def __getattr__(cls, name):
+#             return MagicMock()
 
 MOCK_MODULES = ['Sofa',
                 'stlib','splib',
                 'SofaPython','Quaternion','SofaPython.Quaternion',  # Needed for numerics
                 'PythonScriptController', 'Sofa.PythonScriptController',
-                'PyQt4',
                 'launcher',
                 'yaml',
-                'numpy'] # for AnimationManagerController but doesn't work...
+                'numpy',
+                'PyQt4',"PyQt4.QtCore","PyQt4.QtGui"] # for AnimationManagerController but doesn't work...
+
+MOCK_CLASSES = [
+    # classes you are inheriting from
+    "QAbstractItemModel",
+    "QDialog",
+    "QCompleter",
+    "QWidget",
+    "QLineEdit",
+    "QMainWindow"
+]
+
+MockingClass = type('MockingClass', (), {}) 
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        if name in MOCK_CLASSES:
+            # print("---------------------------->  "+name)
+            return object #MockingClass
+        return MagicMock()
 
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
-autodoc_mock_imports= [ "math", # Standard import
-                        "Sofa",
-                        "stlib","wrapper","scene","splib"]
+# sys.modules["QtCore.QAbstractItemModel"] = mock.Mock(TreeModel=object)
+# autodoc_mock_imports= [ "math", # Standard import
+#                         "Sofa",
+#                         "stlib","wrapper","scene","splib","QtCore","QtGui"]
+                        # "QtCore","QAbstractItemModel","QtCore.QAbstractItemModel"]
 
 autoclass_content = 'both' # When auto doc a class it will automatically add the special method __init__ doc
+add_function_parentheses = False
 
 # Add mappings
 intersphinx_mapping = {
@@ -239,24 +283,108 @@ intersphinx_mapping = {
     'python': ('http://docs.python.org/3', None),
 }
 
-# Breathe 
-breathe_projects_source = { 
-        "loader" : (os.getcwd()+"/../../../src/component/loader",["MatrixLoader.h"]),
-        "mapping" : (os.getcwd()+"/../../../src/component/mapping",["ModelOrderReductionMapping.h"]),
-        "forcefield" : (os.getcwd()+"/../../../src/component/forcefield",[
-            "HyperReducedTetrahedronFEMForceField.h",
-            "HyperReducedTriangleFEMForceField.h",
-            "HyperReducedTetrahedronHyperelasticityFEMForceField.h",
-            "MappedMatrixForceFieldAndMassMOR.h",
-            "MooneyRivlin.h",
-            "NeoHookean.h"])}
+###########################################################
+# -- To Build EXHALE --------------------------------------
 
-breathe_doxygen_config_options = {
-    'ENABLE_PREPROCESSING' : 'YES',
-    'PREDEFINED' : 'DOXYGEN_SHOULD_SKIP_THIS',
-    'EXTRACT_LOCAL_METHODS' : 'YES',
-    'HIDE_UNDOC_MEMBERS' : 'YES',
-    'HIDE_UNDOC_CLASSES' : 'YES',
-    'HIDE_SCOPE_NAMES' : 'YES'}
+# Setup the breathe extension
+breathe_projects = {
+    "ExhaleTest": "./doxyoutput/xml"
+}
 
-add_function_parentheses = False
+breathe_default_project = "ExhaleTest"
+import textwrap
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./api",
+    "rootFileName":          "library_root.rst",
+    "rootFileTitle":         "Library API",
+    "doxygenStripFromPath":  "../../../src/component",
+    # Suggested optional arguments
+    "createTreeView":        True,
+    # TIP: if using the sphinx-bootstrap-theme, you need
+    # "treeViewIsBootstrap": True,
+    # "verboseBuild":True
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin":    textwrap.dedent('''
+        INPUT = ../../../src/component
+        FILE_PATTERNS = *.h
+        ''')
+}
+
+# # Tell sphinx what the primary language being documented is.
+# primary_domain = 'cpp'
+
+# # Tell sphinx what the pygments highlight language should be.
+# highlight_language = 'cpp'
+
+###############################################################################
+# -- To Build Breath doc with ReadTheDocs--------------------------------------
+
+
+# # Breathe 
+# import glob
+
+
+# listProject = [("loader",os.getcwd()+"/../../../src/component/loader"),
+#                ("forcefield",os.getcwd()+"/../../../src/component/forcefield"),
+#                ("mapping",os.getcwd()+"/../../../src/component/mapping")]
+
+# breathe_projects_source = {}
+
+# def addDoxiProject(projectName,pathToProject,filesType = "/*.h"):
+#     filesPath = glob.glob(pathToProject+filesType)
+#     filesNames = [os.path.basename(x) for x in filesPath]
+#     print(filesNames)
+#     breathe_projects_source[projectName] = (pathToProject,filesNames) 
+ 
+# for projectName,pathToProject in listProject:
+#     addDoxiProject(projectName,pathToProject)
+
+# print (breathe_projects_source)
+
+# breathe_default_members = ('members', 'undoc-members')
+
+# breathe_doxygen_config_options = {
+#     'ENABLE_PREPROCESSING' : 'YES',
+#     'PREDEFINED' : 'DOXYGEN_SHOULD_SKIP_THIS',
+#     'EXTRACT_LOCAL_METHODS' : 'YES',
+#     'HIDE_UNDOC_MEMBERS' : 'YES',
+#     'HIDE_UNDOC_CLASSES' : 'YES',
+#     'HIDE_SCOPE_NAMES' : 'YES'}
+
+# import subprocess
+
+# # read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+# # if read_the_docs_build:
+
+# #     subprocess.call('cd .. ; doxygen', shell=True)
+# #     html_extra_path = ['../build/html']
+
+# def run_doxygen(folder):
+#     """Run the doxygen make command in the designated folder"""
+
+#     try:
+#         retcode = subprocess.call("cd %s; make" % folder, shell=True)
+#         if retcode < 0:
+#             sys.stderr.write("doxygen terminated by signal %s" % (-retcode))
+#     except OSError as e:
+#         sys.stderr.write("doxygen execution failed: %s" % e)
+
+
+# def generate_doxygen_xml(app):
+#     """Run the doxygen make commands if we're on the ReadTheDocs server"""
+
+#     read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+#     if read_the_docs_build:
+
+#         run_doxygen("../../../src/component/loader")
+#         run_doxygen("../../../src/component/forcefield")
+#         run_doxygen("../../../src/component/mapping")
+
+# def setup(app):
+
+#     # Add hook for building doxygen xml when needed
+#     app.connect("builder-inited", generate_doxygen_xml)

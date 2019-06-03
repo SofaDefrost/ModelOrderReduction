@@ -1,18 +1,31 @@
 # -*- coding: utf-8 -*-
-from PyQt4 import QtCore, QtGui
+'''
+**Widget used to be able to create easily Form Dialog Box**
+'''
+
+import os, sys
+from PyQt4 import QtGui
+from PyQt4.QtGui import QDialog
+from PyQt4.QtCore import QRegExp
+from PyQt4.QtCore import QString
 
 from collections import OrderedDict
+
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(path+'/../')
+
 import utility as u
 
 try:
-    _fromUtf8 = QtCore.QString.fromUtf8
+    _fromUtf8 = QString.fromUtf8
 except AttributeError:
     def _fromUtf8(s):
         return s
 
-class GenericDialogForm(QtGui.QDialog):
-    def __init__(self,animation,param,currentValues=None,height = 137,width = 300):
-        QtGui.QDialog.__init__(self)
+
+class GenericDialogForm(QDialog):
+    def __init__(self,animation,param,currentValues=None,heightFields = 35,heightMargin = 10,maxWidth = 1000):
+        QDialog.__init__(self)
 
         self.state = False
         self.animation = animation
@@ -21,7 +34,12 @@ class GenericDialogForm(QtGui.QDialog):
         if not currentValues:
             self.currentValues = {}
 
-        self.resize(width, height)
+        self.heightFields = heightFields
+        self.heightMargin = heightMargin
+        self.maxWidth = maxWidth
+
+        self.resize(self.maxWidth/3,self.heightFields+self.heightMargin)
+
         self.setWindowTitle(self.animation)
         self.setupUi(self)
         self.btn_submit.clicked.connect(self.submitclose)
@@ -47,7 +65,7 @@ class GenericDialogForm(QtGui.QDialog):
                 widget.textChanged.connect(lambda: u.check_state(self.sender()))
 
                 if type(value[0]) == str:
-                    widget.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("^("+value[0]+")$")))
+                    widget.setValidator(QtGui.QRegExpValidator(QRegExp("^("+value[0]+")$")))
                 else:
                     widget.setValidator(value[0])
 
@@ -63,8 +81,8 @@ class GenericDialogForm(QtGui.QDialog):
         self.btn_submit.setText("Ok")
         self.formLayout_2.setWidget(i, QtGui.QFormLayout.FieldRole, self.btn_submit)
 
-        self.setFixedHeight(self.height()) 
-        self.setMaximumWidth(1000)
+        self.setFixedHeight((len(self.param)+1)*self.heightFields+self.heightMargin)
+        self.setMaximumWidth(self.maxWidth)
         self.setMinimumWidth(self.width())
 
 
@@ -110,7 +128,10 @@ class GenericDialogForm(QtGui.QDialog):
                     state = False
                 self.currentValues[label.text()] = state
             else:
-                self.currentValues[label.text()] = dataType(widget.text())
+                if widget.text() == "":
+                    print("MISSING VALUE :  for entry "+label.text()+" of "+str(dataType))
+                else:
+                    self.currentValues[label.text()] = dataType(widget.text())
 
         self.setState()
 

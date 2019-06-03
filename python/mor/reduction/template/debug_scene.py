@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 import imp
+import platform
 from sys import argv
 
 #   STLIB IMPORT
@@ -12,8 +14,14 @@ except:
 # MOR IMPORT
 from mor.utility import sceneCreation as u
 
-originalScene = '$ORIGINALSCENE'
-originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
+slash = '/'
+if "Windows" in platform.platform():
+    slash = "\\"
+
+# Our Original Scene IMPORT
+originalScene = r'$ORIGINALSCENE'
+originalScene = os.path.normpath(originalScene)
+originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
 
 paramWrapper = $PARAMWRAPPER
 
@@ -25,7 +33,7 @@ def createScene(rootNode):
         stateFileName="stateFile.state"
     originalScene.createScene(rootNode)
 
-    path , param = paramWrapper[0]  
+    path , param = paramWrapper
     pathToNode = path[1:]
 
-    u.createDebug(rootNode,paramWrapper,stateFileName)
+    u.createDebug(rootNode,pathToNode,stateFileName)

@@ -1,5 +1,4 @@
-../../python
-
 sphinx-rtd-theme
 sphinx
 recommonmark
+exhale

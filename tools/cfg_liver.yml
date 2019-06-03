@@ -1,0 +1,29 @@
+grpBox_AdvancedParam:
+  checkBox_addToLib: 'False'
+  lineEdit_tolGIE: '0.05'
+  lineEdit_tolModes: '0.001'
+grpBox_AnimationParam:
+  tableWidget_animationParam:
+    0:
+      0: shakingSofia
+      1:
+        angle: '0.0'
+        dataToWorkOn: position
+        incr: '0.4'
+        incrPeriod: '3.0'
+        rangeOfAction: '6.2'
+        rodRadius: '0.7'
+      2: actuator/actuatorState
+grpBox_Execution:
+  Phase 1:
+    checkBox: 'False'
+  Phase 2:
+    checkBox: 'False'
+  Phase 3:
+    checkBox: 'False'
+  Phase 4:
+    checkBox: 'False'
+grpBox_ReductionParam:
+  checkBox_AddTranslation: 'False'
+  lineEdit_NodeToReduce: liver
+  lineEdit_moduleName: myReducedModel

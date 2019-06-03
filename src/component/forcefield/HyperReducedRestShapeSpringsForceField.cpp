@@ -37,20 +37,10 @@ SOFA_DECL_CLASS(HyperReducedRestShapeSpringsForceField)
 
 
 int HyperReducedRestShapeSpringsForceFieldClass = core::RegisterObject("Simple elastic springs applied to given degrees of freedom between their current and rest shape position")
-#ifndef SOFA_FLOAT
-        .add< HyperReducedRestShapeSpringsForceField<Vec3dTypes> >()
-#endif
-#ifndef SOFA_DOUBLE
-        .add< HyperReducedRestShapeSpringsForceField<Vec3fTypes> >()
-#endif
+        .add< HyperReducedRestShapeSpringsForceField<Vec3Types> >()
         ;
 
-#ifndef SOFA_FLOAT
-template class SOFA_DEFORMABLE_API HyperReducedRestShapeSpringsForceField<Vec3dTypes>;
-#endif
-#ifndef SOFA_DOUBLE
-template class SOFA_DEFORMABLE_API HyperReducedRestShapeSpringsForceField<Vec3fTypes>;
-#endif
+template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<Vec3Types>;
 
 } // namespace forcefield
 

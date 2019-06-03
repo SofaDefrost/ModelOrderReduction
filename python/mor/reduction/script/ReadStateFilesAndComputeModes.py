@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
 ## Usage: python readStateFilesAndComputeModes.py stateFilename tol modesFilename addRigidBodyModesBOOL
-
+import os
 import math
 import numpy as np
+import platform
 
 from sys import argv
 
+slash = '/'
+if "Windows" in platform.platform():
+    slash = "\\"
 
 def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBodyModes=None, verbose=False ):
 
@@ -86,8 +90,8 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
         sSquare = [i**2 for i in s]
         sumSVD = np.sum(sSquare)
 
-        outputDir = '/'.join(stateFilePath.split('/')[:-1])+'/'
-        # print outputDir
+        stateFilePath = os.path.normpath(stateFilePath)
+        outputDir = slash.join(stateFilePath.split(slash)[:-1])+slash
         np.savetxt(outputDir+"Sdata.txt",s)
 
         i = 0

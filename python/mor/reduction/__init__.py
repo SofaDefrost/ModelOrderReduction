@@ -8,9 +8,9 @@
     :toctree: _autosummary
 
     mor.reduction.reduceModel
+    mor.reduction.container
     mor.reduction.script
 
 """
-__all__=["reduceModel,script"]
+__all__=["reduceModel","script","container"]
 from reduceModel import ReduceModel
-from reduceModel import ObjToAnimate

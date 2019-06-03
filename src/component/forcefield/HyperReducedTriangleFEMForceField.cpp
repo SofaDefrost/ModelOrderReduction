@@ -37,20 +37,10 @@ using namespace sofa::defaulttype;
 
 // Register in the Factory
 int HyperReducedTriangleFEMForceFieldClass = core::RegisterObject("Triangular finite elements")
-#ifndef SOFA_FLOAT
-        .add< HyperReducedTriangleFEMForceField<Vec3dTypes> >()
-#endif
-#ifndef SOFA_DOUBLE
-        .add< HyperReducedTriangleFEMForceField<Vec3fTypes> >()
-#endif
+        .add< HyperReducedTriangleFEMForceField<Vec3Types> >()
         ;
 
-#ifndef SOFA_FLOAT
-template class SOFA_MISC_FEM_API HyperReducedTriangleFEMForceField<Vec3dTypes>;
-#endif
-#ifndef SOFA_DOUBLE
-template class SOFA_MISC_FEM_API HyperReducedTriangleFEMForceField<Vec3fTypes>;
-#endif
+template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<Vec3Types>;
 
 } // namespace forcefield
 

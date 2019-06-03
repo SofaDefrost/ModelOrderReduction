@@ -34,7 +34,7 @@ sys.path.append(os.getcwd()+'/../python')
 # MOR IMPORT
 from mor.gui import utility
 from mor.reduction import ReduceModel
-from mor.reduction import ObjToAnimate
+from mor.reduction.container import ObjToAnimate
 ```
 
 ### 1.  Paths to the SOFA scene, mesh and outputs: <a name="Important Path"></a> 
@@ -226,7 +226,7 @@ We launch again a set of sofa scene with the sofa launcher with the same previou
 
 This scene take the previous one and add the model order reduction component:
 - HyperReducedFEMForceField
-- MappedMatrixForceFieldAndMass
+- MechanicalMatrixMapperMOR
 - ModelOrderReductionMapping and produce an Hyper Reduced description of the model
 
 

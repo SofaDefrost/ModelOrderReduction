@@ -23,6 +23,11 @@
 
 import os
 import sys
+import platform
+
+slash = '/'
+if "Windows" in platform.platform():
+    slash ='\\'
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 
@@ -53,13 +58,60 @@ def writeHeader(packageName,nbrOfModes):
                 logFile.write(myHeader)
                 logFile.close()
 
-            myfile.close()
-
         # print(myHeader)
 
     except:
         print "Unexpected error:", sys.exc_info()[0]
+        raise
+
+
+def writeFooter(packageName,nodeName,listplugin,dt,gravity):
+    """
+    **Write a templated Footer to a file**
+    
+    This footer will finalize the component created 
+    by :py:func:`.writeHeader` & :py:func:`.writeGraphScene` allowing the user to test it rapidly
+    while keeping its original root configuration (listplugin/dt/gravity) 
+
+    **Args:**
+
+    +----------------+------+---------------------------------------------------------------+
+    | argument       | type | definition                                                    |
+    +================+======+===============================================================+
+    | packageName    | str  || Name of the file were we will write (without any extension)  |
+    |                |      ||that will also be the name for the new component              |
+    +----------------+------+---------------------------------------------------------------+
+    | nodeName       | str  | Name of the Sofa.Node we reduce                               |
+    +----------------+------+---------------------------------------------------------------+
+    | listplugin     | str  | Initial scene plugin list                                     |
+    +----------------+------+---------------------------------------------------------------+
+    | dt             | str  | Initial scene plugin dt                                       |
+    +----------------+------+---------------------------------------------------------------+
+    | gravity        | str  | Initial scene plugin gravity                                  |
+    +----------------+------+---------------------------------------------------------------+
+
+    """
+    print(packageName,packageName[0].upper()+packageName[1:])
+    try:
+        with open(path+'myFooter.txt', "r") as myfile:
+            myFooter = myfile.read()
+
+            myFooter = myFooter.replace('myReducedModel',nodeName)
+            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
+            myFooter = myFooter.replace('PLUGIN',str(listplugin))
+            myFooter = myFooter.replace('GRAVITY',str(gravity))
+            myFooter = myFooter.replace('DT',str(dt))
+
+
+            with open(packageName+'.py', "a") as logFile:
+                logFile.write(myFooter)
+
+            # print(myFooter)
+
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
         raise   
+
 
 def writeGraphScene(packageName,nodeName,myMORModel,myModel):
     """
@@ -100,8 +152,9 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
     +-------------+-------------+-------------------------------------------------------------+
 
     """
+    print(myModel)
     try:
-
+        filesName = []
         with open(packageName+'.py', "a+") as logFile:
 
             logFile.write("    "+nodeName+'_MOR'+" = modelRoot.createChild('"+nodeName+'_MOR'+"')\n")
@@ -174,9 +227,17 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                     # print(type+' : '+str(arg)+'\n')
                     if arg :
                         # print(type+' : '+str(arg)+'\n')
-                        tmpList = ['MeshGmshLoader','MeshVTKLoader','MeshSTLLoader']
+                        tmpList = ['MeshGmshLoader','MeshVTKLoader','MeshSTLLoader','MeshObjLoader']
                         if type in tmpList:
-                            arg['filename'] = '/mesh/'+arg['filename'].split('/')[-1]
+                            print(arg['filename'])
+                            if arg['filename'] not in filesName:
+                                filesName.append(arg['filename'])
+
+                            filename = os.path.normpath(arg['filename'])
+                            filename = filename.split(slash)[-1]
+
+                            arg['filename'] = slash+'mesh'+slash+filename
+
                             if 'translation' not in arg:
                                 arg['translation'] = [0.0,0.0,0.0]
                             if 'rotation' not in arg:
@@ -194,19 +255,26 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                                 modelScale = arg['scale3d']
                             # print(myArgs)
                         elif type == 'BoxROI' and not 'orientedBox' in arg: # orientedBoxes aren't handled yet 
-                            tmp = [float(x) for x in arg['box'].split(' ')]
                             # myArgs = ", name= '"+arg['name']+"' , box=np.add(translation,rotate(rotation,"+str(tmp)+") )"
                             if "box" in arg:
+                                if isinstance(arg['box'], str):
+                                    tmp = [float(x) for x in arg['box'].split(' ')]
+                                else:
+                                    tmp = arg['box']
                                 newPoints = []
                                 # print('BOX : '+str(tmp))
                                 for i in range(len(tmp)/3):
                                     newPoints.append([tmp[i*3],tmp[i*3+1],tmp[i*3+2]])
                                 depth = abs(newPoints[0][2] - newPoints[1][2])
-                                tr = (newPoints[0][2] + newPoints[1][2])/2
-                                newPoints[1][2] = newPoints[0][2] = 0
-                                newPoints.append([newPoints[1][0],0,0])
-                                newPoints[2] , newPoints[1] = newPoints[1] , newPoints[2]
-                                myArgs= ", name= '"+arg['name']+"' , orientedBox= newBox("+str(newPoints)+" , "+str(modelTranslation)+",translation,rotation,"+str([0,0,tr])+",scale) + multiply(scale[2],"+str([depth])+").tolist(),drawBoxes=True"
+                                tr = depth/2.0
+                                pointMin = newPoints[0]
+                                pointMax = newPoints[1]
+                                p1 = [pointMin[0],pointMax[1],pointMin[2]]
+                                p2 = [pointMin[0],pointMin[1],pointMin[2]]
+                                p3 = [pointMax[0],pointMin[1],pointMin[2]]
+                                points = [p1,p2,p3]
+                                # newPoints[2] , newPoints[1] = newPoints[1] , newPoints[2]
+                                myArgs= ", name= '"+arg['name']+"' , orientedBox= newBox("+str(points)+" , "+str(modelTranslation)+",translation,rotation,"+str([0,0,tr])+",scale) + multiply(scale[2],"+str([depth])+").tolist(),drawBoxes=True"
                             # elif "orientedBox" in arg :      
                             #     myArgs= ", orientedBox= add("+str(translation)+" , PositionsTRS(subtract("+str(arg['orientedBox'])+" , "+str(translation)+"),translation,rotation))"
                             else:
@@ -226,73 +294,16 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                     
                     logFile.write(myArgs)
 
+        with open('meshFiles.txt', "a") as logFile:
+            for mesh in filesName:
+                logFile.write(mesh+'\n')
 
-        logFile.close()
         return (modelRotation,modelTranslation,modelScale)
 
     except:
         print "Unexpected error:", sys.exc_info()[0]
         raise
 
-def writeFooter(packageName,nodeName,modelTransform,listplugin,dt,gravity):
-    """
-    **Write a templated Footer to a file**
-    
-    This footer will finalize the component created 
-    by :py:func:`.writeHeader` & :py:func:`.writeGraphScene` allowing the user to test it rapidly
-    while keeping its original root configuration (listplugin/dt/gravity) 
-
-    **Args:**
-
-    +----------------+------+---------------------------------------------------------------+
-    | argument       | type | definition                                                    |
-    +================+======+===============================================================+
-    | packageName    | str  || Name of the file were we will write (without any extension)  |
-    |                |      ||that will also be the name for the new component              |
-    +----------------+------+---------------------------------------------------------------+
-    | nodeName       | str  | Name of the Sofa.Node we reduce                               |
-    +----------------+------+---------------------------------------------------------------+
-    | modelTransform | str  | Initial transformation of the model                           |
-    +----------------+------+---------------------------------------------------------------+
-    | listplugin     | str  | Initial scene plugin list                                     |
-    +----------------+------+---------------------------------------------------------------+
-    | dt             | str  | Initial scene plugin dt                                       |
-    +----------------+------+---------------------------------------------------------------+
-    | gravity        | str  | Initial scene plugin gravity                                  |
-    +----------------+------+---------------------------------------------------------------+
-
-    """
-    print(packageName,packageName[0].upper()+packageName[1:])
-    try:
-        print('modelTransform : '+str(modelTransform))
-        with open(path+'myFooter.txt', "r") as myfile:
-            myFooter = myfile.read()
-
-            myFooter = myFooter.replace('myReducedModel',nodeName)
-            myFooter = myFooter.replace('MyReducedModel',packageName[0].upper()+packageName[1:])
-            myFooter = myFooter.replace('PLUGIN',str(listplugin))
-            myFooter = myFooter.replace('GRAVITY',str(gravity))
-            myFooter = myFooter.replace('DT',str(dt))
-
-            if modelTransform:
-                myFooter = myFooter.replace('arg1',str(modelTransform[0]))
-                myFooter = myFooter.replace('arg2',str(modelTransform[1]))
-                myFooter = myFooter.replace('arg3',str(modelTransform[2]))
-            else:
-                myFooter = myFooter.replace('arg1',str([0,0,0]))
-                myFooter = myFooter.replace('arg2',str([0,0,0]))
-                myFooter = myFooter.replace('arg3',str([1,1,1]))
-
-            with open(packageName+'.py', "a") as logFile:
-                logFile.write(myFooter)
-                logFile.close()
-
-            myfile.close()
-            # print(myFooter)
-
-    except:
-        print "Unexpected error:", sys.exc_info()[0]
-        raise   
 
 def buildArgStr(arg,translation=None):
     """
@@ -345,7 +356,8 @@ def buildArgStr(arg,translation=None):
                     myArgs += ", "+key+" = "+str(val)
 
         elif key.find('Path') != -1 or key.find('filename') != -1:
-            myArgs += ", "+key+" = path + '"+str(val)+"'"
+            # add 'r' before val to avoid special char due to windows path
+            myArgs += ", "+key+" = path + r'"+str(val)+"'"
 
         else :
             if key == "nbModes":

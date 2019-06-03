@@ -74,7 +74,7 @@ def createScene(rootNode):
                 ##########################################
                 model = reducedModel.createChild('model')
                 model.createObject('MeshVTKLoader', name='loader', filename=pathMesh+'full_quadriped_fine.vtk')
-                model.createObject('Mesh',src = '@loader')
+                model.createObject('TetrahedronSetTopologyContainer',src = '@loader')
                 model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0',printLog="0")
                 model.createObject('ModelOrderReductionMapping', input='@../alpha', output='@./tetras',modesPath=modesRobot, printLog='0', mapMatrices = '0')
                 model.createObject('UniformMass',name='quadrupedMass', totalMass='0.035', printLog='0')

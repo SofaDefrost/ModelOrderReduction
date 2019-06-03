@@ -2,6 +2,7 @@
 import os
 import sys
 import imp
+import platform
 
 #   STLIB IMPORT
 try:
@@ -15,22 +16,25 @@ from mor.utility import sceneCreation as u
 from mor.utility import writeScene
 from mor.wrapper import replaceAndSave
 
+slash = '/'
+if "Windows" in platform.platform():
+    slash = "\\"
+
 # Our Original Scene IMPORT
-originalScene = '$ORIGINALSCENE'
-originalScene = imp.load_source(originalScene.split('/')[-1], originalScene)
+originalScene = r'$ORIGINALSCENE'
+originalScene = os.path.normpath(originalScene)
+originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
 
 # Scene parameters
 nbrOfModes = $NBROFMODES
 paramWrapper = $PARAMWRAPPER
-toKeep = $TOKEEP
 packageName = '$PACKAGENAME'
 
 # We had these differents parameters to be able to save the scene
-for item in paramWrapper:
-    path, param = item
-    param['nbrOfModes'] = $NBROFMODES
-    param['save'] = True
-    param['toKeep'] = $TOKEEP
+path, param = paramWrapper
+param['nbrOfModes'] = $NBROFMODES
+param['save'] = True
+param['animationPaths'] = $ANIMATIONPATHS
 
 def createScene(rootNode):
 
@@ -69,8 +73,8 @@ def createScene(rootNode):
         myMORModel = replaceAndSave.myMORModel
         myModel = replaceAndSave.myModel
 
-        nodeName = paramWrapper[0][0].split('/')[-1]
+        nodeName = paramWrapper[0].split('/')[-1]
 
         writeScene.writeHeader(packageName,nbrOfModes)
-        modelTransform = writeScene.writeGraphScene(packageName,nodeName,myMORModel,myModel)
-        writeScene.writeFooter(packageName,nodeName,modelTransform,pluginName,rootNode.dt,rootNode.gravity[0])
+        writeScene.writeGraphScene(packageName,nodeName,myMORModel,myModel)
+        writeScene.writeFooter(packageName,nodeName,pluginName,rootNode.dt,rootNode.gravity[0])

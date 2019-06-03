@@ -15,16 +15,22 @@
 #                                                                             #
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
+'''
+**Module describing the visual of MOR GUI**
+'''
+
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QLineEdit
+from PyQt4.QtCore import QObject
+
 import os
 import sys
 
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
-pathToIcon = path+'/../python/mor/gui/icons/'
-sys.path.append(path+'/../python') # TO CHANGE
+pathToIcon = path+'/icons/'
 
-from mor.gui import FrameLayout
+from widget import FrameLayout
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -44,17 +50,15 @@ color_frame = '#fff79a'
 color_mainWindow = '#f2f1f0'
 color_grpBox = '#f2f1f0'
 
-def setBackground(obj,color):
-    obj.setStyleSheet("background-color: "+color+";")
 
-class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
+class LineEdit(QLineEdit):
     clicked = QtCore.pyqtSignal() # signal when the text entry is left clicked
     focused = QtCore.pyqtSignal() # signal when the text entry is focused
     leftArrowBtnClicked = QtCore.pyqtSignal(bool)
 
     def __init__(self, value):
 
-        super(MyLineEdit, self).__init__(value)
+        super(LineEdit, self).__init__(value)
 
         self.leftArrowBtn = QtGui.QToolButton(self)
         self.leftArrowBtn.setIcon(QtGui.QIcon(pathToIcon+'leftArrow.png'))
@@ -75,7 +79,7 @@ class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
         else: super().mousePressEvent(event)
 
     def focusInEvent(self,event):
-        super(MyLineEdit, self).focusInEvent(event)
+        super(LineEdit, self).focusInEvent(event)
         self.focused.emit()
 
     def resizeEvent(self, event):
@@ -84,7 +88,7 @@ class MyLineEdit(QtGui.QLineEdit,QtCore.QObject):
         self.leftArrowBtn.move(self.rect().right() - frameWidth - buttonSize.width() + 5,
                          (self.rect().bottom() - buttonSize.height() + 10 )/2)
 
-        super(MyLineEdit, self).resizeEvent(event)
+        super(LineEdit, self).resizeEvent(event)
 
 class Ui_MainWindow(object):
 
@@ -94,7 +98,7 @@ class Ui_MainWindow(object):
         self.MainWindow = MainWindow
         self.MainWindow.setObjectName(_fromUtf8("MainWindow"))
         self.MainWindow.setMinimumSize(600, 320) #290)
-        self.MainWindow.setMaximumSize(800, 320)
+        self.MainWindow.setMaximumSize(800, 600+65)
         self.MainWindow.layout().setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
         # self.MainWindow.setStyleSheet("margin: 0px; border: 2px solid green;") # padding: 20px;") # background-color:grey;
 
@@ -106,7 +110,7 @@ class Ui_MainWindow(object):
         self.scrollArea = QtGui.QScrollArea(self.centralwidget)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
 
-        self.scrollArea.setStyleSheet('QWidget#scrollArea {border: 0px;}')
+        self.scrollArea.setStyleSheet('QWidget#scrollArea {border: 0px;} QToolTip{background-color: white;color: black;border: black solid 2px} ')
         # self.scrollArea.setStyleSheet("border: 0px;") # padding: 20px;") # background-color:grey;
         self.scrollArea.setWidget(QtGui.QWidget(self.centralwidget))
         self.scrollArea.setWidgetResizable(True)
@@ -207,7 +211,7 @@ class Ui_MainWindow(object):
         self.layout_execution = FrameLayout(self.centralwidget,title="Execution")
         self.layout_execution.setObjectName('Execution')
 
-        self.groupBoxExecution(fontTitle,fontLineEdit)
+        self.groupBoxExecution(fontTitle,fontLineEdit,fontButton)
 
         self.layout_execution.addWidget(self.grpBox_Execution)
         self.scrollArea_layout.addWidget(self.layout_execution) #, 0, QtCore.Qt.AlignTop)
@@ -269,8 +273,14 @@ class Ui_MainWindow(object):
         self.actionSave = QtGui.QAction(self.MainWindow)
         self.actionSave.setObjectName(_fromUtf8("actionSave"))
 
-        self.actionAbout_ModelOrderReduction = QtGui.QAction(self.MainWindow)
-        self.actionAbout_ModelOrderReduction.setObjectName(_fromUtf8("actionAbout_ModelOrderReduction"))
+        self.actionWebsite = QtGui.QAction(self.MainWindow)
+        self.actionWebsite.setObjectName(_fromUtf8("actionWebsite"))
+
+        self.actionGithub = QtGui.QAction(self.MainWindow)
+        self.actionGithub.setObjectName(_fromUtf8("actionGithub"))
+
+        self.actionDoc = QtGui.QAction(self.MainWindow)
+        self.actionDoc.setObjectName(_fromUtf8("actionDoc"))
 
         self.actionSave_as = QtGui.QAction(self.MainWindow)
         self.actionSave_as.setObjectName(_fromUtf8("actionSave_as"))
@@ -294,7 +304,10 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionSave_as)
         self.menuFile.addAction(self.actionReset)
 
-        self.menuHelp.addAction(self.actionAbout_ModelOrderReduction)
+        self.menuHelp.addAction(self.actionDoc)
+        self.menuHelp.addAction(self.actionWebsite)
+        self.menuHelp.addAction(self.actionGithub)
+
 
         self.menuSettings.addAction(self.actionPreferences)
 
@@ -313,9 +326,6 @@ class Ui_MainWindow(object):
         self.setPlaceHolder()
 
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
-
-        self.setMaximumSize(800,600+65)
-        self.setMinimumSize(600, 320) #290)
 
     def groupBoxScene(self,fontTitle,fontLabel,fontLineEdit,fontButton):
 
@@ -344,18 +354,8 @@ class Ui_MainWindow(object):
         self.btn_scene.setFont(fontButton)
         self.btn_scene.setObjectName(_fromUtf8("btn_scene"))
 
-        self.btn_mesh = QtGui.QPushButton(self.grpBox_Path)
-        self.btn_mesh.setFixedWidth(buttonWidth)
-        self.btn_mesh.setFont(fontButton)
-        self.btn_mesh.setObjectName(_fromUtf8("btn_mesh"))
-
         # LineEdit
         readOnly = True
-
-        self.lineEdit_mesh = QtGui.QTextEdit(self.grpBox_Path)
-        self.lineEdit_mesh.setFont(fontLineEdit)
-        self.lineEdit_mesh.setReadOnly(readOnly)
-        self.lineEdit_mesh.setObjectName(_fromUtf8("lineEdit_mesh"))
 
         self.lineEdit_output = QtGui.QLineEdit(self.grpBox_Path)
         self.lineEdit_output.setFont(fontLineEdit)
@@ -370,10 +370,6 @@ class Ui_MainWindow(object):
 
 
         # Label
-        self.label_mesh = QtGui.QLabel(self.grpBox_Path)
-        self.label_mesh.setFont(fontLabel)
-        self.label_mesh.setObjectName(_fromUtf8("label_mesh"))
-
         self.label_output = QtGui.QLabel(self.grpBox_Path)
         self.label_output.setFont(fontLabel)
         self.label_output.setObjectName(_fromUtf8("label_output"))
@@ -389,10 +385,6 @@ class Ui_MainWindow(object):
         self.gridLayout_Path.addWidget(self.label_scene, 0, 0, 1, 1)
         self.gridLayout_Path.addWidget(self.lineEdit_scene, 0, 1, 1, 1)
         self.gridLayout_Path.addWidget(self.btn_scene, 0, 2, 1, 1)
-
-        self.gridLayout_Path.addWidget(self.label_mesh, 1, 0, 1, 1)
-        self.gridLayout_Path.addWidget(self.lineEdit_mesh, 1, 1, 1, 1)
-        self.gridLayout_Path.addWidget(self.btn_mesh, 1, 2, 1, 1)
 
         self.gridLayout_Path.addWidget(self.label_output, 2, 0, 1, 1)
         self.gridLayout_Path.addWidget(self.lineEdit_output, 2, 1, 1, 1)
@@ -427,7 +419,7 @@ class Ui_MainWindow(object):
         self.lineEdit_moduleName.setPlaceholderText(_fromUtf8(""))
         self.lineEdit_moduleName.setObjectName(_fromUtf8("lineEdit_moduleName"))
 
-        self.lineEdit_NodeToReduce = MyLineEdit(self.grpBox_ReductionParam)
+        self.lineEdit_NodeToReduce = LineEdit(self.grpBox_ReductionParam)
         self.lineEdit_NodeToReduce.setFont(fontLineEdit)
         self.lineEdit_NodeToReduce.setObjectName(_fromUtf8("lineEdit_NodeToReduce"))
 
@@ -481,10 +473,6 @@ class Ui_MainWindow(object):
 
         # LineEdit
 
-        self.lineEdit_toKeep = QtGui.QLineEdit(self.grpBox_AdvancedParam)
-        self.lineEdit_toKeep.setFont(fontLineEdit)
-        self.lineEdit_toKeep.setObjectName(_fromUtf8("lineEdit_toKeep"))
-
         self.lineEdit_tolModes = QtGui.QLineEdit(self.grpBox_AdvancedParam)
         self.lineEdit_tolModes.setFont(fontLineEdit)
         self.lineEdit_tolModes.setText(_fromUtf8(""))
@@ -501,10 +489,6 @@ class Ui_MainWindow(object):
         self.label_addToLib.setFont(fontLabel)
         self.label_addToLib.setObjectName(_fromUtf8("label_addToLib"))
 
-        self.label_toKeep = QtGui.QLabel(self.grpBox_AdvancedParam)
-        self.label_toKeep.setFont(fontLabel)
-        self.label_toKeep.setObjectName(_fromUtf8("label_toKeep"))
-
         self.label_tolModes = QtGui.QLabel(self.grpBox_AdvancedParam)
         self.label_tolModes.setFont(fontLabel)
         self.label_tolModes.setObjectName(_fromUtf8("label_tolModes"))
@@ -517,12 +501,10 @@ class Ui_MainWindow(object):
 
         # Add Contents to Layout
         self.formLayout_AdvancedParam.setWidget(0, QtGui.QFormLayout.LabelRole, self.label_addToLib)
-        self.formLayout_AdvancedParam.setWidget(1, QtGui.QFormLayout.LabelRole, self.label_toKeep)
         self.formLayout_AdvancedParam.setWidget(2, QtGui.QFormLayout.LabelRole, self.label_tolModes)
         self.formLayout_AdvancedParam.setWidget(3, QtGui.QFormLayout.LabelRole, self.label_tolGIE)
 
         self.formLayout_AdvancedParam.setWidget(0, QtGui.QFormLayout.FieldRole, self.checkBox_addToLib)
-        self.formLayout_AdvancedParam.setWidget(1, QtGui.QFormLayout.FieldRole, self.lineEdit_toKeep)
         self.formLayout_AdvancedParam.setWidget(2, QtGui.QFormLayout.FieldRole, self.lineEdit_tolModes)
         self.formLayout_AdvancedParam.setWidget(3, QtGui.QFormLayout.FieldRole, self.lineEdit_tolGIE)
 
@@ -553,12 +535,12 @@ class Ui_MainWindow(object):
         self.tableWidget_animationParam.setRowCount(0)
 
         item = QtGui.QTableWidgetItem()
-        item.setText(_translate("MainWindow", "parameters", None))
+        item.setText(_translate("MainWindow", "animation function", None))
         self.tableWidget_animationParam.setHorizontalHeaderItem(0, item)
         self.tableWidget_animationParam.setColumnWidth(1, 80)
 
         item = QtGui.QTableWidgetItem()
-        item.setText(_translate("MainWindow", "animation function", None))
+        item.setText(_translate("MainWindow", "parameters", None))
         self.tableWidget_animationParam.setHorizontalHeaderItem(1, item)
         self.tableWidget_animationParam.setColumnWidth(2, 90)
 
@@ -593,7 +575,29 @@ class Ui_MainWindow(object):
         self.verticalLayout_1.addWidget(self.tableWidget_animationParam)
         self.verticalLayout_1.addLayout(self.layout_addRemoveRow)
 
-    def groupBoxExecution(self,fontTitle,fontLineEdit):
+    def groupBoxExecution(self,fontTitle,fontLineEdit,fontButton):
+
+        # Phase Description
+
+        phase1Info = (  "Snapshot Database Computation\n\n"
+                        "We modify the original scene to do the first step of MOR :\n"
+                        "     - We add animation to each actuators we want for our model\n"
+                        "     - And add a writeState componant to save the shaking resulting states")
+
+        phase2Info = (  "Computation of the reduced basis with SVD decomposition\n\n"
+                        "With the previous result we combine all the generated state files into one to be able to extract from it the different mode")
+
+        phase3Info = (  "Reduced Snapshot Computation to store projected FEM internal forces contributions\n\n"
+                        "We launch again a set of sofa scene with the sofa launcher with the same previous arguments but with a different scene\n"
+                        "This scene take the previous one and add the model order reduction component:\n"
+                        "    - HyperReducedFEMForceField\n"
+                        "    - MechanicalMatrixMapperMOR\n"
+                        "    - ModelOrderReductionMapping and produce an Hyper Reduced description of the model")
+
+        phase4Info = (  "Computation of the reduced integration domain in terms of elements and nodes\n\n"
+                        "Final step :\n"
+                        "   - We gather again all the results of the previous scenes into one and then compute the RID and Weigts with it.\n"
+                        "   - Additionnally we also compute the Active Nodes\n")
 
         # Container
         self.grpBox_Execution = QtGui.QGroupBox(self.layout_execution)
@@ -609,42 +613,59 @@ class Ui_MainWindow(object):
 
         # Frame Layout
 
-        self.phase1 = FrameLayout(self.grpBox_Execution,title="Phase 1")
+        self.phase1 = FrameLayout(self.grpBox_Execution,title="Phase 1: Snapshot Database Computation")
         self.phase1.setObjectName('Phase 1')
 
-        self.phase2 = FrameLayout(self.grpBox_Execution,title="Phase 2")
+        self.phase2 = FrameLayout(self.grpBox_Execution,title="Phase 2: Computation of the reduced basis")
         self.phase2.setObjectName('Phase 2')
 
-        self.phase3 = FrameLayout(self.grpBox_Execution,title="Phase 3")
+        self.phase3 = FrameLayout(self.grpBox_Execution,title="Phase 3: Reduced Snapshot Computation")
         self.phase3.setObjectName('Phase 3')
 
-        self.phase4 = FrameLayout(self.grpBox_Execution,title="Phase 4")
+        self.phase4 = FrameLayout(self.grpBox_Execution,title="Phase 4: Computation of the reduced integration domain")
         self.phase4.setObjectName('Phase 4')
 
         # TextBrowser
 
         textBrowser = QtGui.QTextBrowser(self.phase1)
         textBrowser.setFont(fontLineEdit)
-        textBrowser.setText("Phase 1 Description")
+        textBrowser.setText(phase1Info)
         self.phase1.addWidget(textBrowser)
 
         textBrowser = QtGui.QTextBrowser()
         textBrowser = QtGui.QTextBrowser(self.phase2)
         textBrowser.setFont(fontLineEdit)
-        textBrowser.setText("Phase 2 Description")
+        textBrowser.setText(phase2Info)
         self.phase2.addWidget(textBrowser)
 
         textBrowser = QtGui.QTextBrowser()
         textBrowser = QtGui.QTextBrowser(self.phase3)
         textBrowser.setFont(fontLineEdit)
-        textBrowser.setText("Phase 3 Description")
+        textBrowser.setText(phase3Info)
         self.phase3.addWidget(textBrowser)
 
         textBrowser = QtGui.QTextBrowser()
         textBrowser = QtGui.QTextBrowser(self.phase4)
         textBrowser.setFont(fontLineEdit)
-        textBrowser.setText("Phase 4 Description")
+        textBrowser.setText(phase4Info)
         self.phase4.addWidget(textBrowser)
+
+        # Button
+
+        self.btn_debug1 = QtGui.QPushButton(self.phase1)
+        self.btn_debug1.setFont(fontButton)
+        self.btn_debug1.setObjectName(_fromUtf8("btn_debug1"))
+        self.phase1.addWidget(self.btn_debug1)
+
+        self.btn_debug2 = QtGui.QPushButton(self.phase3)
+        self.btn_debug2.setFont(fontButton)
+        self.btn_debug2.setObjectName(_fromUtf8("btn_debug2"))
+        self.phase3.addWidget(self.btn_debug2)
+
+        self.btn_results = QtGui.QPushButton(self.phase4)
+        self.btn_results.setFont(fontButton)
+        self.btn_results.setObjectName(_fromUtf8("btn_results"))
+        self.phase4.addWidget(self.btn_results)
 
         ################################
 
@@ -663,11 +684,9 @@ class Ui_MainWindow(object):
         self.grpBox_Path.setTitle(_translate("MainWindow", "", None))
 
         self.label_scene.setText(_translate("MainWindow", "Scene", None))
-        self.label_mesh.setText(_translate("MainWindow", "mesh", None))
         self.label_output.setText(_translate("MainWindow", "Output", None))
 
         self.btn_scene.setText(_translate("MainWindow", "...", None))
-        self.btn_mesh.setText(_translate("MainWindow", "...", None))
         self.btn_output.setText(_translate("MainWindow", "...", None))
 
         ##########################      GROUPBOX REDUCTION PARAM     #########################
@@ -684,7 +703,6 @@ class Ui_MainWindow(object):
 
         self.label_addToLib.setText(_translate("MainWindow", "Add to lib", None))
         self.label_tolModes.setText(_translate("MainWindow", "Tolerance Modes", None))
-        self.label_toKeep.setText(_translate("MainWindow", "To keep", None))
         self.label_tolGIE.setText(_translate("MainWindow", "Tolerance GIE", None))
 
         ##########################      GROUPBOX ANIAMATION PARAM     ########################
@@ -698,6 +716,9 @@ class Ui_MainWindow(object):
 
         ##########################      GROUPBOX EXECUTION     ###############################
 
+        self.btn_debug1.setText(_translate("MainWindow", "launch debug phase", None))
+        self.btn_debug2.setText(_translate("MainWindow", "launch debug phase", None))
+        self.btn_results.setText(_translate("MainWindow", "launch result", None))
 
         ##########################      LAUNCH REDUCTION     #################################
 
@@ -713,7 +734,9 @@ class Ui_MainWindow(object):
         self.actionOpen.setShortcut(_translate("MainWindow", "Ctrl+O", None))
         self.actionSave.setText(_translate("MainWindow", "Save", None))
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S", None))
-        self.actionAbout_ModelOrderReduction.setText(_translate("MainWindow", "About ModelOrderReduction", None))
+        self.actionDoc.setText(_translate("MainWindow", "link to doc", None))
+        self.actionWebsite.setText(_translate("MainWindow", "link to website", None))
+        self.actionGithub.setText(_translate("MainWindow", "link to github", None))
         self.actionSave_as.setText(_translate("MainWindow", "Save as...", None))
         self.actionReset.setText(_translate("MainWindow", "Reset", None))
         self.actionReset.setShortcut(_translate("MainWindow", "Ctrl+R", None))
@@ -724,26 +747,41 @@ class Ui_MainWindow(object):
     def setPlaceHolder(self):
 
         ##########################      GROUPBOX PATH     ####################################
-        self.lineEdit_output.setPlaceholderText(_translate("MainWindow", "Choose in which folder all the outputs will be placed", None))
-        self.lineEdit_scene.setPlaceholderText(_translate("MainWindow", "Choose your sofa scene you want to reduce (.scn/.py/.pyscn)", None))
+        self.layout_path._title_frame.setToolTip(_translate("MainWindow", "contains all the I/O file/folder parameters", None))
 
-        # self.lineEdit_mesh.setPlaceholderText(_translate("MainWindow", "select all the meshes that your Sofa scene need, they will be copied and put in a mesh folder in the output folder", None))
+        self.lineEdit_scene.setPlaceholderText(_translate("MainWindow", "Choose your sofa scene you want to reduce (.scn/.py/.pyscn)", None))
+        self.lineEdit_output.setPlaceholderText(_translate("MainWindow", "Choose in which folder all the outputs will be placed", None))
+
+        self.label_scene.setToolTip(_translate("MainWindow", "original scene (input)", None))
+        self.label_output.setToolTip(_translate("MainWindow", "output folder", None))
 
         ##########################      GROUPBOX REDUCTION PARAM     #########################
+        self.layout_reductionParam._title_frame.setToolTip(_translate("MainWindow", "contains the main parameters to reduce our model", None))
+
+
+        self.label_moduleName.setToolTip(_translate("MainWindow", "name of the re-usable component created at the end of the reduction", None))
+        self.label_NodeToReduce.setToolTip(_translate("MainWindow", "paths in the SOFA scene toward the models to reduce", None))
+        self.label_AddTranslation.setToolTip(_translate("MainWindow", "allow translation along [x,y,z] axis of our reduced model", None))
+
         self.lineEdit_NodeToReduce.setPlaceholderText(_translate("MainWindow", "/path/ofMy/sofaNode/inMyScene", None))
 
-        self.label_NodeToReduce.setToolTip(_translate("MainWindow", "paths to models to reduce", None))
-        self.label_AddTranslation.setToolTip(_translate("MainWindow", "allow translation along [x,y,z] axis of our reduced model", None))
-        self.label_tolModes.setToolTip(_translate("MainWindow", "tolerance applied to choose the modes", None))
-        self.label_tolGIE.setToolTip(_translate("MainWindow", "tolerance applied to calculated GIE", None))
-
         ##########################      GROUPBOX ADVANCED PARAM     ##########################
+        self.layout_advancedParam._title_frame.setToolTip(_translate("MainWindow", "contains more advanced parameters,\nusually put to their default value", None))
 
+
+        self.label_addToLib.setToolTip(_translate("MainWindow", "Add to the library ModelOrderReduction/python/morlib\nyour reduce model in order to re-use it easily in other scene", None))
+
+        self.label_tolModes.setToolTip(_translate("MainWindow", "Defines the level of accuracy we want to select the reduced basis modes,\nhight/low tolerance wil select many/few modes", None))
+        self.label_tolGIE.setToolTip(_translate("MainWindow", "tolerance used in the greedy algorithm selecting the reduced integration domain(RID).\nValues are between 0 and 0.1 .\nHigh values will lead to RIDs with very few elements, while values approaching 0 will lead to large RIDs.  Typically set to 0.05", None))
 
         ##########################      GROUPBOX ANIAMATION PARAM     ########################
-
+        self.layout_aniamationParam._title_frame.setToolTip(_translate("MainWindow", "contains the parameters allowing to define our model animation", None))
+        self.tableWidget_animationParam.horizontalHeaderItem(0).setToolTip(_translate("MainWindow", "Select with which animation fct to work", None))
+        self.tableWidget_animationParam.horizontalHeaderItem(1).setToolTip(_translate("MainWindow", "Parameters for the animation function", None))
+        self.tableWidget_animationParam.horizontalHeaderItem(2).setToolTip(_translate("MainWindow", "Path in the SOFA scene toward the SOFA.node/obj you want to aply the animation fct on", None))
 
         ##########################      GROUPBOX EXECUTION     ###############################
+        self.layout_execution._title_frame.setToolTip(_translate("MainWindow", "contains the different execution you can perform", None))
 
 
         ##########################      LAUNCH REDUCTION     #################################

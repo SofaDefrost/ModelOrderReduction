@@ -37,26 +37,10 @@ SOFA_DECL_CLASS(ModelOrderReductionMapping)
 
 // Register in the Factory
 static int ModelOrderReductionMappingClass = core::RegisterObject("Reduced model")
-#ifdef SOFA_WITH_DOUBLE
-        .add< ModelOrderReductionMapping< Vec1dTypes, Vec3dTypes > >(true)
-#endif
+        .add< ModelOrderReductionMapping< Vec1Types, Vec3Types > >(true)
+        ;
 
-#ifdef SOFA_WITH_FLOAT
-        .add< ModelOrderReductionMapping< Vec1fTypes, Vec3fTypes > >()
-#endif
-
-;
-
-
-
-#ifdef SOFA_WITH_DOUBLE
-template class SOFA_BASE_MECHANICS_API ModelOrderReductionMapping< Vec1dTypes, Vec3dTypes >;
-#endif
-
-#ifdef SOFA_WITH_FLOAT
-template class SOFA_BASE_MECHANICS_API ModelOrderReductionMapping< Vec1fTypes, Vec3fTypes >;
-#endif
-
+template class SOFA_MODELORDERREDUCTION_API ModelOrderReductionMapping< Vec1Types, Vec3Types >;
 
 } // namespace mapping
 

@@ -200,7 +200,6 @@ def createScene(rootNode):
     from stlib.scene import ContactHeader
     from stlib.physics.rigid import Floor
 
-    rootNode.createObject('RequiredPlugin', pluginName='SoftRobots');
     rootNode.createObject('RequiredPlugin', pluginName='ModelOrderReduction');
     rootNode.createObject('VisualStyle', displayFlags='showVisualModels showBehaviorModels showCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe');
 

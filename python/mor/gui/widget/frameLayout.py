@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
+'''
+**Widget used to have a foldable GroupBox**
+'''
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QWidget
 
-class FrameLayout(QtGui.QWidget):
+class FrameLayout(QWidget):
+    '''
+    '''
 
     def __init__(self, parent=None, title=None):
         QtGui.QFrame.__init__(self, parent=parent)

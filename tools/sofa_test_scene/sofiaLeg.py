@@ -10,7 +10,7 @@ meshPath = path + '/mesh/'
 def TRSinOrigin(positions,modelPosition,translation,rotation,scale=[1.0,1.0,1.0]):
     posOrigin = subtract(positions , modelPosition)
     if any(isinstance(el, list) for el in positions):
-        posOriginTRS = transformPositions(posOrigin,translation,rotation,scale=scale)
+        posOriginTRS = transformPositions(posOrigin,translation,scale=scale,eulerRotation=rotation)
     else:
         posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation,scale=scale))
     return add(posOriginTRS,modelPosition).tolist()
@@ -98,17 +98,14 @@ def SofiaLeg(
 
         meshType = surfaceMeshFileName.split('.')[-1]
         if meshType == 'stl':
-            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=meshPath+surfaceMeshFileName)
+            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=meshPath+surfaceMeshFileName, rotation= rotation, translation = translation,scale3d = scale)
         elif meshType == 'obj':
-            visu.createObject(  'MeshObjLoader', name= 'loader', filename=meshPath+surfaceMeshFileName)
+            visu.createObject(  'MeshObjLoader', name= 'loader', filename=meshPath+surfaceMeshFileName, rotation= rotation, translation = translation,scale3d = scale)
 
         visu.createObject(  'OglModel',
                             src='@loader',
                             template='ExtVec3f',
-                            color=surfaceColor,
-                            rotation= rotation,
-                            translation = translation,
-                            scale3d = scale)
+                            color=surfaceColor)
 
         visu.createObject('BarycentricMapping')
 
