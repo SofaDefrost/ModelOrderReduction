@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 
 project(ModelOrderReduction VERSION 1.0)
 
@@ -81,7 +81,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BIN
 # Config files and install rules for pythons scripts
 if(SofaPython_FOUND)
     target_link_libraries(${PROJECT_NAME} SofaPython)
-    sofa_set_python_directory(${PROJECT_NAME} "python" "python")
+    sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
 endif()
 
 # Move all resources when install: examples, doc and python files
@@ -95,14 +95,13 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools/")
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools/ DESTINATION tools/ COMPONENT resources)
 endif()
-
-# Install rules for the library and headers; CMake package configurations files
+## Install rules for the library and headers; CMake package configurations files
 sofa_generate_package(
-    NAME ${PROJECT_NAME}
-    TARGETS ${PROJECT_NAME}
+    NAME ModelOrderReduction
     VERSION ${PROJECT_VERSION}
-    INCLUDE_SOURCE_DIR "src/component"
-    INCLUDE_INSTALL_DIR "component"
+    TARGETS ${PROJECT_NAME}
+    INCLUDE_INSTALL_DIR component
+    INCLUDE_SOURCE_DIR src/component
     RELOCATABLE "plugins"
     )
 
