@@ -1,0 +1,229 @@
+# -*- coding: utf-8 -*-
+
+## Usage: python readLambdaFilesAndComputeNNMF.py stateFilename tol modesFilename addRigidBodyModesBOOL
+import os
+import math
+import numpy as np
+from scipy.linalg import solve
+import platform
+
+from sys import argv
+
+slash = '/'
+if "Windows" in platform.platform():
+    slash = "\\"
+
+def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFriction, NNMFfileName, NonZerosCoeffTable):# , verbose=False ):
+
+
+    f = open(lambdaIndicesPath,'r')
+    nbSnap = 0
+    nbLine = 0
+    snapshot = []
+    snapshotV = []
+
+    #if verbose : print "Reading file %r:" % lambdaIndicesPath
+    lambdaIndices = []
+    currentMaxIndex = 0
+    for line in f:
+        nbLine = nbLine + 1
+        lineSplit = line.split()
+        sizeLine = len(lineSplit)
+        lineInt = map(int,lineSplit)
+        if max(lineInt) > currentMaxIndex:
+            currentMaxIndex = max(lineInt)
+        lambdaIndices.append(lineInt)
+    f.close()
+    dimension = currentMaxIndex+1
+    if withFriction:
+        dimension = 3*dimension
+        
+    lambdaSnapshot = np.zeros([dimension,nbLine])
+    f = open(lambdaValsPath,'r')
+    nbCol = 0
+    print('lambdaIndices ------------: ',lambdaIndices)
+    for line in f:
+        lineSplit = line.split()
+        if withFriction:
+            sizeLine = len(lineSplit)/3
+        else:
+            sizeLine = len(lineSplit)
+        lineFloat = map(float,lineSplit)
+        print('lineFloat ------------: ',lineFloat)
+        print('sizeLine ------------: ',sizeLine)
+        for i in range(sizeLine):
+            if withFriction:
+                print('i ------------: ',i)
+                print('lambdaIndices[nbCol][3*i] ------------: ',lambdaIndices[nbCol][3*i])
+                print('lambdaSnapshot size ------------: ',lambdaSnapshot.shape)
+                lambdaSnapshot[3*lambdaIndices[nbCol][3*i],nbCol] = lineFloat[3*i]
+                lambdaSnapshot[3*lambdaIndices[nbCol][3*i]+1,nbCol] = lineFloat[3*i+1]
+                lambdaSnapshot[3*lambdaIndices[nbCol][3*i]+2,nbCol] = lineFloat[3*i+2]
+                
+            else:
+                lambdaSnapshot[lambdaIndices[nbCol][i],nbCol] = lineFloat[i]
+        nbCol = nbCol + 1
+        
+    f.close()
+    print(lambdaSnapshot)
+    lambdaSnapCleaned = lambdaSnapshot[:,sum(lambdaSnapshot) != 0]
+    print(np.sum(lambdaSnapCleaned,axis=1))
+    
+    lambdaSnapVeryCleaned = lambdaSnapCleaned[np.sum(lambdaSnapCleaned,axis=1) != 0,:]
+    print(lambdaSnapCleaned)
+    print(lambdaSnapVeryCleaned)
+    np.savetxt('lambdaSnapshot.txt', lambdaSnapVeryCleaned, fmt='%10.5f')
+    k = 5
+    sizeProblem = np.shape(lambdaSnapVeryCleaned)[0]
+    W = np.random.random((sizeProblem, k))
+    #W = lambdaSnapVeryCleaned[:,0:k]
+    normalForceIndices = range(0,sizeProblem,3)
+    for j in range(100):
+        #print(np.dot(np.transpose(W),W))
+        H = solve( np.dot(np.transpose(W),W) , np.dot(np.transpose(W),lambdaSnapVeryCleaned) )
+        #print(H)
+        negIndicesOnNormal = H<0
+        print('H ----- ',H)
+        print('negIndicesOnNormal ----- ',negIndicesOnNormal)
+        print('range(1,sizeProblem,3) ----- ',range(1,k,3))
+        if withFriction:
+            negIndicesOnNormal[range(1,k,3)] = False
+            negIndicesOnNormal[range(2,k,3)] = False
+        H[negIndicesOnNormal]=0
+        #for p in range(k):
+            #H[:,p] = H[:,p]/np.linalg.norm(H[:,p])
+
+        #print(H)
+        #print 'HHt:'
+        #print(np.dot(H,np.transpose(H)))
+        #print 'HAt'
+        #print( np.dot(H,np.transpose(lambdaSnapCleaned)))
+        W = solve( np.dot(H,np.transpose(H)) , np.dot(H,np.transpose(lambdaSnapVeryCleaned)) )
+        W = np.transpose(W)
+        negIndicesOnNormal = W<0
+        if withFriction:
+            negIndicesOnNormal[range(1,sizeProblem,3)] = False
+            negIndicesOnNormal[range(2,sizeProblem,3)] = False        
+        W[negIndicesOnNormal]=0
+        
+        #print 'Before normalisation'
+        #print(W)
+        #for p in range(k):
+            #W[:,p] = W[:,p]/np.linalg.norm(W[:,p])
+        print 'iteration', j, ' W is :'
+        print(W)
+        print(np.dot(W[:,0],W[:,1]))
+        #print(np.dot(W[:,0],W[:,2]))
+        #print(np.dot(W[:,0],W[:,3]))
+        #print(np.dot(W[:,0],W[:,4]))
+        #print(np.dot(W[:,1],W[:,2]))
+        #print(np.dot(W[:,1],W[:,3]))
+    H = solve( np.dot(np.transpose(W),W) , np.dot(np.transpose(W),lambdaSnapVeryCleaned) )
+    H[H<0]=0
+    for p in range(k):
+            W[:,p] = W[:,p]/np.linalg.norm(W[:,p])
+    print(W)
+    np.savetxt(NNMFfileName, W, header=str(sizeProblem)+' '+str(k), comments='', fmt='%10.5f')
+    contactIndices = np.array(range(dimension))
+    print(np.sum(lambdaSnapCleaned,axis=1) != 0)
+    nonZerosIndices = contactIndices[np.sum(lambdaSnapCleaned,axis=1) != 0]
+    print(contactIndices[np.sum(lambdaSnapCleaned,axis=1) != 0])
+    print(dim)
+    nonZerosTable = np.array([-1]*int(dim))
+    for i in range(nonZerosIndices.shape[0]):
+        nonZerosTable[nonZerosIndices[i]]=i
+    print(nonZerosTable)
+    np.savetxt(NonZerosCoeffTable, nonZerosTable, header=dim+' '+str(1), comments='', fmt='%d')
+        #if not x0Found and lineSplit[0] == "X0=":
+            #lineFloat = map(float,lineSplit[1:])
+            #restPos = []
+            #restPos.append(lineFloat)
+            #restPos = np.transpose(restPos)
+            #x0Found = True
+        #if (lineSplit[0] == "X="):  
+            #lineFloat = map(float,lineSplit[1:])
+            #snapshot.append(lineFloat);
+        #if (lineSplit[0] == "V="):  
+            #lineFloat = map(float,lineSplit[1:])
+            #snapshotV.append(lineFloat);
+
+    #if x0Found :
+        #snapshot = np.transpose(snapshot)
+        #if np.isnan(np.sum(np.sum(snapshot))):
+            #print "NAN PRESENT IN THE POSITIONS! THE SIMULATION WENT WRONG DURING THE SHAKING! MAKE SURE YOUR SIMULATION IS STABLE!"
+            #return -1
+
+        #nbDOFs, nbSnap = np.shape(snapshot)
+        #snapshotDiff = np.zeros((nbDOFs,nbSnap))
+        #translationModes = np.zeros((nbDOFs,3))
+
+        #if verbose : 
+            #print "    Read",nbLine,"line and found",nbSnap,"snapshot with",nbDOFs,"of DOF"
+            #print "Done reading file %r:" % stateFilePath,'\n'
+
+        #for i in range(0,nbSnap):
+            #snapshotDiff[:,i] = snapshot[:,i] - restPos[:,0]
+                      
+        #for i in range(0,nbDOFs/3):
+            #translationModes[3*i][0] = 1/math.sqrt(nbDOFs/3)
+            #translationModes[3*i+1][1] = 1/math.sqrt(nbDOFs/3)
+            #translationModes[3*i+2][2] = 1/math.sqrt(nbDOFs/3)
+        
+        #tmp = []
+        #if (addRigidBodyModes):
+            #if (addRigidBodyModes[0] == 1):
+                #for j in range(nbSnap-1):    
+                    #snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[0]]))*translationModes[:,[0]]
+                #tmp.append(0)
+            #if (addRigidBodyModes[1] == 1):
+                #for j in range(nbSnap-1):    
+                    #snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[1]]))*translationModes[:,[1]]
+                #tmp.append(1)
+            #if (addRigidBodyModes[2] == 1):
+                #for j in range(nbSnap-1):    
+                    #snapshotDiff[:,[j]] = snapshotDiff[:,[j]] - (np.matmul(np.transpose(snapshotDiff[:,[j]]),translationModes[:,[2]]))*translationModes[:,[2]]
+                #tmp.append(2)
+
+        #U, s, V = np.linalg.svd(snapshotDiff, full_matrices=False) # 99% time execution
+        #sSquare = [i**2 for i in s]
+        #sumSVD = np.sum(sSquare)
+
+        #stateFilePath = os.path.normpath(stateFilePath)
+        #outputDir = slash.join(stateFilePath.split(slash)[:-1])+slash
+        #np.savetxt(outputDir+"Sdata.txt",s)
+
+        #i = 0
+        #if verbose : 
+            #print "Determining number of Modes with a Tolerance of",tol
+
+        #while (np.sqrt(np.sum(sSquare[i:])/sumSVD) > tol or i==0):
+            #i = i+1
+
+        #nbModes = i
+        #if (addRigidBodyModes and addRigidBodyModes != [0]*3):    
+            #print "Concatenating translation modes"
+            #nbModes += 3
+            #modesTot = np.concatenate((translationModes[:,tmp], U[:,0:nbModes]), axis=1)
+            #np.savetxt(modesFileName, modesTot, header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
+        #else:
+            #np.savetxt(modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
+        #if verbose :
+            #print "===> Success readStateFilesAndComputeModes.py\n"
+
+        #f.close()
+
+        #print(str(nbModes)+" possible modes with a tolerance of "+str(tol))
+        #return nbModes
+
+    #else: 
+        #print "XO NOT FOUND"
+        #return -1
+
+##########################################################################################
+
+
+if __name__ == '__main__':  # if we're running file directly and not importing it
+    if len(argv) < 2:
+        print("Function need at least 3 arguments")
+    else:
+        readLambdaFilesAndComputeNNMF(*argv[1:])
