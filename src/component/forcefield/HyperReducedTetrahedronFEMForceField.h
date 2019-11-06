@@ -127,7 +127,7 @@ protected:
 
     using TetrahedronFEMForceField<DataTypes>::m_potentialEnergy;
 
-    using TetrahedronFEMForceField<DataTypes>::_mesh;
+    using TetrahedronFEMForceField<DataTypes>::m_topology;
     using TetrahedronFEMForceField<DataTypes>::_indexedElements;
     using TetrahedronFEMForceField<DataTypes>::needUpdateTopology;
 
@@ -189,7 +189,6 @@ public:
     using TetrahedronFEMForceField<DataTypes>::_showVonMisesStressPerNode;
 #endif
     /// Suppress field for save as function
-    using TetrahedronFEMForceField<DataTypes>::isToPrint;
     using TetrahedronFEMForceField<DataTypes>::_updateStiffness;
 
     using TetrahedronFEMForceField<DataTypes>::elemDisplacements;
