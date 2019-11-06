@@ -34,11 +34,13 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
             currentMaxIndex = max(lineInt)
         lambdaIndices.append(lineInt)
     f.close()
-    dimension = currentMaxIndex+1
+    #dimension = currentMaxIndex+1
+    dimension = int(dim)
+    withFriction = int(withFriction)
     if withFriction:
         dimension = 3*dimension
-        
     lambdaSnapshot = np.zeros([dimension,nbLine])
+    lambdaFrictionSnapshot = np.zeros([dimension,nbLine])
     f = open(lambdaValsPath,'r')
     nbCol = 0
     print('lambdaIndices ------------: ',lambdaIndices)
@@ -57,24 +59,38 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
                 print('lambdaIndices[nbCol][3*i] ------------: ',lambdaIndices[nbCol][3*i])
                 print('lambdaSnapshot size ------------: ',lambdaSnapshot.shape)
                 lambdaSnapshot[3*lambdaIndices[nbCol][3*i],nbCol] = lineFloat[3*i]
+                
                 lambdaSnapshot[3*lambdaIndices[nbCol][3*i]+1,nbCol] = lineFloat[3*i+1]
                 lambdaSnapshot[3*lambdaIndices[nbCol][3*i]+2,nbCol] = lineFloat[3*i+2]
                 
+                #lambdaFrictionSnapshot[3*lambdaIndices[nbCol][3*i]+1,nbCol] = lineFloat[3*i+1]
+                #lambdaFrictionSnapshot[3*lambdaIndices[nbCol][3*i]+2,nbCol] = lineFloat[3*i+2]
             else:
                 lambdaSnapshot[lambdaIndices[nbCol][i],nbCol] = lineFloat[i]
         nbCol = nbCol + 1
-        
+    print('nbCol: ', nbCol)
+    print('lambdaSnapshot.shape: ', lambdaSnapshot.shape)    
+    print('lambdaFrictionSnapshot.shape: ', lambdaFrictionSnapshot.shape)    
     f.close()
     print(lambdaSnapshot)
     lambdaSnapCleaned = lambdaSnapshot[:,sum(lambdaSnapshot) != 0]
+    lambdaFrictionSnapCleaned = lambdaFrictionSnapshot[:,sum(lambdaFrictionSnapshot) != 0]
+    print('lambdaSnapCleaned.shape: ', lambdaSnapCleaned.shape)    
+    print('lambdaFrictionSnapCleaned.shape: ', lambdaFrictionSnapCleaned.shape)    
+
     print(np.sum(lambdaSnapCleaned,axis=1))
     
     lambdaSnapVeryCleaned = lambdaSnapCleaned[np.sum(lambdaSnapCleaned,axis=1) != 0,:]
+    lambdaFrictionSnapVeryCleaned = lambdaFrictionSnapCleaned[np.sum(lambdaFrictionSnapCleaned,axis=1) != 0,:]
+    print('lambdaSnapVeryCleaned.shape: ', lambdaSnapVeryCleaned.shape)    
+    print('lambdaFrictionSnapVeryCleaned.shape: ', lambdaFrictionSnapVeryCleaned.shape)         
     print(lambdaSnapCleaned)
     print(lambdaSnapVeryCleaned)
     np.savetxt('lambdaSnapshot.txt', lambdaSnapVeryCleaned, fmt='%10.5f')
+    np.savetxt('lambdaFrictionSnapshot.txt', lambdaFrictionSnapVeryCleaned, fmt='%10.5f')
     k = 5
     sizeProblem = np.shape(lambdaSnapVeryCleaned)[0]
+    
     W = np.random.random((sizeProblem, k))
     #W = lambdaSnapVeryCleaned[:,0:k]
     normalForceIndices = range(0,sizeProblem,3)
@@ -83,21 +99,15 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
         H = solve( np.dot(np.transpose(W),W) , np.dot(np.transpose(W),lambdaSnapVeryCleaned) )
         #print(H)
         negIndicesOnNormal = H<0
-        print('H ----- ',H)
-        print('negIndicesOnNormal ----- ',negIndicesOnNormal)
-        print('range(1,sizeProblem,3) ----- ',range(1,k,3))
-        if withFriction:
-            negIndicesOnNormal[range(1,k,3)] = False
-            negIndicesOnNormal[range(2,k,3)] = False
+        #print('H ----- ',H)
+        #print('H shape:', H.shape)
+        #print('negIndicesOnNormal ----- ',negIndicesOnNormal)
+        #print('range(1,sizeProblem,3) ----- ',range(1,sizeProblem,3))
+        #if withFriction:
+            #negIndicesOnNormal[range(1,sizeProblem,3)] = False
+            #negIndicesOnNormal[range(2,sizeProblem,3)] = False
+            #print('negIndicesOnNormal withFriction----- ',negIndicesOnNormal)
         H[negIndicesOnNormal]=0
-        #for p in range(k):
-            #H[:,p] = H[:,p]/np.linalg.norm(H[:,p])
-
-        #print(H)
-        #print 'HHt:'
-        #print(np.dot(H,np.transpose(H)))
-        #print 'HAt'
-        #print( np.dot(H,np.transpose(lambdaSnapCleaned)))
         W = solve( np.dot(H,np.transpose(H)) , np.dot(H,np.transpose(lambdaSnapVeryCleaned)) )
         W = np.transpose(W)
         negIndicesOnNormal = W<0
@@ -105,35 +115,38 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
             negIndicesOnNormal[range(1,sizeProblem,3)] = False
             negIndicesOnNormal[range(2,sizeProblem,3)] = False        
         W[negIndicesOnNormal]=0
-        
-        #print 'Before normalisation'
-        #print(W)
-        #for p in range(k):
-            #W[:,p] = W[:,p]/np.linalg.norm(W[:,p])
-        print 'iteration', j, ' W is :'
-        print(W)
-        print(np.dot(W[:,0],W[:,1]))
-        #print(np.dot(W[:,0],W[:,2]))
-        #print(np.dot(W[:,0],W[:,3]))
-        #print(np.dot(W[:,0],W[:,4]))
-        #print(np.dot(W[:,1],W[:,2]))
-        #print(np.dot(W[:,1],W[:,3]))
+        WisZero = W==0
+        print WisZero
+        print range(0,sizeProblem,3)
+        for ii in range(0,sizeProblem,3):
+            for jj in range(k):
+                print WisZero[ii,jj]
+                if WisZero[ii,jj]:
+                    W[ii+1,jj]=0
+                    W[ii+2,jj]=0
+
+        print 'iteration', j
+        print W
     H = solve( np.dot(np.transpose(W),W) , np.dot(np.transpose(W),lambdaSnapVeryCleaned) )
     H[H<0]=0
     for p in range(k):
             W[:,p] = W[:,p]/np.linalg.norm(W[:,p])
     print(W)
+    #U, s, V = np.linalg.svd(lambdaFrictionSnapVeryCleaned, full_matrices=False)
+
     np.savetxt(NNMFfileName, W, header=str(sizeProblem)+' '+str(k), comments='', fmt='%10.5f')
     contactIndices = np.array(range(dimension))
+    print(contactIndices)
     print(np.sum(lambdaSnapCleaned,axis=1) != 0)
     nonZerosIndices = contactIndices[np.sum(lambdaSnapCleaned,axis=1) != 0]
     print(contactIndices[np.sum(lambdaSnapCleaned,axis=1) != 0])
     print(dim)
-    nonZerosTable = np.array([-1]*int(dim))
+    nonZerosTable = np.array([-1]*int(dimension))
     for i in range(nonZerosIndices.shape[0]):
+        print (nonZerosIndices[i])
         nonZerosTable[nonZerosIndices[i]]=i
     print(nonZerosTable)
-    np.savetxt(NonZerosCoeffTable, nonZerosTable, header=dim+' '+str(1), comments='', fmt='%d')
+    np.savetxt(NonZerosCoeffTable, nonZerosTable, header=dimension+' '+str(1), comments='', fmt='%d')
         #if not x0Found and lineSplit[0] == "X0=":
             #lineFloat = map(float,lineSplit[1:])
             #restPos = []

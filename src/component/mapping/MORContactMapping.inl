@@ -22,7 +22,7 @@
 #ifndef SOFA_COMPONENT_MAPPING_MORCONTACTMAPPING_INL
 #define SOFA_COMPONENT_MAPPING_MORCONTACTMAPPING_INL
 
-#include <SofaBaseMechanics/MORContactMapping.h>
+#include "MORContactMapping.h"
 #include <sofa/defaulttype/RigidTypes.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <fstream> // for reading the file
