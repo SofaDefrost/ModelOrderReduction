@@ -2,6 +2,8 @@
 import os
 import Sofa
 
+meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
+
 def createScene(rootNode):
 
     rootNode.findData('dt').value=0.02
@@ -23,9 +25,19 @@ def createScene(rootNode):
     M1.createObject('HexahedronFEMForceField', name="FEM", youngModulus="4000", poissonRatio="0.3", method="large")
     M1.createObject('GenericConstraintCorrection', solverName='preconditioner')
     
-    cableNode = M1.createChild('cableNode')
-    cableNode.createObject('MechanicalObject', name="actuatedPoints", template="Vec3d", position="-7.5 1.5 18.5")
-    cableNode.createObject('CableConstraint', name="tipCable", indices="0", pullPoint="-7.5 10 18.5", valueType="displacement")
-    cableNode.createObject('BarycentricMapping', mapForces="false", mapMasses="false")
+    cableNodeTip = M1.createChild('cableNodeTip')
+    cableNodeTip.createObject('MechanicalObject', name="actuatedTip", template="Vec3d", position="-7.5 1.5 18.5")
+    cableNodeTip.createObject('CableConstraint', name="tipCable", indices="0", pullPoint="-7.5 10 18.5", valueType="displacement")
+    cableNodeTip.createObject('BarycentricMapping', mapForces="false", mapMasses="false")
     
+    cableNodeSide = M1.createChild('cableNodeSide')
+    cableNodeSide.createObject('MechanicalObject', name="actuatedSide", template="Vec3d", position="-7.5 1.5 18.5")
+    cableNodeSide.createObject('CableConstraint', name="sideCable", indices="0", pullPoint="1 10 18.5", valueType="displacement")
+    cableNodeSide.createObject('BarycentricMapping', mapForces="false", mapMasses="false")
+    
+    visu = M1.createChild('visu')
+    visu.createObject('MeshSTLLoader', name='loader', filename=meshPath+"hexabeam.stl")
+    visu.createObject('OglModel', src='@loader', template='ExtVec3f', color='0.7 0.7 0.7 0.6')
+    visu.createObject('BarycentricMapping')
+
 

@@ -1,0 +1,199 @@
+# -*- coding: utf-8 -*-
+import os
+import Sofa
+
+meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
+
+
+def createScene(rootNode):
+    rootNode.findData('dt').value=0.02
+    rootNode.findData('gravity').value='0 -981.0 0'
+    rootNode.createObject('VisualStyle', displayFlags='showBehaviorModels showForceFields')
+    rootNode.createObject('RequiredPlugin', pluginName='ModelOrderReduction')
+    rootNode.createObject('RequiredPlugin', pluginName='SoftRobots')
+    rootNode.createObject('RequiredPlugin', pluginName="SofaOpenglVisual")
+    rootNode.createObject('RequiredPlugin', pluginName="CImgPlugin")
+
+    rootNode.createObject('FreeMotionAnimationLoop')
+    rootNode.createObject('GenericConstraintSolver', printLog='0', tolerance="1e-6", maxIterations="500")
+    rootNode.createObject('CollisionPipeline', verbose="0")
+    rootNode.createObject('BruteForceDetection', name="N2")
+    rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.7")
+    rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.1", angleCone="0.05")
+    
+    
+    rootNode.createObject('Camera', position="0 30 90", lookAt="0 30 0")
+    rootNode.createObject('LightManager')
+    rootNode.createObject('SpotLight', name="light1", color="1 1 1", position="0 80 25", direction="0 -1 -0.8", cutoff="30", exponent="1" )
+    rootNode.createObject('SpotLight', name="light2", color="1 1 1", position="0 40 100", direction="0 0 -1", cutoff="30", exponent="1" )
+
+    rootNode.createObject('MeshObjLoader', name="visual_snake_body", filename="mesh/snake_body.obj", handleSeams="1" )
+    rootNode.createObject('MeshObjLoader', name="visual_snake_cornea", filename="mesh/snake_cornea.obj", handleSeams="1" )
+    rootNode.createObject('MeshObjLoader', name="visual_snake_eye", filename="mesh/snake_yellowEye.obj", handleSeams="1" )
+    rootNode.createObject('MeshObjLoader', name="SOFA_pod", filename="mesh/SOFA_pod.obj", handleSeams="1" )
+
+    actuatorDummy = rootNode.createChild('actuatorDummy')
+    actuatorDummy.createObject('MechanicalObject', name = 'actuatorState', template = 'Vec3d')
+
+    Snake = rootNode.createChild("Snake")
+    Snake.createObject('EulerImplicitSolver',rayleighStiffness="0.1", rayleighMass="0.1")
+    Snake.createObject('SparseLDLSolver',name='preconditioner')
+    Snake.createObject('MeshVTKLoader', name='loader', filename=meshPath+'snake0.vtu', rotation=[-90, 0, 0], translation=[0,5,0])
+    Snake.createObject('TetrahedronSetTopologyContainer',src = '@loader')
+    Snake.createObject('MechanicalObject')
+    Snake.createObject('UniformMass', totalMass="1.0")
+    Snake.createObject('TetrahedronFEMForceField', name="FEM", youngModulus="10000.0", poissonRatio="0.4", method="large")
+    Snake.createObject('GenericConstraintCorrection', solverName='preconditioner')
+    
+    
+    
+    collis = Snake.createChild('collis')
+    collis.createObject('MeshObjLoader', name='loader', filename=meshPath+"meca_snake_900tri.obj",translation=[0,5,0])
+    collis.createObject('Mesh', src='@loader', name='topo')
+    collis.createObject('MechanicalObject', name='CollisModel')
+    collis.createObject('Triangle', selfCollision=False)
+    collis.createObject('Line', selfCollision=False)
+    collis.createObject('Point', selfCollision=False)
+    collis.createObject('BarycentricMapping')
+
+    VisuBody = Snake.createChild('VisuBody')
+    VisuBody.createObject('MeshObjLoader', name='loader', filename=meshPath+"snake_body.obj")
+    VisuBody.createObject("OglModel", name="VisualBody",src='@loader', texturename="textures/snakeColorMap.png", color=[1,1,1,0.6], translation=[0, 5, 0])
+    VisuBody.createObject("BarycentricMapping")
+    
+    VisuCornea = Snake.createChild('VisuCornea')
+    VisuCornea.createObject('MeshObjLoader', name='loader', filename=meshPath+"snake_cornea.obj")
+    VisuCornea.createObject("OglModel", name="VisuCornea",src='@loader', translation=[0, 5, 0])
+    VisuCornea.createObject("BarycentricMapping")
+
+    VisualEye = Snake.createChild('VisualEye')
+    VisualEye.createObject('MeshObjLoader', name='loader', filename=meshPath+"snake_yellowEye.obj")
+    VisualEye.createObject("OglModel", name="VisualEye",src='@loader', translation=[0, 5, 0])
+    VisualEye.createObject("BarycentricMapping")
+
+    base = rootNode.createChild("base")
+    
+    stick = base.createChild("stick")
+    stick.createObject('MeshObjLoader',name="loader", filename="mesh/collision_batons.obj")
+    stick.createObject('Mesh', src='@loader', name='topo')
+    stick.createObject('MechanicalObject', name='stickCollisModel')
+    stick.createObject('Line',simulated="false", moving="false")
+    stick.createObject('Point',simulated="false", moving="false")
+    stick.createObject('UncoupledConstraintCorrection')
+    
+    blobs = base.createChild("blobs")
+    blobs.createObject('MeshObjLoader',name="loader", filename="mesh/collision_boules_V3.obj")
+    blobs.createObject('Mesh', src='@loader', name='topo')
+    blobs.createObject('MechanicalObject', name='blobsCollisModel')
+    blobs.createObject('Triangle',simulated="false", moving="false")
+    blobs.createObject('Line',simulated="false", moving="false")
+    blobs.createObject('Point',simulated="false", moving="false")
+    blobs.createObject('UncoupledConstraintCorrection')
+
+    foot = base.createChild("foot")
+    foot.createObject('MeshObjLoader',name="loader", filename="mesh/collision_pied.obj")
+    foot.createObject('Mesh', src='@loader', name='topo')
+    foot.createObject('MechanicalObject', name='footCollisModel')
+    foot.createObject('Triangle',simulated="false", moving="false")
+    foot.createObject('Line',simulated="false", moving="false")
+    foot.createObject('Point',simulated="false", moving="false")
+    foot.createObject('UncoupledConstraintCorrection')
+    
+    visu = base.createChild("visu")
+    visu.createObject('MeshObjLoader', name="SOFA_pod", filename="mesh/SOFA_pod.obj", handleSeams="1" )
+    visu.createObject('OglModel' , src = '@SOFA_pod', name = 'VisuPOD',color=[1,69.0/255.0,0])
+
+
+
+#<?xml version="1.0" ?>
+#<!-- NEW DEFAULT SOFA SCENE (Thanks to Jeremy Ringard for the caduceus model) -->
+#<Node name="root" gravity="0 -981.0 0" dt="0.04">
+    #<RequiredPlugin name="SofaOpenglVisual"/>
+    #<RequiredPlugin pluginName="CImgPlugin"/>
+    #<VisualStyle displayFlags="showVisual  " /> <!--showBehaviorModels showCollisionModels-->
+    #<LCPConstraintSolver tolerance="1e-3" maxIt="1000" initial_guess="false" build_lcp="false"  printLog="0" mu="0.2"/>
+    #<FreeMotionAnimationLoop />
+    #<DefaultPipeline depth="15" verbose="0" draw="0" />
+    #<BruteForceDetection name="N2" />
+    #<MinProximityIntersection name="Proximity" alarmDistance="1.5" contactDistance="1" />
+
+    #<DefaultContactManager name="Response" response="FrictionContact" />
+
+    #<Camera position="0 30 90" lookAt="0 30 0"/>
+    #<LightManager />
+    #<SpotLight name="light1" color="1 1 1" position="0 80 25" direction="0 -1 -0.8" cutoff="30" exponent="1" />
+    #<SpotLight name="light2" color="1 1 1" position="0 40 100" direction="0 0 -1" cutoff="30" exponent="1" />
+
+    #<MeshObjLoader name="visual_snake_body" filename="mesh/snake_body.obj" handleSeams="1" />
+    #<MeshObjLoader name="visual_snake_cornea" filename="mesh/snake_cornea.obj" handleSeams="1" />
+    #<MeshObjLoader name="visual_snake_eye" filename="mesh/snake_yellowEye.obj" handleSeams="1" />
+    #<MeshObjLoader name="SOFA_pod" filename="mesh/SOFA_pod.obj" handleSeams="1" />
+
+    #<Node name="Snake" >
+
+        #<EulerImplicitSolver name="cg_odesolver" rayleighMass="0.03" rayleighStiffness="0.03" />
+        #<CGLinearSolver name="linear_solver" iterations="200" tolerance="1e-12" threshold="1e-18" />
+        #<MeshVTKLoader name="loader" filename='mesh/snake0.vtu' rotation="-90 0 0"/>
+        #<Mesh src="@loader"/>
+        #<MechanicalObject name="dofs"  scale="1" tags="NoPicking" />
+        #<UniformMass totalMass="0.05" />
+        #<TetrahedronFEMForceField name="FEM" youngModulus="3000000.0" poissonRatio="0.4" method="large" printLog="0" />
+        #<UncoupledConstraintCorrection />
+
+        #<Node name="Collis">
+            #<MeshObjLoader name="loader" filename="mesh/meca_snake_900tri.obj" />
+            #<MeshTopology src="@loader" />
+            #<MechanicalObject src="@loader" name="CollisModel" />
+            #<TriangleCollisionModel  selfCollision="0" />
+            #<LineCollisionModel    selfCollision="0" />
+            #<PointCollisionModel  selfCollision="0" />
+            #<BarycentricMapping input="@.." output="@." />
+        #</Node>
+
+        #<Node name="VisuBody" tags="Visual" >
+            #<OglModel  name="VisualBody" src="@../../visual_snake_body" texturename="textures/snakeColorMap.png"  />
+            #<BarycentricMapping input="@.." output="@VisualBody" />
+        #</Node>
+
+        #<Node name="VisuCornea" tags="Visual" >
+            #<OglModel  name="VisualCornea" src="@../../visual_snake_cornea"   />
+            #<BarycentricMapping input="@.." output="@VisualCornea" />
+        #</Node>
+
+        #<Node name="VisuEye" tags="Visual" >
+            #<OglModel  name="VisualEye" src="@../../visual_snake_eye"   />
+            #<BarycentricMapping input="@.." output="@VisualEye" />
+        #</Node>
+    #</Node>
+
+    #<Node name="Base" >
+        #<Node name="Stick">
+                 #<MeshObjLoader name="loader" filename="mesh/collision_batons.obj" />
+                 #<MeshTopology src="@loader" />
+                 #<MechanicalObject src="@loader" name="CollisModel" />
+                 #<LineCollisionModel simulated="false" moving="false" />
+                 #<PointCollisionModel simulated="false"  moving="false"/>
+        #</Node>
+        #<Node name="Blobs">
+                 #<MeshObjLoader name="loader" filename="mesh/collision_boules_V3.obj" />
+                 #<MeshTopology src="@loader" />
+                 #<MechanicalObject src="@loader" name="CollisModel" />
+                 #<TriangleCollisionModel simulated="false" moving="false"/>
+                 #<LineCollisionModel simulated="false" moving="false"/>
+                 #<PointCollisionModel simulated="false" moving="false"/>
+        #</Node>
+
+            #<Node name="Foot">
+            #<MeshObjLoader name="loader" filename="mesh/collision_pied.obj" />
+            #<MeshTopology src="@loader" />
+            #<MechanicalObject src="@loader" name="CollisModel" />
+            #<TriangleCollisionModel simulated="false" moving="false"/>
+            #<LineCollisionModel simulated="false" moving="false"/>
+            #<PointCollisionModel simulated="false" moving="false"/>
+        #</Node>
+
+        #<Node name="Visu" tags="Visual" >
+            #<OglModel  name="OglModel" src="@../../SOFA_pod"  />
+        #</Node>
+    #</Node>
+#</Node>
