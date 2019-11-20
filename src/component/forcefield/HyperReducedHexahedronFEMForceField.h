@@ -182,7 +182,7 @@ protected:
     using HexahedronFEMForceField<DataTypes>::_alreadyInit;
 };
 
-#if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
+#if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<defaulttype::Vec3Types>;
 #endif
 
