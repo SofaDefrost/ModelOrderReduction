@@ -172,11 +172,9 @@ protected:
     virtual void accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// polar decomposition method
-    void initPolar(int i, const Element&elem);
     virtual void accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// small decomposition method
-    void initSmall(int i, const Element&elem);
     virtual void accumulateForceSmall( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     using HexahedronFEMForceField<DataTypes>::_alreadyInit;
