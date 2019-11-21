@@ -95,7 +95,6 @@ protected:
     typedef defaulttype::Mat<9, 9, Real> StiffnessMatrix;
 
 
-    using TriangleFEMForceField<DataTypes>::_mesh;
     using TriangleFEMForceField<DataTypes>::_indexedElements;
     using TriangleFEMForceField<DataTypes>::_initialPoints; ///< the intial positions of the points
     using TriangleFEMForceField<DataTypes>::_rotatedInitialElements;   ///< The initials positions in its frame
