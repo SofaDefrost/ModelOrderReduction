@@ -143,9 +143,9 @@ public:
     void updateGie(const std::vector<unsigned int> indexList, const std::vector<typename DataTypes::Deriv> contrib, const unsigned int numElem){
         if (d_prepareECSW.getValue())
         {
-            unsigned int nbNodesPerElement = indexList.size();
+            size_t nbNodesPerElement = indexList.size();
             std::vector<double> GieUnit(d_nbModes.getValue());
-            int numTest = this->getContext()->getTime()/this->getContext()->getDt();
+            int numTest = unsigned int(this->getContext()->getTime()/this->getContext()->getDt());
             if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
             {
                 numTest = numTest/d_periodSaveGIE.getValue();
@@ -173,7 +173,7 @@ public:
     void saveGieFile(unsigned int nbElements){
         if (d_prepareECSW.getValue())
         {
-            unsigned int numTest = this->getContext()->getTime()/this->getContext()->getDt();
+            unsigned int numTest = unsigned int(this->getContext()->getTime()/this->getContext()->getDt());
             if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
             {
                 numTest = numTest/d_periodSaveGIE.getValue();
