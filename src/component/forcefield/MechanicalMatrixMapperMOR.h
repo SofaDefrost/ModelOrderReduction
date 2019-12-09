@@ -75,12 +75,12 @@ protected:
 
 };
 
-#if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP)
+#if !defined(SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec3Types, sofa::defaulttype::Rigid3Types>;
 extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec3Types, sofa::defaulttype::Vec3Types>;
 extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec1Types, sofa::defaulttype::Rigid3Types>;
 extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec1Types, sofa::defaulttype::Vec1Types>;
-#endif // defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP)
+#endif // !defined(SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP)
 
 } // namespace interactionforcefield
 

@@ -172,17 +172,15 @@ protected:
     virtual void accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// polar decomposition method
-    void initPolar(int i, const Element&elem);
     virtual void accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// small decomposition method
-    void initSmall(int i, const Element&elem);
     virtual void accumulateForceSmall( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     using HexahedronFEMForceField<DataTypes>::_alreadyInit;
 };
 
-#if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
+#if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<defaulttype::Vec3Types>;
 #endif
 
