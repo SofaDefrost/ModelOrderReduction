@@ -145,7 +145,7 @@ public:
         {
             size_t nbNodesPerElement = indexList.size();
             std::vector<double> GieUnit(d_nbModes.getValue());
-            int numTest = unsigned int(this->getContext()->getTime()/this->getContext()->getDt());
+            int numTest = int(this->getContext()->getTime()/this->getContext()->getDt());
             if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
             {
                 numTest = numTest/d_periodSaveGIE.getValue();
@@ -173,7 +173,7 @@ public:
     void saveGieFile(unsigned int nbElements){
         if (d_prepareECSW.getValue())
         {
-            unsigned int numTest = unsigned int(this->getContext()->getTime()/this->getContext()->getDt());
+            unsigned int numTest = int(this->getContext()->getTime()/this->getContext()->getDt());
             if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
             {
                 numTest = numTest/d_periodSaveGIE.getValue();
