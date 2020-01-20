@@ -15,7 +15,7 @@ class ReductionParam():
 
     """
 
-    def __init__(self,tolModes,tolGIE,addRigidBodyModes,dataDir,saveVelocitySnapshots):
+    def __init__(self,tolModes,tolGIE,addRigidBodyModes,dataDir):
 
         self.tolModes = tolModes
         self.tolGIE = tolGIE
@@ -40,11 +40,6 @@ class ReductionParam():
         self.nbTrainingSet = -1
 
         self.paramWrapper = None
-
-        if not saveVelocitySnapshots:
-            self.velocityFileName = None
-        else:
-            self.velocityFileName = "velocityStateFile.state"
 
     def setNbTrainingSet(self,rangeOfAction,incr):
         '''

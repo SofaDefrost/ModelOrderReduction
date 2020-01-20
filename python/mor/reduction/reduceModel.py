@@ -100,8 +100,7 @@ class ReduceModel():
         verbose = False,
         addRigidBodyModes = False,
         nbrCPU = 4,
-        phaseToSave = None,
-        saveVelocitySnapshots = None):
+        phaseToSave = None):
 
         self.originalScene = os.path.normpath(originalScene)
         self.nodeToReduce = nodeToReduce
@@ -114,7 +113,7 @@ class ReduceModel():
         self.packageBuilder = PackageBuilder(outputDir,packageName,addToLib)
 
         ### Obj Containing all the argument & function about the actual reduction
-        self.reductionParam = ReductionParam(tolModes,tolGIE,addRigidBodyModes,self.packageBuilder.dataDir,saveVelocitySnapshots)
+        self.reductionParam = ReductionParam(tolModes,tolGIE,addRigidBodyModes,self.packageBuilder.dataDir)
 
         ### With the previous parameters (listObjToAnimate/nbPossibility) we can set our training set number
         self.reductionParam.setNbTrainingSet(   listObjToAnimate[0].params['rangeOfAction'],
@@ -263,7 +262,7 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")  
 
-        self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName,self.reductionParam.velocityFileName)
+        self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName)
         u.copy(results[self.phaseToSaveIndex]["directory"]+slash+"debug_scene.py", self.packageBuilder.debugDir)
 
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
