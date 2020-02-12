@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(ModelOrderReduction VERSION 1.0)
 
+include(cmake/environment.cmake)
+
 # Specify all required packages
 find_package(SofaFramework REQUIRED)
 find_package(SofaGeneral REQUIRED)
@@ -14,8 +16,6 @@ if(SofaPython_FOUND)
     message("SofaPyhon found")
     set(MOR_PYTHON 1) # See initModelOrderReduction.h.in
 endif()
-
-include(cmake/environment.cmake)
 
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
@@ -86,14 +86,14 @@ endif()
 
 # Move all resources when install: examples, doc and python files
 install(FILES "README.md" "LICENSE" DESTINATION .)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc/")
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/doc/ModelOrderReduction.pdf DESTINATION doc/ COMPONENT resources)	
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/")
-        install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/ DESTINATION examples/ COMPONENT resources)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc")
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/doc/ModelOrderReduction.pdf DESTINATION doc COMPONENT resources)	
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc/examples")
+        install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples DESTINATION . COMPONENT resources)
     endif()
 endif()
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools/")
-    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools/ DESTINATION tools/ COMPONENT resources)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools DESTINATION . COMPONENT resources)
 endif()
 ## Install rules for the library and headers; CMake package configurations files
 sofa_generate_package(
