@@ -116,7 +116,8 @@ void MORContactMapping<TIn, TOut>::init()
 //    for (int i=0; i<m_nbRows; i++)
 //        msg_warning("MatrixLoader") << "Lambda coeffs:" << contactIndices(i);
 
-
+    std::ofstream myLambdaIndices ("lambdaIndices.txt");
+    myLambdaIndices.close();
 }
 
 template <class TIn, class TOut>

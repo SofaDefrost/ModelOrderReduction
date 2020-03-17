@@ -21,8 +21,10 @@ def etaTild(Gtilde, b):
 def selectECSW(G,b,tau,verbose):
     nbLines, numElem = np.shape(G)
     ECSWindex = set([])
+    ECSWcontactIndex = set([])
     xi = np.zeros((numElem,1))
-    valTarget = tau*np.linalg.norm(b);
+    print("tau ", tau,  "np.linalg.norm(b)", np.linalg.norm(b))
+    valTarget = float(tau)*np.linalg.norm(b);
     currentValue = errDif(G,xi,b)
     marge = currentValue - valTarget
 
@@ -36,12 +38,63 @@ def selectECSW(G,b,tau,verbose):
         vecDiff = b - G.dot(xi)
         GT = np.transpose(G)
         mu = GT.dot(vecDiff)
+        #mu = abs(GT.dot(vecDiff))
+        #print("--------------------mu:", mu)
+        #muTab = np.zeros(30)
+        #for i in range(30):            
+            #if i not in ECSWcontactIndex:
+                #ECSWindexCandidate = set([])
+                #for j in ECSWcontactIndex:
+                   #ECSWindexCandidate = ECSWindexCandidate.union([30*i + j])
+                   #ECSWindexCandidate = ECSWindexCandidate.union([30*j + i])
+                #muTab[i] = np.linalg.norm(mu[list(ECSWindexCandidate)])
+        #indexContact = int(np.argmax(muTab))
+        #print("--------------------New indexContact:", indexContact)
+        #print("--------------------ECSWcontactIndex:", ECSWcontactIndex)
+        #ECSWcontactIndex = ECSWcontactIndex.union([indexContact])
+        #ECSWindex = set([])
+        #for i in ECSWcontactIndex:
+            #for j in ECSWcontactIndex:
+                #ECSWindex = ECSWindex.union([30*i + j])
+        #print("--------------------ECSWindex:", ECSWindex)
+        
+        
         index = int(np.argmax(mu))
+        #print("--------------------New index:", index)
         ECSWindex = ECSWindex.union([index])
+        
+        #print("--------------------Current ECSWindex:", ECSWindex)
+        #######################################################
+        ######### To add all contacts relationship ##########"
+        #activeContactList = []
+        #for i in ECSWindex:
+            #contact1 = i/30
+            #contact2 = i - contact1*30
+            #alreadyIn1 = False
+            #alreadyIn2 = False
+            #for j in activeContactList:
+                #if j == contact1:
+                    #alreadyIn1 = True
+                #if j == contact2:   
+                    #alreadyIn2 = True
+            #if  not alreadyIn1:
+                #activeContactList.append(contact1)
+                #if contact1 != contact2:
+                    #if not alreadyIn2:
+                        #activeContactList.append(contact2)
+            #else:
+                #if not alreadyIn2:
+                        #activeContactList.append(contact2)
+        #ECSWindex = set([])
+        #for i in activeContactList:
+            #for j in activeContactList:
+                #ECSWindex = ECSWindex.union([30*i + j])
+        #ECSWcontactIndex = activeContactList
+        ###############################################################
+        #print("--------------------ECSWindex after regularisation:", ECSWindex)     
 
         Gtilde = G[:,list(ECSWindex)]
         etaTilde = etaTild(Gtilde,b)
-
         while ( not(all(etaTilde>0) ) ):
 
             ECSWindexNegative = []
@@ -49,7 +102,7 @@ def selectECSW(G,b,tau,verbose):
             NonZero = []
             ind = 0
 
-            #if verbose : print 'Hohohohohohohohoho !!!'
+            if verbose : print 'Hohohohohohohohoho !!!'
 
             negIndex = (etaTilde-xi[list(ECSWindex)])<0
             negIndex = list(negIndex.flatten())
@@ -61,7 +114,10 @@ def selectECSW(G,b,tau,verbose):
                     etaTildeNegative.append(etaTilde[ind])
 
                 ind = ind + 1
-
+            
+            #print("ECSWindexNegative:",  ECSWindexNegative)
+            #print("etaTildeNegative:",  etaTildeNegative)
+            #print("negIndex:", negIndex)
             vec1 = -xi[ECSWindexNegative] 
             vec2 = (etaTildeNegative-xi[ECSWindexNegative])
             maxFeasibleStep = np.amin(vec1/vec2);
@@ -75,10 +131,42 @@ def selectECSW(G,b,tau,verbose):
                 if (not i): NonZero.append(list(ECSWindex)[ind])
                 ind = ind + 1
 
-            ECSWindex = set(NonZero)
+            ECSWindex = set(NonZero)        
+            
 
             Gtilde = G[:,list(ECSWindex)]
             etaTilde = etaTild(Gtilde,b)
+            #print("etaTilde in hohohoho : ", etaTilde)
+
+
+            #print("--------------------ECSWindex in Hohohohohoho:", ECSWindex)
+            #######################################################
+            ######### To add all contacts relationship ##########"
+            #activeContactList = []
+            #for i in ECSWindex:
+                #contact1 = i/30
+                #contact2 = i - contact1*30
+                #alreadyIn1 = False
+                #alreadyIn2 = False
+                #for j in activeContactList:
+                    #if j == contact1:
+                        #alreadyIn1 = True
+                    #if j == contact2:   
+                        #alreadyIn2 = True
+                #if  not alreadyIn1:
+                    #activeContactList.append(contact1)
+                    #if contact1 != contact2:
+                        #if not alreadyIn2:
+                            #activeContactList.append(contact2)
+                #else:
+                    #if not alreadyIn2:
+                            #activeContactList.append(contact2)
+            #ECSWindex = set([])
+            #for i in activeContactList:
+                #for j in activeContactList:
+                    #ECSWindex = ECSWindex.union([30*i + j])
+            ###############################################################
+            #print("--------------------ECSWindex after regularisation in Hohohohohohoho:", ECSWindex)     
 
         xi[list(ECSWindex)] = etaTilde
 
@@ -138,7 +226,7 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
         # print("DONE -------------> "+str(gie[0][0]))
 
         if verbose : 
-            print("nbLines "+str(nbLines)+"  lenght "+str(lenght))
+            print("nbLines "+str(nbLines)+"  length "+str(lenght))
             print("Done reading file %r:" % gieFilename,'\n')
 
 
@@ -163,7 +251,33 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
     #Store results in files 
     np.savetxt(RIDFileName,ECSWindex, header=str(sizeRID)+' 1', comments='', fmt='%d')
     np.savetxt(weightsFileName,xi, header=str(xi.size)+' 1', comments='',fmt='%10.5f')
-
+    contactList = list(ECSWindex)
+    contactDoubleton = []
+    activeContactList = []
+    for i in contactList:
+        contact1 = i/30
+        contact2 = i - contact1*30
+        contactDoubleton.append([contact1, contact2])
+        alreadyIn1 = False
+        alreadyIn2 = False
+        for j in activeContactList:
+            if j == contact1:
+                alreadyIn1 = True
+            if j == contact2:   
+                alreadyIn2 = True
+        if  not alreadyIn1:
+            activeContactList.append(contact1)
+            if contact1 != contact2:
+                if not alreadyIn2:
+                    activeContactList.append(contact2)
+        else:
+            if not alreadyIn2:
+                    activeContactList.append(contact2)
+            
+            
+    np.savetxt(RIDFileName+'Doubleton',contactDoubleton, header=str(sizeRID)+' 2', comments='', fmt='%d')
+    np.savetxt(RIDFileName+'Singleton',activeContactList, header=str(len(activeContactList))+' 1', comments='', fmt='%d')
+    
     if verbose: print "===> Success readGieFileAndComputeRIDandWeights.py\n"
 
 
