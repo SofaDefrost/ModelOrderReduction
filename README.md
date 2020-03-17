@@ -3,9 +3,9 @@
 This Sofa package contains c++ components with python utilitaries allowing
 to perform model reduction and use these reduced model easily in a Sofa scene.
 
-Our complete documentation is hosted [here](https://modelorderreduction.readthedocs.io/en/latest/index.html) using [readthedocs](https://readthedocs.org/) services.
+Our complete documentation is hosted **[here](https://modelorderreduction.readthedocs.io/en/latest/index.html)**.
 
-You can also explore the *[examples](https://modelorderreduction.readthedocs.io/en/latest/usage/examples/examples.html)*
+You can also explore the **[examples](https://modelorderreduction.readthedocs.io/en/latest/usage/examples/examples.html)**
 where there are complete robot which are completely or partially reduced and test them yourself in the directory *doc/examples/*.
 
 ## AUTHOR :
