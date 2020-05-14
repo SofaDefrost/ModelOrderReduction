@@ -16,12 +16,14 @@ def createScene(rootNode):
                 rootNode.createObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
 
                 rootNode.createObject('FreeMotionAnimationLoop')
-                rootNode.createObject('GenericConstraintSolver', printLog=False, tolerance="1e-6", maxIterations="500", storeLambdas=True)
+                rootNode.createObject('GenericConstraintSolver', printLog=True, tolerance="1e-6", maxIterations="500", storeLambdas=True)
                 rootNode.createObject('CollisionPipeline', verbose="0")
                 rootNode.createObject('BruteForceDetection', name="N2")
                 #rootNode.createObject('CollisionResponse', response="StickContactConstraint", responseParams="mu=0.5")
-                rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.0")
+                #rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.0")
                 #rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0", name='Colcol')
+                rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath=lambdaModesVLONG7.txt?lambdaModesCoeffsPath=lambdaCoeffsVLONG7.txt")
+
                 rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance="1.0", contactDistance="0.5", angleCone="0.01")
 
                 solverNode = rootNode.createChild('solverNode')
@@ -46,8 +48,8 @@ def createScene(rootNode):
 
                                 
                 modelCollis = model.createChild('modelCollis')
-                #modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
-                modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+                modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+                #modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
                 modelCollis.createObject('TriangleSetTopologyContainer', src='@loader', name='container')
                 modelCollis.createObject('MechanicalObject', name='collisMO', template='Vec3d')
                 #modelCollis.createObject('Triangle',group="0")
@@ -56,20 +58,20 @@ def createScene(rootNode):
                 modelCollis.createObject('BarycentricMapping')
                 
                 subModelCollis = modelCollis.createChild('subModelCollis')
-                #subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
-                subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+                subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+                #subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
                 subModelCollis.createObject('TriangleSetTopologyContainer', src='@loader', name='container')
                 subModelCollis.createObject('MechanicalObject', name='subModelCollisMO', template='Vec3d')
-                subModelCollis.createObject('Triangle',group="0",name='TriSPhere')
-                subModelCollis.createObject('Line',group="0",name='LineSPhere')
+                #subModelCollis.createObject('Triangle',group="0",name='TriSPhere')
+                #subModelCollis.createObject('Line',group="0",name='LineSPhere')
                 subModelCollis.createObject('Point',group="0",name='PointSphere')
                 subModelCollis.createObject('MORContactMapping',modesPath='lambdaModes.txt',contactIndicesPath = 'lambdaCoeffs.txt',storeLambda=True)
                 #subModelCollis.createObject('IdentityMapping')
                 
 
 
-                rotation=[20,0,0]
-                #rotation=[0,0,0]
+                #rotation=[20,0,0]
+                rotation=[0,0,0]
                 planeNode = rootNode.createChild('Plane')
                 planeNode.createObject('MeshObjLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true",rotation=rotation)
                 planeNode.createObject('Mesh', src="@loader")

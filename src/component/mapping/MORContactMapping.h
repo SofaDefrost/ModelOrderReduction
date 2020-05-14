@@ -88,6 +88,7 @@ public:
 
     sofa::core::objectmodel::DataFileName d_lambdaModesPath;
     sofa::core::objectmodel::DataFileName d_contactIndices;
+    sofa::core::objectmodel::DataFileName d_lambdaIndicesPath;
     Data< bool > d_storeLambda;
     int m_nbCols;
 
@@ -96,6 +97,7 @@ protected:
         : Inherit()
         , d_lambdaModesPath(initData(&d_lambdaModesPath,"modesPath","Path to the file containing the modes. REQUIRED"))
         , d_contactIndices(initData(&d_contactIndices,"contactIndicesPath","Path to the file containing the modes. REQUIRED"))
+        , d_lambdaIndicesPath(initData(&d_lambdaIndicesPath,"lambdaIndicesPath","Path to the file where contact indices will be stored."))
         , d_storeLambda(initData(&d_storeLambda,"storeLambda","Boolean to say if we store lambda"))
     {
         Js.resize( 1 );

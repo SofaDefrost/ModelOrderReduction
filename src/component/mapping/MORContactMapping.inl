@@ -116,7 +116,7 @@ void MORContactMapping<TIn, TOut>::init()
 //    for (int i=0; i<m_nbRows; i++)
 //        msg_warning("MatrixLoader") << "Lambda coeffs:" << contactIndices(i);
 
-    std::ofstream myLambdaIndices ("lambdaIndices.txt");
+    std::ofstream myLambdaIndices (d_lambdaIndicesPath.getValue());
     myLambdaIndices.close();
 }
 
@@ -165,7 +165,7 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::ConstraintParams * /*cpar
     const MatrixDeriv& in = dIn.getValue();
     typename Out::MatrixDeriv::RowConstIterator rowItEnd = in.end();
 
-    std::ofstream myLambdaIndices ("lambdaIndices.txt", std::fstream::app);
+    std::ofstream myLambdaIndices (d_lambdaIndicesPath.getValue(), std::fstream::app);
 
     for (typename Out::MatrixDeriv::RowConstIterator rowIt = in.begin(); rowIt != rowItEnd; ++rowIt)
     {
@@ -187,9 +187,8 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::ConstraintParams * /*cpar
                         typename In::MatrixDeriv::RowIterator o = out.writeLine(j);
                         data = colIt.val()*m_matrix(contactIndices(rowIt.index()),j);
                         o.addCol(colIt.index(),data);
-                        msg_warning() << "DOING SOME STUUUUUUUUUUUUUUUUUUUUUUUUFFFFFFFFFFFFFFFFFFFFFF";
-                        msg_warning() << "row: " << o.index() << " col: " << colIt.index() << " val: " << data << " colit " << colIt.val();
-                        msg_warning() << "nbCols: " << m_nbCols;
+//                        msg_warning() << "row: " << o.index() << " col: " << colIt.index() << " val: " << data << " colit " << colIt.val();
+//                        msg_warning() << "nbCols: " << m_nbCols;
                     }
                     ++colIt;
                 }
@@ -202,9 +201,10 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::ConstraintParams * /*cpar
                 {
                     InDeriv data;
                     helper::eq(data, colIt.val());
-                    msg_warning() << "row: " << o.index() << " col: " << colIt.index() << " val: " << data;
+//                    msg_warning() << "row: " << o.index() << " col: " << colIt.index() << " val: " << data;
                     myLambdaIndices << colIt.index() << " ";
-                    msg_warning() << "writing in file: " << colIt.index();
+//                    msg_warning() << "Writing:" << colIt.index();
+//                    msg_warning() << "writing in file: " << colIt.index();
 
                     o.addCol(colIt.index(), data);
 
