@@ -89,7 +89,7 @@ protected:
     using HexahedronFEMForceField<DataTypes>::m_potentialEnergy;
 
 
-    using HexahedronFEMForceField<DataTypes>::_mesh;
+    using HexahedronFEMForceField<DataTypes>::m_topology;
     using HexahedronFEMForceField<DataTypes>::_sparseGrid;
     using HexahedronFEMForceField<DataTypes>::_initialPoints; ///< the intial positions of the points
 
@@ -161,7 +161,7 @@ protected:
 
     inline const VecElement *getIndexedElements()
     {
-        return & (_mesh->getHexahedra());
+        return & (m_topology->getHexahedra());
     }
 
 
@@ -172,17 +172,15 @@ protected:
     virtual void accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// polar decomposition method
-    void initPolar(int i, const Element&elem);
     virtual void accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     ////////////// small decomposition method
-    void initSmall(int i, const Element&elem);
     virtual void accumulateForceSmall( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
 
     using HexahedronFEMForceField<DataTypes>::_alreadyInit;
 };
 
-#if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
+#if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<defaulttype::Vec3Types>;
 #endif
 

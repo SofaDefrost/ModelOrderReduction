@@ -149,7 +149,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addDForce (const core::Mech
 
 
     it0=this->getIndexedElements()->begin();
-    unsigned int nbElementsConsidered;
+    size_t nbElementsConsidered;
     if (!d_performECSW.getValue()){
         nbElementsConsidered = this->getIndexedElements()->size();
     }
@@ -311,7 +311,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WData
             f[indexList[w]] += weights(i)*contrib[w];
         }
     }
-    this->updateGie<DataTypes>(indexList, contrib, i);
+    this->template updateGie<DataTypes>(indexList, contrib, i);
 
 
 
@@ -411,7 +411,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addKToMatrix(const core::Me
     sofa::core::behavior::MultiMatrixAccessor::MatrixRef r = matrix->getMatrix(this->mstate);
 
     it0=this->getIndexedElements()->begin();
-    unsigned int nbElementsConsidered;
+    size_t nbElementsConsidered;
     if (!d_performECSW.getValue()){
         nbElementsConsidered = this->getIndexedElements()->size();
     }
@@ -482,7 +482,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
     int i;
 
     it0=this->getIndexedElements()->begin();
-    unsigned int nbElementsConsidered;
+    size_t nbElementsConsidered;
     if (!d_performECSW.getValue())
         nbElementsConsidered = this->getIndexedElements()->size();
     else

@@ -48,15 +48,12 @@ int MORContactMappingClass = core::RegisterObject("Special case of mapping where
         .add< MORContactMapping< Vec6Types, Vec6Types > >()
         .add< MORContactMapping< Rigid3Types, Rigid3Types > >()
         .add< MORContactMapping< Rigid2Types, Rigid2Types > >()
-        .add< MORContactMapping< Vec3dTypes, ExtVec3Types > >()
-        .add< MORContactMapping< Vec6Types, ExtVec3Types > >()
 
 
 
 // Rigid -> Vec
         .add< MORContactMapping< Rigid3Types, Vec3dTypes > >()
         .add< MORContactMapping< Rigid2Types, Vec2Types > >()
-        .add< MORContactMapping< Rigid3Types, ExtVec3Types > >()
 
         ;
 
@@ -66,12 +63,9 @@ template class SOFA_BASE_MECHANICS_API MORContactMapping< Vec2Types, Vec2Types >
 template class SOFA_BASE_MECHANICS_API MORContactMapping< Vec1Types, Vec1Types >;
 template class SOFA_BASE_MECHANICS_API MORContactMapping< Vec6Types, Vec3dTypes >;
 template class SOFA_BASE_MECHANICS_API MORContactMapping< Vec6Types, Vec6Types >;
-template class SOFA_BASE_MECHANICS_API MORContactMapping< Vec3dTypes, ExtVec3Types >;
-template class SOFA_BASE_MECHANICS_API MORContactMapping< Vec6Types, ExtVec3Types >;
 template class SOFA_BASE_MECHANICS_API MORContactMapping< Rigid3Types, Rigid3Types >;
 template class SOFA_BASE_MECHANICS_API MORContactMapping< Rigid2Types, Rigid2Types >;
 template class SOFA_BASE_MECHANICS_API MORContactMapping< Rigid3Types, Vec3dTypes >;
-template class SOFA_BASE_MECHANICS_API MORContactMapping< Rigid3Types, ExtVec3Types >;
 template class SOFA_BASE_MECHANICS_API MORContactMapping< Rigid2Types, Vec2Types >;
 
 

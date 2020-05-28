@@ -95,7 +95,7 @@ protected:
     typedef defaulttype::Mat<9, 9, Real> StiffnessMatrix;
 
 
-    using TriangleFEMForceField<DataTypes>::_mesh;
+    using TriangleFEMForceField<DataTypes>::m_topology;
     using TriangleFEMForceField<DataTypes>::_indexedElements;
     using TriangleFEMForceField<DataTypes>::_initialPoints; ///< the intial positions of the points
     using TriangleFEMForceField<DataTypes>::_rotatedInitialElements;   ///< The initials positions in its frame
@@ -162,9 +162,9 @@ protected :
 };
 
 
-#if defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
+#if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<sofa::defaulttype::Vec3Types>;
-#endif // defined(SOFA_EXTERN_TEMPLATE) && !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
+#endif // !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
 
 } // namespace forcefield
 

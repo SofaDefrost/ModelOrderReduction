@@ -458,7 +458,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
                 f[t[i/3]] += weights(elementIndex)*contrib[i/3];
         }
     }
-    this->updateGie<DataTypes>(indexList, contrib, elementIndex);
+    this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
 
     tetrahedronInfo.endEdit();
 }
