@@ -13,16 +13,32 @@ def createScene(rootNode):
                 rootNode.findData('dt').value=0.005
 
                 rootNode.findData('gravity').value='0 -9810 0';
+                #rootNode.findData('gravity').value='0 0 0';
                 rootNode.createObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
+                
+                reductionOn = False
+                lambdaModes = "lambdaModesSphereFine6.txt"
+                lambdaCoeffs = "lambdaCoeffsSphereFine6.txt"
 
                 rootNode.createObject('FreeMotionAnimationLoop')
-                rootNode.createObject('GenericConstraintSolver', printLog=True, tolerance="1e-6", maxIterations="500", storeLambdas=True)
+                #rootNode.createObject('GenericConstraintSolver', printLog=True, tolerance="1e-6", maxIterations="500", storeLambdas=True)
+                if reductionOn:
+                    rootNode.createObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15')
+                else:
+                    #rootNode.createObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',storeLambdas=True, lambdaPath="lambdaStored.txt",computeConstraintForces=True)
+                    rootNode.createObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',computeConstraintForces=True)
+                    rootNode.createObject('PythonScriptController', filename="lambdaDumper.py", classname="storeLambda", variables="Zetest.txt")
+
+
                 rootNode.createObject('CollisionPipeline', verbose="0")
                 rootNode.createObject('BruteForceDetection', name="N2")
                 #rootNode.createObject('CollisionResponse', response="StickContactConstraint", responseParams="mu=0.5")
-                #rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.0")
+                if not reductionOn:
+                    rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.0")
+                else:
+                    rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath="+lambdaModes+"?lambdaModesCoeffsPath="+lambdaCoeffs)
                 #rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0", name='Colcol')
-                rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath=lambdaModesVLONG7.txt?lambdaModesCoeffsPath=lambdaCoeffsVLONG7.txt")
+                #rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath=lambdaModesVLONG7.txt?lambdaModesCoeffsPath=lambdaCoeffsVLONG7.txt")
 
                 rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance="1.0", contactDistance="0.5", angleCone="0.01")
 
@@ -48,8 +64,8 @@ def createScene(rootNode):
 
                                 
                 modelCollis = model.createChild('modelCollis')
-                modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
-                #modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+                #modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+                modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
                 modelCollis.createObject('TriangleSetTopologyContainer', src='@loader', name='container')
                 modelCollis.createObject('MechanicalObject', name='collisMO', template='Vec3d')
                 #modelCollis.createObject('Triangle',group="0")
@@ -58,20 +74,27 @@ def createScene(rootNode):
                 modelCollis.createObject('BarycentricMapping')
                 
                 subModelCollis = modelCollis.createChild('subModelCollis')
-                subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
-                #subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+                #subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+                subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
                 subModelCollis.createObject('TriangleSetTopologyContainer', src='@loader', name='container')
                 subModelCollis.createObject('MechanicalObject', name='subModelCollisMO', template='Vec3d')
                 #subModelCollis.createObject('Triangle',group="0",name='TriSPhere')
                 #subModelCollis.createObject('Line',group="0",name='LineSPhere')
-                subModelCollis.createObject('Point',group="0",name='PointSphere')
-                subModelCollis.createObject('MORContactMapping',modesPath='lambdaModes.txt',contactIndicesPath = 'lambdaCoeffs.txt',storeLambda=True)
-                #subModelCollis.createObject('IdentityMapping')
+                if reductionOn:
+                    subModelCollis.createObject('Point',group="0",name='PointSphere',computeNormals=True, lambdaModesPath=lambdaModes,lambdaModesCoeffsPath=lambdaCoeffs ,displayContactModes=False)
+                else:
+                    subModelCollis.createObject('Point',group="0",name='PointSphere', displayContactModes=False,computeNormals=True)
+                #subModelCollis.createObject('MORContactMapping',modesPath='lambdaModes.txt',contactIndicesPath = 'lambdaCoeffs.txt',storeLambda=True)
+                ##subModelCollis.createObject('IdentityMapping')
+                if not reductionOn:
+                    subModelCollis.createObject('MORContactMapping',lambdaIndicesPath="lambdaIndices.txt",storeLambda=True)
+                else:
+                    subModelCollis.createObject('IdentityMapping')
                 
 
 
-                #rotation=[20,0,0]
-                rotation=[0,0,0]
+                rotation=[20,0,0]
+                #rotation=[30,0,0]
                 planeNode = rootNode.createChild('Plane')
                 planeNode.createObject('MeshObjLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true",rotation=rotation)
                 planeNode.createObject('Mesh', src="@loader")

@@ -24,7 +24,7 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
     lambdaIndices = []
     currentMaxIndex = 0
     #To skip Nskip snapshot entries: Nskip = 1 to keep everything
-    Nskip = 10
+    Nskip = 1
     for line in f:
         nbSnap = nbSnap + 1
         lineSplit = line.split()
@@ -114,8 +114,10 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
     
     
     W = np.random.random((sizeProblem, k))
+    Wmin = np.zeros([sizeProblem, k])
     #W = lambdaSnapVeryCleaned[:,0:k]
     normalForceIndices = range(0,sizeProblem,3)
+    minErr = 200
     for j in range(100):
         #input("Press Enter to continue...")
         WTW = np.dot(np.transpose(W),W)
@@ -162,7 +164,13 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
             
         print('Error in W before zeroing: ----- ',np.linalg.norm(np.dot(W,H)-lambdaSnapVeryCleaned)/np.linalg.norm(lambdaSnapVeryCleaned))    
         W[negIndicesOnNormal]=0
-        print('Error in W after zeroing: ----- ',np.linalg.norm(np.dot(W,H)-lambdaSnapVeryCleaned)/np.linalg.norm(lambdaSnapVeryCleaned))
+        err = np.linalg.norm(np.dot(W,H)-lambdaSnapVeryCleaned)/np.linalg.norm(lambdaSnapVeryCleaned)
+        print('Error in W after zeroing: ----- ',err)
+        
+        if err < minErr:
+            minErr = err
+            Wmin[:] = W[:]
+            
         #print('numerateur: ----- ',np.linalg.norm(np.dot(W,H)-lambdaSnapVeryCleaned))
         #print('denominateur: ----- ',np.linalg.norm(lambdaSnapVeryCleaned))
         #if withFriction:
@@ -181,26 +189,28 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
 
         print 'iteration', j
         #print ('W at the end:', W)
+    print('Min Error in W after zeroing: ----- ',minErr)
     #H = solve( np.dot(np.transpose(W),W) , np.dot(np.transpose(W),lambdaSnapVeryCleaned) )
     #H[H<0]=0
     for p in range(k):
             if (np.linalg.norm(W[:,p]) != 0.0):
                 W[:,p] = W[:,p]/np.linalg.norm(W[:,p])
-    print(W)
+                Wmin[:,p] = Wmin[:,p]/np.linalg.norm(Wmin[:,p])
+    #print(W)
     #U, s, V = np.linalg.svd(lambdaFrictionSnapVeryCleaned, full_matrices=False)
 
     np.savetxt(NNMFfileName, W, header=str(sizeProblem)+' '+str(k), comments='', fmt='%10.5f')
+    #np.savetxt(NNMFfileName, Wmin, header=str(sizeProblem)+' '+str(k), comments='', fmt='%10.5f')
     contactIndices = np.array(range(dimension))
-    print(contactIndices)
-    print(np.sum(lambdaSnapCleaned,axis=1) != 0)
+    #print(contactIndices)
+    #print(np.sum(lambdaSnapCleaned,axis=1) != 0)
     nonZerosIndices = contactIndices[np.sum(lambdaSnapCleaned,axis=1) != 0]
-    print(contactIndices[np.sum(lambdaSnapCleaned,axis=1) != 0])
-    print(dim)
+    #print(contactIndices[np.sum(lambdaSnapCleaned,axis=1) != 0])
+    #print(dim)
     nonZerosTable = np.array([-1]*int(dimension))
     for i in range(nonZerosIndices.shape[0]):
-        print (nonZerosIndices[i])
         nonZerosTable[nonZerosIndices[i]]=i
-    print(nonZerosTable)
+    #print(nonZerosTable)
     np.savetxt(NonZerosCoeffTable, nonZerosTable, header=str(dimension)+' '+str(1), comments='', fmt='%d')
     
 ### Contacts HyperReduction   
