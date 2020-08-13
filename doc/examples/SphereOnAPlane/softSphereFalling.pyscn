@@ -16,7 +16,7 @@ def createScene(rootNode):
                 #rootNode.findData('gravity').value='0 0 0';
                 rootNode.createObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
                 
-                reductionOn = False
+                reductionOn = True
                 lambdaModes = "lambdaModesSphereFine6.txt"
                 lambdaCoeffs = "lambdaCoeffsSphereFine6.txt"
 
@@ -81,7 +81,7 @@ def createScene(rootNode):
                 #subModelCollis.createObject('Triangle',group="0",name='TriSPhere')
                 #subModelCollis.createObject('Line',group="0",name='LineSPhere')
                 if reductionOn:
-                    subModelCollis.createObject('Point',group="0",name='PointSphere',computeNormals=True, lambdaModesPath=lambdaModes,lambdaModesCoeffsPath=lambdaCoeffs ,displayContactModes=False)
+                    subModelCollis.createObject('MORPoint',group="0",name='PointSphere',computeNormals=True, lambdaModesPath=lambdaModes,lambdaModesCoeffsPath=lambdaCoeffs ,displayContactModes=True)
                 else:
                     subModelCollis.createObject('Point',group="0",name='PointSphere', displayContactModes=False,computeNormals=True)
                 #subModelCollis.createObject('MORContactMapping',modesPath='lambdaModes.txt',contactIndicesPath = 'lambdaCoeffs.txt',storeLambda=True)

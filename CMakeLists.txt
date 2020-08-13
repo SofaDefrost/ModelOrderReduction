@@ -44,6 +44,12 @@ set(HEADER_FILES
     src/component/mapping/MORContactMapping.h
     src/component/mapping/MORContactMapping.inl
 
+    src/component/contact/MORFrictionContact.h
+    src/component/contact/MORFrictionContact.inl
+    src/component/contact/MORUnilateralInteractionConstraint.h
+    src/component/contact/MORUnilateralInteractionConstraint.inl
+    src/component/contact/MORpointModel.h
+    src/component/contact/MORpointModel.inl
     )
 set(SOURCE_FILES
     src/component/initModelOrderReduction.cpp
@@ -60,6 +66,10 @@ set(SOURCE_FILES
 
     src/component/mapping/ModelOrderReductionMapping.cpp
     src/component/mapping/MORContactMapping.cpp
+
+    src/component/contact/MORFrictionContact.cpp
+    src/component/contact/MORUnilateralInteractionConstraint.cpp
+    src/component/contact/MORpointModel.cpp
     )
 set(README_FILES
     README.md

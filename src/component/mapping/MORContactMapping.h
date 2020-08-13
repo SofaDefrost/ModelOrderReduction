@@ -154,18 +154,18 @@ struct MORContactMappingMatrixHelper;
 
 #if  !defined(SOFA_COMPONENT_MAPPING_MORCONTACTMAPPING_CPP)
 
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Vec3dTypes, defaulttype::Vec3dTypes >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Vec2Types, defaulttype::Vec2Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Vec1Types, defaulttype::Vec1Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Vec6Types, defaulttype::Vec6Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Vec6Types, defaulttype::Vec3dTypes >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Vec3dTypes, defaulttype::ExtVec3Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Vec6Types, defaulttype::ExtVec3Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Rigid3Types, defaulttype::Rigid3Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Rigid2Types, defaulttype::Rigid2Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Rigid3Types, defaulttype::Vec3dTypes >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Rigid3Types, defaulttype::ExtVec3Types >;
-extern template class SOFA_BASE_MECHANICS_API MORContactMapping< defaulttype::Rigid2Types, defaulttype::Vec2Types >;
+extern template class  MORContactMapping< defaulttype::Vec3dTypes, defaulttype::Vec3dTypes >;
+extern template class  MORContactMapping< defaulttype::Vec2Types, defaulttype::Vec2Types >;
+extern template class  MORContactMapping< defaulttype::Vec1Types, defaulttype::Vec1Types >;
+extern template class  MORContactMapping< defaulttype::Vec6Types, defaulttype::Vec6Types >;
+extern template class  MORContactMapping< defaulttype::Vec6Types, defaulttype::Vec3dTypes >;
+extern template class  MORContactMapping< defaulttype::Vec3dTypes, defaulttype::ExtVec3Types >;
+extern template class  MORContactMapping< defaulttype::Vec6Types, defaulttype::ExtVec3Types >;
+extern template class  MORContactMapping< defaulttype::Rigid3Types, defaulttype::Rigid3Types >;
+extern template class  MORContactMapping< defaulttype::Rigid2Types, defaulttype::Rigid2Types >;
+extern template class  MORContactMapping< defaulttype::Rigid3Types, defaulttype::Vec3dTypes >;
+extern template class  MORContactMapping< defaulttype::Rigid3Types, defaulttype::ExtVec3Types >;
+extern template class  MORContactMapping< defaulttype::Rigid2Types, defaulttype::Vec2Types >;
 
 
 
