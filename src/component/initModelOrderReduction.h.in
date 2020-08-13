@@ -18,7 +18,7 @@
 #define INITMODELORDERREDUCTION_H
 
 
-#include <sofa/helper/system/config.h>
+#include <sofa/config.h>
 
 #ifdef SOFA_BUILD_MODELORDERREDUCTION
 #define SOFA_MODELORDERREDUCTION_API SOFA_EXPORT_DYNAMIC_LIBRARY

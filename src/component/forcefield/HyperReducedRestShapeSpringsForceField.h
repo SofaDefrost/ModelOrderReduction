@@ -90,15 +90,15 @@ public:
     using HyperReducedHelper::m_RIDsize;
 
 
-    using RestShapeSpringsForceField<DataTypes>::points;
-    using RestShapeSpringsForceField<DataTypes>::stiffness;
-    using RestShapeSpringsForceField<DataTypes>::angularStiffness;
-    using RestShapeSpringsForceField<DataTypes>::pivotPoints;
-    using RestShapeSpringsForceField<DataTypes>::external_points;
-    using RestShapeSpringsForceField<DataTypes>::recompute_indices;
-    using RestShapeSpringsForceField<DataTypes>::drawSpring;
-    using RestShapeSpringsForceField<DataTypes>::springColor;
-    using RestShapeSpringsForceField<DataTypes>::restMState;
+    using RestShapeSpringsForceField<DataTypes>::d_points;
+    using RestShapeSpringsForceField<DataTypes>::d_stiffness;
+    using RestShapeSpringsForceField<DataTypes>::d_angularStiffness;
+    using RestShapeSpringsForceField<DataTypes>::d_pivotPoints;
+    using RestShapeSpringsForceField<DataTypes>::d_external_points;
+    using RestShapeSpringsForceField<DataTypes>::d_recompute_indices;
+    using RestShapeSpringsForceField<DataTypes>::d_drawSpring;
+    using RestShapeSpringsForceField<DataTypes>::d_springColor;
+    using RestShapeSpringsForceField<DataTypes>::l_restMState;
 
     using RestShapeSpringsForceField<DataTypes>::matS;
 

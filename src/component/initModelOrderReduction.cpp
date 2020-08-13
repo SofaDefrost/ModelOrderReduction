@@ -15,6 +15,10 @@
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
 #include <ModelOrderReduction/initModelOrderReduction.h>
+#include <sofa/core/ObjectFactory.h>
+
+#include <sofa/helper/system/PluginManager.h>
+using sofa::helper::system::PluginManager;
 
 #ifdef MOR_PYTHON
 #include <SofaPython/PythonEnvironment.h>
