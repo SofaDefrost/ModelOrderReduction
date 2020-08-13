@@ -28,7 +28,6 @@
 #include <sofa/core/objectmodel/Data.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 #include <sofa/core/behavior/ForceField.h>
-#include <sofa/helper/system/config.h>
 #include <SofaDeformable/config.h>
 #include <fstream> // for reading the file
 #include <iostream>
@@ -49,7 +48,7 @@ namespace forcefield
 
 using sofa::component::loader::MatrixLoader;
 
-class HyperReducedHelper : public virtual core::objectmodel::BaseObject
+class SOFA_MODELORDERREDUCTION_API HyperReducedHelper : public virtual core::objectmodel::BaseObject
 {
 public:
 

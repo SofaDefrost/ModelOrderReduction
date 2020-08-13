@@ -72,21 +72,21 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
 {
     ForceField<DataTypes>::init();
 
-    if (stiffness.getValue().empty())
+    if (d_stiffness.getValue().empty())
     {
         msg_info() << "No stiffness is defined, assuming equal stiffness on each node, k = 100.0 ";
 
         VecReal stiffs;
         stiffs.push_back(100.0);
-        stiffness.setValue(stiffs);
+        d_stiffness.setValue(stiffs);
     }
 
-    if (restMState.get() == NULL)
+    if (l_restMState.get() == NULL)
     {
         useRestMState = false;
         msg_info() << "no external rest shape used";
 
-        if(!restMState.empty())
+        if(!l_restMState.empty())
         {
             msg_warning() << "external_rest_shape in node " << this->getContext()->getName() << " not found";
         }
@@ -110,19 +110,19 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
         matS.resize(state->getMatrixSize(),state->getMatrixSize());
     }
     lastUpdatedStep = -1.0;
-    this->initMOR(points.getValue().size());
+    this->initMOR(d_points.getValue().size());
 }
 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::reinit()
 {
-    if (stiffness.getValue().empty())
+    if (d_stiffness.getValue().empty())
     {
         msg_info() << "No stiffness is defined, assuming equal stiffness on each node, k = 100.0 " ;
 
         VecReal stiffs;
         stiffs.push_back(100.0);
-        stiffness.setValue(stiffs);
+        d_stiffness.setValue(stiffs);
     }
 }
 
@@ -132,14 +132,14 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::recomputeIndices()
     m_indices.clear();
     m_ext_indices.clear();
 
-    for (unsigned int i = 0; i < points.getValue().size(); i++)
+    for (unsigned int i = 0; i < d_points.getValue().size(); i++)
     {
-        m_indices.push_back(points.getValue()[i]);
+        m_indices.push_back(d_points.getValue()[i]);
     }
 
-    for (unsigned int i = 0; i < external_points.getValue().size(); i++)
+    for (unsigned int i = 0; i < d_external_points.getValue().size(); i++)
     {
-        m_ext_indices.push_back(external_points.getValue()[i]);
+        m_ext_indices.push_back(d_external_points.getValue()[i]);
     }
 
     if (m_indices.empty())
@@ -204,7 +204,7 @@ bool HyperReducedRestShapeSpringsForceField<DataTypes>::checkOutOfBoundsIndices(
 template<class DataTypes>
 const typename HyperReducedRestShapeSpringsForceField<DataTypes>::DataVecCoord* HyperReducedRestShapeSpringsForceField<DataTypes>::getExtPosition() const
 {
-    return (useRestMState ? restMState->read(VecCoordId::position()) : this->mstate->read(VecCoordId::restPosition()));
+    return (useRestMState ? l_restMState->read(VecCoordId::position()) : this->mstate->read(VecCoordId::restPosition()));
 }
 
 template<class DataTypes>
@@ -220,13 +220,13 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
 
     f1.resize(p1.size());
 
-    if (recompute_indices.getValue())
+    if (d_recompute_indices.getValue())
     {
         this->recomputeIndices();
     }
 
     unsigned int i;
-    const VecReal &k = stiffness.getValue();
+    const VecReal &k = d_stiffness.getValue();
     if ( k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];
@@ -311,7 +311,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const Mechanic
     ReadAccessor< DataVecDeriv > dx1 = dx;
     Real kFactor = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
 
-    const VecReal &k = stiffness.getValue();
+    const VecReal &k = d_stiffness.getValue();
     if (k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];
@@ -356,7 +356,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const Mechanic
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams *vparams)
 {
-    if (!vparams->displayFlags().getShowForceFields() || !drawSpring.getValue())
+    if (!vparams->displayFlags().getShowForceFields() || !d_drawSpring.getValue())
         return;  /// \todo put this in the parent class
 
     if(DataTypes::spatial_dimensions > 3)
@@ -413,7 +413,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
         }
     }
     //todo(dmarchal) because of https://github.com/sofa-framework/sofa/issues/64
-    vparams->drawTool()->drawLines(vertices,5,Vec4f(springColor.getValue()));
+    vparams->drawTool()->drawLines(vertices,5,Vec4f(d_springColor.getValue()));
     vparams->drawTool()->restoreLastState();
 }
 
@@ -432,7 +432,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
 
     unsigned int curIndex = 0;
 
-    const VecReal &k = stiffness.getValue();
+    const VecReal &k = d_stiffness.getValue();
     if (k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];
@@ -509,7 +509,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addSubKToMatrix(const Me
 
     unsigned int curIndex = 0;
 
-    const VecReal &k = stiffness.getValue();
+    const VecReal &k = d_stiffness.getValue();
     if (k.size()!= m_indices.size() )
     {
         const Real k0 = k[0];

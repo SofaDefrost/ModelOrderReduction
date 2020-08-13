@@ -32,7 +32,7 @@ namespace forcefield
 using namespace sofa::defaulttype;
 
 
-SOFA_DECL_CLASS(HyperReducedHexahedronFEMForceField)
+//SOFA_DECL_CLASS(HyperReducedHexahedronFEMForceField)
 
 // Register in the Factory
 int HyperReducedHexahedronFEMForceFieldClass = core::RegisterObject("Hexahedral finite elements")

@@ -37,7 +37,7 @@ namespace forcefield
 
 
 template<class DataTypes>
-class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
+class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
 {
 public:
     SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(HexahedronFEMForceField, DataTypes), HyperReducedHelper);
