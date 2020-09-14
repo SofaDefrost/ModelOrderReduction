@@ -96,12 +96,12 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools/")
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools/ DESTINATION tools/ COMPONENT resources)
 endif()
 ## Install rules for the library and headers; CMake package configurations files
-sofa_generate_package(
-    NAME ModelOrderReduction
-    VERSION ${PROJECT_VERSION}
+sofa_create_package_with_targets(
+    PACKAGE_NAME ModelOrderReduction
+    PACKAGE_VERSION ${PROJECT_VERSION}
     TARGETS ${PROJECT_NAME}
-    INCLUDE_INSTALL_DIR component
-    INCLUDE_SOURCE_DIR src/component
+    INCLUDE_SOURCE_DIR "src/component"
+    INCLUDE_INSTALL_DIR "component"
     RELOCATABLE "plugins"
     )
 
