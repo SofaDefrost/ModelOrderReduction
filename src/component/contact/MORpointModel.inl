@@ -140,7 +140,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
         }
 
         vparams->drawTool()->drawPoints(pointsP, 3, defaulttype::Vec<4, float>(this->getColor4f()));
-        vparams->drawTool()->drawLines(pointsL, 3, defaulttype::Vec<4, float>( {0.25f, 0.75f, 0.25f, 1}));
+        vparams->drawTool()->drawLines(pointsL, 3, defaulttype::Vec<4, float>( this->getColor4f()));
 
         if (m_displayFreePosition.getValue())
         {
