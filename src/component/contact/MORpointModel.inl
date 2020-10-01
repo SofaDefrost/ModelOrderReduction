@@ -79,18 +79,6 @@ void MORPointCollisionModel<DataTypes>::init()
 }
 
 
-
-
-
-
-template<class DataTypes>
-void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams*, int index)
-{
-    SOFA_UNUSED(index);
-    //TODO(fred roy 2018-06-21)...please implement.
-}
-
-
 template<class DataTypes>
 void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* vparams)
 {

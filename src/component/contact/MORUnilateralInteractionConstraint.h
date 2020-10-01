@@ -29,6 +29,7 @@
 #include <map>
 #include <deque>
 #include <SofaConstraint/UnilateralInteractionConstraint.h>
+#include <Eigen/Sparse>
 
 namespace sofa
 {

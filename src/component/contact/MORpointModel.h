@@ -32,6 +32,8 @@
 #include <sofa/core/topology/BaseMeshTopology.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <vector>
+#include <Eigen/Sparse>
+
 namespace sofa
 {
 
@@ -62,7 +64,6 @@ protected:
 
     // -- CollisionModel interface
 
-    void draw(const core::visual::VisualParams*,int index) override;
     void draw(const core::visual::VisualParams* vparams) override;
 
     Data<bool> displayContactModes;

@@ -44,16 +44,6 @@ int MORContactMappingClass = core::RegisterObject("Special case of mapping where
         .add< MORContactMapping< Vec3dTypes, Vec3dTypes > >()
         .add< MORContactMapping< Vec2Types, Vec2Types > >()
         .add< MORContactMapping< Vec1Types, Vec1Types > >()
-        .add< MORContactMapping< Vec6Types, Vec3dTypes > >()
-        .add< MORContactMapping< Vec6Types, Vec6Types > >()
-        .add< MORContactMapping< Rigid3Types, Rigid3Types > >()
-        .add< MORContactMapping< Rigid2Types, Rigid2Types > >()
-
-
-
-// Rigid -> Vec
-        .add< MORContactMapping< Rigid3Types, Vec3dTypes > >()
-        .add< MORContactMapping< Rigid2Types, Vec2Types > >()
 
         ;
 
@@ -61,12 +51,6 @@ int MORContactMappingClass = core::RegisterObject("Special case of mapping where
 template class  MORContactMapping< Vec3dTypes, Vec3dTypes >;
 template class  MORContactMapping< Vec2Types, Vec2Types >;
 template class  MORContactMapping< Vec1Types, Vec1Types >;
-template class  MORContactMapping< Vec6Types, Vec3dTypes >;
-template class  MORContactMapping< Vec6Types, Vec6Types >;
-template class  MORContactMapping< Rigid3Types, Rigid3Types >;
-template class  MORContactMapping< Rigid2Types, Rigid2Types >;
-template class  MORContactMapping< Rigid3Types, Vec3dTypes >;
-template class  MORContactMapping< Rigid2Types, Vec2Types >;
 
 
 
