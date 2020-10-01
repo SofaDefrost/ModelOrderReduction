@@ -31,7 +31,7 @@
 #include <SofaDeformable/config.h>
 #include <fstream> // for reading the file
 #include <iostream>
-
+#include <Eigen/Sparse>
 
 #include "../loader/MatrixLoader.h"
 #include <sofa/core/objectmodel/BaseContext.h>
