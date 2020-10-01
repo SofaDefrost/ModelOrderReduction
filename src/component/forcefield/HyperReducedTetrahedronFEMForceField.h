@@ -64,6 +64,7 @@ public:
     typedef core::topology::BaseMeshTopology::Tetra Element;
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
     typedef core::topology::BaseMeshTopology::Tetrahedron Tetrahedron;
+    using index_type = sofa::defaulttype::index_type;
 
     enum { SMALL = 0,   ///< Symbol of small displacements tetrahedron solver
             LARGE = 1,   ///< Symbol of corotational large displacements tetrahedron solver based on a QR decomposition    -> Nesme et al 2005 "Efficient, Physically Plausible Finite Elements"
@@ -118,11 +119,12 @@ protected:
     /// @name Full system matrix assembly support
     /// @{
 
-    typedef std::pair<int,Real> Col_Value;
+    typedef std::pair<index_type,Real> Col_Value;
     typedef helper::vector< Col_Value > CompressedValue;
     typedef helper::vector< CompressedValue > CompressedMatrix;
 
     using TetrahedronFEMForceField<DataTypes>::_stiffnesses;
+
     /// @}
 
     using TetrahedronFEMForceField<DataTypes>::m_potentialEnergy;
