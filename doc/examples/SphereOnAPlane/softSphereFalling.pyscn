@@ -1,0 +1,108 @@
+import Sofa
+import os
+pathSceneFile = os.path.dirname(os.path.abspath(__file__))
+pathMesh = os.path.dirname(os.path.abspath(__file__))+'/'
+# Units: mm, kg, s.     Pressure in kPa = k (kg/(m.s^2)) = k (g/(mm.s^2) =  kg/(mm.s^2)
+
+
+
+def createScene(rootNode):
+                rootNode.createObject('RequiredPlugin', name='SoftRobots', pluginName='SoftRobots')
+                rootNode.createObject('RequiredPlugin', name='SofaPython', pluginName='SofaPython')
+                rootNode.createObject('RequiredPlugin', name='ModelOrderReduction', pluginName='ModelOrderReduction')
+                rootNode.findData('dt').value=0.005
+
+                rootNode.findData('gravity').value='0 -9810 0';
+                #rootNode.findData('gravity').value='0 0 0';
+                rootNode.createObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
+                
+                reductionOn = True
+                lambdaModes = "lambdaModesSphereFine6.txt"
+                lambdaCoeffs = "lambdaCoeffsSphereFine6.txt"
+
+                rootNode.createObject('FreeMotionAnimationLoop')
+                #rootNode.createObject('GenericConstraintSolver', printLog=True, tolerance="1e-6", maxIterations="500", storeLambdas=True)
+                if reductionOn:
+                    rootNode.createObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15')
+                else:
+                    #rootNode.createObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',storeLambdas=True, lambdaPath="lambdaStored.txt",computeConstraintForces=True)
+                    rootNode.createObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',computeConstraintForces=True)
+                    rootNode.createObject('PythonScriptController', filename="lambdaDumper.py", classname="storeLambda", variables="Zetest.txt")
+
+
+                rootNode.createObject('CollisionPipeline', verbose="0")
+                rootNode.createObject('BruteForceDetection', name="N2")
+                #rootNode.createObject('CollisionResponse', response="StickContactConstraint", responseParams="mu=0.5")
+                if not reductionOn:
+                    rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.0")
+                else:
+                    rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath="+lambdaModes+"?lambdaModesCoeffsPath="+lambdaCoeffs)
+                #rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0", name='Colcol')
+                #rootNode.createObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath=lambdaModesVLONG7.txt?lambdaModesCoeffsPath=lambdaCoeffsVLONG7.txt")
+
+                rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance="1.0", contactDistance="0.5", angleCone="0.01")
+
+                solverNode = rootNode.createChild('solverNode')
+                solverNode.createObject('EulerImplicit', name='odesolver',firstOrder="false", rayleighStiffness='0.1', rayleighMass='0.1', printLog="0",verbose="0")
+                solverNode.createObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrix3d")
+                solverNode.createObject('GenericConstraintCorrection', solverName='preconditioner',printLog=True, name='ResReso')
+
+
+                ##########################################
+                # FEM Model                              #
+                ##########################################
+                
+                sphereTranslation = [0,7,0]
+                model = solverNode.createChild('model')
+                model.createObject('MeshVTKLoader', name='loader', filename=pathMesh+'sphere.vtk', translation=sphereTranslation)
+                model.createObject('Mesh',src = '@loader')
+                model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0',printLog="0")
+                model.createObject('UniformMass', totalMass='0.1', printLog='0')
+                model.createObject('TetrahedronFEMForceField', template='Vec3d',youngModulus=30)
+
+                
+
+                                
+                modelCollis = model.createChild('modelCollis')
+                #modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+                modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+                modelCollis.createObject('TriangleSetTopologyContainer', src='@loader', name='container')
+                modelCollis.createObject('MechanicalObject', name='collisMO', template='Vec3d')
+                #modelCollis.createObject('Triangle',group="0")
+                #modelCollis.createObject('Line',group="0")
+                #modelCollis.createObject('Point',group="0")
+                modelCollis.createObject('BarycentricMapping')
+                
+                subModelCollis = modelCollis.createChild('subModelCollis')
+                #subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+                subModelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+                subModelCollis.createObject('TriangleSetTopologyContainer', src='@loader', name='container')
+                subModelCollis.createObject('MechanicalObject', name='subModelCollisMO', template='Vec3d')
+                #subModelCollis.createObject('Triangle',group="0",name='TriSPhere')
+                #subModelCollis.createObject('Line',group="0",name='LineSPhere')
+                if reductionOn:
+                    subModelCollis.createObject('MORPoint',group="0",name='PointSphere',computeNormals=True, lambdaModesPath=lambdaModes,lambdaModesCoeffsPath=lambdaCoeffs ,displayContactModes=True)
+                else:
+                    subModelCollis.createObject('Point',group="0",name='PointSphere', displayContactModes=False,computeNormals=True)
+                #subModelCollis.createObject('MORContactMapping',modesPath='lambdaModes.txt',contactIndicesPath = 'lambdaCoeffs.txt',storeLambda=True)
+                ##subModelCollis.createObject('IdentityMapping')
+                if not reductionOn:
+                    subModelCollis.createObject('MORContactMapping',lambdaIndicesPath="lambdaIndices.txt",storeLambda=True)
+                else:
+                    subModelCollis.createObject('IdentityMapping')
+                
+
+
+                rotation=[20,0,0]
+                #rotation=[30,0,0]
+                planeNode = rootNode.createChild('Plane')
+                planeNode.createObject('MeshObjLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true",rotation=rotation)
+                planeNode.createObject('Mesh', src="@loader")
+                planeNode.createObject('MechanicalObject', src="@loader", rotation="0 0 0", translation="0 0 0", scale="1")
+                planeNode.createObject('Triangle',simulated="0", moving="0",group="1",name='TriPlane')
+                #planeNode.createObject('Line',simulated="0", moving="0",group="1")
+                #planeNode.createObject('Point',simulated="0", moving="0",group="1")
+                #planeNode.createObject('OglModel',name="Visual", fileMesh="mesh/floorFlat.obj", color="1 0 0 1",rotation=rotation, translation="0 0 0", scale="1")
+                planeNode.createObject('UncoupledConstraintCorrection')
+
+                return rootNode
