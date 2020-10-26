@@ -118,7 +118,9 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
     #W = lambdaSnapVeryCleaned[:,0:k]
     normalForceIndices = range(0,sizeProblem,3)
     minErr = 200
-    for j in range(100):
+    #for j in range(100):
+    for j in range(50):
+
         #input("Press Enter to continue...")
         WTW = np.dot(np.transpose(W),W)
         #print('titi:', np.dot(np.transpose(W),W))
