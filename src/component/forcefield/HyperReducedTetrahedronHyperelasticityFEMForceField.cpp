@@ -19,8 +19,7 @@
 
 #include "HyperReducedTetrahedronHyperelasticityFEMForceField.inl"
 #include <sofa/core/ObjectFactory.h>
-#include <sofa/defaulttype/Vec3Types.h>
-#include <SofaMiscFem/initMiscFEM.h>
+#include <sofa/defaulttype/VecTypes.h>
 namespace sofa
 {
 
