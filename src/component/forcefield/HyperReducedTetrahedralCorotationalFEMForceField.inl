@@ -55,7 +55,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::init()
 {
 
     TetrahedralCorotationalFEMForceField<DataTypes>::init();
-    this->initMOR(_topology->getNbTetrahedra());
+    this->initMOR(_topology->getNbTetrahedra(),notMuted());
 
 }
 

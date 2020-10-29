@@ -61,7 +61,14 @@ void MatrixLoader<EigenMatrixType>::load(){
 
         modesFile.close();
         if (nbLine-1 != m_nbRows)
+        {
             msg_warning("MatrixLoader") << "Problem with matrix file " << m_fileName << " : wrong row number !!!";
+        }
+        else
+        {
+            if (m_printLog)
+                msg_info("MatrixLoader") << "File " << m_fileName << " read succesfully.";
+        }
     }
     else
     {

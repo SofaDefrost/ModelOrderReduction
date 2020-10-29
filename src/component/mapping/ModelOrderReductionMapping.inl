@@ -54,13 +54,8 @@ void ModelOrderReductionMapping<TIn, TOut>::init()
     MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
     matLoader->m_printLog = this->notMuted();
     matLoader->setFileName(d_modesPath.getValue());
-    msg_info(this) << "Name of data file read";
-
     matLoader->load();
-    msg_info(this) << "file loaded";
-
     matLoader->getMatrix(m_modesEigen);
-    msg_info(this) << "Matrix Obtained";
 
     if (m_modesEigen.cols()<n_in)
     {
@@ -79,8 +74,6 @@ void ModelOrderReductionMapping<TIn, TOut>::init()
 
     if (d_rotation.getValue()[0] != 0.0 || d_rotation.getValue()[1] != 0.0 || d_rotation.getValue()[2] != 0.0)
         applyRotation(d_rotation.getValue()[0], d_rotation.getValue()[1], d_rotation.getValue()[2]);
-
-    msg_info(this) <<"out init";
 }
 
 //Apply Rotation from Euler angles (in degree!)

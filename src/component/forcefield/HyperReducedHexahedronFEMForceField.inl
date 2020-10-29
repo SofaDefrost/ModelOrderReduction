@@ -64,7 +64,7 @@ template <class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::init()
 {
     HexahedronFEMForceField<DataTypes>::init();
-    this->initMOR(this->getIndexedElements()->size());
+    this->initMOR(this->getIndexedElements()->size(),notMuted());
 }
 
 template<class DataTypes>

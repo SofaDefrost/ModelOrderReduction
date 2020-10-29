@@ -88,10 +88,14 @@ public:
     {
     }
 
-
-    void initMOR(unsigned int nbElements){
+    void initMOR(unsigned int nbElements)
+    {
+        initMOR(nbElements, false);
+    }
+    void initMOR(unsigned int nbElements, bool printLog){
         if (d_prepareECSW.getValue()){
             MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
+            matLoader->m_printLog = printLog;
             matLoader->setFileName(d_modesPath.getValue());
             matLoader->load();
             matLoader->getMatrix(m_modes);
@@ -114,12 +118,14 @@ public:
         {
 
             MatrixLoader<Eigen::VectorXd>* weightsMatLoader = new MatrixLoader<Eigen::VectorXd>();
+            weightsMatLoader->m_printLog = printLog;
             weightsMatLoader->setFileName(d_weightsPath.getValue());
             weightsMatLoader->load();
             weightsMatLoader->getMatrix(weights);
             delete weightsMatLoader;
 
             MatrixLoader<Eigen::VectorXi>* RIDMatLoader = new MatrixLoader<Eigen::VectorXi>();
+            RIDMatLoader->m_printLog = printLog;
             RIDMatLoader->setFileName(d_RIDPath.getValue());
             RIDMatLoader->load();
             RIDMatLoader->getMatrix(reducedIntegrationDomain);

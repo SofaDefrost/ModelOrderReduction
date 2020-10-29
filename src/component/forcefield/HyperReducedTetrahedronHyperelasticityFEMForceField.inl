@@ -69,7 +69,7 @@ template <class DataTypes> HyperReducedTetrahedronHyperelasticityFEMForceField<D
 template <class DataTypes> void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::init()
 {
     TetrahedronHyperelasticityFEMForceField<DataTypes>::init();
-    this->initMOR(m_topology->getNbTetrahedra());
+    this->initMOR(m_topology->getNbTetrahedra(),notMuted());
     msg_info(this) << "RID is: " << reducedIntegrationDomain ;
     msg_info(this) << "d_performECSW is: " << d_performECSW.getValue() ;
     msg_info(this) << "d_prepareECSW is: " << d_prepareECSW.getValue() ;

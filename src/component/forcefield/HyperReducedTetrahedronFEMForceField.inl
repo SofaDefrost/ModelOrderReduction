@@ -305,7 +305,7 @@ template <class DataTypes>
 void HyperReducedTetrahedronFEMForceField<DataTypes>::init()
 {
     TetrahedronFEMForceField<DataTypes>::init();
-    this->initMOR(_indexedElements->size());
+    this->initMOR(_indexedElements->size(),notMuted());
 }
 
 

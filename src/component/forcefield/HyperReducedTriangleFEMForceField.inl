@@ -60,7 +60,7 @@ template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::init()
 {
     TriangleFEMForceField<DataTypes>::init();
-    this->initMOR(_indexedElements->size());
+    this->initMOR(_indexedElements->size(),notMuted());
 }
 
 
