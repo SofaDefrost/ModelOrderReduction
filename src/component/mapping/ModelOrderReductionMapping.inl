@@ -76,7 +76,38 @@ void ModelOrderReductionMapping<TIn, TOut>::init()
 
     Inherit::init();
 
+    if (d_rotation.getValue()[0] != 0.0 || d_rotation.getValue()[1] != 0.0 || d_rotation.getValue()[2] != 0.0)
+        applyRotation(d_rotation.getValue()[0], d_rotation.getValue()[1], d_rotation.getValue()[2]);
+
     msg_info(this) <<"out init";
+}
+
+//Apply Rotation from Euler angles (in degree!)
+template <class TIn, class TOut>
+void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const SReal rx, const SReal ry, const SReal rz)
+{
+    sofa::defaulttype::Quaternion q =
+        helper::Quater< SReal >::createQuaterFromEuler(sofa::defaulttype::Vec< 3, SReal >(rx, ry, rz) * M_PI / 180.0);
+    applyRotation(q);
+}
+
+template <class TIn, class TOut>
+void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const defaulttype::Quat q)
+{
+    sofa::defaulttype::Vec<3, InReal> pos;
+    for (unsigned int i = 0; i < m_modesEigen.cols(); i++) // loop over modes
+    {
+        for (unsigned int j = 0; j < m_modesEigen.rows(); j+=3) // loop over positions
+        {
+            pos[0] = m_modesEigen(j, i);
+            pos[1] = m_modesEigen(j+1, i);
+            pos[2] = m_modesEigen(j+2, i);
+            sofa::defaulttype::Vec<3, InReal> newposition = q.rotate(pos);
+            m_modesEigen(j, i)   = newposition[0];
+            m_modesEigen(j+1, i) = newposition[1];
+            m_modesEigen(j+2, i) = newposition[2];
+        }
+    }
 }
 
 template <class TIn, class TOut>
