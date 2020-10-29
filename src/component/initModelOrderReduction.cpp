@@ -52,7 +52,7 @@ void initExternalModule()
     }
 
 #ifdef MOR_PYTHON
-    PythonEnvironment::addPythonModulePathsForPluginsByName(getModuleName());
+    PythonEnvironment::addPythonModulePathsForPluginsByName("ModelOrderReduction");
 #endif
 }
 
