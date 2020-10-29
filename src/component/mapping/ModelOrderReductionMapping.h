@@ -83,6 +83,8 @@ public:
     typedef typename OutDataTypes::VecCoord OutVecCoord;
     typedef typename OutDataTypes::VecDeriv OutVecDeriv;
 
+    typedef sofa::defaulttype::Vector3 Vector3;
+
     typedef typename Inherit::ForceMask ForceMask;
     typedef core::topology::BaseMeshTopology::index_type Index;
     typedef core::topology::BaseMeshTopology::Tetra Element;
@@ -110,6 +112,7 @@ public:
 protected:
     ModelOrderReductionMapping()
         : d_modesPath(initData(&d_modesPath,"modesPath","Path to the file containing the modes. REQUIRED"))
+        , d_rotation(initData(&d_rotation,"rotation","Rotation of the modes"))
     {
         m_Js.resize( 1 );
         m_Js[0] = &m_J;
@@ -128,6 +131,10 @@ public:
     virtual bool sameTopology() const { return false; }
 
     void init();
+
+    void applyRotation(const SReal rx, const SReal ry, const SReal rz);
+
+    void applyRotation(const defaulttype::Quat q);
 
     void apply(const core::MechanicalParams *mparams, Data<VecCoord>& out, const Data<InVecCoord>& in);
 
@@ -158,6 +165,8 @@ protected:
     using core::Mapping<TIn, TOut>::toModel ;
 
     friend core::Mapping<TIn, TOut>;
+
+    Data<Vector3> d_rotation;
 
 public:
 
