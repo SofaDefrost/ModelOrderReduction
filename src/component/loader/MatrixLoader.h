@@ -37,6 +37,8 @@ public:
     void getMatrix(EigenMatrixType& matrix);
     void setFileName(std::string fileName);
 
+    bool m_printLog = false;
+
 protected:
 
     unsigned int m_nbRows;

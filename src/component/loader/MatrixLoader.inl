@@ -41,7 +41,8 @@ void MatrixLoader<EigenMatrixType>::load(){
     {
         std::string lineValues;  // déclaration d'une chaîne qui contiendra la ligne lue
         unsigned int nbLine = 0;
-        msg_info("MatrixLoader") << "[MatrixLoader] Reading file " << m_fileName << " ...";
+        if (m_printLog)
+            msg_info("MatrixLoader") << "Reading file " << m_fileName << " ...";
         while (std::getline(modesFile, lineValues))
         {
             std::stringstream ssin(lineValues);
