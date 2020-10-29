@@ -22,7 +22,6 @@
 #include <SofaBaseTopology/GridTopology.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/helper/AdvancedTimer.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -44,7 +43,6 @@ namespace mapping
 
 using std::vector;
 using sofa::component::loader::MatrixLoader;
-using sofa::component::container::MechanicalObject;
 
 template<class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::init()
