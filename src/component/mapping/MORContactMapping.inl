@@ -27,7 +27,7 @@
 #include <sofa/defaulttype/VecTypes.h>
 #include <fstream> // for reading the file
 #include <iostream>
-#include "/home/olivier/sofa/plugins/ModelOrderReduction/src/component/loader/MatrixLoader.h"
+#include "../loader/MatrixLoader.h"
 
 namespace sofa
 {

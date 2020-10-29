@@ -52,7 +52,7 @@ void ModelOrderReductionMapping<TIn, TOut>::init()
     msg_info(this) << "Number of modes: "<<n_in<<" Number of FEM nodes: "<<n_out;
 
     MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
-    matLoader->m_printLog = notMuted();
+    matLoader->m_printLog = this->notMuted();
     matLoader->setFileName(d_modesPath.getValue());
     msg_info(this) << "Name of data file read";
 

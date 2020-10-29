@@ -27,8 +27,8 @@
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/defaulttype/Vec.h>
 #include <sofa/defaulttype/RGBAColor.h>
-#include "/home/olivier/sofa/plugins/ModelOrderReduction/src/component/loader/MatrixLoader.h"
-#include "/home/olivier/sofa/plugins/ModelOrderReduction/src/component/loader/MatrixLoader.inl"
+#include "../loader/MatrixLoader.h"
+#include "../loader/MatrixLoader.inl"
 
 namespace sofa
 {
