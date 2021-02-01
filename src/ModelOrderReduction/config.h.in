@@ -14,38 +14,24 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_CPP
-#include "HyperReducedTetrahedronFEMForceField.inl"
-#include <sofa/defaulttype/VecTypes.h>
-#include <sofa/core/ObjectFactory.h>
-#include <assert.h>
-#include <ModelOrderReduction/initModelOrderReduction.h>
-
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
-{
-
-using namespace sofa::defaulttype;
+#ifndef INITMODELORDERREDUCTION_H
+#define INITMODELORDERREDUCTION_H
 
 
-SOFA_DECL_CLASS(HyperReducedTetrahedronFEMForceField)
+#include <sofa/config.h>
 
-// Register in the Factory
-int HyperReducedTetrahedronFEMForceFieldClass = core::RegisterObject("Tetrahedral finite elements")
-        .add< HyperReducedTetrahedronFEMForceField<Vec3Types> >()
-        ;
+#ifdef SOFA_BUILD_MODELORDERREDUCTION
+#define SOFA_MODELORDERREDUCTION_API SOFA_EXPORT_DYNAMIC_LIBRARY
+#else
+#define SOFA_MODELORDERREDUCTION_API SOFA_IMPORT_DYNAMIC_LIBRARY
+#endif
 
-template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedronFEMForceField<Vec3Types>;
+#cmakedefine MOR_PYTHON
 
-} // namespace forcefield
+/** \mainpage
+  This is a the starting page of the plugin documentation, defined in file initModelOrderReduction.h
+  */
 
-} // namespace component
-
-} // namespace sofa
+#endif // INITINITMODELORDERREDUCTION_H
 
 

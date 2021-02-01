@@ -1,6 +1,6 @@
 /******************************************************************************
-*       SOFA, Simulation Open-Framework Architecture, development version     *
-*                (c) 2006-2019 INRIA, USTL, UJF, CNRS, MGH                    *
+*                 SOFA, Simulation Open-Framework Architecture                *
+*                    (c) 2006 INRIA, USTL, UJF, CNRS, MGH                     *
 *                                                                             *
 * This program is free software; you can redistribute it and/or modify it     *
 * under the terms of the GNU Lesser General Public License as published by    *
@@ -19,10 +19,10 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#define MOR_MORUNILATERALINTERACTIONCONSTRAINT_CPP
-#include "MORUnilateralInteractionConstraint.inl"
-#include <sofa/defaulttype/VecTypes.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
+#define MOR_POINTCOLLISIONMODEL_CPP
+#include "MORpointModel.inl"
+#include <SofaMeshCollision/PointModel.inl>
+
 #include <sofa/core/ObjectFactory.h>
 
 namespace sofa
@@ -31,26 +31,23 @@ namespace sofa
 namespace component
 {
 
-namespace constraintset
+namespace collision
 {
 
 using namespace sofa::defaulttype;
-using namespace sofa::helper;
+using namespace sofa::core::collision;
+using namespace helper;
 
-//TODO(dmarchal) What does this TODO mean ?
-int MORUnilateralInteractionConstraintClass = core::RegisterObject("TODO-MORUnilateralInteractionConstraint")
-        .add< MORUnilateralInteractionConstraint<Vec3Types> >()
+int MORPointCollisionModelClass = core::RegisterObject("Collision model which represents a set of points")
+        .add< MORPointCollisionModel<defaulttype::Vec3Types> >()
 
+        .addAlias("MORPoint")
         ;
 
-
-template class SOFA_CONSTRAINT_API MORUnilateralInteractionConstraint<Vec3Types>;
-
+template class SOFA_MODELORDERREDUCTION_API MORPointCollisionModel<defaulttype::Vec3Types>;
 
 
-
-
-} // namespace constraintset
+} // namespace collision
 
 } // namespace component
 

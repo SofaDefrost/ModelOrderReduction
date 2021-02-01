@@ -16,7 +16,7 @@
 ******************************************************************************/
 #ifndef MECHANICALMATRIXMAPPERMOR_H
 #define MECHANICALMATRIXMAPPERMOR_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 
 #include <SofaGeneralAnimationLoop/MechanicalMatrixMapper.h>
 

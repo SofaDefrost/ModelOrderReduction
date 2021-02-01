@@ -14,44 +14,38 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_LOADER_MATRIXLOADER_H
-#define SOFA_COMPONENT_LOADER_MATRIXLOADER_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_CPP
+#include "HyperReducedTetrahedronFEMForceField.inl"
+#include <sofa/defaulttype/VecTypes.h>
+#include <sofa/core/ObjectFactory.h>
+#include <assert.h>
+#include <ModelOrderReduction/config.h>
 
-#include <iostream>
-#include <vector>
+namespace sofa
+{
 
-namespace sofa {
-namespace component {
-namespace loader {
+namespace component
+{
 
-template< class EigenMatrixType >
-class MatrixLoader {
+namespace forcefield
+{
 
-public:
-
-    MatrixLoader(){}
-    virtual ~MatrixLoader(){}
-
-    void load();
-    void getMatrix(EigenMatrixType& matrix);
-    void setFileName(std::string fileName);
-
-    bool m_printLog = false;
-
-protected:
-
-    unsigned int m_nbRows;
-    unsigned int m_nbColumns;
-    std::string m_fileName;
-    EigenMatrixType m_matrix;
-
-};
+using namespace sofa::defaulttype;
 
 
+SOFA_DECL_CLASS(HyperReducedTetrahedronFEMForceField)
 
-}
-}
-}
+// Register in the Factory
+int HyperReducedTetrahedronFEMForceFieldClass = core::RegisterObject("Tetrahedral finite elements")
+        .add< HyperReducedTetrahedronFEMForceField<Vec3Types> >()
+        ;
 
-#endif
+template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedronFEMForceField<Vec3Types>;
+
+} // namespace forcefield
+
+} // namespace component
+
+} // namespace sofa
+
+

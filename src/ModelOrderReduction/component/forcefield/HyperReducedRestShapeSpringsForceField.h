@@ -16,7 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 
 #include "HyperReducedHelper.h"
 #include <SofaDeformable/RestShapeSpringsForceField.h>

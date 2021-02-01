@@ -16,7 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_H
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 
 #include "HyperReducedHelper.h"
 #include <SofaSimpleFem/TetrahedronFEMForceField.h>

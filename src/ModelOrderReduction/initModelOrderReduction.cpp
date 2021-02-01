@@ -14,7 +14,7 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 #include <sofa/core/ObjectFactory.h>
 
 #include <sofa/helper/system/PluginManager.h>
