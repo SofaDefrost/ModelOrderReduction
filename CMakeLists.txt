@@ -79,10 +79,6 @@ set(README_FILES
     README.md
     )
 
-# Generate initModelOrderReduction.h from initModelOrderReduction.h.in
-# configure_file(${MOR_SRC}/component/initModelOrderReduction.h.in "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h")
-# install(FILES "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h" DESTINATION "include/ModelOrderReduction" COMPONENT headers)
-
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
@@ -93,8 +89,6 @@ target_link_libraries(${PROJECT_NAME}
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
     SofaMiscFem SofaMiscMapping # SofaMisc
     )
-# target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
-# target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>")
 
 # Config files and install rules for pythons scripts
 if(SofaPython_FOUND)
@@ -113,6 +107,7 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools")
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools DESTINATION . COMPONENT resources)
 endif()
+
 ## Install rules for the library and headers; CMake package configurations files
 sofa_create_package_with_targets(
     PACKAGE_NAME ModelOrderReduction
@@ -122,10 +117,6 @@ sofa_create_package_with_targets(
     INCLUDE_INSTALL_DIR "ModelOrderReduction"
     RELOCATABLE "plugins"
     )
-
-get_target_property(include_dirs ModelOrderReduction INCLUDE_DIRECTORIES)
-message("include_dirs = ${include_dirs}")
-debug_print_target_properties(ModelOrderReduction)
 
 # if(SOFA_BUILD_TESTS)
 #     add_subdirectory(${MOR_SRC}/component/ModelOrderReduction_test)
