@@ -20,11 +20,6 @@
 #include <sofa/helper/system/PluginManager.h>
 using sofa::helper::system::PluginManager;
 
-#ifdef MOR_PYTHON
-#include <SofaPython/PythonEnvironment.h>
-using sofa::simulation::PythonEnvironment;
-#endif
-
 #include <fstream>
 
 namespace sofa
@@ -50,10 +45,6 @@ void initExternalModule()
     {
         first = false;
     }
-
-#ifdef MOR_PYTHON
-    PythonEnvironment::addPythonModulePathsForPluginsByName("ModelOrderReduction");
-#endif
 }
 
 const char* getModuleName()

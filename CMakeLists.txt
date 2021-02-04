@@ -11,12 +11,6 @@ find_package(SofaBase REQUIRED)
 find_package(SofaCommon REQUIRED)
 find_package(SofaMisc REQUIRED)
 
-find_package(SofaPython QUIET)
-if(SofaPython_FOUND)
-    message("SofaPyhon found")
-    set(MOR_PYTHON 1) # See config.h.in
-endif()
-
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
 set(MOR_SRC "src/ModelOrderReduction")
@@ -91,10 +85,7 @@ target_link_libraries(${PROJECT_NAME}
     )
 
 # Config files and install rules for pythons scripts
-if(SofaPython_FOUND)
-    target_link_libraries(${PROJECT_NAME} SofaPython)
-    sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
-endif()
+sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
 
 # Move all resources when install: examples, doc and python files
 install(FILES "README.md" "LICENSE" DESTINATION .)
