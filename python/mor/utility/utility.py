@@ -57,7 +57,7 @@ def copy(src, dest):
         # If the error was caused because the source wasn't a directory
         try:
             shutil.copy(src, dest)
-        except:
+        except as e:
             print('Directory not copied. Error: %s' % e)
 
 def checkExistance(dir):
