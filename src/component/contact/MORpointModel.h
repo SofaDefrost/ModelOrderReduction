@@ -79,7 +79,7 @@ protected:
 
 
 #if  !defined(MOR_POINTCOLLISIONMODEL_CPP)
-extern template class SOFA_MESH_COLLISION_API MORPointCollisionModel<defaulttype::Vec3Types>;
+extern template class MORPointCollisionModel<defaulttype::Vec3Types>;
 
 #endif
 
