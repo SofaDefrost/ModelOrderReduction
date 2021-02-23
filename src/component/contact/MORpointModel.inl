@@ -117,7 +117,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
 //                    pointsL.push_back(p.p());
 //                    pointsL.push_back(p.p() + normals[i] * 1000.1f*val);
 //                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 20.1f*val, 0.06, 0.4, 0.3, {0.25f, 0.75f, 0.75f, 1});
-                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 60.1f*val, 0.4, 2.0, 1.8, {0.25f, 0.75f, 0.75f, 1});
+                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 60.1f*val, 0.4, 2.0, 1.8, helper::types::RGBAColor(0.25f, 0.75f, 0.75f, 1));
                 }
                 if ((unsigned)i < normals.size())
                 {

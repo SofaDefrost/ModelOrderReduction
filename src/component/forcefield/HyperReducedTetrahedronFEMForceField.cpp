@@ -16,7 +16,7 @@
 ******************************************************************************/
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_CPP
 #include "HyperReducedTetrahedronFEMForceField.inl"
-#include <sofa/defaulttype/Vec3Types.h>
+#include <sofa/defaulttype/VecTypes.h>
 #include <sofa/core/ObjectFactory.h>
 #include <assert.h>
 #include <ModelOrderReduction/initModelOrderReduction.h>

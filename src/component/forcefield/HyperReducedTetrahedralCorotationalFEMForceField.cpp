@@ -17,7 +17,7 @@
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_CPP
 
 #include "HyperReducedTetrahedralCorotationalFEMForceField.inl"
-#include <sofa/defaulttype/Vec3Types.h>
+#include <sofa/defaulttype/VecTypes.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <sofa/core/ObjectFactory.h>
 //#include <typeinfo>
