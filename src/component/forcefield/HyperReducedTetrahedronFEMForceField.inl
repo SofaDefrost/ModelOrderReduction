@@ -22,6 +22,7 @@
 #include <SofaBaseTopology/GridTopology.h>
 #include <sofa/simulation/Simulation.h>
 #include <sofa/core/behavior/MultiMatrixAccessor.h>
+#include <sofa/core/MechanicalParams.h>
 #include <sofa/helper/decompose.h>
 #include <sofa/helper/gl/template.h>
 #include <assert.h>
@@ -462,7 +463,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 
     const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
 
-    const bool edges = (drawAsEdges.getValue() || vparams->displayFlags().getShowWireFrame());
+//    const bool edges = (drawAsEdges.getValue() || vparams->displayFlags().getShowWireFrame());
     const bool heterogeneous = (drawHeterogeneousTetra.getValue() && minYoung!=maxYoung);
 
     const VecReal & youngModulus = _youngModulus.getValue();
@@ -500,7 +501,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
     if (_showVonMisesStressPerNode.getValue()) {
         std::vector<defaulttype::Vec4f> nodeColors(x.size());
         std::vector<defaulttype::Vector3> pts(x.size());
-        helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap.getEvaluator(minVMN, maxVMN);
+        helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVMN, maxVMN);
         for (size_t nd = 0; nd < x.size(); nd++) {
             pts[nd] = x[nd];
             nodeColors[nd] = evalColor(vMN[nd]);
@@ -509,74 +510,74 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
     }
 #endif
 
-    if (edges)
-    {
-        std::vector< defaulttype::Vector3 > points[3];
-        typename VecElement::const_iterator it, it0;
-        int i;
-        it0 = _indexedElements->begin();
-        for( i = 0 ; i<m_RIDsize ;++i)
-        {
-            it = it0 + reducedIntegrationDomain(i);
-            Index a = (*it)[0];
-            Index b = (*it)[1];
-            Index c = (*it)[2];
-            Index d = (*it)[3];
-            Coord pa = x[a];
-            Coord pb = x[b];
-            Coord pc = x[c];
-            Coord pd = x[d];
+//    if (edges)
+//    {
+//        std::vector< defaulttype::Vector3 > points[3];
+//        typename VecElement::const_iterator it, it0;
+//        int i;
+//        it0 = _indexedElements->begin();
+//        for( i = 0 ; i<m_RIDsize ;++i)
+//        {
+//            it = it0 + reducedIntegrationDomain(i);
+//            Index a = (*it)[0];
+//            Index b = (*it)[1];
+//            Index c = (*it)[2];
+//            Index d = (*it)[3];
+//            Coord pa = x[a];
+//            Coord pb = x[b];
+//            Coord pc = x[c];
+//            Coord pd = x[d];
 
-            points[0].push_back(pa);
-            points[0].push_back(pb);
-            points[0].push_back(pc);
-            points[0].push_back(pd);
+//            points[0].push_back(pa);
+//            points[0].push_back(pb);
+//            points[0].push_back(pc);
+//            points[0].push_back(pd);
 
-            points[1].push_back(pa);
-            points[1].push_back(pc);
-            points[1].push_back(pb);
-            points[1].push_back(pd);
+//            points[1].push_back(pa);
+//            points[1].push_back(pc);
+//            points[1].push_back(pb);
+//            points[1].push_back(pd);
 
-            points[2].push_back(pa);
-            points[2].push_back(pd);
-            points[2].push_back(pb);
-            points[2].push_back(pc);
+//            points[2].push_back(pa);
+//            points[2].push_back(pd);
+//            points[2].push_back(pb);
+//            points[2].push_back(pc);
 
-            if(heterogeneous)
-            {
-                float col = (float)((youngModulus[i]-minYoung) / (maxYoung-minYoung));
-                float fac = col * 0.5f;
-                defaulttype::Vec<4,float> color2 = defaulttype::Vec<4,float>(col      , 0.5f - fac , 1.0f-col,1.0f);
-                defaulttype::Vec<4,float> color3 = defaulttype::Vec<4,float>(col      , 1.0f - fac , 1.0f-col,1.0f);
-                defaulttype::Vec<4,float> color4 = defaulttype::Vec<4,float>(col+0.5f , 1.0f - fac , 1.0f-col,1.0f);
+//            if(heterogeneous)
+//            {
+//                float col = (float)((youngModulus[i]-minYoung) / (maxYoung-minYoung));
+//                float fac = col * 0.5f;
+//                defaulttype::Vec<4,float> color2 = defaulttype::Vec<4,float>(col      , 0.5f - fac , 1.0f-col,1.0f);
+//                defaulttype::Vec<4,float> color3 = defaulttype::Vec<4,float>(col      , 1.0f - fac , 1.0f-col,1.0f);
+//                defaulttype::Vec<4,float> color4 = defaulttype::Vec<4,float>(col+0.5f , 1.0f - fac , 1.0f-col,1.0f);
 
-                vparams->drawTool()->drawLines(points[0],1,color2 );
-                vparams->drawTool()->drawLines(points[1],1,color3 );
-                vparams->drawTool()->drawLines(points[2],1,color4 );
+//                vparams->drawTool()->drawLines(points[0],1,color2 );
+//                vparams->drawTool()->drawLines(points[1],1,color3 );
+//                vparams->drawTool()->drawLines(points[2],1,color4 );
 
-                for(unsigned int i=0 ; i<3 ; i++) points[i].clear();
-            } else {
-#ifdef SIMPLEFEM_COLORMAP
-                if (_computeVonMisesStress.getValue() > 0) {
-                    for(unsigned int i=0 ; i<3 ; i++) points[i].clear();
-                }
-#endif
-            }
-        }
+//                for(unsigned int i=0 ; i<3 ; i++) points[i].clear();
+//            } else {
+//#ifdef SIMPLEFEM_COLORMAP
+//                if (_computeVonMisesStress.getValue() > 0) {
+//                    for(unsigned int i=0 ; i<3 ; i++) points[i].clear();
+//                }
+//#endif
+//            }
+//        }
 
-        if(!heterogeneous
-        #ifdef SIMPLEFEM_COLORMAP
-                && _computeVonMisesStress.getValue() == 0
-        #endif
-                )
-        {
-            vparams->drawTool()->drawLines(points[0], 1, defaulttype::Vec<4,float>(0.0,0.5,1.0,1.0));
-            vparams->drawTool()->drawLines(points[1], 1, defaulttype::Vec<4,float>(0.0,1.0,1.0,1.0));
-            vparams->drawTool()->drawLines(points[2], 1, defaulttype::Vec<4,float>(0.5,1.0,1.0,1.0));
-        }
-    }
-    else
-    {
+//        if(!heterogeneous
+//        #ifdef SIMPLEFEM_COLORMAP
+//                && _computeVonMisesStress.getValue() == 0
+//        #endif
+//                )
+//        {
+//            vparams->drawTool()->drawLines(points[0], 1, defaulttype::Vec<4,float>(0.0,0.5,1.0,1.0));
+//            vparams->drawTool()->drawLines(points[1], 1, defaulttype::Vec<4,float>(0.0,1.0,1.0,1.0));
+//            vparams->drawTool()->drawLines(points[2], 1, defaulttype::Vec<4,float>(0.5,1.0,1.0,1.0));
+//        }
+//    }
+//    else
+//    {
 
         std::vector< defaulttype::Vector3 > points[4];
         typename VecElement::const_iterator it, it0;
@@ -630,7 +631,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
             } else {
 #ifdef SIMPLEFEM_COLORMAP
                 if (_computeVonMisesStress.getValue() > 0) {
-                    helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap.getEvaluator(minVM, maxVM);
+                    helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVM, maxVM);
                     defaulttype::Vec4f col = evalColor(vM[i]); //*vM[i]);
 
                     col[3] = 1.0f;
@@ -644,7 +645,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 #endif
             }
 
-        }
+//        }
 
         if(!heterogeneous
         #ifdef SIMPLEFEM_COLORMAP

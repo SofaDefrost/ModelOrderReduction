@@ -19,6 +19,7 @@
 
 #include "HyperReducedRestShapeSpringsForceField.h"
 #include <sofa/core/visual/VisualParams.h>
+#include <sofa/core/MechanicalParams.h>
 #include <sofa/helper/system/config.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
