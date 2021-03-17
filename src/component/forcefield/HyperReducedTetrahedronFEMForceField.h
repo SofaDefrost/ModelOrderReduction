@@ -161,7 +161,6 @@ public:
     using TetrahedronFEMForceField<DataTypes>::_gatherPt; //use in GPU version
     using TetrahedronFEMForceField<DataTypes>::_gatherBsize; //use in GPU version
     using TetrahedronFEMForceField<DataTypes>::drawHeterogeneousTetra;
-//    using TetrahedronFEMForceField<DataTypes>::drawAsEdges;
 
     using TetrahedronFEMForceField<DataTypes>::minYoung;
     using TetrahedronFEMForceField<DataTypes>::maxYoung;
