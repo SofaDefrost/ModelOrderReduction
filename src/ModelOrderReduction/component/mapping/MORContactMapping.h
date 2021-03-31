@@ -21,7 +21,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_MAPPING_MORCONTACTMAPPING_H
 #define SOFA_COMPONENT_MAPPING_MORCONTACTMAPPING_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 #include <sofa/core/Mapping.h>
 #include <SofaBaseLinearSolver/CompressedRowSparseMatrix.h>
 #include <sofa/defaulttype/VecTypes.h>

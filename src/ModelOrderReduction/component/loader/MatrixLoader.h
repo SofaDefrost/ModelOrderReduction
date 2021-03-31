@@ -14,24 +14,44 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef INITMODELORDERREDUCTION_H
-#define INITMODELORDERREDUCTION_H
+#ifndef SOFA_COMPONENT_LOADER_MATRIXLOADER_H
+#define SOFA_COMPONENT_LOADER_MATRIXLOADER_H
+#include <ModelOrderReduction/config.h>
+
+#include <iostream>
+#include <vector>
+
+namespace sofa {
+namespace component {
+namespace loader {
+
+template< class EigenMatrixType >
+class MatrixLoader {
+
+public:
+
+    MatrixLoader(){}
+    virtual ~MatrixLoader(){}
+
+    void load();
+    void getMatrix(EigenMatrixType& matrix);
+    void setFileName(std::string fileName);
+
+    bool m_printLog = false;
+
+protected:
+
+    unsigned int m_nbRows;
+    unsigned int m_nbColumns;
+    std::string m_fileName;
+    EigenMatrixType m_matrix;
+
+};
 
 
-#include <sofa/config.h>
 
-#ifdef SOFA_BUILD_MODELORDERREDUCTION
-#define SOFA_MODELORDERREDUCTION_API SOFA_EXPORT_DYNAMIC_LIBRARY
-#else
-#define SOFA_MODELORDERREDUCTION_API  SOFA_IMPORT_DYNAMIC_LIBRARY
+}
+}
+}
+
 #endif
-
-#cmakedefine MOR_PYTHON
-
-/** \mainpage
-  This is a the starting page of the plugin documentation, defined in file initModelOrderReduction.h
-  */
-
-#endif // INITINITMODELORDERREDUCTION_H
-
-

@@ -44,7 +44,7 @@ int MORUnilateralInteractionConstraintClass = core::RegisterObject("TODO-MORUnil
         ;
 
 
-template class MORUnilateralInteractionConstraint<Vec3Types>;
+template class SOFA_MODELORDERREDUCTION_API MORUnilateralInteractionConstraint<Vec3Types>;
 
 
 

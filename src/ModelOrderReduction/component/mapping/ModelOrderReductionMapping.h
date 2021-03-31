@@ -16,7 +16,7 @@
 ******************************************************************************/
 #ifndef SOFA_COMPONENT_MAPPING_MODELORDERREDUCTIONMAPPING_H
 #define SOFA_COMPONENT_MAPPING_MODELORDERREDUCTIONMAPPING_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 
 #include <vector>
 

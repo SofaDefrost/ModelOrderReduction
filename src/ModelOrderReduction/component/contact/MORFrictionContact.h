@@ -21,7 +21,7 @@
 ******************************************************************************/
 #ifndef MOR_MORFRICTIONCONTACT_H
 #define MOR_MORFRICTIONCONTACT_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 
 #include <SofaConstraint/FrictionContact.h>
 #include <sofa/core/collision/Contact.h>
