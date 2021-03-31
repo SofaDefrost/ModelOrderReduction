@@ -82,6 +82,7 @@ target_link_libraries(${PROJECT_NAME}
     SofaRigid # SofaCommon
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
     SofaMiscFem SofaMiscMapping # SofaMisc
+    Sofa.GL
     )
 
 # Config files and install rules for pythons scripts

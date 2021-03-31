@@ -49,7 +49,7 @@ def createScene(rootNode):
                 rootNode.createObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels hideCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
 
                 rootNode.createObject('FreeMotionAnimationLoop')
-                rootNode.createObject('GenericConstraintSolver', printLog=False, tolerance="1e-6", maxIterations="500")
+                rootNode.createObject('GenericConstraintSolver', printLog=False, tolerance="1e-4", maxIterations="1000")
                 rootNode.createObject('CollisionPipeline', verbose="0")
                 rootNode.createObject('BruteForceDetection', name="N2")
                 rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.7")
@@ -61,7 +61,7 @@ def createScene(rootNode):
                 solverNode.createObject('EulerImplicit', name='odesolver',firstOrder="false", rayleighStiffness='0.1', rayleighMass='0.1', printLog=False,verbose=False)
                 solverNode.createObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrix3d")
                 solverNode.createObject('GenericConstraintCorrection', solverName='preconditioner')
-                solverNode.createObject('MechanicalMatrixMapperMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', nodeToParse='@./reducedModel/model', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = 'true',timeInvariantMapping2 = 'true', saveReducedMass="false", usePrecomputedMass="false", precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', printLog=False)
+                solverNode.createObject('MechanicalMatrixMapperMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', nodeToParse='@./reducedModel/model', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = True,timeInvariantMapping2 = True, saveReducedMass=False, usePrecomputedMass=False, precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', printLog=False)
 
 
                 ##########################################
@@ -75,13 +75,15 @@ def createScene(rootNode):
                 model = reducedModel.createChild('model')
                 model.createObject('MeshVTKLoader', name='loader', filename=pathMesh+'full_quadriped_fine.vtk')
                 model.createObject('TetrahedronSetTopologyContainer',src = '@loader')
-                model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0',printLog=False)
+                model.createObject('MechanicalObject', name='tetras', template='Vec3d', showIndices=False, showIndicesScale='4e-5', rx='0',printLog=False)
                 model.createObject('ModelOrderReductionMapping', input='@../alpha', output='@./tetras',modesPath=modesRobot, printLog=False, mapMatrices = '0')
                 model.createObject('UniformMass',name='quadrupedMass', totalMass='0.035', printLog=False)
                 model.createObject('HyperReducedTetrahedronFEMForceField', template='Vec3d', name='Append_HyperReducedFF_QuadrupedWellConverged_'+str(nbModes)+'modes', method='large', poissonRatio='0.05',  youngModulus='70', drawAsEdges="0", prepareECSW=prepareECSWBool, performECSW=performECSWBoolBody, nbModes=str(nbModes), modesPath=modesRobot, RIDPath=RIDFile, weightsPath=weightsFile, nbTrainingSet="93", periodSaveGIE="50",printLog=False)		  
-                model.createObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes='true') 
-                model.createObject('BoxROI', name='membraneROISubTopo', box='0 0 -0.1 150 -100 0.1',computeTetrahedra="false", drawBoxes='true') 
-                model.createObject('PythonScriptController', filename="keyInteractiveController.py", classname="keyInteractiveController")
+                model.createObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes=True) 
+                model.createObject('BoxROI', name='membraneROISubTopo', box='0 0 -0.1 150 -100 0.1',computeTetrahedra="false", drawBoxes=True) 
+                #model.createObject('PythonScriptController', filename="keyInteractiveController.py", classname="keyInteractiveController")
+                model.createObject('PythonScriptController', filename="waveController.py", classname="waveController")
+
 
                 ##########################################
                 # Sub topology                           #
@@ -99,28 +101,28 @@ def createScene(rootNode):
                 centerCavity.createObject('Mesh', src='@loader', name='topo')
                 centerCavity.createObject('MechanicalObject', name='centerCavity')
                 centerCavity.createObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="volumeGrowth")
-                centerCavity.createObject('BarycentricMapping', name='mapping',  mapForces='false', mapMasses='false')
+                centerCavity.createObject('BarycentricMapping', name='mapping',  mapForces=False, mapMasses=False)
                                 
                 rearLeftCavity = model.createChild('rearLeftCavity')
                 rearLeftCavity.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'quadriped_Rear-Left-cavity_finer.stl')
                 rearLeftCavity.createObject('Mesh', src='@loader', name='topo')
                 rearLeftCavity.createObject('MechanicalObject', name='rearLeftCavity')
                 rearLeftCavity.createObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', valueType="volumeGrowth", value="0.0000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002')
-                rearLeftCavity.createObject('BarycentricMapping', name='mapping',  mapForces='false', mapMasses='false')
+                rearLeftCavity.createObject('BarycentricMapping', name='mapping',  mapForces=False, mapMasses=False)
 
                 rearRightCavity = model.createChild('rearRightCavity')
                 rearRightCavity.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'quadriped_Rear-Right-cavity_finer.stl')
                 rearRightCavity.createObject('Mesh', src='@loader', name='topo')
                 rearRightCavity.createObject('MechanicalObject', name='rearRightCavity')
                 rearRightCavity.createObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="volumeGrowth")
-                rearRightCavity.createObject('BarycentricMapping', name='mapping',  mapForces='false', mapMasses='false')
+                rearRightCavity.createObject('BarycentricMapping', name='mapping',  mapForces=False, mapMasses=False)
                                 
                 frontLeftCavity = model.createChild('frontLeftCavity')
                 frontLeftCavity.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'quadriped_Front-Left-cavity_finer.stl')
                 frontLeftCavity.createObject('Mesh', src='@loader', name='topo')
                 frontLeftCavity.createObject('MechanicalObject', name='frontLeftCavity')
                 frontLeftCavity.createObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.0000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="volumeGrowth")
-                frontLeftCavity.createObject('BarycentricMapping', name='mapping',  mapForces='false', mapMasses='false')
+                frontLeftCavity.createObject('BarycentricMapping', name='mapping',  mapForces=False, mapMasses=False)
                                 
                 frontRightCavity = model.createChild('frontRightCavity')
                 frontRightCavity.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'quadriped_Front-Right-cavity_finer.stl')
@@ -128,7 +130,7 @@ def createScene(rootNode):
                 #frontRightCavity.createObject('MechanicalObject', name='frontRightCavity', translation='-80 55 0')
                 frontRightCavity.createObject('MechanicalObject', name='frontRightCavity')
                 frontRightCavity.createObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.0000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="volumeGrowth")
-                frontRightCavity.createObject('BarycentricMapping', name='mapping',  mapForces='false', mapMasses='false')
+                frontRightCavity.createObject('BarycentricMapping', name='mapping',  mapForces=False, mapMasses=False)
                                 
                 modelCollis = model.createChild('modelCollis')
                 modelCollis.createObject('MeshSTLLoader', name='loader', filename=pathMesh+'quadriped_collision.stl', rotation="0 0 0", translation="0 0 0")
@@ -156,6 +158,5 @@ def createScene(rootNode):
                 planeNode.createObject('Line',simulated="0", moving="0",group="1")
                 planeNode.createObject('Point',simulated="0", moving="0",group="1")
                 planeNode.createObject('OglModel',name="Visual", src="@loader", color="1 0 0 1",rotation="90 0 0", translation="0 35 -1", scale="15")
-                planeNode.createObject('UncoupledConstraintCorrection')
 
                 return rootNode
