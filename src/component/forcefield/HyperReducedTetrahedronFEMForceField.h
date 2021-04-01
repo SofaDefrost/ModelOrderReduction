@@ -64,7 +64,7 @@ public:
     typedef core::topology::BaseMeshTopology::Tetra Element;
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
     typedef core::topology::BaseMeshTopology::Tetrahedron Tetrahedron;
-    using index_type = sofa::defaulttype::index_type;
+    using index_type = sofa::Index;
 
     enum { SMALL = 0,   ///< Symbol of small displacements tetrahedron solver
             LARGE = 1,   ///< Symbol of corotational large displacements tetrahedron solver based on a QR decomposition    -> Nesme et al 2005 "Efficient, Physically Plausible Finite Elements"
@@ -161,7 +161,6 @@ public:
     using TetrahedronFEMForceField<DataTypes>::_gatherPt; //use in GPU version
     using TetrahedronFEMForceField<DataTypes>::_gatherBsize; //use in GPU version
     using TetrahedronFEMForceField<DataTypes>::drawHeterogeneousTetra;
-    using TetrahedronFEMForceField<DataTypes>::drawAsEdges;
 
     using TetrahedronFEMForceField<DataTypes>::minYoung;
     using TetrahedronFEMForceField<DataTypes>::maxYoung;
