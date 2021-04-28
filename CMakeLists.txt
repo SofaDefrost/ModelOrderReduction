@@ -6,10 +6,14 @@ include(cmake/environment.cmake)
 
 # Specify all required packages
 find_package(SofaFramework REQUIRED)
-find_package(SofaGeneral REQUIRED)
-find_package(SofaBase REQUIRED)
-find_package(SofaCommon REQUIRED)
-find_package(SofaMisc REQUIRED)
+find_package(SofaRigid REQUIRED)
+find_package(SofaBaseMechanics REQUIRED)
+find_package(SofaBaseTopology REQUIRED)
+find_package(SofaMiscFem REQUIRED)
+find_package(SofaMiscMapping REQUIRED)
+find_package(SofaGeneralAnimationLoop REQUIRED)
+find_package(SofaGeneralSimpleFem REQUIRED)
+find_package(Sofa.GL REQUIRED)
 
 find_package(SofaPython QUIET)
 if(SofaPython_FOUND)
@@ -85,7 +89,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MOD
 target_link_libraries(${PROJECT_NAME}
     SofaCore # SofaFramework
     SofaBaseMechanics SofaBaseTopology # SofaBase
-    SofaRigid # SofaCommon
+    SofaRigid
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
     SofaMiscFem SofaMiscMapping # SofaMisc
     Sofa.GL
