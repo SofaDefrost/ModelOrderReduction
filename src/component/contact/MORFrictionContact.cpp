@@ -26,53 +26,43 @@
 #include <SofaMiscCollision/CapsuleContactMapper.h>
 #include <SofaMiscCollision/OBBContactMapper.h>
 
-namespace sofa
+namespace sofa::component::collision
 {
 
-namespace component
-{
+using sofa::core::collision::Contact;
+using sofa::defaulttype::Vec3Types;
+using sofa::defaulttype::Rigid3Types;
 
-namespace collision
-{
-
-using namespace defaulttype;
-using namespace sofa::helper;
-using simulation::Node;
-
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<PointCollisionModel<sofa::defaulttype::Vec3Types>, PointCollisionModel<sofa::defaulttype::Vec3Types>> > PointPointMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<LineCollisionModel<sofa::defaulttype::Vec3Types>, SphereCollisionModel<sofa::defaulttype::Vec3Types>> > LineSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<LineCollisionModel<sofa::defaulttype::Vec3Types>, PointCollisionModel<sofa::defaulttype::Vec3Types>> > LinePointMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<LineCollisionModel<sofa::defaulttype::Vec3Types>, LineCollisionModel<sofa::defaulttype::Vec3Types>> > LineLineMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<TriangleCollisionModel<sofa::defaulttype::Vec3Types>, SphereCollisionModel<sofa::defaulttype::Vec3Types>> > TriangleSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<TriangleCollisionModel<sofa::defaulttype::Vec3Types>, PointCollisionModel<sofa::defaulttype::Vec3Types>> > TrianglePointMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<TriangleCollisionModel<sofa::defaulttype::Vec3Types>, LineCollisionModel<sofa::defaulttype::Vec3Types>> > TriangleLineMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<TriangleCollisionModel<sofa::defaulttype::Vec3Types>, TriangleCollisionModel<sofa::defaulttype::Vec3Types>> > TriangleTriangleMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<SphereCollisionModel<sofa::defaulttype::Vec3Types>, SphereCollisionModel<sofa::defaulttype::Vec3Types>> > SphereSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<SphereCollisionModel<sofa::defaulttype::Vec3Types>, PointCollisionModel<sofa::defaulttype::Vec3Types>> > SpherePointMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Vec3Types>, CapsuleCollisionModel<sofa::defaulttype::Vec3Types>> > CapsuleCapsuleMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Vec3Types>, TriangleCollisionModel<sofa::defaulttype::Vec3Types>> > CapsuleTriangleMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Vec3Types>, SphereCollisionModel<sofa::defaulttype::Vec3Types>> > CapsuleSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<OBBCollisionModel<sofa::defaulttype::Rigid3Types>, OBBCollisionModel<sofa::defaulttype::Rigid3Types>> > OBBOBBMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<SphereCollisionModel<sofa::defaulttype::Vec3Types>, OBBCollisionModel<sofa::defaulttype::Rigid3Types>> > SphereOBBMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Vec3Types>, OBBCollisionModel<sofa::defaulttype::Rigid3Types>> > CapsuleOBBMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<TriangleCollisionModel<sofa::defaulttype::Vec3Types>, OBBCollisionModel<sofa::defaulttype::Rigid3Types>> > TriangleOBBMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<RigidSphereModel, RigidSphereModel> > RigidSphereRigidSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<SphereCollisionModel<sofa::defaulttype::Vec3Types>, RigidSphereModel> > SphereRigidSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<LineCollisionModel<sofa::defaulttype::Vec3Types>, RigidSphereModel> > LineRigidSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<TriangleCollisionModel<sofa::defaulttype::Vec3Types>, RigidSphereModel> > TriangleRigidSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<RigidSphereModel, PointCollisionModel<sofa::defaulttype::Vec3Types>> > RigidSpherePointMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Vec3Types>, RigidSphereModel> > CapsuleRigidSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<RigidSphereModel, OBBCollisionModel<sofa::defaulttype::Rigid3Types>> > RigidSphereOBBMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Rigid3Types>, CapsuleCollisionModel<sofa::defaulttype::Rigid3Types>> > RigidCapsuleRigidCapsuleMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Vec3Types>, CapsuleCollisionModel<sofa::defaulttype::Rigid3Types>> > CapsuleRigidCapsuleMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Rigid3Types>, TriangleCollisionModel<sofa::defaulttype::Vec3Types>> > RigidCapsuleTriangleMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Rigid3Types>, SphereCollisionModel<sofa::defaulttype::Vec3Types>> > RigidCapsuleSphereMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Rigid3Types>, OBBCollisionModel<sofa::defaulttype::Rigid3Types>> > RigidCapsuleOBBMORFrictionContactClass("MORFrictionContact",true);
-Creator<sofa::core::collision::Contact::Factory, MORFrictionContact<CapsuleCollisionModel<sofa::defaulttype::Rigid3Types>, RigidSphereModel> > RigidCapsuleRigidSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<PointCollisionModel<Vec3Types>, PointCollisionModel<Vec3Types>> > PointPointMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<LineCollisionModel<Vec3Types>, SphereCollisionModel<Vec3Types>> > LineSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<LineCollisionModel<Vec3Types>, PointCollisionModel<Vec3Types>> > LinePointMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<LineCollisionModel<Vec3Types>, LineCollisionModel<Vec3Types>> > LineLineMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<TriangleCollisionModel<Vec3Types>, SphereCollisionModel<Vec3Types>> > TriangleSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<TriangleCollisionModel<Vec3Types>, PointCollisionModel<Vec3Types>> > TrianglePointMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<TriangleCollisionModel<Vec3Types>, LineCollisionModel<Vec3Types>> > TriangleLineMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<TriangleCollisionModel<Vec3Types>, TriangleCollisionModel<Vec3Types>> > TriangleTriangleMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<SphereCollisionModel<Vec3Types>, SphereCollisionModel<Vec3Types>> > SphereSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<SphereCollisionModel<Vec3Types>, PointCollisionModel<Vec3Types>> > SpherePointMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, CapsuleCollisionModel<Vec3Types>> > CapsuleCapsuleMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, TriangleCollisionModel<Vec3Types>> > CapsuleTriangleMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, SphereCollisionModel<Vec3Types>> > CapsuleSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<OBBCollisionModel<Rigid3Types>, OBBCollisionModel<Rigid3Types>> > OBBOBBMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<SphereCollisionModel<Vec3Types>, OBBCollisionModel<Rigid3Types>> > SphereOBBMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, OBBCollisionModel<Rigid3Types>> > CapsuleOBBMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<TriangleCollisionModel<Vec3Types>, OBBCollisionModel<Rigid3Types>> > TriangleOBBMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<RigidSphereModel, RigidSphereModel> > RigidSphereRigidSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<SphereCollisionModel<Vec3Types>, RigidSphereModel> > SphereRigidSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<LineCollisionModel<Vec3Types>, RigidSphereModel> > LineRigidSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<TriangleCollisionModel<Vec3Types>, RigidSphereModel> > TriangleRigidSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<RigidSphereModel, PointCollisionModel<Vec3Types>> > RigidSpherePointMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, RigidSphereModel> > CapsuleRigidSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<RigidSphereModel, OBBCollisionModel<Rigid3Types>> > RigidSphereOBBMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Rigid3Types>, CapsuleCollisionModel<Rigid3Types>> > RigidCapsuleRigidCapsuleMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, CapsuleCollisionModel<Rigid3Types>> > CapsuleRigidCapsuleMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Rigid3Types>, TriangleCollisionModel<Vec3Types>> > RigidCapsuleTriangleMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Rigid3Types>, SphereCollisionModel<Vec3Types>> > RigidCapsuleSphereMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Rigid3Types>, OBBCollisionModel<Rigid3Types>> > RigidCapsuleOBBMORFrictionContactClass("MORFrictionContact",true);
+Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Rigid3Types>, RigidSphereModel> > RigidCapsuleRigidSphereMORFrictionContactClass("MORFrictionContact",true);
 
 
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::collision
