@@ -87,7 +87,7 @@ target_link_libraries(${PROJECT_NAME}
     SofaBaseMechanics SofaBaseTopology # SofaBase
     SofaRigid # SofaCommon
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
-    SofaMiscFem SofaMiscMapping # SofaMisc
+    SofaMiscFem SofaMiscMapping SofaMiscCollision # SofaMisc
     Sofa.GL
     )
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")

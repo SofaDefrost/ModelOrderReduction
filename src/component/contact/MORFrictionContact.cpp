@@ -23,6 +23,9 @@
 #include <SofaMeshCollision/RigidContactMapper.inl>
 #include <SofaMeshCollision/BarycentricContactMapper.inl>
 
+#include <SofaMiscCollision/CapsuleContactMapper.h>
+#include <SofaMiscCollision/OBBContactMapper.h>
+#include <SofaBaseCollision/RigidCapsuleModel.h>
 
 namespace sofa
 {
