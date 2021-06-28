@@ -18,7 +18,7 @@
 #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_INL
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_INL
 
-#include <sofa/helper/system/gl.h>
+#include <sofa/gl/gl.h>
 #include <SofaMiscFem/BoyceAndArruda.h>
 #include <SofaMiscFem/NeoHookean.h>
 #include <SofaMiscFem/MooneyRivlin.h>
@@ -34,7 +34,7 @@
 #include <sofa/core/ObjectFactory.h>
 #include <fstream> // for reading the file
 #include <iostream> //for debugging
-#include <sofa/helper/gl/template.h>
+#include <sofa/gl/template.h>
 #include <sofa/core/behavior/ForceField.inl>
 #include <SofaBaseTopology/TopologyData.inl>
 #include <algorithm>
@@ -647,59 +647,59 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::draw(const 
         points[3].push_back(pb);
     }
 
-    Vec<4,float> color1;
-    Vec<4,float> color2;
-    Vec<4,float> color3;
-    Vec<4,float> color4;
+    type::RGBAColor color1;
+    type::RGBAColor color2;
+    type::RGBAColor color3;
+    type::RGBAColor color4;
 
     std::string material = d_materialName.getValue();
     if (material=="ArrudaBoyce") {
-        color1 = Vec<4,float>(0.0,1.0,0.0,1.0);
-        color2 = Vec<4,float>(0.5,1.0,0.0,1.0);
-        color3 = Vec<4,float>(1.0,1.0,0.0,1.0);
-        color4 = Vec<4,float>(1.0,1.0,0.5,1.0);
+        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
+        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
+        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
+        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
     }
     else if (material=="StVenantKirchhoff"){
-        color1 = Vec<4,float>(1.0,0.0,0.0,1.0);
-        color2 = Vec<4,float>(1.0,0.0,0.5,1.0);
-        color3 = Vec<4,float>(1.0,1.0,0.0,1.0);
-        color4 = Vec<4,float>(1.0,0.5,1.0,1.0);
+        color1 = type::RGBAColor(1.0,0.0,0.0,1.0);
+        color2 = type::RGBAColor(1.0,0.0,0.5,1.0);
+        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
+        color4 = type::RGBAColor(1.0,0.5,1.0,1.0);
     }
     else if (material=="NeoHookean"){
-        color1 = Vec<4,float>(0.0,1.0,1.0,1.0);
-        color2 = Vec<4,float>(0.5,0.0,1.0,1.0);
-        color3 = Vec<4,float>(1.0,0.0,1.0,1.0);
-        color4 = Vec<4,float>(1.0,0.5,1.0,1.0);
+        color1 = type::RGBAColor(0.0,1.0,1.0,1.0);
+        color2 = type::RGBAColor(0.5,0.0,1.0,1.0);
+        color3 = type::RGBAColor(1.0,0.0,1.0,1.0);
+        color4 = type::RGBAColor(1.0,0.5,1.0,1.0);
     }
     else if (material=="MooneyRivlin"){
-        color1 = Vec<4,float>(0.0,1.0,0.0,1.0);
-        color2 = Vec<4,float>(0.0,1.0,0.5,1.0);
-        color3 = Vec<4,float>(0.0,1.0,1.0,1.0);
-        color4 = Vec<4,float>(0.5,1.0,1.0,1.0);
+        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
+        color2 = type::RGBAColor(0.0,1.0,0.5,1.0);
+        color3 = type::RGBAColor(0.0,1.0,1.0,1.0);
+        color4 = type::RGBAColor(0.5,1.0,1.0,1.0);
     }
     else if (material=="VerondaWestman"){
-        color1 = Vec<4,float>(0.0,1.0,0.0,1.0);
-        color2 = Vec<4,float>(0.5,1.0,0.0,1.0);
-        color3 = Vec<4,float>(1.0,1.0,0.0,1.0);
-        color4 = Vec<4,float>(1.0,1.0,0.5,1.0);
+        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
+        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
+        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
+        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
     }
     else if (material=="Costa"){
-        color1 = Vec<4,float>(0.0,1.0,0.0,1.0);
-        color2 = Vec<4,float>(0.5,1.0,0.0,1.0);
-        color3 = Vec<4,float>(1.0,1.0,0.0,1.0);
-        color4 = Vec<4,float>(1.0,1.0,0.5,1.0);
+        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
+        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
+        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
+        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
     }
     else if (material=="Ogden"){
-        color1 = Vec<4,float>(0.0,1.0,0.0,1.0);
-        color2 = Vec<4,float>(0.5,1.0,0.0,1.0);
-        color3 = Vec<4,float>(1.0,1.0,0.0,1.0);
-        color4 = Vec<4,float>(1.0,1.0,0.5,1.0);
+        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
+        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
+        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
+        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
     }
     else {
-        color1 = Vec<4,float>(0.0,1.0,0.0,1.0);
-        color2 = Vec<4,float>(0.5,1.0,0.0,1.0);
-        color3 = Vec<4,float>(1.0,1.0,0.0,1.0);
-        color4 = Vec<4,float>(1.0,1.0,0.5,1.0);
+        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
+        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
+        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
+        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
     }
 
 

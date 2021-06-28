@@ -22,7 +22,7 @@
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
-#include <sofa/helper/gl/template.h>
+#include <sofa/gl/template.h>
 #include <fstream> // for reading the file
 #include <iostream> //for debugging
 #include <vector>
@@ -361,11 +361,11 @@ void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::Visu
         Index c = (*it)[2];
 
         glColor4f(0,1,0,1);
-        helper::gl::glVertexT(x[a]);
+        gl::glVertexT(x[a]);
         glColor4f(0,0.5,0.5,1);
-        helper::gl::glVertexT(x[b]);
+        gl::glVertexT(x[b]);
         glColor4f(0,0,1,1);
-        helper::gl::glVertexT(x[c]);
+        gl::glVertexT(x[c]);
     }
     glEnd();
 

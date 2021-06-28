@@ -23,7 +23,7 @@
 #ifndef MOR_POINTMODEL_INL
 #define MOR_POINTMODEL_INL
 
-#include <sofa/helper/system/config.h>
+#include <sofa/helper/config.h>
 #include <sofa/helper/proximity.h>
 #include <sofa/defaulttype/Mat.h>
 #include <sofa/defaulttype/Vec.h>
@@ -127,8 +127,9 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
             }
         }
 
-        vparams->drawTool()->drawPoints(pointsP, 3, defaulttype::Vec<4, float>(this->getColor4f()));
-        vparams->drawTool()->drawLines(pointsL, 3, defaulttype::Vec<4, float>( this->getColor4f()));
+        const auto* color = this->getColor4f();
+        vparams->drawTool()->drawPoints(pointsP, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
+        vparams->drawTool()->drawLines(pointsL, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
 
         if (m_displayFreePosition.getValue())
         {
@@ -143,7 +144,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
                 }
             }
 
-            vparams->drawTool()->drawPoints(pointsPFree, 3, defaulttype::Vec<4, float>(0.0f, 1.0f, 0.2f, 1.0f));
+            vparams->drawTool()->drawPoints(pointsPFree, 3, type::RGBAColor(0.0f, 1.0f, 0.2f, 1.0f));
         }
 
         if (vparams->displayFlags().getShowWireFrame())

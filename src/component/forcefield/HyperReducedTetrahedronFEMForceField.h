@@ -60,7 +60,7 @@ public:
     typedef core::objectmodel::Data<VecDeriv>    DataVecDeriv;
     typedef core::objectmodel::Data<VecCoord>    DataVecCoord;
 
-    typedef core::topology::BaseMeshTopology::index_type Index;
+    typedef sofa::Index Index;
     typedef core::topology::BaseMeshTopology::Tetra Element;
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
     typedef core::topology::BaseMeshTopology::Tetrahedron Tetrahedron;
