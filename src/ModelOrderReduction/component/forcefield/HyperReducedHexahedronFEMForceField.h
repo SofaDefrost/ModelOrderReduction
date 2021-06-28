@@ -54,7 +54,7 @@ public:
     typedef helper::ReadAccessor< Data< VecCoord > > RDataRefVecCoord;
     typedef helper::WriteAccessor< Data< VecDeriv > > WDataRefVecDeriv;
 
-    typedef core::topology::BaseMeshTopology::index_type Index;
+    typedef sofa::Index Index;
     typedef core::topology::BaseMeshTopology::Hexa Element;
     typedef core::topology::BaseMeshTopology::SeqHexahedra VecElement;
 

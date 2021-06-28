@@ -19,6 +19,7 @@
 
 #include "HyperReducedTetrahedralCorotationalFEMForceField.h"
 #include <sofa/core/visual/VisualParams.h>
+#include <sofa/core/MechanicalParams.h>
 #include <SofaBaseTopology/GridTopology.h>
 #include <sofa/simulation/Simulation.h>
 #include <sofa/helper/decompose.h>

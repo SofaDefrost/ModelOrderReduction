@@ -355,7 +355,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(default
 //        msg_warning() << "dfreeRed "  << dfreeRed(k);
         v->set(k, dfreeRed(k));
     }
-    msg_warning() << " v is: " << v[0];
+//    msg_warning() << " v is: " << v[0];
 
 
 }
