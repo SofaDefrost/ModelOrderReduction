@@ -6,10 +6,15 @@ include(cmake/environment.cmake)
 
 # Specify all required packages
 find_package(SofaFramework REQUIRED)
-find_package(SofaGeneral REQUIRED)
+find_package(SofaConstraint REQUIRED)
+find_package(SofaGeneralAnimationLoop REQUIRED)
+find_package(SofaGeneralSimpleFem REQUIRED)
+find_package(SofaUserInteraction REQUIRED)
 find_package(SofaBase REQUIRED)
-find_package(SofaCommon REQUIRED)
-find_package(SofaMisc REQUIRED)
+find_package(SofaRigid REQUIRED)
+find_package(SofaMiscFem REQUIRED)
+find_package(SofaMiscMapping REQUIRED)
+find_package(SofaMiscCollision REQUIRED)
 
 find_package(SofaPython QUIET)
 if(SofaPython_FOUND)
