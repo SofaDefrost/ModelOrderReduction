@@ -24,7 +24,7 @@
 #include <sofa/core/behavior/MultiMatrixAccessor.h>
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/helper/decompose.h>
-#include <sofa/helper/gl/template.h>
+#include <sofa/gl/template.h>
 #include <assert.h>
 #include <fstream> // for reading the file
 #include <iostream>
@@ -167,10 +167,10 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
 
         for(int i=0; i<12; ++i)
         {
-            index_type row = index[i/3]*3+i%3;
+            Index row = index[i/3]*3+i%3;
             for(int j=0; j<12; ++j)
             {
-                index_type col = index[j/3]*3+j%3;
+                Index col = index[j/3]*3+j%3;
 
                 // search if the vertex is already take into account by another element
                 typename CompressedValue::iterator result = _stiffnesses[row].end();
@@ -498,7 +498,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 
 #ifdef SIMPLEFEM_COLORMAP
     if (_showVonMisesStressPerNode.getValue()) {
-        std::vector<defaulttype::Vec4f> nodeColors(x.size());
+        std::vector<type::RGBAColor> nodeColors(x.size());
         std::vector<defaulttype::Vector3> pts(x.size());
         helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVMN, maxVMN);
         for (size_t nd = 0; nd < x.size(); nd++) {
@@ -547,10 +547,10 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
         {
             float col = (float)((youngModulus[i]-minYoung) / (maxYoung-minYoung));
             float fac = col * 0.5f;
-            defaulttype::Vec<4,float> color1 = defaulttype::Vec<4,float>(col      , 0.0f - fac , 1.0f-col,1.0f);
-            defaulttype::Vec<4,float> color2 = defaulttype::Vec<4,float>(col      , 0.5f - fac , 1.0f-col,1.0f);
-            defaulttype::Vec<4,float> color3 = defaulttype::Vec<4,float>(col      , 1.0f - fac , 1.0f-col,1.0f);
-            defaulttype::Vec<4,float> color4 = defaulttype::Vec<4,float>(col+0.5f , 1.0f - fac , 1.0f-col,1.0f);
+            type::RGBAColor color1 = type::RGBAColor(col      , 0.0f - fac , 1.0f-col,1.0f);
+            type::RGBAColor color2 = type::RGBAColor(col      , 0.5f - fac , 1.0f-col,1.0f);
+            type::RGBAColor color3 = type::RGBAColor(col      , 1.0f - fac , 1.0f-col,1.0f);
+            type::RGBAColor color4 = type::RGBAColor(col+0.5f , 1.0f - fac , 1.0f-col,1.0f);
 
             vparams->drawTool()->drawTriangles(points[0],color1 );
             vparams->drawTool()->drawTriangles(points[1],color2 );
@@ -562,7 +562,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 #ifdef SIMPLEFEM_COLORMAP
             if (_computeVonMisesStress.getValue() > 0) {
                 helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVM, maxVM);
-                defaulttype::Vec4f col = evalColor(vM[i]); //*vM[i]);
+                type::RGBAColor col = evalColor(vM[i]); //*vM[i]);
 
                 col[3] = 1.0f;
                 vparams->drawTool()->drawTriangles(points[0],col);
@@ -581,10 +581,10 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
         #endif
                 )
         {
-            vparams->drawTool()->drawTriangles(points[0], defaulttype::Vec<4,float>(0.0,0.0,1.0,1.0));
-            vparams->drawTool()->drawTriangles(points[1], defaulttype::Vec<4,float>(0.0,0.5,1.0,1.0));
-            vparams->drawTool()->drawTriangles(points[2], defaulttype::Vec<4,float>(0.0,1.0,1.0,1.0));
-            vparams->drawTool()->drawTriangles(points[3], defaulttype::Vec<4,float>(0.5,1.0,1.0,1.0));
+            vparams->drawTool()->drawTriangles(points[0], type::RGBAColor(0.0,0.0,1.0,1.0));
+            vparams->drawTool()->drawTriangles(points[1], type::RGBAColor(0.0,0.5,1.0,1.0));
+            vparams->drawTool()->drawTriangles(points[2], type::RGBAColor(0.0,1.0,1.0,1.0));
+            vparams->drawTool()->drawTriangles(points[3], type::RGBAColor(0.5,1.0,1.0,1.0));
         }
 
     }
@@ -618,9 +618,9 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
             points[2].push_back(b);
         }
 
-        vparams->drawTool()->drawLines(points[0], 5, defaulttype::Vec<4,float>(1,0,0,1));
-        vparams->drawTool()->drawLines(points[1], 5, defaulttype::Vec<4,float>(0,1,0,1));
-        vparams->drawTool()->drawLines(points[2], 5, defaulttype::Vec<4,float>(0,0,1,1));
+        vparams->drawTool()->drawLines(points[0], 5, type::RGBAColor(1,0,0,1));
+        vparams->drawTool()->drawLines(points[1], 5, type::RGBAColor(0,1,0,1));
+        vparams->drawTool()->drawLines(points[2], 5, type::RGBAColor(0,0,1,1));
 
     }
 }

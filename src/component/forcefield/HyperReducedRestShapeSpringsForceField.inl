@@ -20,7 +20,7 @@
 #include "HyperReducedRestShapeSpringsForceField.h"
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
-#include <sofa/helper/system/config.h>
+#include <sofa/helper/config.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
 
@@ -414,7 +414,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
         }
     }
     //todo(dmarchal) because of https://github.com/sofa-framework/sofa/issues/64
-    vparams->drawTool()->drawLines(vertices,5,Vec4f(d_springColor.getValue()));
+    vparams->drawTool()->drawLines(vertices,5,type::RGBAColor(d_springColor.getValue()));
     vparams->drawTool()->restoreLastState();
 }
 

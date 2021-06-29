@@ -67,7 +67,7 @@ class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual Tetra
     typedef helper::vector<Coord> SetAnisotropyDirectionArray;
 
 
-    typedef core::topology::BaseMeshTopology::index_type Index;
+    typedef sofa::Index Index;
     typedef core::topology::BaseMeshTopology::Tetra Element;
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
     typedef sofa::core::topology::Topology::Tetrahedron Tetrahedron;

@@ -71,7 +71,6 @@ public:
     typedef core::objectmodel::Data<VecCoord> DataVecCoord;
     typedef core::objectmodel::Data<VecDeriv> DataVecDeriv;
 
-    typedef sofa::core::topology::BaseMeshTopology::index_type Index;
     typedef sofa::core::topology::BaseMeshTopology::Triangle Element;
     typedef sofa::core::topology::BaseMeshTopology::SeqTriangles VecElement;
 
@@ -149,11 +148,11 @@ public:
 protected :
 
     ////////////// small displacements method
-    void accumulateForceSmall( VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit = false );
+    void accumulateForceSmall(VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit = false );
     void applyStiffnessSmall( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
 
     ////////////// large displacements method
-    void accumulateForceLarge( VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit=false );
+    void accumulateForceLarge(VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit=false );
     void applyStiffnessLarge( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
 
     //// stiffness matrix assembly

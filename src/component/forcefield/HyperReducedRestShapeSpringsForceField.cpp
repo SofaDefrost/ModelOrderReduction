@@ -18,7 +18,7 @@
 
 #include "HyperReducedRestShapeSpringsForceField.inl"
 
-#include <sofa/core/visual/DrawTool.h>
+#include <sofa/helper/visual/DrawTool.h>
 #include <sofa/core/ObjectFactory.h>
 
 namespace sofa

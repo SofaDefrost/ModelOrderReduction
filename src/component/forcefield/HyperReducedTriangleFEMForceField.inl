@@ -22,14 +22,13 @@
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
-#include <sofa/helper/gl/template.h>
+#include <sofa/gl/template.h>
 #include <fstream> // for reading the file
 #include <iostream> //for debugging
 #include <vector>
 #include <sofa/defaulttype/VecTypes.h>
 #include "../loader/MatrixLoader.h"
 
-//#include "config.h"
 
 // #define DEBUG_TRIANGLEFEM
 
@@ -130,12 +129,12 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::Mechani
 
 
 template <class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceSmall( VecCoord &f, const VecCoord &p, Index elementIndex, bool implicit )
+void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceSmall(VecCoord &f, const VecCoord &p, Index elementIndex, bool implicit )
 {
 
-    Index a = (*_indexedElements)[elementIndex][0];
-    Index b = (*_indexedElements)[elementIndex][1];
-    Index c = (*_indexedElements)[elementIndex][2];
+    sofa::Index a = (*_indexedElements)[elementIndex][0];
+    sofa::Index b = (*_indexedElements)[elementIndex][1];
+    sofa::Index c = (*_indexedElements)[elementIndex][2];
 
     Coord deforme_a, deforme_b, deforme_c;
     deforme_b = p[b]-p[a];
@@ -356,16 +355,16 @@ void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::Visu
     for(unsigned i = 0 ; i<m_RIDsize ;++i)
     {
         it = it0 + reducedIntegrationDomain(i);
-        Index a = (*it)[0];
-        Index b = (*it)[1];
-        Index c = (*it)[2];
+        sofa::Index a = (*it)[0];
+        sofa::Index b = (*it)[1];
+        sofa::Index c = (*it)[2];
 
         glColor4f(0,1,0,1);
-        helper::gl::glVertexT(x[a]);
+        gl::glVertexT(x[a]);
         glColor4f(0,0.5,0.5,1);
-        helper::gl::glVertexT(x[b]);
+        gl::glVertexT(x[b]);
         glColor4f(0,0,1,1);
-        helper::gl::glVertexT(x[c]);
+        gl::glVertexT(x[c]);
     }
     glEnd();
 
