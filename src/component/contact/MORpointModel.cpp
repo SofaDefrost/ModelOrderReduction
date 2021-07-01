@@ -44,7 +44,7 @@ int MORPointCollisionModelClass = core::RegisterObject("Collision model which re
         .addAlias("MORPoint")
         ;
 
-template class SOFA_MESH_COLLISION_API MORPointCollisionModel<defaulttype::Vec3Types>;
+template class MORPointCollisionModel<defaulttype::Vec3Types>;
 
 
 } // namespace collision

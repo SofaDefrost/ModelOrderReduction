@@ -6,10 +6,15 @@ include(cmake/environment.cmake)
 
 # Specify all required packages
 find_package(SofaFramework REQUIRED)
-find_package(SofaGeneral REQUIRED)
+find_package(SofaConstraint REQUIRED)
+find_package(SofaGeneralAnimationLoop REQUIRED)
+find_package(SofaGeneralSimpleFem REQUIRED)
+find_package(SofaUserInteraction REQUIRED)
 find_package(SofaBase REQUIRED)
-find_package(SofaCommon REQUIRED)
-find_package(SofaMisc REQUIRED)
+find_package(SofaRigid REQUIRED)
+find_package(SofaMiscFem REQUIRED)
+find_package(SofaMiscMapping REQUIRED)
+find_package(SofaMiscCollision REQUIRED)
 
 find_package(SofaPython QUIET)
 if(SofaPython_FOUND)
@@ -87,7 +92,8 @@ target_link_libraries(${PROJECT_NAME}
     SofaBaseMechanics SofaBaseTopology # SofaBase
     SofaRigid # SofaCommon
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
-    SofaMiscFem SofaMiscMapping # SofaMisc
+    SofaMiscFem SofaMiscMapping SofaMiscCollision # SofaMisc
+    Sofa.GL
     )
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>")

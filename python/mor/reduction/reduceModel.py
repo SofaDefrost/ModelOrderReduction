@@ -171,7 +171,7 @@ class ReduceModel():
 
         """
         self.listSofaScene = []
-
+        phaseNumClass = [self.reductionAnimations.phaseNumClass[i] for i in phasesToExecute]
         if not phasesToExecute:
             phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
 
@@ -181,8 +181,8 @@ class ReduceModel():
         for i in phasesToExecute:
             if i >= self.reductionAnimations.nbPossibility or i < 0 :
                 raise ValueError("phasesToExecute incorrect, select an non-existent phase : "+phasesToExecute)
-            if self.phaseToSave == self.reductionAnimations.phaseNumClass[i]:
-                self.phaseToSaveIndex = self.reductionAnimations.phaseNumClass.index(self.phaseToSave)
+            if self.phaseToSave == phaseNumClass:
+                self.phaseToSaveIndex = phaseNumClass.index(self.phaseToSave)
                 # print("INDEX -------------------> "+str(self.phaseToSaveIndex))
 
             self.listSofaScene.append({ "ORIGINALSCENE": self.originalScene,

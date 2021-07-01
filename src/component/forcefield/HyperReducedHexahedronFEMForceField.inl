@@ -19,13 +19,13 @@
 
 #include "HyperReducedHexahedronFEMForceField.h"
 #include <sofa/core/visual/VisualParams.h>
+#include <sofa/core/MechanicalParams.h>
 #include <sofa/simulation/Simulation.h>
+#include <sofa/core/behavior/MultiMatrixAccessor.h>
 #include <sofa/helper/decompose.h>
 #include <assert.h>
 #include <iostream>
 #include <set>
-
-
 
 
 
@@ -570,12 +570,12 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
 
 
         vparams->drawTool()->setLightingEnabled(false);
-        vparams->drawTool()->drawTriangles(points[0], defaulttype::Vec<4,float>(0.7f,0.7f,0.1f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
-        vparams->drawTool()->drawTriangles(points[1], defaulttype::Vec<4,float>(0.7f,0.0f,0.0f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
-        vparams->drawTool()->drawTriangles(points[2], defaulttype::Vec<4,float>(0.0f,0.7f,0.0f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
-        vparams->drawTool()->drawTriangles(points[3], defaulttype::Vec<4,float>(0.0f,0.0f,0.7f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
-        vparams->drawTool()->drawTriangles(points[4], defaulttype::Vec<4,float>(0.1f,0.7f,0.7f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
-        vparams->drawTool()->drawTriangles(points[5], defaulttype::Vec<4,float>(0.7f,0.1f,0.7f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
+        vparams->drawTool()->drawTriangles(points[0], type::RGBAColor(0.7f,0.7f,0.1f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
+        vparams->drawTool()->drawTriangles(points[1], type::RGBAColor(0.7f,0.0f,0.0f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
+        vparams->drawTool()->drawTriangles(points[2], type::RGBAColor(0.0f,0.7f,0.0f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
+        vparams->drawTool()->drawTriangles(points[3], type::RGBAColor(0.0f,0.0f,0.7f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
+        vparams->drawTool()->drawTriangles(points[4], type::RGBAColor(0.1f,0.7f,0.7f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
+        vparams->drawTool()->drawTriangles(points[5], type::RGBAColor(0.7f,0.1f,0.7f,(_sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0f)));
 
     }
 
