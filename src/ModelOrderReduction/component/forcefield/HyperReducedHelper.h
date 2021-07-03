@@ -69,7 +69,7 @@ public:
 
     // Reduced order model variables
     Eigen::MatrixXd m_modes;
-    //sofa::helper::vector<sofa::helper::vector<double>> Gie;
+    //sofa::type::vector<sofa::type::vector<double>> Gie;
     std::vector<std::vector<double> > Gie;
     Eigen::VectorXd weights;
     Eigen::VectorXi reducedIntegrationDomain;

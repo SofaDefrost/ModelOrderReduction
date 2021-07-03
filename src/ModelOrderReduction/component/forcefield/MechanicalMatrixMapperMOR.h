@@ -46,7 +46,7 @@ protected:
 public:
     Data< bool > performECSW;
     sofa::core::objectmodel::DataFileName listActiveNodesPath;
-    Data <sofa::helper::vector<unsigned int>> listActiveNodes;
+    Data <sofa::type::vector<unsigned int>> listActiveNodes;
     int nbActiveNodesAtStart;
     Data< bool > timeInvariantMapping1;
     Data< bool > timeInvariantMapping2;

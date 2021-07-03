@@ -205,7 +205,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
     unsigned int i=0,j=0,k=0,l=0;
     unsigned int nbTetrahedra=m_topology->getNbTetrahedra();
 
-    helper::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation>& tetrahedronInf = *(m_tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation>& tetrahedronInf = *(m_tetrahedronInfo.beginEdit());
 
 
     typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation *tetInfo;
@@ -310,8 +310,8 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::updateTange
     unsigned int nbEdges=m_topology->getNbEdges();
     const vector< Edge> &edgeArray=m_topology->getEdges() ;
 
-    helper::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
-    helper::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation>& tetrahedronInf = *(m_tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
+    type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation>& tetrahedronInf = *(m_tetrahedronInfo.beginEdit());
 
     typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation *einfo;
     typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronRestInformation *tetInfo;
@@ -475,7 +475,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
     unsigned int nbEdges=m_topology->getNbEdges();
     const vector< Edge> &edgeArray=m_topology->getEdges() ;
 
-    helper::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
+    type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
 
     typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation *einfo;
     sofa::helper::system::thread::CTime *timer;
@@ -539,7 +539,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatri
 
     unsigned int nbEdges=m_topology->getNbEdges();
     const vector< Edge> &edgeArray=m_topology->getEdges() ;
-    helper::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
+    type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
     typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation *einfo;
     unsigned int i,j,N0, N1, l, lECSW;
     Index noeud0, noeud1;

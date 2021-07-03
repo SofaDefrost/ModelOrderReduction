@@ -60,8 +60,8 @@ public:
     typedef typename DataTypes::CPos CPos;
     typedef typename DataTypes::Deriv Deriv;
     typedef typename DataTypes::Real Real;
-    typedef helper::vector< unsigned int > VecIndex;
-    typedef helper::vector< Real >	 VecReal;
+    typedef type::vector< unsigned int > VecIndex;
+    typedef type::vector< Real >	 VecReal;
 
     typedef core::objectmodel::Data<VecCoord> DataVecCoord;
     typedef core::objectmodel::Data<VecDeriv> DataVecDeriv;
@@ -119,7 +119,7 @@ public:
     /// Brings ForceField contribution to the global system stiffness matrix.
     virtual void addKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix ) override;
 
-    virtual void addSubKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix, const helper::vector<unsigned> & addSubIndex ) override;
+    virtual void addSubKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix, const type::vector<unsigned> & addSubIndex ) override;
 
     virtual void draw(const core::visual::VisualParams* vparams) override;
 
