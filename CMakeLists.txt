@@ -15,6 +15,7 @@ find_package(SofaRigid REQUIRED)
 find_package(SofaMiscFem REQUIRED)
 find_package(SofaMiscMapping REQUIRED)
 find_package(SofaMiscCollision REQUIRED)
+find_package(Sofa.GL REQUIRED)
 
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
