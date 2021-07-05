@@ -220,7 +220,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     // compute force on element
     Displacement F;
 
-    const helper::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
 
     if(!_assembling.getValue())
     {
@@ -309,7 +309,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::applyStiffness
 
     Displacement F;
 
-    const helper::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
 
     this->computeForce( F, X,tetrahedronInf[i].materialMatrix,tetrahedronInf[i].strainDisplacementTransposedMatrix, fact);
 
@@ -329,7 +329,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
 {
     const core::topology::BaseMeshTopology::Tetrahedron t=_topology->getTetrahedron(elementIndex);
 
-    helper::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
 
     // Rotation matrix (deformed and displaced Tetrahedron/world)
     Transformation R_0_2;
@@ -337,7 +337,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     tetrahedronInf[elementIndex].rotation.transpose(R_0_2);
 
     // positions of the deformed and displaced Tetrahedron in its frame
-    helper::fixed_array<Coord,4> deforme;
+    type::fixed_array<Coord,4> deforme;
     for(int i=0; i<4; ++i)
         deforme[i] = R_0_2*p[t[i]];
 
@@ -467,7 +467,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
 template<class DataTypes>
 void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::applyStiffnessLarge( Vector& f, const Vector& x, int i, Index a, Index b, Index c, Index d, SReal fact)
 {
-    const helper::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
 
     Transformation R_0_2;
     R_0_2.transpose(tetrahedronInf[i].rotation);
@@ -530,15 +530,15 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     A[2] = p[t[3]]-p[t[0]];
 
     Transformation R_0_2;
-    defaulttype::MatNoInit<3,3,Real> S;
+    type::MatNoInit<3,3,Real> S;
     helper::Decompose<Real>::polarDecomposition(A, R_0_2);
 
-    helper::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
 
     tetrahedronInf[elementIndex].rotation.transpose( R_0_2 );
 
     // positions of the deformed and displaced Tetrahedre in its frame
-    helper::fixed_array<Coord, 4>  deforme;
+    type::fixed_array<Coord, 4>  deforme;
     for(int i=0; i<4; ++i)
         deforme[i] = R_0_2 * p[t[i]];
 
@@ -582,7 +582,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
 template<class DataTypes>
 void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::applyStiffnessPolar( Vector& f, const Vector& x, int i, Index a, Index b, Index c, Index d, SReal fact )
 {
-    helper::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
 
     Transformation R_0_2;
     R_0_2.transpose( tetrahedronInf[i].rotation );
@@ -646,7 +646,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
         vparams->drawTool()->setPolygonMode(0,true);
 
 
-    std::vector< defaulttype::Vector3 > points[4];
+    std::vector< type::Vector3 > points[4];
     for(unsigned int i = 0 ; i<m_RIDsize ;++i)
     {
         const core::topology::BaseMeshTopology::Tetrahedron t=_topology->getTetrahedron(reducedIntegrationDomain(i));
@@ -704,7 +704,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::addKToMatrix(s
     Transformation Rot;
     StiffnessMatrix JKJt,tmp;
 
-    const helper::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
 
     Index noeud1, noeud2;
 
