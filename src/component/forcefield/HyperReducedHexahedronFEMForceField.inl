@@ -210,12 +210,12 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addDForce (const core::Mech
 template<class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceSmall ( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem )
 {
-    Vec<8,Coord> nodes;
+    type::Vec<8,Coord> nodes;
     for(int w=0; w<8; ++w)
         nodes[w] = p[elem[w]];
 
     // positions of the deformed and displaced Tetrahedron in its frame
-    Vec<8,Coord> deformed;
+    type::Vec<8,Coord> deformed;
     for(int w=0; w<8; ++w)
         deformed[w] = nodes[w];
 
@@ -259,7 +259,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceSmall ( WDat
 template<class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem )
 {
-    defaulttype::Vec<8,Coord> nodes;
+    type::Vec<8,Coord> nodes;
 
     for(int w=0; w<8; ++w)
         nodes[w] = p[elem[w]];
@@ -274,7 +274,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WData
 // 	_rotations[i].transpose(R_0_2);
 
     // positions of the deformed and displaced Tetrahedron in its frame
-    defaulttype::Vec<8,Coord> deformed;
+    type::Vec<8,Coord> deformed;
     for(int w=0; w<8; ++w)
         deformed[w] = _rotations[i] * nodes[w];
 
@@ -340,7 +340,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WData
 template<class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem )
 {
-    defaulttype::Vec<8,Coord> nodes;
+    type::Vec<8,Coord> nodes;
     for(int j=0; j<8; ++j)
         nodes[j] = p[elem[j]];
 
@@ -351,7 +351,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForcePolar( WData
 
 
     // positions of the deformed and displaced Tetrahedre in its frame
-    defaulttype::Vec<8,Coord> deformed;
+    type::Vec<8,Coord> deformed;
     for(int j=0; j<8; ++j)
         deformed[j] = _rotations[i] * nodes[j];
 
@@ -498,7 +498,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
         }
         it = it0 + i;
 
-        std::vector< defaulttype::Vector3 > points[6];
+        std::vector< type::Vector3 > points[6];
 
         Index a = (*it)[0];
         Index b = (*it)[1];
