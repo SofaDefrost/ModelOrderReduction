@@ -134,7 +134,7 @@ public:
 
     void applyRotation(const SReal rx, const SReal ry, const SReal rz);
 
-    void applyRotation(const type::Quat<SReal> q);
+    void applyRotation(const type::Quat<SReal>& q);
 
     void apply(const core::MechanicalParams *mparams, Data<VecCoord>& out, const Data<InVecCoord>& in);
 
