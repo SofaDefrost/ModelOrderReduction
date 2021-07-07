@@ -25,8 +25,8 @@
 
 #include <sofa/helper/config.h>
 #include <sofa/helper/proximity.h>
-#include <sofa/defaulttype/Mat.h>
-#include <sofa/defaulttype/Vec.h>
+#include <sofa/type/Mat.h>
+#include <sofa/type/Vec.h>
 #include <iostream>
 #include <algorithm>
 
@@ -88,12 +88,11 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
             vparams->drawTool()->setPolygonMode(0, true);
 
         // Check topological modifications
-        const int npoints = mstate->getSize();
-        if (npoints != size)
+        if (mstate->getSize() != size)
             return;
 
-        std::vector< defaulttype::Vector3 > pointsP;
-        std::vector< defaulttype::Vector3 > pointsL;
+        std::vector< type::Vector3 > pointsP;
+        std::vector< type::Vector3 > pointsL;
         msg_warning() << "Displaying Points. Size is:" << size;
         int numMode;
         double val;
@@ -133,7 +132,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
 
         if (m_displayFreePosition.getValue())
         {
-            std::vector< defaulttype::Vector3 > pointsPFree;
+            std::vector< type::Vector3 > pointsPFree;
 
             for (int i = 0; i < size; i++)
             {

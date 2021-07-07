@@ -25,7 +25,7 @@
 #include "MORUnilateralInteractionConstraint.h"
 #include <SofaConstraint/UnilateralInteractionConstraint.inl>
 #include <sofa/core/visual/VisualParams.h>
-#include <sofa/defaulttype/Vec.h>
+#include <sofa/type/Vec.h>
 #include <sofa/defaulttype/RGBAColor.h>
 #include "../loader/MatrixLoader.h"
 #include "../loader/MatrixLoader.inl"
