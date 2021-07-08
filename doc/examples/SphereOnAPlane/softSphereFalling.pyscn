@@ -31,7 +31,8 @@ def createScene(rootNode):
 
 
                 rootNode.createObject('CollisionPipeline', verbose="0")
-                rootNode.createObject('BruteForceDetection', name="N2")
+                rootNode.createObject('BruteForceBroadPhase', name="N2")
+                rootNode.createObject('BVHNarrowPhase')
                 #rootNode.createObject('CollisionResponse', response="StickContactConstraint", responseParams="mu=0.5")
                 if not reductionOn:
                     rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.0")
