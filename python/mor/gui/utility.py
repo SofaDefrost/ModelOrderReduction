@@ -3,7 +3,7 @@
 **Sets of utility Fct used by the GUI**
 '''
 import os,sys
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 class Color():
 
@@ -43,7 +43,7 @@ def check_state(sender):
     validator = sender.validator()
     state = validator.validate(sender.text(), 0)[0]
     if state == QtGui.QValidator.Acceptable:
-        color = Color.good 
+        color = Color.good
     elif state == QtGui.QValidator.Intermediate:
         color = Color.intermediate
     else:
@@ -53,7 +53,7 @@ def check_state(sender):
 
 def checkedBoxes(checkBox,items,checked=True):
     '''
-    checkedBoxes will with the state of a checkBox 
+    checkedBoxes will with the state of a checkBox
     change accordingly the state of other checkBoxes
     '''
     if checkBox.isChecked():
@@ -86,7 +86,7 @@ lastVisited = '.'
 def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
     '''
     openFileName will pop up a dialog window allowing the user to choose a file
-    and potentially display the path to it 
+    and potentially display the path to it
     '''
     global lastVisited
     if shortcut:
@@ -141,7 +141,7 @@ def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk *.obj",display=None):
 def openDirName(hdialog,display=None):
     '''
     openDirName will pop up a dialog window allowing the user to choose a directory
-    and potentially display the path to it 
+    and potentially display the path to it
     '''
     global lastVisited
     if shortcut:
@@ -150,7 +150,7 @@ def openDirName(hdialog,display=None):
     fileName = str(QtGui.QFileDialog.getExistingDirectory(None,hdialog,
         directory=lastVisited,
         options=QtGui.QFileDialog.DontUseNativeDialog))
-    
+
     if display and fileName:
         display.setText(fileName)
 
@@ -180,7 +180,7 @@ def removeLine(tab,rm=False):
     rowCount = tab.rowCount()-1
 
     if currentRow != -1:
-        rm = True 
+        rm = True
         row = currentRow
     elif rowCount != -1:
         rm = True
