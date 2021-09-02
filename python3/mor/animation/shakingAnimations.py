@@ -4,10 +4,10 @@ from math import sin
 
 def upDateValue(actualValue,actuatorMaxPull,actuatorIncrement):
     if actualValue < actuatorMaxPull:
-        print "INCREMENT ++"
+        print ("INCREMENT ++")
         return actualValue + actuatorIncrement
     else:
-        print "Done"
+        print ("Done")
         return actualValue
 
 def rotationPoint(Pos0, angle, brasLevier):
