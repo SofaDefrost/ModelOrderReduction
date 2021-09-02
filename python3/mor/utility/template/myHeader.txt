@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+import os
+import Sofa
+from numpy import add,subtract,multiply
+try:
+    from splib.numerics import *
+except:
+    raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
+                     +"Please install it : https://github.com/SofaDefrost/STLIB")
+
+path = os.path.dirname(os.path.abspath(__file__))
+
+def TRSinOrigin(positions,modelPosition,translation,rotation,scale=[1.0,1.0,1.0]):
+    posOrigin = subtract(positions , modelPosition)
+    if any(isinstance(el, list) for el in positions):
+        posOriginTRS = transformPositions(posOrigin,translation,eulerRotation=rotation,scale=scale)
+    else:
+        posOriginTRS = transformPosition(posOrigin,TRS_to_matrix(translation,eulerRotation=rotation,scale=scale))
+    return add(posOriginTRS,modelPosition).tolist()
+    
+def newBox(positions,modelPosition,translation,rotation,offset,scale=[1.0,1.0,1.0]):
+    pos = TRSinOrigin(positions,modelPosition,translation,rotation,scale)
+    offset =transformPositions([offset],eulerRotation=rotation,scale=scale)[0]
+    return add(pos,offset).tolist()
+
+def MyReducedModel(
+                  attachedTo=None,
+                  name="MyReducedModel",
+                  rotation=[0.0, 0.0, 0.0],
+                  translation=[0.0, 0.0, 0.0],
+                  scale=[1.0, 1.0, 1.0],
+                  surfaceMeshFileName=False,
+                  surfaceColor=[1.0, 1.0, 1.0],
+                  nbrOfModes=NBOFMODES,
+                  hyperReduction=True):
+    """
+    Object with an elastic deformation law.
+
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | argument            | type      | definition                                                                                      |
+        +=====================+===========+=================================================================================================+
+        | attachedTo          | Sofa.Node | Where the node is created;                                                                      |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | name                | str       | name of the Sofa.Node it will                                                                   |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | rotation            | vec3f     | Apply a 3D rotation to the object in Euler angles.                                              |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | translation         | vec3f     | Apply a 3D translation to the object.                                                           |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | scale               | vec3f     | Apply a 3D scale to the object.                                                                 |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | surfaceMeshFileName | str       | Filepath to a surface mesh (STL, OBJ). If missing there is no visual properties to this object. |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | surfaceColor        | vec3f     | The default color used for the rendering of the object.                                         |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | nbrOfModes          | int       | Number of modes we want our reduced model to work with                                          |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+        | hyperReduction      | Bool      | Controlled if we have the simple reduction or the hyper-reduction                               |
+        +---------------------+-----------+-------------------------------------------------------------------------------------------------+
+
+    """
+
+    modelRoot = attachedTo.createChild(name)
+
