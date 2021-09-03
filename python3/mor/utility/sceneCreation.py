@@ -23,11 +23,10 @@
 '''
 import sys
 import yaml
-from Sofa import getCategories
 
 try:
-    from splib.animation import animate
-    from splib.scenegraph import *
+    from splib3.animation import animate
+    from splib3.scenegraph import *
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
@@ -64,7 +63,7 @@ def getNodeSolver(node):
     solver = []
     for obj in node.getObjects():
         className = obj.getClassName()
-        categories = obj.Categories()
+        categories = obj.getCategories()
         solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
         if any(x in solverCategories for x in categories):
             solver.append(obj)
