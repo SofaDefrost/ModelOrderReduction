@@ -64,7 +64,7 @@ def getNodeSolver(node):
     solver = []
     for obj in node.getObjects():
         className = obj.getClassName()
-        categories = getCategories(obj.getClassName())
+        categories = obj.Categories()
         solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
         if any(x in solverCategories for x in categories):
             solver.append(obj)
