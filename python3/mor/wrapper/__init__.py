@@ -11,5 +11,5 @@
 
 """
 __all__=["replaceAndSave"]
-from replaceAndSave import MORreplace
+from mor.wrapper.replaceAndSave import MORreplace
 
