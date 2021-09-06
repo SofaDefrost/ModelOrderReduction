@@ -5,9 +5,9 @@ import platform
 
 #   STLIB IMPORT
 try:
-    from splib.animation import AnimationManager , animate
-    from stlib.scene.wrapper import Wrapper
-    from splib.scenegraph import *
+    from splib3.animation import AnimationManager , animate
+    from stlib3.scene.wrapper import Wrapper
+    from splib3.scenegraph import *
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")

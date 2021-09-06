@@ -174,7 +174,7 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
         if phase[tmp] :
             if type(toAnimate[tmp]).__name__ == "Node":
                 objToAnimate.item = toAnimate[tmp]
-                for obj in objToAnimate.item.getObjects():
+                for obj in objToAnimate.item.objects:
                     # print(obj.getClassName())
                     if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
                         objToAnimate.item = obj
