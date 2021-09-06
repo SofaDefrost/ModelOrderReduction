@@ -278,7 +278,7 @@ class ReduceModel():
 
         """
         # MOR IMPORT
-        from script import readStateFilesAndComputeModes
+        from mor.reduction.script import readStateFilesAndComputeModes
 
         start_time = time.time()
 
