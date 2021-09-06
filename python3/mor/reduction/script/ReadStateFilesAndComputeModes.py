@@ -14,16 +14,16 @@ if "Windows" in platform.platform():
 
 def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBodyModes=None, verbose=False ):
 
-    print "###################################################"
-    print "Executing readStateFilesAndComputeModes.py\n" 
-    print "Arguments :\n"
-    print "     INPUT  :"
-    print "     in stateFilePath         :",stateFilePath
-    print "     with arguments           :"
-    print "         -tolerance               :",tol,"\n"
-    print "     OUTPUT :"
-    print "         -modesFileName           :",modesFileName,"\n"
-    print "###################################################"
+    print("###################################################")
+    print("Executing readStateFilesAndComputeModes.py\n")
+    print("Arguments :\n")
+    print("     INPUT  :")
+    print("     in stateFilePath         :",stateFilePath)
+    print("     with arguments           :")
+    print("         -tolerance               :",tol,"\n")
+    print("     OUTPUT :")
+    print("         -modesFileName           :",modesFileName,"\n")
+    print("###################################################")
     x0Found = False
 
     f = open(stateFilePath,'r')
@@ -32,7 +32,7 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
     snapshot = []
     snapshotV = []
 
-    if verbose : print "Reading file %r:" % stateFilePath
+    if verbose : print("Reading file %r:" % stateFilePath)
     for line in f:
         nbLine = nbLine + 1
         lineSplit = line.split();
@@ -52,7 +52,7 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
     if x0Found :
         snapshot = np.transpose(snapshot)
         if np.isnan(np.sum(np.sum(snapshot))):
-            print "NAN PRESENT IN THE POSITIONS! THE SIMULATION WENT WRONG DURING THE SHAKING! MAKE SURE YOUR SIMULATION IS STABLE!"
+            print("NAN PRESENT IN THE POSITIONS! THE SIMULATION WENT WRONG DURING THE SHAKING! MAKE SURE YOUR SIMULATION IS STABLE!")
             return -1
 
         nbDOFs, nbSnap = np.shape(snapshot)
@@ -60,8 +60,8 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
         translationModes = np.zeros((nbDOFs,3))
 
         if verbose : 
-            print "    Read",nbLine,"line and found",nbSnap,"snapshot with",nbDOFs,"of DOF"
-            print "Done reading file %r:" % stateFilePath,'\n'
+            print("    Read",nbLine,"line and found",nbSnap,"snapshot with",nbDOFs,"of DOF")
+            print ("Done reading file %r:" % stateFilePath,'\n')
 
         for i in range(0,nbSnap):
             snapshotDiff[:,i] = snapshot[:,i] - restPos[:,0]
@@ -96,21 +96,21 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
 
         i = 0
         if verbose : 
-            print "Determining number of Modes with a Tolerance of",tol
+            print("Determining number of Modes with a Tolerance of",tol)
 
         while (np.sqrt(np.sum(sSquare[i:])/sumSVD) > tol or i==0):
             i = i+1
 
         nbModes = i
         if (addRigidBodyModes and addRigidBodyModes != [0]*3):    
-            print "Concatenating translation modes"
+            print("Concatenating translation modes")
             nbModes += 3
             modesTot = np.concatenate((translationModes[:,tmp], U[:,0:nbModes]), axis=1)
             np.savetxt(modesFileName, modesTot, header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
         else:
             np.savetxt(modesFileName, U[:,0:nbModes], header=str(nbDOFs)+' '+str(nbModes), comments='', fmt='%10.5f')
         if verbose :
-            print "===> Success readStateFilesAndComputeModes.py\n"
+            print("===> Success readStateFilesAndComputeModes.py\n")
 
         f.close()
 
@@ -118,7 +118,7 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName , addRigidBo
         return nbModes
 
     else: 
-        print "XO NOT FOUND"
+        print ("XO NOT FOUND")
         return -1
 
 ##########################################################################################

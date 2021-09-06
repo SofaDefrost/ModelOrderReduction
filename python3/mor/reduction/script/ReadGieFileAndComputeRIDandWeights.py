@@ -29,7 +29,7 @@ def selectECSW(G,b,tau,verbose):
     while (currentValue > valTarget):
 
         if verbose : 
-            print 'Current Error: ', currentValue,' Target Error: ', valTarget
+            print ("Current Error: ", currentValue,"Target Error:", valTarget)
         else :
             u.update_progress( round( ( 100 - ((currentValue - valTarget)*100) / marge) / 100 , 4) )
 
@@ -85,7 +85,7 @@ def selectECSW(G,b,tau,verbose):
         currentValue = errDif(G,xi,b)
 
     if verbose :
-        print "Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget
+        print ("Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget)
     else :    
         u.update_progress( 1 )
 
@@ -94,24 +94,24 @@ def selectECSW(G,b,tau,verbose):
 
 def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName, tol, verbose=False ):
 
-    print "###################################################"
-    print "Executing readGieFileAndComputeRIDandWeights.py\n"
-    print "Arguments :\n"
-    print "     INPUT  :"
-    print "         -gieFilename    :",gieFilename
-    print "     with arguments    :"
-    print "         -tolerance        :",tol,"\n"
-    print "     OUTPUT :"
-    print "         -RIDFileName                :",RIDFileName
-    print "         -weightsFileName            :",weightsFileName,"\n"
-    print "###################################################"
+    print("###################################################")
+    print("Executing readGieFileAndComputeRIDandWeights.py\n")
+    print("Arguments :\n")
+    print("     INPUT  :")
+    print("         -gieFilename    :",gieFilename)
+    print("     with arguments    :")
+    print("         -tolerance        :",tol,"\n")
+    print("     OUTPUT :")
+    print("         -RIDFileName                :",RIDFileName)
+    print("         -weightsFileName            :",weightsFileName,"\n")
+    print("###################################################")
 
     ################################################################################################
 
     gie = None
 
     #Read all the file & store it in GIE
-    if verbose : print "Reading file : %r" %gieFilename
+    if verbose : print("Reading file : %r" %gieFilename)
 
     with open(gieFilename,'r') as fgie :
         nbLines = 0
@@ -149,10 +149,10 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
 
     ####################################
     if verbose : 
-        print "INFO pre-process"
+        print("INFO pre-process")
         # print "     size GIE (nbLine,lenght) :   ", '('+str(nbLines)+', '+str(lenght)+')'
-        print "     size cleaned GIE :               ", np.shape(gie)
-        print "     size bECSW :                     ", np.shape(bECSW),'\n'
+        print("     size cleaned GIE :               ", np.shape(gie))
+        print("     size bECSW :                     ", np.shape(bECSW),'\n')
     ####################################
 
     #Compute RID & Weight
@@ -164,7 +164,7 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
     np.savetxt(RIDFileName,ECSWindex, header=str(sizeRID)+' 1', comments='', fmt='%d')
     np.savetxt(weightsFileName,xi, header=str(xi.size)+' 1', comments='',fmt='%10.5f')
 
-    if verbose: print "===> Success readGieFileAndComputeRIDandWeights.py\n"
+    if verbose: print ("===> Success readGieFileAndComputeRIDandWeights.py\n")
 
 
 ##########################################################################################
