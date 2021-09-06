@@ -15,7 +15,7 @@
 """
 __all__=["objToAnimate","reductionAnimations","packageBuilder","reductionParam"]
 
-from objToAnimate import ObjToAnimate
-from reductionAnimations import ReductionAnimations
-from packageBuilder import PackageBuilder
-from reductionParam import ReductionParam
+from mor.reduction.container.objToAnimate import ObjToAnimate
+from mor.reduction.container.reductionAnimations import ReductionAnimations
+from mor.reduction.container.packageBuilder import PackageBuilder
+from mor.reduction.container.reductionParam import ReductionParam
