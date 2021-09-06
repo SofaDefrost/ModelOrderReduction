@@ -47,7 +47,7 @@ def createScene(rootNode):
     # Import Original scene
 
     originalScene.createScene(rootNode)
-    dt = rootNode.dt
+    dt = rootNode.dt.value
     timeExe = nbIterations * dt
 
     # Add Animation Manager to Scene
