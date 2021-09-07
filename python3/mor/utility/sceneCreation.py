@@ -61,7 +61,7 @@ def removeNodes(nodes):
 
 def getNodeSolver(node):
     solver = []
-    for obj in node.getObjects():
+    for obj in node.objects:
         className = obj.getClassName()
         categories = obj.getCategories()
         solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
@@ -330,14 +330,15 @@ def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     +------------+-----------+--------------------------------------------------------------+
 
     '''
-
+    print("---------------------------------------------------")
     node = get(rootNode,pathToNode)
     nodeName = node.name
 
     solver = getNodeSolver(node)
+    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     removeObjects(solver)
 
-    for obj in rootNode.getObjects():
+    for obj in rootNode.objects:
         rootNode.removeObject(obj)
 
     rootNode.createObject('VisualStyle', displayFlags='showForceFields')
