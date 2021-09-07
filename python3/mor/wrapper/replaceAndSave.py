@@ -30,7 +30,7 @@ list of tuple (type,argument) each one coresponding to a component
 
 '''
 from collections import OrderedDict
-from Sofa import getCategories
+
 
 forceFieldImplemented = {   'TetrahedralCorotationalFEMForceField':('HyperReducedTetrahedralCorotationalFEMForceField','tetrahedra'),
                             'TetrahedronHyperelasticityFEMForceField':('HyperReducedTetrahedronHyperelasticityFEMForceField','tetrahedra'),
