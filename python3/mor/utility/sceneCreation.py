@@ -347,7 +347,8 @@ def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
         rootNode.removeChild(child)
 
     for child in node.children:
-        if not child.name in nodeName:
+        print(child)
+        if not child.name.value in nodeName:
             # print '--------------------------> remove   '+child.name
             node.removeChild(child)
 
