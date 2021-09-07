@@ -335,7 +335,6 @@ def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     nodeName = node.name
 
     solver = getNodeSolver(node)
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     removeObjects(solver)
 
     for obj in rootNode.objects:
@@ -344,11 +343,11 @@ def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     rootNode.createObject('VisualStyle', displayFlags='showForceFields')
     rootNode.dt = 1
 
-    for child in rootNode.getChildren():
+    for child in rootNode.children:
         rootNode.removeChild(child)
 
-    for child in node.getChildren():
-        if not (child.name in nodeName):
+    for child in node.children:
+        if not child.name in nodeName:
             # print '--------------------------> remove   '+child.name
             node.removeChild(child)
 
