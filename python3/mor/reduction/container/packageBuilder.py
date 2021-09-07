@@ -67,9 +67,9 @@ class PackageBuilder():
         for line in fileinput.input(self.debugDir+stateFileName, inplace=True):
             if line.find('T=') != -1:
                 line = 'T= '+str(periodSaveGIE*counter)+'\n'
-                print("%s" % line),
+                print("%s" % line, end="")
                 counter += 1
-            else : print(line),
+            else : print(line, end="")
 
     def copyAndCleanState(self,results,periodSaveGIE,stateFileName,velocityFileName=None,gie=None):
         '''
