@@ -104,7 +104,7 @@ def searchObjectClassInGraphScene(node,toFind):
 
     def search(node,toFind):
 
-        for obj in node.getObjects():
+        for obj in node.objects:
             if obj.getClassName() == toFind:
                 tmp.results.append(obj)
 
