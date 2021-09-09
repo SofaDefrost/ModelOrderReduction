@@ -107,12 +107,10 @@ def searchObjectClassInGraphScene(node,toFind):
         for obj in node.objects:
             if obj.getClassName() == toFind:
                 tmp.results.append(obj)
-
-        for child in node.getChildren():
+        for child in node.children:
             search(child,toFind)
 
     search(node,toFind)
-
     return tmp.results
 
 def searchPlugin(rootNode,pluginName):
@@ -121,9 +119,10 @@ def searchPlugin(rootNode,pluginName):
     '''
     found = False
     plugins = searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
+    print(plugins)
     for plugin in plugins:
-        for name in plugin.pluginName:
-            if name == ["pluginName"]:
+        for name in plugin.pluginName.value:
+            if name == pluginName:
                 found = True
     return found
 
