@@ -67,7 +67,7 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName, addRigidBod
         for i in range(0, nbSnap):
             snapshotDiff[:, i] = snapshot[:, i] - restPos[:, 0]
 
-        for i in range(0, nbDOFs / 3):
+        for i in range(0, int(nbDOFs / 3)):
             translationModes[3 * i][0] = 1 / math.sqrt(nbDOFs / 3)
             translationModes[3 * i + 1][1] = 1 / math.sqrt(nbDOFs / 3)
             translationModes[3 * i + 2][2] = 1 / math.sqrt(nbDOFs / 3)

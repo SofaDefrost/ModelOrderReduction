@@ -375,7 +375,6 @@ class ReduceModel():
 
         for fileName in self.reductionParam.savedElementsFilesNames :
             u.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+slash+fileName,self.packageBuilder.debugDir+fileName)
-
         self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
         # print("massName -----------------------> ",self.reductionParam.massName)
         u.copy(self.reductionParam.massName,self.reductionParam.dataDir)
