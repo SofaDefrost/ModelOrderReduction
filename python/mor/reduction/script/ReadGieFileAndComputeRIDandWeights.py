@@ -36,7 +36,13 @@ def selectECSW(G,b,tau,verbose):
         vecDiff = b - G.dot(xi)
         GT = np.transpose(G)
         mu = GT.dot(vecDiff)
-        index = int(np.argmax(mu))
+
+        sorted_inds = np.argsort(mu[:, 0])
+        for ind in reversed(sorted_inds):
+            if ind not in ECSWindex:
+                index = int(ind)
+                break
+
         ECSWindex = ECSWindex.union([index])
 
         Gtilde = G[:,list(ECSWindex)]
@@ -51,7 +57,7 @@ def selectECSW(G,b,tau,verbose):
 
             #if verbose : print 'Hohohohohohohohoho !!!'
 
-            negIndex = (etaTilde-xi[list(ECSWindex)])<0
+            negIndex = etaTilde<0
             negIndex = list(negIndex.flatten())
 
             for i in negIndex:
