@@ -61,15 +61,15 @@ public:
 
 public:
 
-    virtual void init();
+    virtual void init() override;
 
 protected:
-    virtual void accumulateJacobiansOptimized(const MechanicalParams* mparams);
-    virtual void addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor);
-    virtual void addPrecomputedMassToSystem(const MechanicalParams* mparams, const unsigned int mstateSize, const Eigen::SparseMatrix<double>& Jeig, Eigen::SparseMatrix<double>& JtKJeig);
-    virtual void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id);
-    virtual void optimizeAndCopyMappingJacobianToEigenFormat1(const typename TDataTypes1::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig);
-    virtual void optimizeAndCopyMappingJacobianToEigenFormat2(const typename TDataTypes2::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig);
+    virtual void accumulateJacobiansOptimized(const MechanicalParams* mparams) override;
+    virtual void addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor) override;
+    virtual void addPrecomputedMassToSystem(const MechanicalParams* mparams, const unsigned int mstateSize, const Eigen::SparseMatrix<double>& Jeig, Eigen::SparseMatrix<double>& JtKJeig) override;
+    virtual void buildIdentityBlocksInJacobian(core::behavior::BaseMechanicalState* mstate, sofa::core::MatrixDerivId Id) override;
+    virtual void optimizeAndCopyMappingJacobianToEigenFormat1(const typename TDataTypes1::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig) override;
+    virtual void optimizeAndCopyMappingJacobianToEigenFormat2(const typename TDataTypes2::MatrixDeriv& J, Eigen::SparseMatrix<double>& Jeig) override;
 
 
 

@@ -169,13 +169,13 @@ protected:
     using HexahedronFEMForceField<DataTypes>::_rotatedInitialElements;   ///< The initials positions in its frame
     using HexahedronFEMForceField<DataTypes>::_rotations;
     using HexahedronFEMForceField<DataTypes>::_initialrotations;
-    virtual void accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
+    virtual void accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, sofa::Index i, const Element&elem ) override;
 
     ////////////// polar decomposition method
-    virtual void accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
+    virtual void accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, sofa::Index i, const Element&elem ) override;
 
     ////////////// small decomposition method
-    virtual void accumulateForceSmall( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem  );
+    virtual void accumulateForceSmall( WDataRefVecDeriv &f, RDataRefVecCoord &p, sofa::Index i, const Element&elem ) override;
 
     using HexahedronFEMForceField<DataTypes>::_alreadyInit;
 };
