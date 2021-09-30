@@ -495,9 +495,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
     }
 }
 
-
-
-
 } // namespace forcefield
 
 } // namespace component

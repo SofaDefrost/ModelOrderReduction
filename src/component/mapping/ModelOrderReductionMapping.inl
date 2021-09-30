@@ -80,13 +80,12 @@ void ModelOrderReductionMapping<TIn, TOut>::init()
 template <class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const SReal rx, const SReal ry, const SReal rz)
 {
-
     Quat q = Quat::createQuaterFromEuler(type::Vec< 3, SReal >(rx, ry, rz) * M_PI / 180.0);
     applyRotation(q);
 }
 
 template <class TIn, class TOut>
-void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const type::Quat<SReal> q)
+void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const type::Quat<SReal>& q)
 {
     type::Vec<3, InReal> pos;
     for (unsigned int i = 0; i < m_modesEigen.cols(); i++) // loop over modes

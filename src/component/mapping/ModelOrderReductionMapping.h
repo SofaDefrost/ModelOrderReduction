@@ -110,8 +110,9 @@ public:
 
 protected:
     ModelOrderReductionMapping()
-        : d_modesPath(initData(&d_modesPath,"modesPath","Path to the file containing the modes. REQUIRED"))
-        , d_rotation(initData(&d_rotation,"rotation","Rotation of the modes"))
+        : d_rotation(initData(&d_rotation,"rotation","Rotation of the modes"))
+        , d_modesPath(initData(&d_modesPath,"modesPath","Path to the file containing the modes. REQUIRED"))
+
     {
         m_Js.resize( 1 );
         m_Js[0] = &m_J;
@@ -127,23 +128,23 @@ public:
     ///
     /// This is the case for mapping keeping a one-to-one correspondance between
     /// input and output DOFs (mostly identity or data-conversion mappings).
-    virtual bool sameTopology() const { return false; }
+    virtual bool sameTopology() const override { return false; }
 
-    void init();
+    void init() override;
 
     void applyRotation(const SReal rx, const SReal ry, const SReal rz);
 
-    void applyRotation(const type::Quat<SReal> q);
+    void applyRotation(const type::Quat<SReal>& q);
 
-    void apply(const core::MechanicalParams *mparams, Data<VecCoord>& out, const Data<InVecCoord>& in);
+    void apply(const core::MechanicalParams *mparams, Data<VecCoord>& out, const Data<InVecCoord>& in) override;
 
-    void applyJ(const core::MechanicalParams *mparams, Data<VecDeriv>& out, const Data<InVecDeriv>& in);
+    void applyJ(const core::MechanicalParams *mparams, Data<VecDeriv>& out, const Data<InVecDeriv>& in) override;
 
-    void applyJT(const core::MechanicalParams *mparams, Data<InVecDeriv>& out, const Data<VecDeriv>& in);
+    void applyJT(const core::MechanicalParams *mparams, Data<InVecDeriv>& out, const Data<VecDeriv>& in) override;
 
-    void applyJT(const core::ConstraintParams *cparams, Data<InMatrixDeriv>& out, const Data<MatrixDeriv>& in);
+    void applyJT(const core::ConstraintParams *cparams, Data<InMatrixDeriv>& out, const Data<MatrixDeriv>& in) override;
 
-    const sofa::defaulttype::BaseMatrix* getJ();
+    const sofa::defaulttype::BaseMatrix* getJ() override;
 
 
 
@@ -169,7 +170,7 @@ protected:
 
 public:
 
-    const js_type* getJs();
+    const js_type* getJs() override;
 
     sofa::core::objectmodel::DataFileName d_modesPath;
 

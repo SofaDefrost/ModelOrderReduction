@@ -114,10 +114,11 @@ protected:
     using UnilateralInteractionConstraint<DataTypes>::prevForces;
     using UnilateralInteractionConstraint<DataTypes>::contactsStatus;
 
-//    /// Computes constraint violation in position and stores it into resolution global vector
+//    /// Computes constraint violation
+//    in position and stores it into resolution global vector
 //    ///
 //    /// @param v Global resolution vector
-    virtual void getPositionViolation(defaulttype::BaseVector *v);
+    virtual void getPositionViolation(defaulttype::BaseVector *v) override;
 
 //    ///Computes constraint violation in velocity and stores it into resolution global vector
 //    ///

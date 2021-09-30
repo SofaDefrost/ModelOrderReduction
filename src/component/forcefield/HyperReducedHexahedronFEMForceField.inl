@@ -208,7 +208,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addDForce (const core::Mech
 ////////////// small displacements method
 
 template<class DataTypes>
-void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceSmall ( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem )
+        void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceSmall ( WDataRefVecDeriv &f, RDataRefVecCoord &p, sofa::Index i, const Element&elem )
 {
     type::Vec<8,Coord> nodes;
     for(int w=0; w<8; ++w)
@@ -257,7 +257,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceSmall ( WDat
 
 
 template<class DataTypes>
-void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem )
+        void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WDataRefVecDeriv &f, RDataRefVecCoord &p, sofa::Index i, const Element&elem )
 {
     type::Vec<8,Coord> nodes;
 
@@ -338,7 +338,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForceLarge( WData
 
 
 template<class DataTypes>
-void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, int i, const Element&elem )
+        void HyperReducedHexahedronFEMForceField<DataTypes>::accumulateForcePolar( WDataRefVecDeriv &f, RDataRefVecCoord &p, sofa::Index i, const Element&elem )
 {
     type::Vec<8,Coord> nodes;
     for(int j=0; j<8; ++j)

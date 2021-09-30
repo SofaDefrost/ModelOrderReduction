@@ -87,8 +87,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
             vparams->drawTool()->setPolygonMode(0, true);
 
         // Check topological modifications
-        const int npoints = mstate->getSize();
-        if (npoints != size)
+        if (mstate->getSize() != size)
             return;
 
         std::vector< type::Vector3 > pointsP;
