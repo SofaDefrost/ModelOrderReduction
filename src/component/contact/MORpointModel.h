@@ -27,12 +27,14 @@
 #include <SofaMeshCollision/PointModel.inl>
 
 #include <sofa/core/CollisionModel.h>
-#include <SofaMeshCollision/LocalMinDistanceFilter.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
 #include <sofa/defaulttype/VecTypes.h>
+#include <SofaMeshCollision/fwd.h>
+
 #include <vector>
 #include <Eigen/Sparse>
+
 
 namespace sofa
 {

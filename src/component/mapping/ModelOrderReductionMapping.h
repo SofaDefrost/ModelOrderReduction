@@ -83,15 +83,14 @@ public:
     typedef typename OutDataTypes::VecCoord OutVecCoord;
     typedef typename OutDataTypes::VecDeriv OutVecDeriv;
 
-    typedef sofa::defaulttype::Vector3 Vector3;
+    typedef type::Vector3 Vector3;
 
-    typedef typename Inherit::ForceMask ForceMask;
     typedef core::topology::BaseMeshTopology::index_type Index;
     typedef core::topology::BaseMeshTopology::Tetra Element;
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
 
     typedef linearsolver::EigenSparseMatrix<TIn, TOut> eigen_type;
-    typedef helper::vector< defaulttype::BaseMatrix* > js_type;
+    typedef type::vector< defaulttype::BaseMatrix* > js_type;
 
 
     enum
@@ -107,7 +106,7 @@ public:
         NOut = sofa::defaulttype::DataTypeInfo<Deriv>::Size
     };
 
-    typedef defaulttype::Mat<N, N, InReal> Mat;
+    typedef type::Mat<N, N, InReal> Mat;
 
 protected:
     ModelOrderReductionMapping()
@@ -134,7 +133,7 @@ public:
 
     void applyRotation(const SReal rx, const SReal ry, const SReal rz);
 
-    void applyRotation(const defaulttype::Quat q);
+    void applyRotation(const type::Quat<SReal> q);
 
     void apply(const core::MechanicalParams *mparams, Data<VecCoord>& out, const Data<InVecCoord>& in);
 

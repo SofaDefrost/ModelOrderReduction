@@ -64,7 +64,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
 {
     MechanicalMatrixMapper<DataTypes1, DataTypes2>::init();
     //listActiveNodes.resize(0);
-    sofa::helper::vector <unsigned int>& listActiveNodesInit = *(listActiveNodes.beginEdit());
+    sofa::type::vector <unsigned int>& listActiveNodesInit = *(listActiveNodes.beginEdit());
     listActiveNodesInit.resize(0);
     if (performECSW.getValue())
     {
@@ -112,7 +112,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptim
     if (m_nbInteractionForceFieldsMOR != currentNbInteractionFFs)
     {
         m_mouseInteraction = true;
-        sofa::helper::vector <unsigned int>& listActiveNodesUpdate = *(listActiveNodes.beginEdit());
+        sofa::type::vector <unsigned int>& listActiveNodesUpdate = *(listActiveNodes.beginEdit());
         for(BaseForceField* iforcefield : node->interactionForceField)
         {
             if (iforcefield->getName() == "Spring-Mouse-Contact")
@@ -169,7 +169,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::buildIdentityBlocksInJac
     else
     {
         msg_info(this) << "In buildIdentityBlocksInJacobianMOR, performECSW is false";
-        sofa::helper::vector<unsigned int> list;
+        sofa::type::vector<unsigned int> list;
         for (unsigned int i=0; i<mstate->getSize(); i++)
             list.push_back(i);
         mstate->buildIdentityBlocksInJacobian(list, Id);

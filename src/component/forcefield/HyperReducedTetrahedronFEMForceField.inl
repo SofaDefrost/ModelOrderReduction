@@ -87,7 +87,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
     rotations[elementIndex].transpose(R_0_2);
 
     // positions of the deformed and displaced Tetrahedron in its frame
-    helper::fixed_array<Coord,4> deforme;
+    type::fixed_array<Coord,4> deforme;
     for(int i=0; i<4; ++i)
         deforme[i] = R_0_2*p[index[i]];
 
@@ -470,8 +470,8 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
     /// vonMises stress
     Real minVM = (Real)1e20, maxVM = (Real)-1e20;
     Real minVMN = (Real)1e20, maxVMN = (Real)-1e20;
-    helper::ReadAccessor<Data<helper::vector<Real> > > vM =  _vonMisesPerElement;
-    helper::ReadAccessor<Data<helper::vector<Real> > > vMN =  _vonMisesPerNode;
+    helper::ReadAccessor<Data<type::vector<Real> > > vM =  _vonMisesPerElement;
+    helper::ReadAccessor<Data<type::vector<Real> > > vMN =  _vonMisesPerNode;
     if (_computeVonMisesStress.getValue() > 0) {
         if (updateVonMisesStress)
             this->computeVonMisesStress();
@@ -499,7 +499,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 #ifdef SIMPLEFEM_COLORMAP
     if (_showVonMisesStressPerNode.getValue()) {
         std::vector<type::RGBAColor> nodeColors(x.size());
-        std::vector<defaulttype::Vector3> pts(x.size());
+        std::vector<type::Vector3> pts(x.size());
         helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVMN, maxVMN);
         for (size_t nd = 0; nd < x.size(); nd++) {
             pts[nd] = x[nd];
@@ -509,7 +509,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
     }
 #endif
 
-    std::vector< defaulttype::Vector3 > points[4];
+    std::vector< type::Vector3 > points[4];
     typename VecElement::const_iterator it, it0;
     unsigned int i;
 
@@ -593,7 +593,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
     if (vparams->displayFlags().getShowNormals())
     {
 
-        std::vector< defaulttype::Vector3 > points[3];
+        std::vector< type::Vector3 > points[3];
 
         for(unsigned ii = 0; ii<  x.size() ; ii++)
         {
@@ -662,7 +662,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::default
         nbElementsConsidered = m_RIDsize;
     SReal kTimesWeight;
 
-    if (sofa::component::linearsolver::CompressedRowSparseMatrix<defaulttype::Mat<3,3,double> > * crsmat = dynamic_cast<sofa::component::linearsolver::CompressedRowSparseMatrix<defaulttype::Mat<3,3,double> > * >(mat))
+    if (sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,double> > * crsmat = dynamic_cast<sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,double> > * >(mat))
     {
 
 
@@ -685,7 +685,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::default
             else
                 kTimesWeight = k*weights(IT);
 
-            defaulttype::Mat<3,3,double> tmpBlock[4][4];
+            type::Mat<3,3,double> tmpBlock[4][4];
             // find index of node 1
             for (n1=0; n1<4; n1++)
             {
@@ -722,7 +722,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::default
         }
 
     }
-    else if (sofa::component::linearsolver::CompressedRowSparseMatrix<defaulttype::Mat<3,3,float> > * crsmat = dynamic_cast<sofa::component::linearsolver::CompressedRowSparseMatrix<defaulttype::Mat<3,3,float> > * >(mat))
+    else if (sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,float> > * crsmat = dynamic_cast<sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,float> > * >(mat))
     {
         for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
         {
@@ -744,7 +744,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::default
             else
                 kTimesWeight = k*weights(IT);
 
-            defaulttype::Mat<3,3,double> tmpBlock[4][4];
+            type::Mat<3,3,double> tmpBlock[4][4];
             // find index of node 1
             for (n1=0; n1<4; n1++)
             {

@@ -46,9 +46,9 @@ using core::behavior::ForceField;
 using defaulttype::BaseMatrix;
 using core::VecCoordId;
 using core::MechanicalParams;
-using defaulttype::Vector3;
-using defaulttype::Vec4f;
-using helper::vector;
+using type::Vector3;
+using type::Vec4f;
+using type::vector;
 using core::visual::VisualParams;
 
 template<class DataTypes>
@@ -495,56 +495,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
     }
 }
 
-template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::addSubKToMatrix(const MechanicalParams* mparams, const MultiMatrixAccessor* matrix, const vector<unsigned> & addSubIndex )
-{
-    //  remove to be able to build in parallel
-    // 	const VecIndex& indices = points.getValue();
-    // 	const VecReal& k = stiffness.getValue();
-    MultiMatrixAccessor::MatrixRef mref = matrix->getMatrix(this->mstate);
-    BaseMatrix* mat = mref.matrix;
-    unsigned int offset = mref.offset;
-    Real kFact = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
 
-    const int N = Coord::total_size;
-
-    unsigned int curIndex = 0;
-
-    const VecReal &k = d_stiffness.getValue();
-    if (k.size()!= m_indices.size() )
-    {
-        const Real k0 = k[0];
-        for (unsigned int index = 0; index < m_indices.size(); index++)
-        {
-            curIndex = m_indices[index];
-
-            bool contains=false;
-            for (unsigned s=0;s<addSubIndex.size() && !contains;s++) if (curIndex==addSubIndex[s]) contains=true;
-            if (!contains) continue;
-
-            for(int i = 0; i < N; i++)
-            {
-                mat->add(offset + N * curIndex + i, offset + N * curIndex + i, -kFact * k0);
-            }
-        }
-    }
-    else
-    {
-        for (unsigned int index = 0; index < m_indices.size(); index++)
-        {
-            curIndex = m_indices[index];
-
-            bool contains=false;
-            for (unsigned s=0;s<addSubIndex.size() && !contains;s++) if (curIndex==addSubIndex[s]) contains=true;
-            if (!contains) continue;
-
-            for(int i = 0; i < N; i++)
-            {
-                mat->add(offset + N * curIndex + i, offset + N * curIndex + i, -kFact * k[index]);
-            }
-        }
-    }
-}
 
 
 } // namespace forcefield

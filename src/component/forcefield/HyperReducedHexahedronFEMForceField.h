@@ -69,22 +69,22 @@ public:
 
 protected:
 
-    typedef defaulttype::Vec<24, Real> Displacement;		///< the displacement vector
+    typedef type::Vec<24, Real> Displacement;		///< the displacement vector
 
-    typedef defaulttype::Mat<6, 6, Real> MaterialStiffness;	///< the matrix of material stiffness
-    typedef helper::vector<MaterialStiffness> VecMaterialStiffness;         ///< a vector of material stiffness matrices
+    typedef type::Mat<6, 6, Real> MaterialStiffness;	///< the matrix of material stiffness
+    typedef type::vector<MaterialStiffness> VecMaterialStiffness;         ///< a vector of material stiffness matrices
     VecMaterialStiffness _materialsStiffnesses;					///< the material stiffness matrices vector
 
-    typedef defaulttype::Mat<24, 24, Real> ElementStiffness;
-    typedef helper::vector<ElementStiffness> VecElementStiffness;
+    typedef type::Mat<24, 24, Real> ElementStiffness;
+    typedef type::vector<ElementStiffness> VecElementStiffness;
     using HexahedronFEMForceField<DataTypes>::_elementStiffnesses; ///< Stiffness matrices per element (K_i)
 
-    typedef defaulttype::Mat<3, 3, Real> Mat33;
+    typedef type::Mat<3, 3, Real> Mat33;
 
 
     typedef std::pair<int,Real> Col_Value;
-    typedef helper::vector< Col_Value > CompressedValue;
-    typedef helper::vector< CompressedValue > CompressedMatrix;
+    typedef type::vector< Col_Value > CompressedValue;
+    typedef type::vector< CompressedValue > CompressedMatrix;
     using HexahedronFEMForceField<DataTypes>::_stiffnesses;
     using HexahedronFEMForceField<DataTypes>::m_potentialEnergy;
 

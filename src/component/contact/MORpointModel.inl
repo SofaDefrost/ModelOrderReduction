@@ -25,14 +25,13 @@
 
 #include <sofa/helper/config.h>
 #include <sofa/helper/proximity.h>
-#include <sofa/defaulttype/Mat.h>
-#include <sofa/defaulttype/Vec.h>
+#include <sofa/type/Mat.h>
+#include <sofa/type/Vec.h>
 #include <iostream>
 #include <algorithm>
 
 #include "MORpointModel.h"
 #include <sofa/core/visual/VisualParams.h>
-#include <SofaMeshCollision/PointLocalMinDistanceFilter.h>
 #include <SofaBaseCollision/CubeModel.h>
 #include <sofa/core/ObjectFactory.h>
 #include <vector>
@@ -92,8 +91,8 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
         if (npoints != size)
             return;
 
-        std::vector< defaulttype::Vector3 > pointsP;
-        std::vector< defaulttype::Vector3 > pointsL;
+        std::vector< type::Vector3 > pointsP;
+        std::vector< type::Vector3 > pointsL;
         msg_warning() << "Displaying Points. Size is:" << size;
         int numMode;
         double val;
@@ -117,7 +116,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
 //                    pointsL.push_back(p.p());
 //                    pointsL.push_back(p.p() + normals[i] * 1000.1f*val);
 //                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 20.1f*val, 0.06, 0.4, 0.3, {0.25f, 0.75f, 0.75f, 1});
-                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 60.1f*val, 0.4, 2.0, 1.8, helper::types::RGBAColor(0.25f, 0.75f, 0.75f, 1));
+                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 60.1f*val, 0.4, 2.0, 1.8, type::RGBAColor(0.25f, 0.75f, 0.75f, 1));
                 }
                 if ((unsigned)i < normals.size())
                 {
@@ -133,7 +132,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
 
         if (m_displayFreePosition.getValue())
         {
-            std::vector< defaulttype::Vector3 > pointsPFree;
+            std::vector< type::Vector3 > pointsPFree;
 
             for (int i = 0; i < size; i++)
             {

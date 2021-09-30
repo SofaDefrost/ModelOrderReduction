@@ -43,7 +43,7 @@ namespace mapping
 
 using std::vector;
 using sofa::component::loader::MatrixLoader;
-
+typedef type::Quat<SReal> Quat;
 template<class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::init()
 {
@@ -80,15 +80,15 @@ void ModelOrderReductionMapping<TIn, TOut>::init()
 template <class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const SReal rx, const SReal ry, const SReal rz)
 {
-    sofa::defaulttype::Quaternion q =
-        helper::Quater< SReal >::createQuaterFromEuler(sofa::defaulttype::Vec< 3, SReal >(rx, ry, rz) * M_PI / 180.0);
+
+    Quat q = Quat::createQuaterFromEuler(type::Vec< 3, SReal >(rx, ry, rz) * M_PI / 180.0);
     applyRotation(q);
 }
 
 template <class TIn, class TOut>
-void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const defaulttype::Quat q)
+void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const type::Quat<SReal> q)
 {
-    sofa::defaulttype::Vec<3, InReal> pos;
+    type::Vec<3, InReal> pos;
     for (unsigned int i = 0; i < m_modesEigen.cols(); i++) // loop over modes
     {
         for (unsigned int j = 0; j < m_modesEigen.rows(); j+=3) // loop over positions
@@ -96,7 +96,7 @@ void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const defaulttype::Qua
             pos[0] = m_modesEigen(j, i);
             pos[1] = m_modesEigen(j+1, i);
             pos[2] = m_modesEigen(j+2, i);
-            sofa::defaulttype::Vec<3, InReal> newposition = q.rotate(pos);
+            type::Vec<3, InReal> newposition = q.rotate(pos);
             m_modesEigen(j, i)   = newposition[0];
             m_modesEigen(j+1, i) = newposition[1];
             m_modesEigen(j+2, i) = newposition[2];

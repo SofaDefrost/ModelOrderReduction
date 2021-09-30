@@ -78,36 +78,36 @@ protected:
     /// @{
 
     /// Displacement vector (deformation of the 4 corners of a tetrahedron
-    typedef defaulttype::VecNoInit<12, Real> Displacement;
+    typedef type::VecNoInit<12, Real> Displacement;
 
     /// Material stiffness matrix of a tetrahedron
-    typedef defaulttype::Mat<6, 6, Real> MaterialStiffness;
+    typedef type::Mat<6, 6, Real> MaterialStiffness;
 
     /// Strain-displacement matrix
-    typedef defaulttype::Mat<12, 6, Real> StrainDisplacement;
+    typedef type::Mat<12, 6, Real> StrainDisplacement;
 
 
-    defaulttype::MatNoInit<3, 3, Real> R0;
+    type::MatNoInit<3, 3, Real> R0;
 
     /// Rigid transformation (rotation) matrix
-    typedef defaulttype::MatNoInit<3, 3, Real> Transformation;
+    typedef type::MatNoInit<3, 3, Real> Transformation;
 
     /// Stiffness matrix ( = RJKJtRt  with K the Material stiffness matrix, J the strain-displacement matrix, and R the transformation matrix if any )
-    typedef defaulttype::Mat<12, 12, Real> StiffnessMatrix;
+    typedef type::Mat<12, 12, Real> StiffnessMatrix;
 
     /// Symmetrical tensor written as a vector following the Voigt notation
-    typedef defaulttype::VecNoInit<6,Real> VoigtTensor;
+    typedef type::VecNoInit<6,Real> VoigtTensor;
 
     /// @}
 
     /// Vector of material stiffness of each tetrahedron
-    typedef helper::vector<MaterialStiffness> VecMaterialStiffness;
-    typedef helper::vector<StrainDisplacement> VecStrainDisplacement;  ///< a vector of strain-displacement matrices
+    typedef type::vector<MaterialStiffness> VecMaterialStiffness;
+    typedef type::vector<StrainDisplacement> VecStrainDisplacement;  ///< a vector of strain-displacement matrices
 
     /// structures used to compute vonMises stress
-    typedef defaulttype::Mat<4, 4, Real> Mat44;
-    typedef defaulttype::Mat<3, 3, Real> Mat33;
-    typedef defaulttype::Mat<4, 3, Real> Mat43;
+    typedef type::Mat<4, 4, Real> Mat44;
+    typedef type::Mat<3, 3, Real> Mat33;
+    typedef type::Mat<4, 3, Real> Mat43;
 
     /// Vector of material stiffness matrices of each tetrahedron
     using TetrahedronFEMForceField<DataTypes>::materialsStiffnesses;
@@ -120,8 +120,8 @@ protected:
     /// @{
 
     typedef std::pair<index_type,Real> Col_Value;
-    typedef helper::vector< Col_Value > CompressedValue;
-    typedef helper::vector< CompressedValue > CompressedMatrix;
+    typedef type::vector< Col_Value > CompressedValue;
+    typedef type::vector< CompressedValue > CompressedMatrix;
 
     using TetrahedronFEMForceField<DataTypes>::_stiffnesses;
 

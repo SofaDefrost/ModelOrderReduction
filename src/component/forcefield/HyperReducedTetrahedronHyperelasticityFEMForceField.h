@@ -63,8 +63,8 @@ class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual Tetra
     typedef std::pair<Real,MatrixSym> MatrixCoeffPair;
 
 
-    typedef helper::vector<Real> SetParameterArray;
-    typedef helper::vector<Coord> SetAnisotropyDirectionArray;
+    typedef type::vector<Real> SetParameterArray;
+    typedef type::vector<Coord> SetAnisotropyDirectionArray;
 
 
     typedef sofa::Index Index;
