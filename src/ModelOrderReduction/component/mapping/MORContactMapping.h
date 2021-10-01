@@ -69,7 +69,6 @@ public:
     typedef typename OutDataTypes::VecCoord OutVecCoord;
     typedef typename OutDataTypes::VecDeriv OutVecDeriv;
 
-    typedef typename Inherit::ForceMask ForceMask;
 
     enum
     {
@@ -108,7 +107,6 @@ protected:
     {
     }
 
-    void updateForceMask() override;
 
 public:
     /// Return true if the destination model has the same topology as the source model.

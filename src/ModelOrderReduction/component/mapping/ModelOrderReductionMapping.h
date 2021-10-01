@@ -83,10 +83,9 @@ public:
     typedef typename OutDataTypes::VecCoord OutVecCoord;
     typedef typename OutDataTypes::VecDeriv OutVecDeriv;
 
-    typedef sofa::type::Vector3 Vector3;
+    typedef type::Vector3 Vector3;
 
-    typedef typename Inherit::ForceMask ForceMask;
-    typedef sofa::Index Index;
+    typedef core::topology::BaseMeshTopology::index_type Index;
     typedef core::topology::BaseMeshTopology::Tetra Element;
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
 

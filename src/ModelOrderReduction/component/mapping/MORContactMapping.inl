@@ -28,6 +28,7 @@
 #include <fstream> // for reading the file
 #include <iostream>
 #include "../loader/MatrixLoader.h"
+#include <sofa/core/MappingHelper.h>
 
 namespace sofa
 {
@@ -128,7 +129,7 @@ void MORContactMapping<TIn, TOut>::apply(const core::MechanicalParams * /*mparam
 
     for(unsigned int i=0; i<out.size(); i++)
     {
-        helper::eq(out[i], in[i]);
+        core::eq(out[i], in[i]);
     }
 }
 
@@ -138,10 +139,10 @@ void MORContactMapping<TIn, TOut>::applyJ(const core::MechanicalParams * /*mpara
     helper::WriteOnlyAccessor< Data<VecDeriv> > out = dOut;
     helper::ReadAccessor< Data<InVecDeriv> > in = dIn;
 
-    for( size_t i=0 ; i<this->maskTo->size() ; ++i)
+    for( size_t i=0 ; i<out.size() ; ++i)
     {
-        if( !this->maskTo->isActivated() || this->maskTo->getEntry(i) )
-            helper::eq(out[i], in[i]);
+
+            core::eq(out[i], in[i]);
     }
 }
 
@@ -151,10 +152,10 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::MechanicalParams * /*mpar
     helper::WriteAccessor< Data<InVecDeriv> > out = dOut;
     helper::ReadAccessor< Data<VecDeriv> > in = dIn;
 
-    for( size_t i=0 ; i<this->maskTo->size() ; ++i)
+    for( size_t i=0 ; i<out.size() ; ++i)
     {
-        if( this->maskTo->getEntry(i) )
-            helper::peq(out[i], in[i]);
+
+            core::peq(out[i], in[i]);
     }
 }
 
@@ -241,14 +242,6 @@ const typename MORContactMapping<TIn, TOut>::js_type* MORContactMapping<TIn, TOu
     return &Js;
 }
 
-
-template<class TIn, class TOut>
-void MORContactMapping<TIn, TOut>::updateForceMask()
-{
-    for( size_t i = 0 ; i<this->maskTo->size() ; ++i )
-        if( this->maskTo->getEntry(i) )this->maskFrom->insertEntry( i );
-
-}
 
 } // namespace mapping
 

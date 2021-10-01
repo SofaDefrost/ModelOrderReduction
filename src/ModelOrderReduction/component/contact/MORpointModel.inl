@@ -32,7 +32,6 @@
 
 #include "MORpointModel.h"
 #include <sofa/core/visual/VisualParams.h>
-#include <SofaMeshCollision/PointLocalMinDistanceFilter.h>
 #include <SofaBaseCollision/CubeModel.h>
 #include <sofa/core/ObjectFactory.h>
 #include <vector>

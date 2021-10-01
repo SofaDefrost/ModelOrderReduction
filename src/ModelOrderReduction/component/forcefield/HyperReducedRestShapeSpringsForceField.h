@@ -60,7 +60,7 @@ public:
     typedef typename DataTypes::CPos CPos;
     typedef typename DataTypes::Deriv Deriv;
     typedef typename DataTypes::Real Real;
-    typedef type::vector< unsigned int > VecIndex;
+    typedef type::vector< sofa::Index > VecIndex;
     typedef type::vector< Real >	 VecReal;
 
     typedef core::objectmodel::Data<VecCoord> DataVecCoord;
