@@ -159,7 +159,7 @@ public:
 
 
 #if  !defined(MOR_MORUNILATERALINTERACTIONCONSTRAINT_CPP)
-extern template class MORUnilateralInteractionConstraint<defaulttype::Vec3Types>;
+extern template class SOFA_MODELORDERREDUCTION_API MORUnilateralInteractionConstraint<defaulttype::Vec3Types>;
 #endif
 
 } // namespace constraintset

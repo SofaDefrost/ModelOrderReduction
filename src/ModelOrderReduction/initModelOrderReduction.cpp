@@ -14,38 +14,67 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_CPP
-#include "HyperReducedTetrahedronFEMForceField.inl"
-#include <sofa/defaulttype/VecTypes.h>
+#include <ModelOrderReduction/config.h>
 #include <sofa/core/ObjectFactory.h>
-#include <assert.h>
-#include <ModelOrderReduction/initModelOrderReduction.h>
+
+#include <sofa/helper/system/PluginManager.h>
+using sofa::helper::system::PluginManager;
+
+#include <fstream>
 
 namespace sofa
 {
-
 namespace component
 {
 
-namespace forcefield
+//Here are just several convenient functions to help user to know what contains the plugin
+
+extern "C" {
+    SOFA_MODELORDERREDUCTION_API void initExternalModule();
+    SOFA_MODELORDERREDUCTION_API const char* getModuleName();
+    SOFA_MODELORDERREDUCTION_API const char* getModuleVersion();
+    SOFA_MODELORDERREDUCTION_API const char* getModuleLicense();
+    SOFA_MODELORDERREDUCTION_API const char* getModuleDescription();
+    SOFA_MODELORDERREDUCTION_API const char* getModuleComponentList();
+}
+
+void initExternalModule()
 {
+    static bool first = true;
+    if (first)
+    {
+        first = false;
+    }
+}
 
-using namespace sofa::defaulttype;
+const char* getModuleName()
+{
+  return "ModelOrderReduction";
+}
+
+const char* getModuleVersion()
+{
+    return "1.0";
+}
+
+const char* getModuleLicense()
+{
+    return "GPL";
+}
 
 
-SOFA_DECL_CLASS(HyperReducedTetrahedronFEMForceField)
+const char* getModuleDescription()
+{
+    return "The ModelOrderReduction plugin builds reduced models by reducing the computational complexity of the system";
+}
 
-// Register in the Factory
-int HyperReducedTetrahedronFEMForceFieldClass = core::RegisterObject("Tetrahedral finite elements")
-        .add< HyperReducedTetrahedronFEMForceField<Vec3Types> >()
-        ;
+const char* getModuleComponentList()
+{
+  /// string containing the names of the classes provided by the plugin
+  return "";
+  //return "MyMappingPendulumInPlane, MyBehaviorModel, MyProjectiveConstraintSet";
+}
 
-template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedronFEMForceField<Vec3Types>;
-
-} // namespace forcefield
 
 } // namespace component
-
 } // namespace sofa
-
-

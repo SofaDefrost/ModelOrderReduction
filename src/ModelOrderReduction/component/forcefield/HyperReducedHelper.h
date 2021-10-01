@@ -16,7 +16,7 @@
 ******************************************************************************/
 #ifndef HYPERREDUCEDHELPER_H
 #define HYPERREDUCEDHELPER_H
-#include <ModelOrderReduction/initModelOrderReduction.h>
+#include <ModelOrderReduction/config.h>
 
 #include <sofa/core/behavior/BaseMechanicalState.h>
 #include <sofa/core/objectmodel/Event.h>
