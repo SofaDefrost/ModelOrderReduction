@@ -69,7 +69,7 @@ def modifyPath(currentPath,type,initialParam,newParam):
     return_bool = False
     initialParam_copy = initialParam.copy()
     # print(currentPath,type)#,initialParam,newParam)
-    for key , value in initialParam_copy.iteritems():
+    for key , value in initialParam_copy.items():
         if isinstance(value, str):
             if '@' in value:
                 # print(value)
@@ -171,9 +171,9 @@ def MORreplace(node,type,newParam,initialParam):
     '''
     global tmp
     currentPath = node.getPathName()
-    # print('NODE : '+node.name)
-    # print('TYPE : '+str(type))
-    # print('PARAM  :'+str(newParam[0][0]) )
+    print('NODE : '+node.name.value)
+    print('TYPE : '+str(type))
+    print('PARAM  :'+str(newParam[0][0]) )
     save = False
     if 'save' in newParam[1]:
         save = True
@@ -182,9 +182,8 @@ def MORreplace(node,type,newParam,initialParam):
     # print(currentPath,path)
     if path in currentPath :
         # print('\n')
-
         #   Change the initial Forcefield by the HyperReduced one with the new argument
-        # print('----------->',getCategories(type))
+        #print('----------->',getCategories(type))
         if "ForceField" in getCategories(type):
             if type in forceFieldImplemented :
                 type , valueType = forceFieldImplemented[type]
