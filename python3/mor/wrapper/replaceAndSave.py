@@ -170,10 +170,11 @@ def MORreplace(node,type,newParam,initialParam):
 
     '''
     global tmp
+    from  SofaRuntime import  getCategories
     currentPath = node.getPathName()
-    print('NODE : '+node.name.value)
-    print('TYPE : '+str(type))
-    print('PARAM  :'+str(newParam[0][0]) )
+    #print('NODE : '+node.name.value)
+    #print('TYPE : '+str(type))
+    #print('PARAM  :'+str(newParam[0][0]) )
     save = False
     if 'save' in newParam[1]:
         save = True
@@ -183,13 +184,14 @@ def MORreplace(node,type,newParam,initialParam):
     if path in currentPath :
         # print('\n')
         #   Change the initial Forcefield by the HyperReduced one with the new argument
-        #print('----------->',getCategories(type))
         if "ForceField" in getCategories(type):
             if type in forceFieldImplemented :
                 type , valueType = forceFieldImplemented[type]
                 # print str(type)
 
-                name = 'reducedFF_'+ node.name + '_' + str(tmp)
+                name = 'reducedFF_'+ node.name.value + '_' + str(tmp)
+                #name = 'reducedFF_' + str(node.name) + '_' + str(tmp)
+
                 tmp += 1    
                 initialParam['name'] = name
                 initialParam['nbModes'] = param['nbrOfModes']
