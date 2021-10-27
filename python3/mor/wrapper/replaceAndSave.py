@@ -187,11 +187,8 @@ def MORreplace(node,type,newParam,initialParam):
         if "ForceField" in getCategories(type):
             if type in forceFieldImplemented :
                 type , valueType = forceFieldImplemented[type]
-                # print str(type)
-
+                #print("++++++", node.name.value)
                 name = 'reducedFF_'+ node.name.value + '_' + str(tmp)
-                #name = 'reducedFF_' + str(node.name) + '_' + str(tmp)
-
                 tmp += 1    
                 initialParam['name'] = name
                 initialParam['nbModes'] = param['nbrOfModes']

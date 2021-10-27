@@ -4,10 +4,10 @@ import os
 import sys
 
 #   STLIB IMPORT
-from stlib.scene import MainHeader
-from stlib.solver import DefaultSolver
-from stlib.physics.deformable import ElasticMaterialObject
-from stlib.physics.constraints import FixedBox
+from stlib3.scene import MainHeader
+from stlib3.solver import DefaultSolver
+from stlib3.physics.deformable import ElasticMaterialObject
+from stlib3.physics.constraints import FixedBox
 
 # SOFTROBOTS IMPORT
 from softrobots.actuators import PullingCable

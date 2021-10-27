@@ -281,8 +281,9 @@ def saveElements(node,dt,forcefield):
     To do that we use :py:func:`splib.animation.animate`
     **of the** `STLIB <https://github.com/SofaDefrost/STLIB>`_ **SOFA plugin**
     '''
+
     import numpy as np
-    # print('--------------------->  Gonna Try to Save the Elements')
+    #print('--------------------->  Gonna Try to Save the Elements')
     def save(node,container,valueType, **param):
         global tmp
         elements = container.findData(valueType).value
@@ -290,10 +291,11 @@ def saveElements(node,dt,forcefield):
         tmp += 1
         print('save : '+'elmts_'+node.name+' from '+container.name+' with value Type '+valueType)
 
-    # print('--------------------->  ',forcefield)
+    print('--------------------->  ',forcefield)
     for objPath in forcefield:
         nodePath = '/'.join(objPath.split('/')[:-1])
-        # print(nodePath,objPath)
+        #print(nodePath,objPath)
+        #print("----------->", type(node))
         obj = get(node,objPath[1:])
         currentNode = get(node,nodePath[1:])
 
@@ -303,15 +305,17 @@ def saveElements(node,dt,forcefield):
             container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
         else:
             container = getContainer(currentNode)
+        print("0000, \n \n \n++554++--**//74+-/ \n \n \n")
 
         # print(container)
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
 
             # print('--------------------->  ',valueType)
-
+            print("1100, \n \n \n++554++--**//74+-/ \n \n \n")
             if valueType:
                 animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
+                print("2200, \n \n \n++554++--**//74+-/ \n \n \n")
 
 def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     '''

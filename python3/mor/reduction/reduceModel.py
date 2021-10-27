@@ -355,7 +355,6 @@ class ReduceModel():
         filesandtemplates = []
         for filename in filenames:                
             filesandtemplates.append( (open(pathToTemplate+filename).read(), filename) )
-             
         results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(self.nbrCPU))
 
         if self.verbose:
@@ -378,7 +377,6 @@ class ReduceModel():
         self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
         # print("massName -----------------------> ",self.reductionParam.massName)
         u.copy(self.reductionParam.massName,self.reductionParam.dataDir)
-
 
         files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_Gie.txt")
         if files: 
