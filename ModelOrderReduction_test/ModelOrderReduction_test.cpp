@@ -1,6 +1,5 @@
-#include <plugins/SofaTest/Sofa_test.h>
-#include <sofa/component/init.h>
-#include <sofa/simulation/graph/DAGSimulation.h>
+#include <SofaTest/Sofa_test.h>
+#include <SofaSimulationGraph/DAGSimulation.h>
 
 namespace sofa {
 
@@ -19,7 +18,6 @@ namespace sofa {
         typedef typename DataTypes::CPos CPos;
         typedef typename DataTypes::VecCoord VecCoord;
         typedef typename DataTypes::VecDeriv VecDeriv;
-        typedef container::MechanicalObject<DataTypes> MechanicalObject;
 
         /// Root of the scene graph
         simulation::Node::SPtr root;
@@ -29,8 +27,6 @@ namespace sofa {
         /// Create the context for the scene
         void SetUp()
         {
-            // Init simulation
-            sofa::component::init();
             sofa::simulation::setSimulation(simulation = new sofa::simulation::graph::DAGSimulation());
 
             root = simulation::getSimulation()->createNewGraph("root");
@@ -53,7 +49,7 @@ namespace sofa {
     };
 
     // Define the list of DataTypes to instantiate
-    using testing::Types;
+    using ::testing::Types;
     typedef Types<
         Vec3Types
     > DataTypes; // the types to instantiate.
