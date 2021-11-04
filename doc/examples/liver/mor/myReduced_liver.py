@@ -101,9 +101,9 @@ def Reduced_liver(
     #modelCollis.createObject('BarycentricMapping')
 
     ## Visualization
-    print 'test surfaceMeshFileName'
+    print('test surfaceMeshFileName')
     if surfaceMeshFileName:
-            print 'Its TRUE !!!'
+            print('Its TRUE !!!')
 	    visu = liver.createChild('Visual')
 
 	    visu.createObject(	'OglModel', 
@@ -130,7 +130,8 @@ def createScene(rootNode):
     rootNode.createObject('FreeMotionAnimationLoop')
     rootNode.createObject('GenericConstraintSolver', printLog='0', tolerance="1e-6", maxIterations="500")
     rootNode.createObject('CollisionPipeline', verbose="0")
-    rootNode.createObject('BruteForceDetection', name="N2")
+    rootNode.createObject('BruteForceBroadPhase', name="N2")
+    rootNode.createObject('BVHNarrowPhase')
     rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.7")
     rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.5", angleCone="0.01")
 

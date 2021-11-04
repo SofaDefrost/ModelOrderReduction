@@ -209,7 +209,8 @@ def createScene(rootNode):
     rootNode.createObject('FreeMotionAnimationLoop'); 
     rootNode.createObject('LCPConstraintSolver', mu=str(1), tolerance="1.0e-15", maxIt="10000");
     rootNode.createObject('CollisionPipeline', verbose="0");
-    rootNode.createObject('BruteForceDetection', name="N2");
+    rootNode.createObject('BruteForceBroadPhase', name="N2")
+    rootNode.createObject('BVHNarrowPhase')
     rootNode.createObject('CollisionResponse', response="FrictionContact");
     rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance=10, contactDistance=1.5);
 

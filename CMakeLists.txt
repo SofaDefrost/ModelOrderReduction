@@ -6,78 +6,78 @@ include(cmake/environment.cmake)
 
 # Specify all required packages
 find_package(SofaFramework REQUIRED)
-find_package(SofaGeneral REQUIRED)
+find_package(SofaConstraint REQUIRED)
+find_package(SofaGeneralAnimationLoop REQUIRED)
+find_package(SofaGeneralSimpleFem REQUIRED)
+find_package(SofaUserInteraction REQUIRED)
 find_package(SofaBase REQUIRED)
-find_package(SofaCommon REQUIRED)
-find_package(SofaMisc REQUIRED)
-
-find_package(SofaPython QUIET)
-if(SofaPython_FOUND)
-    message("SofaPyhon found")
-    set(MOR_PYTHON 1) # See initModelOrderReduction.h.in
-endif()
+find_package(SofaRigid REQUIRED)
+find_package(SofaMiscFem REQUIRED)
+find_package(SofaMiscMapping REQUIRED)
+find_package(SofaMiscCollision REQUIRED)
+find_package(Sofa.GL REQUIRED)
 
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
+set(MOR_SRC "src/ModelOrderReduction")
+
 set(HEADER_FILES
-    src/component/forcefield/HyperReducedHelper.h
-    src/component/forcefield/HyperReducedHexahedronFEMForceField.h
-    src/component/forcefield/HyperReducedHexahedronFEMForceField.inl
-    src/component/forcefield/HyperReducedRestShapeSpringsForceField.h
-    src/component/forcefield/HyperReducedRestShapeSpringsForceField.inl
-    src/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.h
-    src/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.inl
-    src/component/forcefield/HyperReducedTetrahedronFEMForceField.h
-    src/component/forcefield/HyperReducedTetrahedronFEMForceField.inl
-    src/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.h
-    src/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.inl
-    src/component/forcefield/HyperReducedTriangleFEMForceField.h
-    src/component/forcefield/HyperReducedTriangleFEMForceField.inl
-    src/component/forcefield/MechanicalMatrixMapperMOR.h
-    src/component/forcefield/MechanicalMatrixMapperMOR.inl
+    ${MOR_SRC}/config.h.in
 
-    src/component/loader/MatrixLoader.h
-    src/component/loader/MatrixLoader.inl
+    ${MOR_SRC}/component/forcefield/HyperReducedHelper.h
+    ${MOR_SRC}/component/forcefield/HyperReducedHexahedronFEMForceField.h
+    ${MOR_SRC}/component/forcefield/HyperReducedHexahedronFEMForceField.inl
+    ${MOR_SRC}/component/forcefield/HyperReducedRestShapeSpringsForceField.h
+    ${MOR_SRC}/component/forcefield/HyperReducedRestShapeSpringsForceField.inl
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.h
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.inl
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronFEMForceField.h
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronFEMForceField.inl
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.h
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.inl
+    ${MOR_SRC}/component/forcefield/HyperReducedTriangleFEMForceField.h
+    ${MOR_SRC}/component/forcefield/HyperReducedTriangleFEMForceField.inl
+    ${MOR_SRC}/component/forcefield/MechanicalMatrixMapperMOR.h
+    ${MOR_SRC}/component/forcefield/MechanicalMatrixMapperMOR.inl
 
-    src/component/mapping/ModelOrderReductionMapping.h
-    src/component/mapping/ModelOrderReductionMapping.inl
-    src/component/mapping/MORContactMapping.h
-    src/component/mapping/MORContactMapping.inl
+    ${MOR_SRC}/component/loader/MatrixLoader.h
+    ${MOR_SRC}/component/loader/MatrixLoader.inl
 
-    src/component/contact/MORFrictionContact.h
-    src/component/contact/MORFrictionContact.inl
-    src/component/contact/MORUnilateralInteractionConstraint.h
-    src/component/contact/MORUnilateralInteractionConstraint.inl
-    src/component/contact/MORpointModel.h
-    src/component/contact/MORpointModel.inl
+    ${MOR_SRC}/component/mapping/ModelOrderReductionMapping.h
+    ${MOR_SRC}/component/mapping/ModelOrderReductionMapping.inl
+    ${MOR_SRC}/component/mapping/MORContactMapping.h
+    ${MOR_SRC}/component/mapping/MORContactMapping.inl
+
+    ${MOR_SRC}/component/contact/MORFrictionContact.h
+    ${MOR_SRC}/component/contact/MORFrictionContact.inl
+    ${MOR_SRC}/component/contact/MORUnilateralInteractionConstraint.h
+    ${MOR_SRC}/component/contact/MORUnilateralInteractionConstraint.inl
+    ${MOR_SRC}/component/contact/MORpointModel.h
+    ${MOR_SRC}/component/contact/MORpointModel.inl
     )
 set(SOURCE_FILES
-    src/component/initModelOrderReduction.cpp
+    ${MOR_SRC}/initModelOrderReduction.cpp
 
-    src/component/forcefield/HyperReducedHexahedronFEMForceField.cpp
-    src/component/forcefield/HyperReducedRestShapeSpringsForceField.cpp
-    src/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.cpp
-    src/component/forcefield/HyperReducedTetrahedronFEMForceField.cpp
-    src/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.cpp
-    src/component/forcefield/HyperReducedTriangleFEMForceField.cpp
-    src/component/forcefield/MechanicalMatrixMapperMOR.cpp
+    ${MOR_SRC}/component/forcefield/HyperReducedHexahedronFEMForceField.cpp
+    ${MOR_SRC}/component/forcefield/HyperReducedRestShapeSpringsForceField.cpp
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.cpp
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronFEMForceField.cpp
+    ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.cpp
+    ${MOR_SRC}/component/forcefield/HyperReducedTriangleFEMForceField.cpp
+    ${MOR_SRC}/component/forcefield/MechanicalMatrixMapperMOR.cpp
 
-    src/component/loader/MatrixLoader.cpp
+    ${MOR_SRC}/component/loader/MatrixLoader.cpp
 
-    src/component/mapping/ModelOrderReductionMapping.cpp
-    src/component/mapping/MORContactMapping.cpp
+    ${MOR_SRC}/component/mapping/ModelOrderReductionMapping.cpp
+    ${MOR_SRC}/component/mapping/MORContactMapping.cpp
 
-    src/component/contact/MORFrictionContact.cpp
-    src/component/contact/MORUnilateralInteractionConstraint.cpp
-    src/component/contact/MORpointModel.cpp
+    ${MOR_SRC}/component/contact/MORFrictionContact.cpp
+    ${MOR_SRC}/component/contact/MORUnilateralInteractionConstraint.cpp
+    ${MOR_SRC}/component/contact/MORpointModel.cpp
     )
 set(README_FILES
     README.md
     )
-
-# Generate initModelOrderReduction.h from initModelOrderReduction.h.in
-configure_file(src/component/initModelOrderReduction.h.in "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h")
-install(FILES "${CMAKE_BINARY_DIR}/include/ModelOrderReduction/initModelOrderReduction.h" DESTINATION "include/ModelOrderReduction" COMPONENT headers)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
@@ -87,17 +87,12 @@ target_link_libraries(${PROJECT_NAME}
     SofaBaseMechanics SofaBaseTopology # SofaBase
     SofaRigid # SofaCommon
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
-    SofaMiscFem SofaMiscMapping # SofaMisc
+    SofaMiscFem SofaMiscMapping SofaMiscCollision # SofaMisc
     Sofa.GL
     )
-target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include>")
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>")
 
 # Config files and install rules for pythons scripts
-if(SofaPython_FOUND)
-    target_link_libraries(${PROJECT_NAME} SofaPython)
-    sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
-endif()
+sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
 
 # Move all resources when install: examples, doc and python files
 install(FILES "README.md" "LICENSE" DESTINATION .)
@@ -110,18 +105,19 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools")
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools DESTINATION . COMPONENT resources)
 endif()
+
 ## Install rules for the library and headers; CMake package configurations files
 sofa_create_package_with_targets(
     PACKAGE_NAME ModelOrderReduction
     PACKAGE_VERSION ${PROJECT_VERSION}
-    TARGETS ${PROJECT_NAME}
-    INCLUDE_SOURCE_DIR "src/component"
-    INCLUDE_INSTALL_DIR "component"
+    TARGETS ${PROJECT_NAME} AUTO_SET_TARGET_PROPERTIES
+    INCLUDE_SOURCE_DIR "src"
+    INCLUDE_INSTALL_DIR "ModelOrderReduction"
     RELOCATABLE "plugins"
     )
 
 # if(SOFA_BUILD_TESTS)
-#     add_subdirectory(src/component/ModelOrderReduction_test)
+#     add_subdirectory(${MOR_SRC}/component/ModelOrderReduction_test)
 # endif()
 
 include(cmake/packaging.cmake)
