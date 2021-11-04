@@ -4,7 +4,6 @@
 
 namespace sofa {
 
-    using namespace component;
     using namespace defaulttype;
 
     /// Patch test
