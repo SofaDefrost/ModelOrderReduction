@@ -20,10 +20,10 @@
 #include "HyperReducedRestShapeSpringsForceField.h"
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
+#include <sofa/core/behavior/MultiMatrixAccessor.h>
 #include <sofa/helper/config.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
-
 #include <sofa/defaulttype/RGBAColor.h>
 
 #include <assert.h>
