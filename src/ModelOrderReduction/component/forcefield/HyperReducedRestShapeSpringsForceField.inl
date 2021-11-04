@@ -23,7 +23,6 @@
 #include <sofa/helper/config.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
-
 #include <sofa/defaulttype/RGBAColor.h>
 
 #include <assert.h>
