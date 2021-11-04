@@ -1,12 +1,15 @@
-include(${SOFA_CMAKE_DIR}/preProject.cmake)
+cmake_minimum_required(VERSION 3.12)
+
+project(ModelOrderReduction_test)
+
+sofa_find_package(ModelOrderReduction REQUIRED)
+sofa_find_package(SofaTest REQUIRED)
+sofa_find_package(SofaSimulationGraph REQUIRED)
 
 set(SOURCE_FILES
-
     ModelOrderReduction_test.cpp
 )
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${RC_FILES})
 
-AddCompilerDefinitions("ModelOrderReduction_test_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"")
-AddLinkerDependencies(ModelOrderReduction SofaTest)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-include(${SOFA_CMAKE_DIR}/postProject.cmake)
+target_link_libraries(${PROJECT_NAME} ModelOrderReduction SofaTest Sofa.Testing SofaSimulationGraph)
