@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 project(ModelOrderReduction VERSION 1.0)
 
+include(CMakeDependentOption)
 include(cmake/environment.cmake)
 
 # Specify all required packages
@@ -119,8 +120,10 @@ sofa_create_package_with_targets(
     RELOCATABLE "plugins"
     )
 
-# if(SOFA_BUILD_TESTS)
-#     add_subdirectory(${MOR_SRC}/component/ModelOrderReduction_test)
-# endif()
+# If SOFA_BUILD_TESTS exists and is OFF, then these tests will be auto-disabled
+cmake_dependent_option(MODELORDERREDUCTION_BUILD_TESTS "Compile the tests" ON "SOFA_BUILD_TESTS OR NOT DEFINED SOFA_BUILD_TESTS" OFF)
+if(MODELORDERREDUCTION_BUILD_TESTS)
+    add_subdirectory(ModelOrderReduction_test)
+endif()
 
 include(cmake/packaging.cmake)
