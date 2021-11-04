@@ -71,7 +71,8 @@ def getNodeSolver(node):
 
 def getContainer(node):
     container = None
-    for obj in node.getObjects():
+    print("------>", type(node))
+    for obj in node.objects:
         className = obj.getClassName()
         if className.find('TopologyContainer') != -1:
             # print obj.getName()
