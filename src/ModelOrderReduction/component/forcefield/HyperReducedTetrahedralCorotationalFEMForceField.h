@@ -133,7 +133,6 @@ public:
     using TetrahedralCorotationalFEMForceField<DataTypes>::_volumeGraph;
 protected:
     HyperReducedTetrahedralCorotationalFEMForceField();
-    using TetrahedralCorotationalFEMForceField<DataTypes>::tetrahedronHandler;
 public:
 
     virtual void init() override;

@@ -58,12 +58,10 @@ using sofa::component::loader::MatrixLoader;
 
 template <class DataTypes> HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::HyperReducedTetrahedronHyperelasticityFEMForceField()
 {
-    m_tetrahedronHandler = new typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronHandler(this,&m_tetrahedronInfo);
 }
 
 template <class DataTypes> HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::~HyperReducedTetrahedronHyperelasticityFEMForceField()
 {
-    if(m_tetrahedronHandler) delete m_tetrahedronHandler;
 }
 
 template <class DataTypes> void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::init()

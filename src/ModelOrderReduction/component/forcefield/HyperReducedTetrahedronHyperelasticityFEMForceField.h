@@ -88,8 +88,6 @@ public :
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_topology;
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_initialPoints;	/// the intial positions of the points
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_updateMatrix;
-    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_meshSaved ;
-
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::d_stiffnessMatrixRegularizationWeight;
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::d_materialName; /// the name of the material
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::d_parameterSet;
