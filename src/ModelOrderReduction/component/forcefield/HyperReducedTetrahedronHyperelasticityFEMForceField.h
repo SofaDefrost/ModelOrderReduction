@@ -137,7 +137,6 @@ public:
     /// the array that describes the complete material energy and its derivatives
 
     using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_myMaterial;
-    using TetrahedronHyperelasticityFEMForceField<DataTypes>::m_tetrahedronHandler;
 
     void updateTangentMatrix();
 };
