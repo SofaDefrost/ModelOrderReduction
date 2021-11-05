@@ -172,8 +172,8 @@ def MORreplace(node,type,newParam,initialParam):
     global tmp
     from  SofaRuntime import  getCategories
     currentPath = node.getPathName()
-    #print('NODE : '+node.name.value)
-    #print('TYPE : '+str(type))
+    # print('NODE : '+node.name.value)
+    # print('TYPE : '+str(type))
     #print('PARAM  :'+str(newParam[0][0]) )
     save = False
     if 'save' in newParam[1]:
@@ -185,11 +185,14 @@ def MORreplace(node,type,newParam,initialParam):
         # print('\n')
         #   Change the initial Forcefield by the HyperReduced one with the new argument
         if "ForceField" in getCategories(type):
+            # print('NODE : ' + node.name.value)
+            # print('TYPE : ' + str(type))
+            # print(getCategories(type))
             if type in forceFieldImplemented :
+                # print("---------------------------------> here")
                 type , valueType = forceFieldImplemented[type]
-                #print("++++++", node.name.value)
                 name = 'reducedFF_'+ node.name.value + '_' + str(tmp)
-                tmp += 1    
+                tmp += 1
                 initialParam['name'] = name
                 initialParam['nbModes'] = param['nbrOfModes']
 
@@ -197,7 +200,7 @@ def MORreplace(node,type,newParam,initialParam):
                     initialParam[key] = param['paramForcefield'][key]
 
                 # We've already put the path to the "data" folder we now have to add the right file
-                if param['paramForcefield'].get('performECSW') == True: 
+                if param['paramForcefield'].get('performECSW') == True:
                     initialParam['RIDPath'] += name + '_RID.txt'
                     initialParam['weightsPath'] += name + '_weight.txt'
 
@@ -212,10 +215,11 @@ def MORreplace(node,type,newParam,initialParam):
                         myModel[currentPath].append((str(type),initialParam))
 
                 forcefield.append(currentPath+'/'+initialParam.get("name",str(type)))
+                print(type, initialParam)
                 return type , initialParam
             else:
                 print("[WARNING]        No HyperReducedForceField exist for "+type)
-        
+
         saveParam = modifyPath(currentPath,type,initialParam,newParam)
 
         if save:
@@ -244,7 +248,7 @@ def MORreplace(node,type,newParam,initialParam):
         # this way we will take the path we want "to keep" and all its parents
         if newParam[1]['animationPaths']:
             for path in newParam[1]['animationPaths']:
-                # If the animationPaths contain the name of the obj 
+                # If the animationPaths contain the name of the obj
                 currentObjPath = currentPath + '/' + initialParam.get("name",str(type))
                 if currentPath.find(path) != -1 or currentObjPath.find(path) != -1:
                     if currentPath not in myModel:
