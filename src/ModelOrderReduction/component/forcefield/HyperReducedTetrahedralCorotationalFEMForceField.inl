@@ -45,7 +45,6 @@ HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::HyperReducedTetrahe
 {
     this->addAlias(&_assembling, "assembling");
     _poissonRatio.setWidget("poissonRatio");
-    tetrahedronHandler = new typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronHandler(this,&tetrahedronInfo);
 
     _poissonRatio.setRequired(true);
     _youngModulus.setRequired(true);
