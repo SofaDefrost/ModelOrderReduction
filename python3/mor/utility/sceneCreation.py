@@ -307,13 +307,11 @@ def saveElements(node,dt,forcefield):
             container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
         else:
             container = getContainer(currentNode)
-
         # print(container)
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
 
             # print('--------------------->  ',valueType)
-            # print({"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0})
             if valueType:
                 animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
