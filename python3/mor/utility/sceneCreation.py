@@ -305,17 +305,13 @@ def saveElements(node,dt,forcefield):
             container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
         else:
             container = getContainer(currentNode)
-        print("0000, \n \n \n++554++--**//74+-/ \n \n \n")
-
         # print(container)
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
 
             # print('--------------------->  ',valueType)
-            print("1100, \n \n \n++554++--**//74+-/ \n \n \n")
             if valueType:
                 animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
-                print("2200, \n \n \n++554++--**//74+-/ \n \n \n")
 
 def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     '''
