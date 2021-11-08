@@ -55,9 +55,9 @@ def createScene(rootNode):
     # more details at splib.animation.AnimationManager (https://stlib.readthedocs.io/en/latest/)
 
     if isinstance(rootNode, Wrapper):
-        AnimationManager(rootNode.node)
+        rootNode.addObject(AnimationManager(rootNode.node))
     else:
-        AnimationManager(rootNode)
+        rootNode.addObject(AnimationManager(rootNode))
 
     # Now that we have the AnimationManager & a list of the nodes we want to animate
     # we can add an animation to then according to the arguments in listObjToAnimate
@@ -73,10 +73,10 @@ def createScene(rootNode):
     # We need rest_position and because it is normally always the same we record it one time
     # during the first phase with the argument writeX0 put to True
     if phase == phaseToSave:
-        myParent.createObject('WriteState', filename="stateFile.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
+        myParent.addObject('WriteState', filename="stateFile.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="1", writeV="0")
     else :
-        myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
+        myParent.addObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="0", writeV="0")
 
     # If you want to save also the velocity uncomment the what is below.
