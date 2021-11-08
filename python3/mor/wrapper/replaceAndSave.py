@@ -215,7 +215,7 @@ def MORreplace(node,type,newParam,initialParam):
                         myModel[currentPath].append((str(type),initialParam))
 
                 forcefield.append(currentPath+'/'+initialParam.get("name",str(type)))
-                print(type, initialParam)
+                # print(type, initialParam)
                 return type , initialParam
             else:
                 print("[WARNING]        No HyperReducedForceField exist for "+type)

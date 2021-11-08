@@ -6,7 +6,7 @@ from sys import argv
 
 #   STLIB IMPORT
 try:
-	from stlib.scene.wrapper import Wrapper
+	from stlib3.scene.wrapper import Wrapper
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
