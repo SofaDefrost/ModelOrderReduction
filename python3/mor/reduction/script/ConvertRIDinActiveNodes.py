@@ -37,7 +37,7 @@ def convertRIDinActiveNodes(RIDFileName,connectivityFileName,listActiveNodesFile
     connecList = []
     for line in fconnec:
         lineSplit = line.split();
-        connecList.append(map(int,lineSplit))
+        connecList.append(list(map(int,lineSplit)))
     fconnec.close()
     #print connecList
     if verbose : print("Done reading file :",connectivityFileName,'\n')

@@ -6,7 +6,7 @@ import platform
 
 #   STLIB IMPORT
 try:
-    from stlib.scene.wrapper import Wrapper
+    from stlib3.scene.wrapper import Wrapper
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
@@ -77,4 +77,4 @@ def createScene(rootNode):
 
         writeScene.writeHeader(packageName,nbrOfModes)
         writeScene.writeGraphScene(packageName,nodeName,myMORModel,myModel)
-        writeScene.writeFooter(packageName,nodeName,pluginName,rootNode.dt,rootNode.gravity[0])
+        writeScene.writeFooter(packageName,nodeName,pluginName,rootNode.dt.value,rootNode.gravity.value)

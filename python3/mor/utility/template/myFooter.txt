@@ -3,11 +3,11 @@
 
 
 #   STLIB IMPORT
-from stlib.scene import MainHeader
+from stlib3.scene import MainHeader
 def createScene(rootNode):
     surfaceMeshFileName = False
 
-    MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=["SoftRobots","ModelOrderReduction"],
                         dt=DT,
                         gravity=GRAVITY)
     rootNode.VisualStyle.displayFlags="showForceFields"
