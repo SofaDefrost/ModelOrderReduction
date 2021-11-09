@@ -129,7 +129,7 @@ def searchPlugin(rootNode,pluginName):
 def addPlugin(rootNode,pluginName):
 
     if not searchPlugin(rootNode,pluginName):
-        rootNode.createObject('RequiredPlugin', pluginName=pluginName)
+        rootNode.addObject('RequiredPlugin', pluginName=pluginName)
 
 def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     '''
@@ -171,6 +171,7 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     tmp = 0
     for objToAnimate in listObjToAnimate:
         if phase[tmp] :
+            # print("----------------------------------> ",objToAnimate)
             if type(toAnimate[tmp]).__name__ == "Node":
                 objToAnimate.item = toAnimate[tmp]
                 for obj in objToAnimate.item.objects:
@@ -226,22 +227,23 @@ def modifyGraphScene(node,nbrOfModes,newParam):
     try :
         currentNode = get(node,pathTmp[1:])
         solver = getNodeSolver(currentNode)
-        # print("node.getPathName()",currentNode.getPathName())
+        print("node.getPathName()",currentNode.getPathName())
+        print(solver)
         if currentNode.getPathName() == pathTmp:
             if 'paramMappedMatrixMapping' in param:
                 print('Create new child modelMOR and move node in it')
-                myParent = currentNode.getParents()[0]
-                modelMOR = myParent.createChild(currentNode.name+'_MOR')
-                for parents in currentNode.getParents():
-                    parents.removeChild(currentNode)
+                myParent = list(currentNode.parents)
+                modelMOR = myParent[0].addChild(currentNode.name.value+'_MOR')
+                myParent[0].removeChild(currentNode)
                 modelMOR.addChild(currentNode)
                 for obj in solver:
                     # print('To move!')
+                    # print(obj.name.value)
                     currentNode.removeObject(obj)
-                    currentNode.getParents()[0].addObject(obj)
-                modelMOR.createObject('MechanicalObject', **argMecha)
+                    modelMOR.addObject(obj)
+                modelMOR.addObject('MechanicalObject', **argMecha)
                 # print param['paramMappedMatrixMapping']
-                modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
+                modelMOR.addObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
                 # print 'Create MechanicalMatrixMapperMOR in modelMOR'
                 if save:
                     replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
@@ -249,15 +251,15 @@ def modifyGraphScene(node,nbrOfModes,newParam):
 
                 if 'paramMORMapping' in param:
                     #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
-                    param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name
+                    param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name.value
                     if save:
                         replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
 
-                    currentNode.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
+                    currentNode.addObject('ModelOrderReductionMapping', **param['paramMORMapping'])
                     print ("Create ModelOrderReductionMapping in node")
                 # else do error !!
     except :
-        print("Problem with path : "+pathTmp[1:])
+        print("[ERROR]    In modifyGraphScene , cannot modify scene from path : "+pathTmp[1:])
 
 def saveElements(node,dt,forcefield):
     '''
@@ -287,14 +289,14 @@ def saveElements(node,dt,forcefield):
     def save(node,container,valueType, **param):
         global tmp
         elements = container.findData(valueType).value
-        np.savetxt('reducedFF_'+ node.name + '_' + str(tmp)+'_'+valueType+'_elmts.txt', elements,fmt='%i')
+        np.savetxt('reducedFF_'+ node.name.value + '_' + str(tmp)+'_'+valueType+'_elmts.txt', elements,fmt='%i')
         tmp += 1
-        print('save : '+'elmts_'+node.name+' from '+container.name+' with value Type '+valueType)
+        print('save : '+'elmts_'+node.name.value+' from '+container.name.value+' with value Type '+valueType)
 
-    print('--------------------->  ',forcefield)
+    # print('--------------------->  ',forcefield)
     for objPath in forcefield:
         nodePath = '/'.join(objPath.split('/')[:-1])
-        #print(nodePath,objPath)
+        # print(nodePath,objPath)
         #print("----------->", type(node))
         obj = get(node,objPath[1:])
         currentNode = get(node,nodePath[1:])
@@ -339,7 +341,7 @@ def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     for obj in rootNode.objects:
         rootNode.removeObject(obj)
 
-    rootNode.createObject('VisualStyle', displayFlags='showForceFields')
+    rootNode.addObject('VisualStyle', displayFlags='showForceFields')
     rootNode.dt = 1
 
     for child in rootNode.children:
@@ -351,5 +353,5 @@ def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
             # print '--------------------------> remove   '+child.name
             node.removeChild(child)
 
-    node.createObject('ReadState', filename=stateFile)
+    node.addObject('ReadState', filename=stateFile)
     rootNode.addChild(node)

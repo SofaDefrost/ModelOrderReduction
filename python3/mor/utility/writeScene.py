@@ -47,7 +47,6 @@ def writeHeader(packageName,nbrOfModes):
     +-------------+------+----------------------------------------------------+
     """
     try:
-    
         with open(path+'myHeader.txt', "r") as myfile:
             myHeader = myfile.read()
 
@@ -61,9 +60,8 @@ def writeHeader(packageName,nbrOfModes):
         # print(myHeader)
 
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print("Unexpected error:", sys.exc_info()[0])
         raise
-
 
 def writeFooter(packageName,nodeName,listplugin,dt,gravity):
     """
@@ -91,7 +89,6 @@ def writeFooter(packageName,nodeName,listplugin,dt,gravity):
     +----------------+------+---------------------------------------------------------------+
 
     """
-    print(packageName,packageName[0].upper()+packageName[1:])
     try:
         with open(path+'myFooter.txt', "r") as myfile:
             myFooter = myfile.read()
@@ -109,7 +106,7 @@ def writeFooter(packageName,nodeName,listplugin,dt,gravity):
             # print(myFooter)
 
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print("Unexpected error:", sys.exc_info()[0])
         raise   
 
 
@@ -157,7 +154,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
         filesName = []
         with open(packageName+'.py', "a+") as logFile:
 
-            logFile.write("    "+nodeName+'_MOR'+" = modelRoot.createChild('"+nodeName+'_MOR'+"')\n")
+            logFile.write("    "+nodeName+'_MOR'+" = modelRoot.addChild('"+nodeName+'_MOR'+"')\n")
 
             for type , arg in myMORModel:
                 # print(type+' : '+str(arg)+'\n')                    
@@ -165,9 +162,9 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                     if type == "MechanicalObject":
                         arg['position'] = "[0]*nbrOfModes"
                     myArgs = buildArgStr(arg)
-                    myArgs = "    "+nodeName+"_MOR.createObject('" + type +"' "+myArgs+")\n"
+                    myArgs = "    "+nodeName+"_MOR.addObject('" + type +"' "+myArgs+")\n"
                 else :
-                    myArgs = "    "+nodeName+"_MOR.createObject('"+type+"')\n"
+                    myArgs = "    "+nodeName+"_MOR.addObject('"+type+"')\n"
 
                 # print('for '+type+' '+myArgs+'\n')
                 myArgs = myArgs.replace("'[0]*nbrOfModes'","[0]*nbrOfModes")
@@ -190,8 +187,8 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                             if i < len(tmp)-2:
                                 toFind = ''
                                 if i == 0:
-                                    toFind += "    "+tmp[i]+" = modelRoot.createChild('"+tmp[i]+"')\n"
-                                toFind += "    "+tmp[i+1]+" = "+tmp[i]+".createChild('"+tmp[i+1]+"')\n"
+                                    toFind += "    "+tmp[i]+" = modelRoot.addChild('"+tmp[i]+"')\n"
+                                toFind += "    "+tmp[i+1]+" = "+tmp[i]+".addChild('"+tmp[i+1]+"')\n"
                                 logFile.seek(0)
                                 if toFind not in logFile.read():
                                     # print(toFind)
@@ -212,7 +209,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                         if len(tmp) > 2:
                             for i, node in enumerate(tmp):
                                 if i < len(tmp)-2:
-                                    toFind = "    "+tmp[i+1]+" = "+tmp[i]+".createChild('"+tmp[i+1]+"')\n"
+                                    toFind = "    "+tmp[i+1]+" = "+tmp[i]+".addChild('"+tmp[i+1]+"')\n"
                                     logFile.seek(0)
                                     if toFind not in logFile.read():
                                         # print(toFind)
@@ -220,10 +217,10 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
 
                     childName = childName.split('/')[-1]
 
-                logFile.write("    "+childName+" = "+parentNode+".createChild('"+childName+"')\n")
+                logFile.write("    "+childName+" = "+parentNode+".addChild('"+childName+"')\n")
                 # print('CHILD :'+childName)
                 for type , arg in obj:
-                    #print(type+' : '+str(arg)+'\n')
+                    # print(type+' : '+str(arg)+'\n')
                     if arg :
                         # print(type+' : '+str(arg)+'\n')
                         tmpList = ['MeshGmshLoader','MeshVTKLoader','MeshSTLLoader','MeshObjLoader']
@@ -261,8 +258,9 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                                 else:
                                     tmp = arg['box']
                                 newPoints = []
+
                                 # print('BOX : '+str(tmp))
-                                for i in range(len(tmp)/3):
+                                for i in range(int(len(tmp)/3)):
                                     newPoints.append([tmp[i*3],tmp[i*3+1],tmp[i*3+2]])
                                 depth = abs(newPoints[0][2] - newPoints[1][2])
                                 tr = depth/2.0
@@ -281,6 +279,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                             else:
                                 raise Exception('Wrong BoxROI arguments :'+str(arg))
                             # print('BOXROI ARG: ',myArgs)
+
                         else :
                             # print(childName)
                             if childName == nodeName :
@@ -288,10 +287,10 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                             else:
                                 myArgs = buildArgStr(arg,modelTranslation)
 
-                        myArgs = "    "+childName+".createObject('" + type +"' "+myArgs+")\n"
+                        myArgs = "    "+childName+".addObject('" + type +"' "+myArgs+")\n"
                         # print(myArgs)
                     else :
-                        myArgs = "    "+childName+".createObject('"+type+"')\n"
+                        myArgs = "    "+childName+".addObject('"+type+"')\n"
                     
                     logFile.write(myArgs)
 
@@ -302,7 +301,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
         return (modelRotation,modelTranslation,modelScale)
 
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print("Unexpected error:", sys.exc_info()[0])
         raise
 
 

@@ -415,7 +415,7 @@ class ReduceModel():
 
         """
         # MOR IMPORT
-        from script import readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
+        from . script import readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
 
         start_time = time.time()
 
