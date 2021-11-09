@@ -149,7 +149,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
     +-------------+-------------+-------------------------------------------------------------+
 
     """
-    print(myModel)
+    #print("------------>", myModel)
     try:
         filesName = []
         with open(packageName+'.py', "a+") as logFile:
