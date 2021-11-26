@@ -58,12 +58,10 @@ using sofa::component::loader::MatrixLoader;
 
 template <class DataTypes> HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::HyperReducedTetrahedronHyperelasticityFEMForceField()
 {
-    m_tetrahedronHandler = new typename TetrahedronHyperelasticityFEMForceField<DataTypes>::TetrahedronHandler(this,&m_tetrahedronInfo);
 }
 
 template <class DataTypes> HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::~HyperReducedTetrahedronHyperelasticityFEMForceField()
 {
-    if(m_tetrahedronHandler) delete m_tetrahedronHandler;
 }
 
 template <class DataTypes> void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::init()
@@ -125,30 +123,21 @@ template <class DataTypes> void HyperReducedTetrahedronHyperelasticityFEMForceFi
             nbEdgesStored = nbEdgesStored+1;
 
         }
-        else
-        {
-            msg_info(this) << te[0] << "already in !!!!!! ";
-        }
+
         if (!alreadyIn1)
         {
             reducedIntegrationDomainWithEdges(nbEdgesStored) = te[1];
             nbEdgesStored = nbEdgesStored+1;
 
         }
-        else
-        {
-            msg_info(this) << te[1] << "already in !!!!!! ";
-        }
+
         if (!alreadyIn2)
         {
             reducedIntegrationDomainWithEdges(nbEdgesStored) = te[2];
             nbEdgesStored = nbEdgesStored+1;
 
         }
-        else
-        {
-            msg_info(this) << te[2] << "already in !!!!!! ";
-        }
+
         if (!alreadyIn3)
         {
             reducedIntegrationDomainWithEdges(nbEdgesStored) = te[3];
@@ -196,12 +185,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addForce(co
     const VecCoord& x = d_x.getValue();
 
     const bool printLog = this->f_printLog.getValue();
-    if (printLog && !m_meshSaved)
-    {
-        this->saveMesh( "D:/Steph/sofa-result.stl" );
-        printf( "Mesh saved.\n" );
-        m_meshSaved = true;
-    }
+
     unsigned int i=0,j=0,k=0,l=0;
     unsigned int nbTetrahedra=m_topology->getNbTetrahedra();
 
