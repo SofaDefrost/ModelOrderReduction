@@ -376,7 +376,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::Visu
 
 
 template<class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset)
+void HyperReducedTriangleFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
 {
     if (d_performECSW.getValue())
     {

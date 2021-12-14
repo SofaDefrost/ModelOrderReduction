@@ -243,7 +243,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addPrecomputedMassToSyst
     typedef typename DataTypes1::Real     Real1;
 
     typedef typename CompressedRowSparseMatrix<Real1>::Range  Range;
-    typedef sofa::defaulttype::BaseVector::Index  Index;
+    typedef sofa::linearalgebra::BaseVector::Index  Index;
 
 
 

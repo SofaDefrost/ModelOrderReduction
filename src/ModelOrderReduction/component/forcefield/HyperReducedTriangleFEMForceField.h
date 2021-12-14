@@ -157,7 +157,7 @@ protected :
     void applyStiffnessLarge( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
 
     //// stiffness matrix assembly
-    void addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset) override; // compute and add all the element stiffnesses to the global stiffness matrix
+    void addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset) override; // compute and add all the element stiffnesses to the global stiffness matrix
 
 };
 

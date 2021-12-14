@@ -24,7 +24,7 @@
 #include <sofa/helper/config.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
-#include <sofa/defaulttype/RGBAColor.h>
+#include <sofa/type/RGBAColor.h>
 
 #include <assert.h>
 #include <iostream>
@@ -43,7 +43,7 @@ using helper::ReadAccessor;
 using core::behavior::BaseMechanicalState;
 using core::behavior::MultiMatrixAccessor;
 using core::behavior::ForceField;
-using defaulttype::BaseMatrix;
+using linearalgebra::BaseMatrix;
 using core::VecCoordId;
 using core::MechanicalParams;
 using type::Vector3;

@@ -35,7 +35,6 @@ namespace forcefield
 {
 using namespace std;
 using namespace sofa::defaulttype;
-using namespace sofa::component::topology;
 using namespace sofa::core::topology;
 
 //***************** Tetrahedron FEM code for several elastic models: TotalLagrangianForceField************************//
@@ -128,7 +127,7 @@ public:
     
     virtual void addForce(const core::MechanicalParams* mparams /* PARAMS FIRST */, DataVecDeriv& d_f, const DataVecCoord& d_x, const DataVecDeriv& d_v) override;
     virtual void addDForce(const core::MechanicalParams* mparams /* PARAMS FIRST */, DataVecDeriv& d_df, const DataVecDeriv& d_dx) override;
-    virtual void addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset) override;
+    virtual void addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset) override;
 
     void draw(const core::visual::VisualParams* vparams) override;
 

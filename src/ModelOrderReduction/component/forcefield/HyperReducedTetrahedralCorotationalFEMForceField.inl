@@ -695,7 +695,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
 
 
 template<class DataTypes>
-void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset)
+void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
 {
     // Build Matrix Block for this ForceField
     unsigned int i,j,n1, n2, row, column, ROW, COLUMN;

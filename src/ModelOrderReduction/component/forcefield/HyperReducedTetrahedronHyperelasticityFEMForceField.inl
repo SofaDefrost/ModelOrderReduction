@@ -504,7 +504,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
 }
 
 template <class DataTypes>
-void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset)
+void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
 {
 
     /// if the  matrix needs to be updated

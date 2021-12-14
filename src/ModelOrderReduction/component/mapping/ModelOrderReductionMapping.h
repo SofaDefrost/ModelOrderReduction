@@ -90,7 +90,7 @@ public:
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
 
     typedef linearsolver::EigenSparseMatrix<TIn, TOut> eigen_type;
-    typedef type::vector< defaulttype::BaseMatrix* > js_type;
+    typedef type::vector< linearalgebra::BaseMatrix* > js_type;
 
 
     enum
@@ -144,7 +144,7 @@ public:
 
     void applyJT(const core::ConstraintParams *cparams, Data<InMatrixDeriv>& out, const Data<MatrixDeriv>& in) override;
 
-    const sofa::defaulttype::BaseMatrix* getJ() override;
+    const sofa::linearalgebra::BaseMatrix* getJ() override;
 
 
 
