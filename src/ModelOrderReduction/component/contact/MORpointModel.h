@@ -72,7 +72,7 @@ protected:
     Data<std::string> d_lambdaModesPath;
     Data<std::string> d_lambdaModesCoeffsPath;
     Eigen::MatrixXd lambdaModes;
-    Eigen::MatrixXd contactIndices;
+    Eigen::MatrixXi contactIndices;
 
 };
 
