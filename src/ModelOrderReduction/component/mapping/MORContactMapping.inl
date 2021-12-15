@@ -231,7 +231,7 @@ void MORContactMapping<TIn, TOut>::handleTopologyChange()
 }
 
 template <class TIn, class TOut>
-const sofa::defaulttype::BaseMatrix* MORContactMapping<TIn, TOut>::getJ()
+const sofa::linearalgebra::BaseMatrix* MORContactMapping<TIn, TOut>::getJ()
 {
     return &J;
 }

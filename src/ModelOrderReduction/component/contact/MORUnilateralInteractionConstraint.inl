@@ -26,7 +26,8 @@
 #include <SofaConstraint/UnilateralInteractionConstraint.inl>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/type/Vec.h>
-#include <sofa/defaulttype/RGBAColor.h>
+#include <sofa/type/RGBAColor.h>
+#include <sofa/linearalgebra/BaseVector.h>
 #include "../loader/MatrixLoader.h"
 #include "../loader/MatrixLoader.inl"
 
@@ -235,7 +236,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
 }
 
 template<class DataTypes>
-void MORUnilateralInteractionConstraint<DataTypes>::getConstraintViolation(const core::ConstraintParams *cparams, defaulttype::BaseVector *v, const DataVecCoord &, const DataVecCoord &
+void MORUnilateralInteractionConstraint<DataTypes>::getConstraintViolation(const core::ConstraintParams *cparams, linearalgebra::BaseVector *v, const DataVecCoord &, const DataVecCoord &
         , const DataVecDeriv &, const DataVecDeriv &)
 {
     switch (cparams->constOrder())
@@ -257,7 +258,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::getConstraintViolation(const
 }
 
 template<class DataTypes>
-void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(defaulttype::BaseVector *v)
+void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(linearalgebra::BaseVector *v)
 {
     const VecCoord &PfreeVec = this->getMState2()->read(core::ConstVecCoordId::freePosition())->getValue();
     const VecCoord &QfreeVec = this->getMState1()->read(core::ConstVecCoordId::freePosition())->getValue();

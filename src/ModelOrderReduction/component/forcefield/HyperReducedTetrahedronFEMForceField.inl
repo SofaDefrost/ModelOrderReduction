@@ -635,7 +635,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(const core::M
 }
 
 template<class DataTypes>
-void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::defaulttype::BaseMatrix *mat, SReal k, unsigned int &offset)
+void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
 {
     // Build Matrix Block for this ForceField
     unsigned int i,j,n1, n2, row, column, ROW, COLUMN , IT;

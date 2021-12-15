@@ -262,7 +262,7 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams
 
 
 template <class TIn, class TOut>
-const sofa::defaulttype::BaseMatrix* ModelOrderReductionMapping<TIn, TOut>::getJ()
+const sofa::linearalgebra::BaseMatrix* ModelOrderReductionMapping<TIn, TOut>::getJ()
 {
 //    updateJ();
     return &m_J;
