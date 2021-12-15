@@ -70,7 +70,7 @@ void MORPointCollisionModel<DataTypes>::init()
     matLoaderModes->load();
     matLoaderModes->getMatrix(lambdaModes);
 
-    MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
+    auto* matLoader = new MatrixLoader<Eigen::MatrixXi>();
     matLoader->setFileName(d_lambdaModesCoeffsPath.getValue());
     matLoader->load();
     matLoader->getMatrix(contactIndices);
