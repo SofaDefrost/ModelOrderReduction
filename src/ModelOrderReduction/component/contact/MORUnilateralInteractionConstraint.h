@@ -100,7 +100,7 @@ public:
     std::string m_lambdaModesPath;
     std::string m_lambdaModesCoeffsPath;
     Eigen::MatrixXd lambdaModes;
-    Eigen::MatrixXd contactIndices;
+    Eigen::MatrixXi contactIndices;
     sofa::type::vector<unsigned int> reducedContacts;
 
 

@@ -139,7 +139,7 @@ protected:
     js_type Js;
 
     Eigen::MatrixXd m_matrix;
-    Eigen::MatrixXd contactIndices;
+    Eigen::MatrixXi contactIndices;
 
 public:
 
