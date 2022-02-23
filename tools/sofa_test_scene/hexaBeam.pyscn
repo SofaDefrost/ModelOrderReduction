@@ -7,7 +7,7 @@ meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
 def createScene(rootNode):
 
     rootNode.findData('dt').value=0.02
-    rootNode.findData('gravity').value='0 -9810 0'
+    rootNode.findData('gravity').value=[0, -9810, 0]
     rootNode.createObject('VisualStyle', displayFlags='showBehaviorModels showForceFields')
     rootNode.createObject('RequiredPlugin', pluginName='ModelOrderReduction')
     rootNode.createObject('RequiredPlugin', pluginName='SoftRobots')
@@ -35,9 +35,4 @@ def createScene(rootNode):
     cableNodeSide.createObject('CableConstraint', name="sideCable", indices="0", pullPoint="1 10 18.5", valueType="displacement")
     cableNodeSide.createObject('BarycentricMapping', mapForces="false", mapMasses="false")
     
-    visu = M1.createChild('visu')
-    visu.createObject('MeshSTLLoader', name='loader', filename=meshPath+"hexabeam.stl")
-    visu.createObject('OglModel', src='@loader', template='ExtVec3f', color='0.7 0.7 0.7 0.6')
-    visu.createObject('BarycentricMapping')
-
 

@@ -1,0 +1,48 @@
+
+    return myReducedModel
+
+
+#   STLIB IMPORT
+from stlib3.scene import MainHeader
+def createScene(rootNode):
+    surfaceMeshFileName = False
+
+    MainHeader(rootNode,plugins=["SoftRobots","ModelOrderReduction"],
+                        dt=DT,
+                        gravity=GRAVITY)
+    rootNode.VisualStyle.displayFlags="showForceFields"
+    
+    MyReducedModel(rootNode,
+                        name="MyReducedModel",
+                        surfaceMeshFileName=surfaceMeshFileName)
+
+    # translate = 300
+    # rotationBlue = 60.0
+    # rotationWhite = 80
+    # rotationRed = 70
+
+    # for i in range(3):
+
+    #     MyReducedModel(rootNode,
+    #                    name="MyReducedModel_blue_"+str(i),
+    #                    rotation=[rotationBlue*i, 0.0, 0.0],
+    #                    translation=[i*translate, 0.0, 0.0],
+    #                    surfaceColor=[0.0, 0.0, 1, 0.5],
+    #                    surfaceMeshFileName=surfaceMeshFileName)
+    # for i in range(3):
+
+    #     MyReducedModel(rootNode,
+    #                    name="MyReducedModel_white_"+str(i),
+    #                    rotation=[0.0, rotationWhite*i, 0.0],
+    #                    translation=[i*translate, translate, -translate],
+    #                    surfaceColor=[0.5, 0.5, 0.5, 0.5],
+    #                    surfaceMeshFileName=surfaceMeshFileName)
+
+    # for i in range(3):
+
+    #     MyReducedModel(rootNode,
+    #                    name="MyReducedModel_red_"+str(i),
+    #                    rotation=[0.0, 0.0, i*rotationRed],
+    #                    translation=[i*translate, 2*translate, -2*translate],
+    #                    surfaceColor=[1, 0.0, 0.0, 0.5],
+    #                    surfaceMeshFileName=surfaceMeshFileName)

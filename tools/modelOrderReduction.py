@@ -62,11 +62,11 @@ app = QtGui.QApplication(sys.argv)
 #addRigidBodyModes = [0,0,0]
 
 ### HEXABEAM
-#nodeToReduce ='/M1'
-#actuator = ObjToAnimate("M1/cableNodeTip", incr=1,incrPeriod=5,rangeOfAction=5)
-#actuator2 = ObjToAnimate("M1/cableNodeSide", incr=1,incrPeriod=5,rangeOfAction=5)
-#listObjToAnimate = [actuator, actuator2]
-#addRigidBodyModes = [0,0,0]
+nodeToReduce ='/M1'
+actuator = ObjToAnimate("M1/cableNodeTip", incr=1,incrPeriod=5,rangeOfAction=5)
+actuator2 = ObjToAnimate("M1/cableNodeSide", incr=1,incrPeriod=5,rangeOfAction=5)
+listObjToAnimate = [actuator, actuator2]
+addRigidBodyModes = [0,0,0]
 
 ### SNAKE
 #nodeToReduce ='/Snake'

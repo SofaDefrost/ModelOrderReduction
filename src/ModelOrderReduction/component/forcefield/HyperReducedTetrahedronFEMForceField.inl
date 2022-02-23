@@ -446,7 +446,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addDForce(const cor
 template<class DataTypes>
 void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::VisualParams* vparams)
 {
-
+    
     if (_computeVonMisesStress.getValue() > 0) {
         if (updateVonMisesStress)
             this->computeVonMisesStress();
