@@ -17,6 +17,7 @@ find_package(SofaMiscFem REQUIRED)
 find_package(SofaMiscMapping REQUIRED)
 find_package(SofaMiscCollision REQUIRED)
 find_package(Sofa.GL REQUIRED)
+find_package(CollisionOBBCapsule REQUIRED)
 
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
@@ -90,6 +91,7 @@ target_link_libraries(${PROJECT_NAME}
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
     SofaMiscFem SofaMiscMapping SofaMiscCollision # SofaMisc
     Sofa.GL
+    CollisionOBBCapsule
     )
 
 # Config files and install rules for pythons scripts

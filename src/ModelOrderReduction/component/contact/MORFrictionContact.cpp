@@ -23,10 +23,10 @@
 #include <SofaMeshCollision/RigidContactMapper.inl>
 #include <SofaMeshCollision/BarycentricContactMapper.inl>
 
-#include <SofaMiscCollision/CapsuleContactMapper.h>
-#include <SofaMiscCollision/OBBContactMapper.h>
+#include <CollisionOBBCapsule/response/mapper/CapsuleContactMapper.h>
+#include <CollisionOBBCapsule/response/mapper/OBBContactMapper.h>
 
-namespace sofa::component::collision
+namespace sofa::component::collision::geometry
 {
 
 using sofa::core::collision::Contact;
