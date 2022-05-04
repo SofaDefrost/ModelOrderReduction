@@ -3,15 +3,15 @@
 Exemple python file to launch the MOR GUI
 '''
 import os,sys
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
 path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path+'/../python/') # TO CHANGE
+sys.path.append(path+'/../python3/') # TO CHANGE
 
 from mor.gui.ui_mor import UI_mor
 
 def main():
-    app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
+    app = QtWidgets.QApplication(sys.argv)  # A new instance of QApplication
     gui_mor = UI_mor()  # We set the form to be our ExampleApp (design)
     gui_mor.show()  # Show the form
     app.exec_()  # and execute the app

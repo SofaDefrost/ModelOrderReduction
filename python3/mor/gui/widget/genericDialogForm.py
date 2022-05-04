@@ -4,10 +4,10 @@
 '''
 
 import os, sys
-from PyQt4 import QtGui
-from PyQt4.QtGui import QDialog
-from PyQt4.QtCore import QRegExp
-from PyQt4.QtCore import QString
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import QRegExp
+# from PyQt5.QtCore import QString # --> doesn't exist anymore will return string
 
 from collections import OrderedDict
 
@@ -16,12 +16,13 @@ sys.path.append(path+'/../')
 
 import utility as u
 
-try:
-    _fromUtf8 = QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
+# try:
+#     _fromUtf8 = QString.fromUtf8
+# except AttributeError:
+#     def _fromUtf8(s):
+#         return s
+def _fromUtf8(s):
+    return s
 
 class GenericDialogForm(QDialog):
     def __init__(self,animation,param,currentValues=None,heightFields = 35,heightMargin = 10,maxWidth = 1000):
@@ -46,40 +47,40 @@ class GenericDialogForm(QDialog):
 
     def setupUi(self, ShowGroupWidget):
         self.setObjectName(_fromUtf8("Animation Parameters"))
-        self.formLayout_2 = QtGui.QFormLayout(self)
+        self.formLayout_2 = QtWidgets.QFormLayout(self)
         self.formLayout_2.setObjectName(_fromUtf8("formLayout_2"))
 
         i = 0
-        for attribute , value in self.param.iteritems():
-            label = QtGui.QLabel(self)
+        for attribute , value in self.param.items():
+            label = QtWidgets.QLabel(self)
             label.setObjectName(_fromUtf8("label_"+str(i)))
             label.setText(attribute)
             if value[1] == bool:
-                widget = QtGui.QCheckBox(self)
+                widget = QtWidgets.QCheckBox(self)
                 widget.setObjectName(_fromUtf8("checkBox_"+(str(i))))
             else:
-                widget = QtGui.QLineEdit(self)
+                widget = QtWidgets.QLineEdit(self)
                 widget.setObjectName(_fromUtf8("lineEdit_"+(str(i))))
                 # Validator
                 widget.textChanged.emit(widget.text())
                 widget.textChanged.connect(lambda: u.check_state(self.sender()))
 
                 if type(value[0]) == str:
-                    widget.setValidator(QtGui.QRegExpValidator(QRegExp("^("+value[0]+")$")))
+                    widget.setValidator(QtWidgets.QRegExpValidator(QRegExp("^("+value[0]+")$")))
                 else:
                     widget.setValidator(value[0])
 
             u.setBackColor(widget)
 
             self.row[label] = widget
-            self.formLayout_2.setWidget(i, QtGui.QFormLayout.LabelRole, label)
-            self.formLayout_2.setWidget(i, QtGui.QFormLayout.FieldRole, widget)
+            self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.LabelRole, label)
+            self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.FieldRole, widget)
             i += 1
 
-        self.btn_submit = QtGui.QPushButton(self)
+        self.btn_submit = QtWidgets.QPushButton(self)
         self.btn_submit.setObjectName(_fromUtf8("btn_submit"))
         self.btn_submit.setText("Ok")
-        self.formLayout_2.setWidget(i, QtGui.QFormLayout.FieldRole, self.btn_submit)
+        self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.FieldRole, self.btn_submit)
 
         self.setFixedHeight((len(self.param)+1)*self.heightFields+self.heightMargin)
         self.setMaximumWidth(self.maxWidth)
@@ -93,7 +94,7 @@ class GenericDialogForm(QDialog):
 
     def load(self,data):
         if data:
-            for label,widget in self.row.iteritems():
+            for label,widget in self.row.items():
                 labelTitle = str(label.text())
                 dataType = self.param[labelTitle][1]
 
@@ -108,7 +109,7 @@ class GenericDialogForm(QDialog):
                     else:
                         widget.setText('')
         else:
-            for label,widget in self.row.iteritems():
+            for label,widget in self.row.items():
                 if dataType == bool:
                     widget.setCheckState(False)
                 else:
@@ -117,7 +118,7 @@ class GenericDialogForm(QDialog):
         self.setCurrentValues()
 
     def setCurrentValues(self):
-        for label,widget in self.row.iteritems():
+        for label,widget in self.row.items():
             labelTitle = str(label.text())
             dataType = self.param[labelTitle][1]
 
@@ -136,7 +137,7 @@ class GenericDialogForm(QDialog):
         self.setState()
 
     def setState(self):
-        if all( widget.palette().color(QtGui.QPalette.Background).name() not in u.Color.wrong for label,widget in self.row.iteritems()):
+        if all( widget.palette().color(QtGui.QPalette.Background).name() not in u.Color.wrong for label,widget in self.row.items()):
             self.state = True
         else:
             self.state = False

@@ -3,7 +3,7 @@
 **Sets of utility Fct used by the GUI**
 '''
 import os,sys
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Color():
 
@@ -90,11 +90,11 @@ def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
     '''
     global lastVisited
     if shortcut:
-        QtGui.QFileDialog.setSidebarUrls(QtGui.QFileDialog(),shortcut)
+        QtWidgets.QFileDialog.setSidebarUrls(QtWidgets.QFileDialog(),shortcut)
 
-    fileName = str(QtGui.QFileDialog.getOpenFileName(None, hdialog,
+    fileName , *_ = QtWidgets.QFileDialog.getOpenFileName(None, hdialog,
         directory=lastVisited,filter=filter,
-        options=QtGui.QFileDialog.DontUseNativeDialog))
+        options=QtWidgets.QFileDialog.DontUseNativeDialog)
 
     if display and fileName:
         display.setText(fileName)
@@ -113,11 +113,11 @@ def openFilesNames(hdialog,filter="*.stl *.vtu *.vtk *.obj",display=None):
     '''
     global lastVisited
     if shortcut:
-        QtGui.QFileDialog.setSidebarUrls(QtGui.QFileDialog(),shortcut)
+        QtWidgets.QFileDialog.setSidebarUrls(QtWidgets.QFileDialog(),shortcut)
 
-    tmp = QtGui.QFileDialog.getOpenFileNames(None,hdialog,
+    tmp = QtWidgets.QFileDialog.getOpenFileNames(None,hdialog,
         directory=lastVisited,filter=filter,
-        options=QtGui.QFileDialog.DontUseNativeDialog)
+        options=QtWidgets.QFileDialog.DontUseNativeDialog)
 
     filesName = []
     for fileName in tmp:
@@ -145,11 +145,11 @@ def openDirName(hdialog,display=None):
     '''
     global lastVisited
     if shortcut:
-        QtGui.QFileDialog.setSidebarUrls(QtGui.QFileDialog(),shortcut)
+        QtWidgets.QFileDialog.setSidebarUrls(QtWidgets.QFileDialog(),shortcut)
 
-    fileName = str(QtGui.QFileDialog.getExistingDirectory(None,hdialog,
+    fileName = str(QtWidgets.QFileDialog.getExistingDirectory(None,hdialog,
         directory=lastVisited,
-        options=QtGui.QFileDialog.DontUseNativeDialog))
+        options=QtWidgets.QFileDialog.DontUseNativeDialog))
 
     if display and fileName:
         display.setText(fileName)
