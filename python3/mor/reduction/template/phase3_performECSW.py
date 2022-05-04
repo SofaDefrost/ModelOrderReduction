@@ -77,4 +77,4 @@ def createScene(rootNode):
 
         writeScene.writeHeader(packageName,nbrOfModes)
         writeScene.writeGraphScene(packageName,nodeName,myMORModel,myModel)
-        writeScene.writeFooter(packageName,nodeName,pluginName,rootNode.dt.value,rootNode.gravity.value)
+        writeScene.writeFooter(packageName,nodeName,pluginName,rootNode.dt.value,list(rootNode.gravity.value))

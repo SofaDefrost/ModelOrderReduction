@@ -594,7 +594,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::draw(const 
           vparams->drawTool()->setPolygonMode(0,true);
 
 
-    std::vector< Vector3 > points[4];
+    std::vector< sofa::type::Vector3 > points[4];
     int i;
     for(unsigned int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
     {

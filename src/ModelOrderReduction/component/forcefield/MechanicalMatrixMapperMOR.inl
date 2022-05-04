@@ -18,10 +18,11 @@
 #define MECHANICALMATRIXMAPPERMOR_INL
 
 #include "MechanicalMatrixMapperMOR.h"
-#include <SofaGeneralAnimationLoop/MechanicalMatrixMapper.inl>
+#include <sofa/component/mapping/mappedmatrix/MechanicalMatrixMapper.inl>
 #include <SofaDeformable/SpringForceField.h>
 #include <SofaDeformable/StiffSpringForceField.h>
 #include "../loader/MatrixLoader.h"
+
 
 #include <fstream>
 
@@ -103,7 +104,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::init()
 }
 
 template<class DataTypes1, class DataTypes2>
-void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptimized(const MechanicalParams* mparams)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptimized(const core::MechanicalParams* mparams)
 {
     sofa::simulation::Node *node = MechanicalMatrixMapper<DataTypes1,DataTypes2>::l_nodeToParse.get();
     size_t currentNbInteractionFFs = node->interactionForceField.size();
@@ -113,7 +114,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::accumulateJacobiansOptim
     {
         m_mouseInteraction = true;
         sofa::type::vector <unsigned int>& listActiveNodesUpdate = *(listActiveNodes.beginEdit());
-        for(BaseForceField* iforcefield : node->interactionForceField)
+        for(core::behavior::BaseForceField* iforcefield : node->interactionForceField)
         {
             if (iforcefield->getName() == "Spring-Mouse-Contact")
             {
@@ -182,7 +183,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
     msg_info(this) << "type1: ";
     bool timeInvariantMapping = timeInvariantMapping1.getValue();
     if ((timeInvariantMapping == false) || (this->getContext()->getTime() == 0) || m_mouseInteraction)
-        copyMappingJacobianToEigenFormat<DataTypes1>(J, Jeig);
+        sofa::component::mapping::mappedmatrix::copyMappingJacobianToEigenFormat<DataTypes1>(J, Jeig);
 
     if (timeInvariantMapping == true){
         if ((this->getContext()->getTime() == 0) || m_mouseInteraction)
@@ -205,7 +206,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
     msg_info(this) << "type2: ";
     bool timeInvariantMapping = timeInvariantMapping2.getValue();
     if ((timeInvariantMapping == false) || (this->getContext()->getTime() == 0) || m_mouseInteraction)
-        copyMappingJacobianToEigenFormat<DataTypes2>(J, Jeig);
+        sofa::component::mapping::mappedmatrix::copyMappingJacobianToEigenFormat<DataTypes2>(J, Jeig);
 
     if (timeInvariantMapping == true){
         if (this->getContext()->getTime() == 0)
@@ -222,7 +223,7 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::optimizeAndCopyMappingJa
 }
 
 template<class DataTypes1, class DataTypes2>
-void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addMassToSystem(const MechanicalParams* mparams, const DefaultMultiMatrixAccessor* KAccessor)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addMassToSystem(const core::MechanicalParams* mparams, const core::behavior::DefaultMultiMatrixAccessor* KAccessor)
 {
     if (usePrecomputedMass.getValue() == false)
     {
@@ -238,11 +239,11 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addMassToSystem(const Me
 }
 
 template<class DataTypes1, class DataTypes2>
-void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addPrecomputedMassToSystem(const MechanicalParams* mparams,const unsigned int mstateSize, const Eigen::SparseMatrix<double>& Jeig, Eigen::SparseMatrix<double>& JtKJeig)
+void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addPrecomputedMassToSystem(const core::MechanicalParams* mparams,const unsigned int mstateSize, const Eigen::SparseMatrix<double>& Jeig, Eigen::SparseMatrix<double>& JtKJeig)
 {
     typedef typename DataTypes1::Real     Real1;
 
-    typedef typename CompressedRowSparseMatrix<Real1>::Range  Range;
+    typedef typename sofa::linearalgebra::CompressedRowSparseMatrix<Real1>::Range  Range;
     typedef sofa::linearalgebra::BaseVector::Index  Index;
 
 
@@ -253,11 +254,11 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addPrecomputedMassToSyst
         {
             if (MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::l_mappedMass != NULL)
             {
-                CompressedRowSparseMatrix<typename DataTypes1::Real >* M = new CompressedRowSparseMatrix<typename DataTypes1::Real > ( );
+                sofa::linearalgebra::CompressedRowSparseMatrix<typename DataTypes1::Real >* M = new sofa::linearalgebra::CompressedRowSparseMatrix<typename DataTypes1::Real > ( );
                 M->resizeBloc( 3*mstateSize ,  3*mstateSize);
                 M->clear();
-                DefaultMultiMatrixAccessor* MassAccessor;
-                MassAccessor = new DefaultMultiMatrixAccessor;
+                core::behavior::DefaultMultiMatrixAccessor* MassAccessor;
+                MassAccessor = new core::behavior::DefaultMultiMatrixAccessor;
                 MassAccessor->addMechanicalState( this->l_mechanicalState);
                 MassAccessor->setGlobalMatrix(M);
                 MassAccessor->setupMatrices();

@@ -56,8 +56,8 @@ class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual Tetra
     typedef core::objectmodel::Data<VecDeriv>    DataVecDeriv;
     typedef core::objectmodel::Data<VecCoord>    DataVecCoord;
 
-    typedef Mat<3,3,Real> Matrix3;
-    typedef MatSym<3,Real> MatrixSym;
+    typedef type::Mat<3,3,Real> Matrix3;
+    typedef type::MatSym<3,Real> MatrixSym;
     typedef std::pair<MatrixSym,MatrixSym> MatrixPair;
     typedef std::pair<Real,MatrixSym> MatrixCoeffPair;
 
