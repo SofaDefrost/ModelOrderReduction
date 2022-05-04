@@ -75,31 +75,11 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::Mechanic
 
     if(method==SMALL)
     {
-        typename VecElement::const_iterator it;
-        unsigned int i(0);
-
-        for(it = _indexedElements->begin() ; it != _indexedElements->end() ; ++it, ++i)
-        {
-            accumulateForceSmall( f1, x1, i, true );
-        }
+        this->accumulateForceSmall( f1, x1, true );
     }
     else
     {
-        typename VecElement::const_iterator it;
-        unsigned int i(0);
-        if (d_performECSW.getValue()){
-            for( i = 0 ; i<m_RIDsize ;++i)
-            {
-                accumulateForceLarge( f1, x1, reducedIntegrationDomain(i), true );
-            }
-        }
-        else
-        {
-            for(it = _indexedElements->begin() ; it != _indexedElements->end() ; ++it, ++i)
-            {
-                accumulateForceLarge( f1, x1, i, true );
-            }
-        }
+        accumulateForceLarge( f1, x1, true );
     }
     f.endEdit();
     this->saveGieFile(this->_indexedElements->size());
@@ -117,7 +97,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::Mechani
 
     if (method == SMALL)
     {
-        applyStiffnessSmall( df1, h, dx1, kFactor );
+        this->applyStiffnessSmall( df1, h, dx1, kFactor );
     }
     else
     {
@@ -129,139 +109,340 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::Mechani
 
 
 
+//template <class DataTypes>
+//void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceSmall( VecCoord &f, const VecCoord &p, bool implicit )
+//{
+//    typename VecElement::const_iterator it;
+//    unsigned int elementIndex(0);
+//    for (it = _indexedElements->begin(); it != _indexedElements->end(); ++it, ++elementIndex)
+//    {
+//        Index a = (*_indexedElements)[elementIndex][0];
+//        Index b = (*_indexedElements)[elementIndex][1];
+//        Index c = (*_indexedElements)[elementIndex][2];
+
+//        Coord deforme_a, deforme_b, deforme_c;
+//        deforme_b = p[b]-p[a];
+//        deforme_c = p[c]-p[a];
+//        deforme_a = Coord(0,0,0);
+
+//        // displacements
+//        Displacement D;
+//        D[0] = 0;
+//        D[1] = 0;
+//        D[2] = (_initialPoints.getValue()[b][0]-_initialPoints.getValue()[a][0]) - deforme_b[0];
+//        D[3] = 0;
+//        D[4] = (_initialPoints.getValue()[c][0]-_initialPoints.getValue()[a][0]) - deforme_c[0];
+//        D[5] = (_initialPoints.getValue()[c][1]-_initialPoints.getValue()[a][1]) - deforme_c[1];
+
+
+//        StrainDisplacement J;
+//        //this->computeStrainDisplacement(J,deforme_a,deforme_b,deforme_c);
+//        this->m_triangleUtils.computeStrainDisplacementGlobal(J,deforme_a,deforme_b,deforme_c);
+//        if (implicit)
+//            _strainDisplacements[elementIndex] = J;
+
+//        // compute force on element
+//        Displacement F;
+//        //this->computeForce( F, D, _materialsStiffnesses[elementIndex], J );
+//        this->m_triangleUtils.computeForceLarge( F, J, _materialsStiffnesses[elementIndex], J );
+
+//        f[a] += Coord( F[0], F[1], 0);
+//        f[b] += Coord( F[2], F[3], 0);
+//        f[c] += Coord( F[4], F[5], 0);
+//    }
+//}
+
+//template <class DataTypes>
+//void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessSmall(VecCoord &v, Real h, const VecCoord &x, const SReal &kFactor)
+//{
+
+//    typename VecElement::const_iterator it;
+//    unsigned int i(0);
+
+//    for(it = _indexedElements->begin() ; it != _indexedElements->end() ; ++it, ++i)
+//    {
+//        Index a = (*it)[0];
+//        Index b = (*it)[1];
+//        Index c = (*it)[2];
+
+//        Displacement X;
+
+//        X[0] = x[a][0];
+//        X[1] = x[a][1];
+
+//        X[2] = x[b][0];
+//        X[3] = x[b][1];
+
+//        X[4] = x[c][0];
+//        X[5] = x[c][1];
+
+//        Displacement F;
+//        this->computeForce( F, X, _materialsStiffnesses[i], _strainDisplacements[i] );
+
+//        v[a] += Coord(-h*F[0], -h*F[1], 0)*kFactor;
+//        v[b] += Coord(-h*F[2], -h*F[3], 0)*kFactor;
+//        v[c] += Coord(-h*F[4], -h*F[5], 0)*kFactor;
+//    }
+//}
+
+
 template <class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceSmall( VecCoord &f, const VecCoord &p, Index elementIndex, bool implicit )
+void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord& f, const VecCoord& p, bool implicit)
 {
-
-    Index a = (*_indexedElements)[elementIndex][0];
-    Index b = (*_indexedElements)[elementIndex][1];
-    Index c = (*_indexedElements)[elementIndex][2];
-
-    Coord deforme_a, deforme_b, deforme_c;
-    deforme_b = p[b]-p[a];
-    deforme_c = p[c]-p[a];
-    deforme_a = Coord(0,0,0);
-
-    // displacements
-    Displacement D;
-    D[0] = 0;
-    D[1] = 0;
-    D[2] = (_initialPoints.getValue()[b][0]-_initialPoints.getValue()[a][0]) - deforme_b[0];
-    D[3] = 0;
-    D[4] = (_initialPoints.getValue()[c][0]-_initialPoints.getValue()[a][0]) - deforme_c[0];
-    D[5] = (_initialPoints.getValue()[c][1]-_initialPoints.getValue()[a][1]) - deforme_c[1];
-
-
-    StrainDisplacement J;
-    this->computeStrainDisplacement(J,deforme_a,deforme_b,deforme_c);
-    if (implicit)
-        _strainDisplacements[elementIndex] = J;
-
-    // compute force on element
-    Displacement F;
-    this->computeForce( F, D, _materialsStiffnesses[elementIndex], J );
-
-    f[a] += Coord( F[0], F[1], 0);
-    f[b] += Coord( F[2], F[3], 0);
-    f[c] += Coord( F[4], F[5], 0);
-}
-
-template <class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessSmall(VecCoord &v, Real h, const VecCoord &x, const SReal &kFactor)
-{
-
-    typename VecElement::const_iterator it;
-    unsigned int i(0);
-
-    for(it = _indexedElements->begin() ; it != _indexedElements->end() ; ++it, ++i)
+    if(method==SMALL)
     {
-        Index a = (*it)[0];
-        Index b = (*it)[1];
-        Index c = (*it)[2];
+        typename VecElement::const_iterator it;
+        unsigned int elementIndex(0);
+        for (it = _indexedElements->begin(); it != _indexedElements->end(); ++it, ++elementIndex)
+        {
+            // triangle vertex indices
+            const Index a = (*_indexedElements)[elementIndex][0];
+            const Index b = (*_indexedElements)[elementIndex][1];
+            const Index c = (*_indexedElements)[elementIndex][2];
 
-        Displacement X;
+            const Coord& pA = p[a];
+            const Coord& pB = p[b];
+            const Coord& pC = p[c];
 
-        X[0] = x[a][0];
-        X[1] = x[a][1];
+            // Rotation matrix (deformed and displaced Triangle/world)
+            Transformation R_2_0(type::NOINIT), R_0_2(type::NOINIT);
+            this->m_triangleUtils.computeRotationLarge(R_0_2, pA, pB, pC);
 
-        X[2] = x[b][0];
-        X[3] = x[b][1];
+            // positions of the deformed points in the local frame
+            const Coord deforme_b = R_0_2 * (pB - pA);
+            const Coord deforme_c = R_0_2 * (pC - pA);
 
-        X[4] = x[c][0];
-        X[5] = x[c][1];
+            // displacements in the local frame
+            Displacement Depl(type::NOINIT);
+            this->m_triangleUtils.computeDisplacementLarge(Depl, R_0_2, _rotatedInitialElements[elementIndex], pA, pB, pC);
 
-        Displacement F;
-        this->computeForce( F, X, _materialsStiffnesses[i], _strainDisplacements[i] );
+            // Strain-displacement matrix
+            StrainDisplacement J(type::NOINIT);
+            try
+            {
+                this->m_triangleUtils.computeStrainDisplacementLocal(J, deforme_b, deforme_c);
+            }
+            catch (const std::exception& e)
+            {
+                msg_error() << e.what();
+                sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
+                break;
+            }
 
-        v[a] += Coord(-h*F[0], -h*F[1], 0)*kFactor;
-        v[b] += Coord(-h*F[2], -h*F[3], 0)*kFactor;
-        v[c] += Coord(-h*F[4], -h*F[5], 0)*kFactor;
-    }
-}
+            // compute strain
+            type::Vec<3, Real> strain(type::NOINIT);
+            this->m_triangleUtils.computeStrain(strain, J, Depl, false);
 
+            // compute stress
+            type::Vec<3, Real> stress(type::NOINIT);
+            this->m_triangleUtils.computeStress(stress, _materialsStiffnesses[elementIndex], strain, false);
 
-template <class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord &f, const VecCoord &p, Index elementIndex, bool implicit )
-{
+            // compute force on element, in local frame
+            Displacement F(type::NOINIT);
+            this->m_triangleUtils.computeForceLarge(F, J, stress);
 
-    // triangle vertex indices
-    Index a = (*_indexedElements)[elementIndex][0];
-    Index b = (*_indexedElements)[elementIndex][1];
-    Index c = (*_indexedElements)[elementIndex][2];
-    // Rotation matrix (deformed and displaced Triangle/world)
-    Transformation R_2_0, R_0_2;
-    this->computeRotationLarge( R_0_2, p, a, b, c);
+            // project forces to world frame
+            R_2_0.transpose(R_0_2);
+            std::vector<Deriv> contrib;
+            std::vector<unsigned int> indexList;
+            contrib.resize(3);
+            indexList.resize(3);
+            contrib[0] = R_2_0 * Coord(F[0], F[1], 0);
+            contrib[1] = R_2_0 * Coord(F[2], F[3], 0);
+            contrib[2] = R_2_0 * Coord(F[4], F[5], 0);
+            indexList[0] = a;
+            indexList[1] = b;
+            indexList[2] = c;
+            if (!d_performECSW.getValue()){
+                for (auto i : {0,1,2})
+                    f[indexList[i]] += contrib[i];
+            }
+            else
+            {
+                for (auto i : {0,1,2})
+                    f[indexList[i]] += weights(elementIndex)*contrib[i];
 
+            }
 
-    // positions of the deformed points in the local frame
-    Coord deforme_a, deforme_b, deforme_c;
-    deforme_b = R_0_2 * (p[b]-p[a]);
-    deforme_c = R_0_2 * (p[c]-p[a]);
+            this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
 
-    // displacements in the local frame
-    Displacement D;
-    D[0] = 0;
-    D[1] = 0;
-    D[2] = _rotatedInitialElements[elementIndex][1][0] - deforme_b[0];
-    D[3] = 0;
-    D[4] = _rotatedInitialElements[elementIndex][2][0] - deforme_c[0];
-    D[5] = _rotatedInitialElements[elementIndex][2][1] - deforme_c[1];
-    // Strain-displacement matrix
-    StrainDisplacement B;
-    this->computeStrainDisplacement(B,deforme_a,deforme_b,deforme_c);
-    // compute force on element, in local frame
-    Displacement F;
-    this->computeForce( F, D, _materialsStiffnesses[elementIndex], B ); // F = Bt.S.B.D
-    // project forces to world frame
-    R_2_0.transpose(R_0_2);
-    std::vector<Deriv> contrib;
-    std::vector<unsigned int> indexList;
-    contrib.resize(3);
-    indexList.resize(3);
-    contrib[0] = R_2_0 * Coord(F[0], F[1], 0);
-    contrib[1] = R_2_0 * Coord(F[2], F[3], 0);
-    contrib[2] = R_2_0 * Coord(F[4], F[5], 0);
-    indexList[0] = a;
-    indexList[1] = b;
-    indexList[2] = c;
-    if (!d_performECSW.getValue()){
-        for (auto i : {0,1,2})
-            f[indexList[i]] += contrib[i];
+            // store for re-use in matrix-vector products
+            if(implicit)
+            {
+                _strainDisplacements[elementIndex] = J;
+                _rotations[elementIndex] = R_2_0 ;
+            }
+        }
     }
     else
     {
-        for (auto i : {0,1,2})
-            f[indexList[i]] += weights(elementIndex)*contrib[i];
+        typename VecElement::const_iterator it;
+        unsigned int elementIndex(0);
+        if (d_performECSW.getValue()){
+            for( elementIndex = 0 ; elementIndex<m_RIDsize ;++elementIndex)
+            {
+                // triangle vertex indices
+                const Index a = (*_indexedElements)[elementIndex][0];
+                const Index b = (*_indexedElements)[elementIndex][1];
+                const Index c = (*_indexedElements)[elementIndex][2];
 
-    }
+                const Coord& pA = p[a];
+                const Coord& pB = p[b];
+                const Coord& pC = p[c];
 
-    this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
+                // Rotation matrix (deformed and displaced Triangle/world)
+                Transformation R_2_0(type::NOINIT), R_0_2(type::NOINIT);
+                this->m_triangleUtils.computeRotationLarge(R_0_2, pA, pB, pC);
 
-    // store for re-use in matrix-vector products
-    if(implicit)
-    {
-        _strainDisplacements[elementIndex] = B;
-        _rotations[elementIndex] = R_2_0 ;
+                // positions of the deformed points in the local frame
+                const Coord deforme_b = R_0_2 * (pB - pA);
+                const Coord deforme_c = R_0_2 * (pC - pA);
+
+                // displacements in the local frame
+                Displacement Depl(type::NOINIT);
+                this->m_triangleUtils.computeDisplacementLarge(Depl, R_0_2, _rotatedInitialElements[elementIndex], pA, pB, pC);
+
+                // Strain-displacement matrix
+                StrainDisplacement J(type::NOINIT);
+                try
+                {
+                    this->m_triangleUtils.computeStrainDisplacementLocal(J, deforme_b, deforme_c);
+                }
+                catch (const std::exception& e)
+                {
+                    msg_error() << e.what();
+                    sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
+                    break;
+                }
+
+                // compute strain
+                type::Vec<3, Real> strain(type::NOINIT);
+                this->m_triangleUtils.computeStrain(strain, J, Depl, false);
+
+                // compute stress
+                type::Vec<3, Real> stress(type::NOINIT);
+                this->m_triangleUtils.computeStress(stress, _materialsStiffnesses[elementIndex], strain, false);
+
+                // compute force on element, in local frame
+                Displacement F(type::NOINIT);
+                this->m_triangleUtils.computeForceLarge(F, J, stress);
+
+                // project forces to world frame
+                R_2_0.transpose(R_0_2);
+                std::vector<Deriv> contrib;
+                std::vector<unsigned int> indexList;
+                contrib.resize(3);
+                indexList.resize(3);
+                contrib[0] = R_2_0 * Coord(F[0], F[1], 0);
+                contrib[1] = R_2_0 * Coord(F[2], F[3], 0);
+                contrib[2] = R_2_0 * Coord(F[4], F[5], 0);
+                indexList[0] = a;
+                indexList[1] = b;
+                indexList[2] = c;
+                if (!d_performECSW.getValue()){
+                    for (auto i : {0,1,2})
+                        f[indexList[i]] += contrib[i];
+                }
+                else
+                {
+                    for (auto i : {0,1,2})
+                        f[indexList[i]] += weights(elementIndex)*contrib[i];
+
+                }
+
+                this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
+
+                // store for re-use in matrix-vector products
+                if(implicit)
+                {
+                    _strainDisplacements[elementIndex] = J;
+                    _rotations[elementIndex] = R_2_0 ;
+                }
+            }
+        }
+        else
+        {
+            for(it = _indexedElements->begin() ; it != _indexedElements->end() ; ++it, ++elementIndex)
+            {
+                // triangle vertex indices
+                const Index a = (*_indexedElements)[elementIndex][0];
+                const Index b = (*_indexedElements)[elementIndex][1];
+                const Index c = (*_indexedElements)[elementIndex][2];
+
+                const Coord& pA = p[a];
+                const Coord& pB = p[b];
+                const Coord& pC = p[c];
+
+                // Rotation matrix (deformed and displaced Triangle/world)
+                Transformation R_2_0(type::NOINIT), R_0_2(type::NOINIT);
+                this->m_triangleUtils.computeRotationLarge(R_0_2, pA, pB, pC);
+
+                // positions of the deformed points in the local frame
+                const Coord deforme_b = R_0_2 * (pB - pA);
+                const Coord deforme_c = R_0_2 * (pC - pA);
+
+                // displacements in the local frame
+                Displacement Depl(type::NOINIT);
+                this->m_triangleUtils.computeDisplacementLarge(Depl, R_0_2, _rotatedInitialElements[elementIndex], pA, pB, pC);
+
+                // Strain-displacement matrix
+                StrainDisplacement J(type::NOINIT);
+                try
+                {
+                    this->m_triangleUtils.computeStrainDisplacementLocal(J, deforme_b, deforme_c);
+                }
+                catch (const std::exception& e)
+                {
+                    msg_error() << e.what();
+                    sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
+                    break;
+                }
+
+                // compute strain
+                type::Vec<3, Real> strain(type::NOINIT);
+                this->m_triangleUtils.computeStrain(strain, J, Depl, false);
+
+                // compute stress
+                type::Vec<3, Real> stress(type::NOINIT);
+                this->m_triangleUtils.computeStress(stress, _materialsStiffnesses[elementIndex], strain, false);
+
+                // compute force on element, in local frame
+                Displacement F(type::NOINIT);
+                this->m_triangleUtils.computeForceLarge(F, J, stress);
+
+                // project forces to world frame
+                R_2_0.transpose(R_0_2);
+                std::vector<Deriv> contrib;
+                std::vector<unsigned int> indexList;
+                contrib.resize(3);
+                indexList.resize(3);
+                contrib[0] = R_2_0 * Coord(F[0], F[1], 0);
+                contrib[1] = R_2_0 * Coord(F[2], F[3], 0);
+                contrib[2] = R_2_0 * Coord(F[4], F[5], 0);
+                indexList[0] = a;
+                indexList[1] = b;
+                indexList[2] = c;
+                if (!d_performECSW.getValue()){
+                    for (auto i : {0,1,2})
+                        f[indexList[i]] += contrib[i];
+                }
+                else
+                {
+                    for (auto i : {0,1,2})
+                        f[indexList[i]] += weights(elementIndex)*contrib[i];
+
+                }
+
+                this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
+
+                // store for re-use in matrix-vector products
+                if(implicit)
+                {
+                    _strainDisplacements[elementIndex] = J;
+                    _rotations[elementIndex] = R_2_0 ;
+                }
+            }
+        }
     }
 
 }
@@ -297,37 +478,45 @@ void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessLarge(VecCoord 
         Index b = (*it)[1];
         Index c = (*it)[2];
 
-        Transformation R_0_2;
+        Transformation R_0_2(type::NOINIT);
         R_0_2.transpose(_rotations[i]);
 
-        Displacement X;
-        Coord x_2;
+        Displacement dX(type::NOINIT);
 
-        x_2 = R_0_2 * x[a];
-        X[0] = x_2[0];
-        X[1] = x_2[1];
+        Coord x_2 = R_0_2 * x[a];
+        dX[0] = x_2[0];
+        dX[1] = x_2[1];
 
         x_2 = R_0_2 * x[b];
-        X[2] = x_2[0];
-        X[3] = x_2[1];
+        dX[2] = x_2[0];
+        dX[3] = x_2[1];
 
         x_2 = R_0_2 * x[c];
-        X[4] = x_2[0];
-        X[5] = x_2[1];
+        dX[4] = x_2[0];
+        dX[5] = x_2[1];
 
-        Displacement F;
-        this->computeForce( F, X, _materialsStiffnesses[i], _strainDisplacements[i] );
+        // compute strain
+        type::Vec<3, Real> strain(type::NOINIT);
+        this->m_triangleUtils.computeStrain(strain, _strainDisplacements[i], dX, false);
+
+        // compute stress
+        type::Vec<3, Real> stress(type::NOINIT);
+        this->m_triangleUtils.computeStress(stress, _materialsStiffnesses[i], strain, false);
+
+        // compute force on element, in local frame
+        Displacement F(type::NOINIT);
+        this->m_triangleUtils.computeForceLarge(F, _strainDisplacements[i], stress);
 
         if (!d_performECSW.getValue()){
-            v[a] += (_rotations[i] * Coord(-h*F[0], -h*F[1], 0))*kFactor;
-            v[b] += (_rotations[i] * Coord(-h*F[2], -h*F[3], 0))*kFactor;
-            v[c] += (_rotations[i] * Coord(-h*F[4], -h*F[5], 0))*kFactor;
+            v[a] += (_rotations[i] * Coord(-h * F[0], -h * F[1], 0)) * kFactor;
+            v[b] += (_rotations[i] * Coord(-h * F[2], -h * F[3], 0)) * kFactor;
+            v[c] += (_rotations[i] * Coord(-h * F[4], -h * F[5], 0)) * kFactor;
         }
         else
         {
-            v[a] += weights(i)*(_rotations[i] * Coord(-h*F[0], -h*F[1], 0))*kFactor;
-            v[b] += weights(i)*(_rotations[i] * Coord(-h*F[2], -h*F[3], 0))*kFactor;
-            v[c] += weights(i)*(_rotations[i] * Coord(-h*F[4], -h*F[5], 0))*kFactor;
+            v[a] += weights(i) * (_rotations[i] * Coord(-h * F[0], -h * F[1], 0)) * kFactor;
+            v[b] += weights(i) * (_rotations[i] * Coord(-h * F[2], -h * F[3], 0)) * kFactor;
+            v[c] += weights(i) * (_rotations[i] * Coord(-h * F[4], -h * F[5], 0)) * kFactor;
         }
     }
 
