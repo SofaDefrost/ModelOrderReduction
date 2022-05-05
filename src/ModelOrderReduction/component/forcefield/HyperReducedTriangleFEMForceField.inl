@@ -85,6 +85,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::Mechanic
     this->saveGieFile(this->_indexedElements->size());
 }
 
+
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx)
 {
@@ -106,84 +107,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::Mechani
 
     df.endEdit();
 }
-
-
-
-//template <class DataTypes>
-//void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceSmall( VecCoord &f, const VecCoord &p, bool implicit )
-//{
-//    typename VecElement::const_iterator it;
-//    unsigned int elementIndex(0);
-//    for (it = _indexedElements->begin(); it != _indexedElements->end(); ++it, ++elementIndex)
-//    {
-//        Index a = (*_indexedElements)[elementIndex][0];
-//        Index b = (*_indexedElements)[elementIndex][1];
-//        Index c = (*_indexedElements)[elementIndex][2];
-
-//        Coord deforme_a, deforme_b, deforme_c;
-//        deforme_b = p[b]-p[a];
-//        deforme_c = p[c]-p[a];
-//        deforme_a = Coord(0,0,0);
-
-//        // displacements
-//        Displacement D;
-//        D[0] = 0;
-//        D[1] = 0;
-//        D[2] = (_initialPoints.getValue()[b][0]-_initialPoints.getValue()[a][0]) - deforme_b[0];
-//        D[3] = 0;
-//        D[4] = (_initialPoints.getValue()[c][0]-_initialPoints.getValue()[a][0]) - deforme_c[0];
-//        D[5] = (_initialPoints.getValue()[c][1]-_initialPoints.getValue()[a][1]) - deforme_c[1];
-
-
-//        StrainDisplacement J;
-//        //this->computeStrainDisplacement(J,deforme_a,deforme_b,deforme_c);
-//        this->m_triangleUtils.computeStrainDisplacementGlobal(J,deforme_a,deforme_b,deforme_c);
-//        if (implicit)
-//            _strainDisplacements[elementIndex] = J;
-
-//        // compute force on element
-//        Displacement F;
-//        //this->computeForce( F, D, _materialsStiffnesses[elementIndex], J );
-//        this->m_triangleUtils.computeForceLarge( F, J, _materialsStiffnesses[elementIndex], J );
-
-//        f[a] += Coord( F[0], F[1], 0);
-//        f[b] += Coord( F[2], F[3], 0);
-//        f[c] += Coord( F[4], F[5], 0);
-//    }
-//}
-
-//template <class DataTypes>
-//void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessSmall(VecCoord &v, Real h, const VecCoord &x, const SReal &kFactor)
-//{
-
-//    typename VecElement::const_iterator it;
-//    unsigned int i(0);
-
-//    for(it = _indexedElements->begin() ; it != _indexedElements->end() ; ++it, ++i)
-//    {
-//        Index a = (*it)[0];
-//        Index b = (*it)[1];
-//        Index c = (*it)[2];
-
-//        Displacement X;
-
-//        X[0] = x[a][0];
-//        X[1] = x[a][1];
-
-//        X[2] = x[b][0];
-//        X[3] = x[b][1];
-
-//        X[4] = x[c][0];
-//        X[5] = x[c][1];
-
-//        Displacement F;
-//        this->computeForce( F, X, _materialsStiffnesses[i], _strainDisplacements[i] );
-
-//        v[a] += Coord(-h*F[0], -h*F[1], 0)*kFactor;
-//        v[b] += Coord(-h*F[2], -h*F[3], 0)*kFactor;
-//        v[c] += Coord(-h*F[4], -h*F[5], 0)*kFactor;
-//    }
-//}
 
 
 template <class DataTypes>
