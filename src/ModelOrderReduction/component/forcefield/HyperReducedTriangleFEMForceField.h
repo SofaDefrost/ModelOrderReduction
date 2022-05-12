@@ -148,13 +148,9 @@ public:
 
 protected :
 
-    ////////////// small displacements method
-    void accumulateForceSmall( VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit = false );
-    void applyStiffnessSmall( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
-
     ////////////// large displacements method
-    void accumulateForceLarge( VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit=false );
-    void applyStiffnessLarge( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
+    void hyperReducedAccumulateForceLarge( VecCoord& f, const VecCoord & p, bool implicit=false );
+    void hyperReducedApplyStiffnessLarge( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
 
     //// stiffness matrix assembly
     void addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset) override; // compute and add all the element stiffnesses to the global stiffness matrix
