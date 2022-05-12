@@ -17,7 +17,10 @@ find_package(SofaMiscFem REQUIRED)
 find_package(SofaMiscMapping REQUIRED)
 find_package(SofaMiscCollision REQUIRED)
 find_package(Sofa.GL REQUIRED)
-find_package(CollisionOBBCapsule REQUIRED)
+find_package(CollisionOBBCapsule QUIET)
+if (NOT CollisionOBBCapsule_FOUND)
+    message(WARNING "The package CollisionOBBCapsule has not been found. It is required to compile all the features of ${PROJECT_NAME}")
+endif()
 
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
@@ -81,6 +84,11 @@ set(README_FILES
     README.md
     )
 
+
+if (CollisionOBBCapsule_FOUND)
+    list(APPEND SOURCE_FILES ${MOR_SRC}/component/contact/MORFrictionContact[OBBCapsule].cpp)
+endif()
+
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
@@ -91,8 +99,10 @@ target_link_libraries(${PROJECT_NAME}
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
     SofaMiscFem SofaMiscMapping SofaMiscCollision # SofaMisc
     Sofa.GL
-    CollisionOBBCapsule
     )
+if (CollisionOBBCapsule_FOUND)
+    target_link_libraries(${PROJECT_NAME} CollisionOBBCapsule)
+endif()
 
 # Config files and install rules for pythons scripts
 sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
