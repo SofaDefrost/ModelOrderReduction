@@ -18,6 +18,9 @@ find_package(SofaMiscMapping REQUIRED)
 find_package(SofaMiscCollision REQUIRED)
 find_package(Sofa.GL REQUIRED)
 find_package(CollisionOBBCapsule QUIET)
+if (NOT CollisionOBBCapsule_FOUND)
+    message(WARNING "The package CollisionOBBCapsule has not been found. It is required to compile all the features of ${PROJECT_NAME}")
+endif()
 
 option(USE_COMPRESSED_ROW_SPARSE "Use compressed row sparse format in the mappings" ON)
 
