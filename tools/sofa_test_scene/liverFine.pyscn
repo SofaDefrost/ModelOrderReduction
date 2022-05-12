@@ -1,36 +1,39 @@
 import Sofa
+import Sofa.Core
 import os
 
 meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
 
 def createScene(rootNode):
     
-    rootNode.createObject('RequiredPlugin', name='ModelOrderReduction', pluginName='ModelOrderReduction')
-    rootNode.createObject('RequiredPlugin', name='SofaPython', pluginName='SofaPython')
+    rootNode.addObject('RequiredPlugin', name='ModelOrderReduction', pluginName='ModelOrderReduction')
+    rootNode.addObject('RequiredPlugin', name='SofaPython3', pluginName='SofaPython3')
 
-    rootNode.createObject('VisualStyle', displayFlags='showCollision showVisualModels showForceFields showInteractionForceFields hideCollisionModels hideBoundingCollisionModels hideWireframe')
+    rootNode.addObject('VisualStyle', displayFlags='showCollision showVisualModels showForceFields showInteractionForceFields hideCollisionModels hideBoundingCollisionModels hideWireframe')
     rootNode.findData('dt').value=0.01
     rootNode.findData('gravity').value=[0, -981, 0]
-    liver = rootNode.createChild('liver')
-    liver.createObject('EulerImplicitSolver', rayleighStiffness = 0.0, rayleighMass = 0.0)
-    liver.createObject('SparseLDLSolver', saveMatrixToFile='False')
-    liver.createObject('MeshVTKLoader', name="loader", filename=meshPath+'liverFine.vtu')
-    liver.createObject('TetrahedronSetTopologyContainer', src="@loader")
-    liver.createObject('TetrahedronSetGeometryAlgorithms')
-    liver.createObject('MechanicalObject')
-    liver.createObject('BoxROI', name='ROI1', box='0 3 -1 2 5 2', drawBoxes='true')
-    liver.createObject('BoxROI', name='boxROIactuation', box='-5 0 -0.5 -4 0.5 0.5', drawBoxes='true')
-    liver.createObject('UniformMass', totalMass=0.3)
-    liver.createObject('TetrahedronFEMForceField', poissonRatio="0.3", youngModulus="5000")
-    liver.createObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
-    liver.createObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
+    liver = rootNode.addChild('liver')
+    liver.addObject('EulerImplicitSolver', rayleighStiffness = 0.0, rayleighMass = 0.0)
+    liver.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
+    liver.addObject('MeshVTKLoader', name="loader", filename=meshPath+'liverFine.vtu')
+    liver.addObject('TetrahedronSetTopologyContainer', src="@loader")
+    liver.addObject('TetrahedronSetGeometryAlgorithms')
+    liver.addObject('MechanicalObject')
+    liver.addObject('BoxROI', name='ROI1', box='0 3 -1 2 5 2', drawBoxes='true')
+    liver.addObject('BoxROI', name='boxROIactuation', box='-5 0 -0.5 -4 0.5 0.5', drawBoxes='true')
+
+    liver.addObject('UniformMass', totalMass=0.3)
+    liver.addObject('TetrahedronFEMForceField', poissonRatio="0.3", youngModulus="5000")
+    liver.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
+    liver.addObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
     
-    visu = liver.createChild('visu')
-    visu.createObject(  'MeshObjLoader', name= 'loader', filename=meshPath+'liver-smoothUV.obj')
-    visu.createObject('OglModel', src="@loader")
-    visu.createObject('BarycentricMapping')
+    visu = liver.addChild('visu')
+    visu.addObject(  'MeshObjLoader', name= 'loader', filename=meshPath+'liver-smoothUV.obj')
+    visu.addObject('OglModel',src='@loader')
+    visu.addObject('BarycentricMapping')
 
     
 
-    actuator = rootNode.createChild('actuator')
-    actuator.createObject('MechanicalObject', name = 'actuatorState', position = '@../liver/boxROIactuation.pointsInROI', template = 'Vec3d')
+    actuator = rootNode.addChild('actuator')
+    actuator.addObject('MechanicalObject', name = 'actuatorState', position = '@../liver/boxROIactuation.pointsInROI', template = 'Vec3d')
+    #actuator.addObject('PythonScriptController', filename="washingMachineController.py", classname="washingMachineController")

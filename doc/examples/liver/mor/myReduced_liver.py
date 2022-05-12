@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import Sofa
+import Sofa.Core
 from numpy import add,subtract,multiply
 from splib.numerics import *
 
@@ -103,18 +104,16 @@ def Reduced_liver(
     ## Visualization
     print('test surfaceMeshFileName')
     if surfaceMeshFileName:
-            print('Its TRUE !!!')
-	    visu = liver.createChild('Visual')
-
-	    visu.createObject(	'OglModel', 
+        print('Its TRUE !!!')
+        visu = liver.createChild('Visual')
+        visu.createObject(	'OglModel', 
                             filename=path+'/mesh/'+surfaceMeshFileName,
                             template='ExtVec3f',
                             color=surfaceColor,
                             rotation= add(rotation,[0.0, 0.0, 0.0]),
                             translation = add(translation,[0.0, 0.0, 0.0]),
                             scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-
-	    visu.createObject('BarycentricMapping')
+        visu.createObject('BarycentricMapping')
 
     return liver
 
