@@ -14,24 +14,12 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_H
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_H
-#include <ModelOrderReduction/config.h>
-
-#if !defined(__GNUC__) || (__GNUC__ > 3 || (_GNUC__ == 3 && __GNUC_MINOR__ > 3))
 #pragma once
-#endif
-#include "HyperReducedHelper.h"
+#include <ModelOrderReduction/config.h>
+#include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
 #include <SofaMiscFem/TetrahedronHyperelasticityFEMForceField.h>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 using namespace std;
 using namespace sofa::defaulttype;
@@ -146,11 +134,4 @@ using sofa::defaulttype::Vec3fTypes;
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedronHyperelasticityFEMForceField<Vec3Types>;
 #endif // !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_CPP)
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif
+} // namespace sofa::component::forcefield

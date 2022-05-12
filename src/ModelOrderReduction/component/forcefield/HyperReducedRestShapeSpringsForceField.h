@@ -14,31 +14,18 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
+#pragma once
 #include <ModelOrderReduction/config.h>
 
-#include "HyperReducedHelper.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
 #include <SofaDeformable/RestShapeSpringsForceField.h>
-namespace sofa
-{
-namespace core
-{
-namespace behavior
+
+namespace sofa::core::behavior
 {
 template< class T > class MechanicalState;
+} // namespace sofa::core::behavior
 
-} // namespace behavior
-} // namespace core
-} // namespace sofa
-
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 /**
@@ -144,11 +131,4 @@ private :
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<sofa::defaulttype::Vec3Types>;
 
 #endif
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_H
+} // namespace sofa::component::forcefield

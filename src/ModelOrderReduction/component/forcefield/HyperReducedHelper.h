@@ -14,8 +14,7 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef HYPERREDUCEDHELPER_H
-#define HYPERREDUCEDHELPER_H
+#pragma once
 #include <ModelOrderReduction/config.h>
 
 #include <sofa/core/behavior/BaseMechanicalState.h>
@@ -33,17 +32,11 @@
 #include <iostream>
 #include <Eigen/Sparse>
 
-#include "../loader/MatrixLoader.h"
+#include <ModelOrderReduction/component/loader/MatrixLoader.h>
 #include <sofa/core/objectmodel/BaseContext.h>
 
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using sofa::component::loader::MatrixLoader;
@@ -53,9 +46,7 @@ class SOFA_MODELORDERREDUCTION_API HyperReducedHelper : public virtual core::obj
 public:
 
     SOFA_CLASS(HyperReducedHelper,core::objectmodel::BaseObject);
-//class HyperReducedForceField
-//{
-public:
+
     // Reduced order model SOFA Data parameters
     Data< bool > d_prepareECSW;
     Data<unsigned int> d_nbModes;
@@ -75,146 +66,47 @@ public:
     Eigen::VectorXi reducedIntegrationDomain;
     unsigned int m_RIDsize;
 
-public:
-    HyperReducedHelper()
-        : d_prepareECSW(initData(&d_prepareECSW,false,"prepareECSW","Save data necessary for the construction of the reduced model"))
-        , d_nbModes(initData(&d_nbModes,unsigned(3),"nbModes","Number of modes when preparing the ECSW method only"))
-        , d_modesPath(initData(&d_modesPath,std::string("modes.txt"),"modesPath","Path to the file containing the modes (useful only for preparing ECSW)"))
-        , d_nbTrainingSet(initData(&d_nbTrainingSet,unsigned(40),"nbTrainingSet","When preparing the ECSW, size of the training set"))
-        , d_periodSaveGIE(initData(&d_periodSaveGIE,unsigned(5),"periodSaveGIE","When prepareECSW is true, the values of Gie are taken every periodSaveGIE timesteps."))
-        , d_performECSW(initData(&d_performECSW,false,"performECSW","Use the reduced model with the ECSW method"))
-        , d_RIDPath(initData(&d_RIDPath,std::string("reducedIntegrationDomain.txt"),"RIDPath","Path to the Reduced Integration domain when performing the ECSW method"))
-        , d_weightsPath(initData(&d_weightsPath,std::string("weights.txt"),"weightsPath","Path to the weights when performing the ECSW method"))
-    {
-    }
+    HyperReducedHelper();
 
-    void initMOR(unsigned int nbElements)
-    {
-        initMOR(nbElements, false);
-    }
-    void initMOR(unsigned int nbElements, bool printLog){
-        if (d_prepareECSW.getValue()){
-            MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
-            matLoader->m_printLog = printLog;
-            matLoader->setFileName(d_modesPath.getValue());
-            matLoader->load();
-            matLoader->getMatrix(m_modes);
-            delete matLoader;
-            m_modes.conservativeResize(Eigen::NoChange,d_nbModes.getValue());
-
-            Gie.resize(d_nbTrainingSet.getValue()*d_nbModes.getValue());
-
-            for (unsigned int i = 0; i < d_nbTrainingSet.getValue()*d_nbModes.getValue(); i++)
-            {
-                Gie[i].resize(nbElements);
-                for (unsigned int j = 0; j < nbElements; j++)
-                {
-                    Gie[i][j] = 0;
-                }
-            }
-        }
-
-        if (d_performECSW.getValue())
-        {
-
-            MatrixLoader<Eigen::VectorXd>* weightsMatLoader = new MatrixLoader<Eigen::VectorXd>();
-            weightsMatLoader->m_printLog = printLog;
-            weightsMatLoader->setFileName(d_weightsPath.getValue());
-            weightsMatLoader->load();
-            weightsMatLoader->getMatrix(weights);
-            delete weightsMatLoader;
-
-            MatrixLoader<Eigen::VectorXi>* RIDMatLoader = new MatrixLoader<Eigen::VectorXi>();
-            RIDMatLoader->m_printLog = printLog;
-            RIDMatLoader->setFileName(d_RIDPath.getValue());
-            RIDMatLoader->load();
-            RIDMatLoader->getMatrix(reducedIntegrationDomain);
-            delete RIDMatLoader;
-
-            m_RIDsize = reducedIntegrationDomain.rows();
-
-        }
-        else
-        {
-            m_RIDsize = nbElements;  // the reduced integration contains all the elements in this case.
-            reducedIntegrationDomain.resize(m_RIDsize);
-            for (unsigned int i = 0; i<m_RIDsize; i++)
-                reducedIntegrationDomain(i) = i;
-        }
-
-    }
+    void initMOR(unsigned int nbElements, bool printLog = false);
 
     template<class DataTypes>
-    void updateGie(const std::vector<unsigned int> indexList, const std::vector<typename DataTypes::Deriv> contrib, const unsigned int numElem){
-        if (d_prepareECSW.getValue())
-        {
-            size_t nbNodesPerElement = indexList.size();
-            std::vector<double> GieUnit(d_nbModes.getValue());
-            int numTest = int(this->getContext()->getTime()/this->getContext()->getDt());
-            if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
-            {
-                numTest = numTest/d_periodSaveGIE.getValue();
-                for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
-                {
-                    GieUnit[modNum] = 0;
-                    for (unsigned int i=0; i<nbNodesPerElement; i++){
-                        GieUnit[modNum] += contrib[i]*typename DataTypes::Deriv(m_modes(3*indexList[i],modNum),m_modes(3*indexList[i]+1,modNum),m_modes(3*indexList[i]+2,modNum));
-                    }
-                }
-                for (unsigned int i = 0 ; i < d_nbModes.getValue() ; i++)
-                {
-                    if ( d_nbModes.getValue()*numTest < d_nbModes.getValue()*d_nbTrainingSet.getValue() )
-                    {
-                        Gie[d_nbModes.getValue()*numTest+i][numElem] = GieUnit[i];
-                    }
-                }
-            }
-        }
-
-    }
+    void updateGie(const std::vector<unsigned int> indexList, const std::vector<typename DataTypes::Deriv> contrib, const unsigned int numElem);
 
 
-
-    void saveGieFile(unsigned int nbElements){
-        if (d_prepareECSW.getValue())
-        {
-            unsigned int numTest = int(this->getContext()->getTime()/this->getContext()->getDt());
-            if (numTest%d_periodSaveGIE.getValue() == 0)       // A new value was taken
-            {
-                numTest = numTest/d_periodSaveGIE.getValue();
-                if (numTest < d_nbTrainingSet.getValue()){
-                    std::stringstream gieFileNameSS;
-                    gieFileNameSS << this->name << "_Gie.txt";
-                    std::string gieFileName = gieFileNameSS.str();
-                    std::ofstream myfileGie (gieFileName, std::fstream::app);
-                    msg_info(this) << "Storing case number " << numTest+1 << " in " << gieFileName << " ...";
-                    for (unsigned int k=numTest*d_nbModes.getValue(); k<(numTest+1)*d_nbModes.getValue();k++){
-                        for (unsigned int l=0;l<nbElements;l++){
-                            myfileGie << Gie[k][l] << " ";
-                        }
-                        myfileGie << std::endl;
-                    }
-                    myfileGie.close();
-                    msg_info(this) << "Storing Done";
-                }
-                else
-                {
-                    msg_info(this) << d_nbTrainingSet.getValue() << "were already stored. Learning phase completed.";
-                }
-            }
-        }
-
-    }
-
+    void saveGieFile(unsigned int nbElements);
 };
 
 
+template <class DataTypes>
+void HyperReducedHelper::updateGie(const std::vector<unsigned> indexList,
+    const std::vector<typename DataTypes::Deriv> contrib, const unsigned numElem)
+{
+    if (d_prepareECSW.getValue())
+    {
+        size_t nbNodesPerElement = indexList.size();
+        std::vector<double> GieUnit(d_nbModes.getValue());
+        int numTest = int(this->getContext()->getTime()/this->getContext()->getDt());
+        if (numTest%d_periodSaveGIE.getValue() == 0)       // Take a measure every periodSaveGIE timesteps
+        {
+            numTest = numTest/d_periodSaveGIE.getValue();
+            for (unsigned int modNum = 0 ; modNum < d_nbModes.getValue() ; modNum++)
+            {
+                GieUnit[modNum] = 0;
+                for (unsigned int i=0; i<nbNodesPerElement; i++){
+                    GieUnit[modNum] += contrib[i]*typename DataTypes::Deriv(m_modes(3*indexList[i],modNum),m_modes(3*indexList[i]+1,modNum),m_modes(3*indexList[i]+2,modNum));
+                }
+            }
+            for (unsigned int i = 0 ; i < d_nbModes.getValue() ; i++)
+            {
+                if ( d_nbModes.getValue()*numTest < d_nbModes.getValue()*d_nbTrainingSet.getValue() )
+                {
+                    Gie[d_nbModes.getValue()*numTest+i][numElem] = GieUnit[i];
+                }
+            }
+        }
+    }
 
-} // namespace forcefield
+}
+} // namespace sofa::component::forcefield
 
-} // namespace component
-
-} // namespace sofa
-
-
-#endif // HYPERREDUCEDHELPER_H

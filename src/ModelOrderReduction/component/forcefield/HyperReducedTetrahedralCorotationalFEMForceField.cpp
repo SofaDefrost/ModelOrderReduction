@@ -16,20 +16,13 @@
 ******************************************************************************/
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_CPP
 
-#include "HyperReducedTetrahedralCorotationalFEMForceField.inl"
+#include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.inl>
 #include <sofa/defaulttype/VecTypes.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <sofa/core/ObjectFactory.h>
-//#include <typeinfo>
 
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using namespace sofa::defaulttype;
@@ -43,10 +36,5 @@ int HyperReducedTetrahedralCorotationalFEMForceFieldClass = core::RegisterObject
         ;
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types>;
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::forcefield
 

@@ -16,19 +16,13 @@
 ******************************************************************************/
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP
 
-#include "HyperReducedTriangleFEMForceField.inl"
+#include <ModelOrderReduction/component/forcefield/HyperReducedTriangleFEMForceField.inl>
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/defaulttype/VecTypes.h>
 
 // #define DEBUG_TRIANGLEFEM
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 SOFA_DECL_CLASS(HyperReducedTriangleFEMForceField)
@@ -41,9 +35,4 @@ int HyperReducedTriangleFEMForceFieldClass = core::RegisterObject("Triangular fi
         ;
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<Vec3Types>;
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::forcefield

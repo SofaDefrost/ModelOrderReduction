@@ -60,6 +60,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
     ${MOR_SRC}/initModelOrderReduction.cpp
 
+    ${MOR_SRC}/component/forcefield/HyperReducedHelper.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedHexahedronFEMForceField.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedRestShapeSpringsForceField.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.cpp
