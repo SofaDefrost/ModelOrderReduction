@@ -26,10 +26,8 @@ from mor.reduction.container import ObjToAnimate
 #from PyQt4 import QtCore, QtGui
 #app = QtGui.QApplication(sys.argv)
 
-#originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-#outputDir = utility.openDirName('Select the directory tha will contain all the results')
-originalScene = "/home/olivier/sofa/plugins/ModelOrderReduction/tools/sofa_test_scene/liverFine.pyscn"
-outputDir = "/home/olivier/sofa/plugins/ModelOrderReduction/tools/results"
+originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 
 ### DIAMOND ROBOT PARAM
@@ -59,7 +57,7 @@ outputDir = "/home/olivier/sofa/plugins/ModelOrderReduction/tools/results"
 
 ### LIVER
 nodeToReduce ='/liver'
-actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
+actuator = ObjToAnimate("actuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
 listObjToAnimate = [actuator]
 addRigidBodyModes = [0,0,0]
 
@@ -128,7 +126,7 @@ reduceMyModel.phase1()
 #                       the different mode                           #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase2()
+reduceMyModel.phase2()
 
 
 ####################    SOFA LAUNCHER       ##########################
@@ -146,7 +144,7 @@ reduceMyModel.phase1()
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase3()
+reduceMyModel.phase3()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -159,4 +157,4 @@ reduceMyModel.phase1()
 #      with it. Additionnally we also compute the Active Nodes       #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase4()
+reduceMyModel.phase4()
