@@ -14,15 +14,10 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_H
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_H
+#pragma once
 #include <ModelOrderReduction/config.h>
 
-#if !defined(__GNUC__) || (__GNUC__ > 3 || (_GNUC__ == 3 && __GNUC_MINOR__ > 3))
-#pragma once
-#endif
-
-#include "HyperReducedHelper.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
 #include <SofaMiscFem/TriangleFEMForceField.h>
 
 
@@ -39,14 +34,7 @@
 // }
 
 
-
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 
@@ -161,11 +149,4 @@ protected :
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<sofa::defaulttype::Vec3Types>;
 #endif // !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_H
+} // namespace sofa::component::forcefield

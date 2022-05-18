@@ -17,18 +17,12 @@
 #define SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP
 
 
-#include "MechanicalMatrixMapperMOR.inl"
+#include <ModelOrderReduction/component/forcefield/MechanicalMatrixMapperMOR.inl>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
 #include <sofa/core/ObjectFactory.h>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace interactionforcefield
+namespace sofa::component::interactionforcefield
 {
 
 using namespace sofa::defaulttype;
@@ -59,9 +53,4 @@ template class MechanicalMatrixMapperMOR<Vec3Types, Rigid3Types>;
 template class MechanicalMatrixMapperMOR<Vec3Types, Vec3Types>;
 template class MechanicalMatrixMapperMOR<Vec1Types, Rigid3Types>;
 template class MechanicalMatrixMapperMOR<Vec1Types, Vec1Types>;
-
-} // namespace interactionforcefield
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::interactionforcefield

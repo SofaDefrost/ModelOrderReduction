@@ -14,10 +14,9 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_INL
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_INL
+#pragma once
 
-#include "HyperReducedTetrahedronFEMForceField.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedronFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <SofaBaseTopology/GridTopology.h>
 #include <sofa/simulation/Simulation.h>
@@ -36,19 +35,13 @@
 #include <sofa/simulation/AnimateBeginEvent.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
-#include "../loader/MatrixLoader.h"
+#include <ModelOrderReduction/component/loader/MatrixLoader.h>
 
 // verify timing
 #include <sofa/helper/system/thread/CTime.h>
 
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using sofa::component::loader::MatrixLoader;
@@ -832,14 +825,4 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::lineara
         }
     }
 }
-
-
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_INL
-
+} // namespace sofa::component::forcefield

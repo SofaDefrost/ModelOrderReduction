@@ -14,11 +14,10 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_H
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_H
+#pragma once
 #include <ModelOrderReduction/config.h>
 
-#include "HyperReducedHelper.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
 #include <SofaSimpleFem/TetrahedronFEMForceField.h>
 
 #define SIMPLEFEM_COLORMAP
@@ -28,14 +27,7 @@
 #include <sofa/helper/ColorMap.h>
 
 
-
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 
@@ -274,11 +266,4 @@ protected:
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedronFEMForceField<defaulttype::Vec3Types>;
 #endif
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif
+} // namespace sofa::component::forcefield

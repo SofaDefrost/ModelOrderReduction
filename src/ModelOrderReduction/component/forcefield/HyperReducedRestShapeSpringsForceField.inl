@@ -14,10 +14,9 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_INL
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_INL
+#pragma once
 
-#include "HyperReducedRestShapeSpringsForceField.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedRestShapeSpringsForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/core/behavior/MultiMatrixAccessor.h>
@@ -29,13 +28,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using helper::WriteAccessor;
@@ -495,13 +488,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
     }
 }
 
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGFORCEFIELD_INL
-
+} // namespace sofa::component::forcefield
 
 

@@ -14,26 +14,19 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef MECHANICALMATRIXMAPPERMOR_INL
-#define MECHANICALMATRIXMAPPERMOR_INL
+#pragma once
 
-#include "MechanicalMatrixMapperMOR.h"
+#include <ModelOrderReduction/component/forcefield/MechanicalMatrixMapperMOR.h>
 #include <sofa/component/mapping/mappedmatrix/MechanicalMatrixMapper.inl>
 #include <SofaDeformable/SpringForceField.h>
 #include <SofaDeformable/StiffSpringForceField.h>
-#include "../loader/MatrixLoader.h"
+#include <ModelOrderReduction/component/loader/MatrixLoader.h>
 
 
 #include <fstream>
 
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace interactionforcefield
+namespace sofa::component::interactionforcefield
 {
 
 using sofa::component::loader::MatrixLoader;
@@ -316,11 +309,4 @@ void MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::addPrecomputedMassToSyst
         JtKJeig = JtKJeig + JtMJ;
     }
 }
-
-} // namespace interactionforcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // MechanicalMatrixMapperMOR_INL
+} // namespace sofa::component::interactionforcefield

@@ -14,10 +14,9 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_INL
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_INL
+#pragma once
 
-#include "HyperReducedHexahedronFEMForceField.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedHexahedronFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/simulation/Simulation.h>
@@ -43,17 +42,7 @@
 //     |/	     |/
 //     0---------1-->X
 
-
-
-
-
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using std::set;
@@ -63,7 +52,7 @@ using namespace sofa::defaulttype;
 template <class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::init()
 {
-    HexahedronFEMForceField<DataTypes>::init();
+    solidmechanics::fem::elastic::HexahedronFEMForceField<DataTypes>::init();
     this->initMOR(this->getIndexedElements()->size(),notMuted());
 }
 
@@ -588,10 +577,4 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
 }
 
 
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_INL
+} // namespace sofa::component::forcefield

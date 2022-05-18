@@ -14,33 +14,24 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
+#pragma once
 #include <ModelOrderReduction/config.h>
 
-#include "HyperReducedHelper.h"
-#include <SofaSimpleFem/HexahedronFEMForceField.h>
+#include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
+#include <sofa/component/solidmechanics/fem/elastic/HexahedronFEMForceField.h>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 
 /** This forceField is the HyperReduced version of HexahedronFEMForceField.
 *   At the moment, it is only implemented for the "large" method (i.e not for small, polar or svd).
 */
-
-
 template<class DataTypes>
-class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedHexahedronFEMForceField : public virtual solidmechanics::fem::elastic::HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
 {
 public:
-    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(HexahedronFEMForceField, DataTypes), HyperReducedHelper);
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(solidmechanics::fem::elastic::HexahedronFEMForceField, DataTypes), HyperReducedHelper);
 
     typedef typename core::behavior::ForceField<DataTypes> InheritForceField;
     typedef typename DataTypes::VecCoord VecCoord;
@@ -183,11 +174,4 @@ protected:
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<defaulttype::Vec3Types>;
 #endif
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_H
+} // namespace sofa::component::forcefield
