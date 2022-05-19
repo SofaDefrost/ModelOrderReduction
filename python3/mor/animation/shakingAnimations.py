@@ -11,14 +11,15 @@ def upDateValue(actualValue,actuatorMaxPull,actuatorIncrement):
         return actualValue
 
 def rotationPoint(Pos0, angle, brasLevier):
+    print ("In rotation POint")
     size0 = len(Pos0);
     posOut = [0.0]*3*size0;
 
     for i in range(size0):
+        
         posOut[3*i] = Pos0[i][0]- brasLevier*cos(angle);
         posOut[3*i+1] = Pos0[i][1] - brasLevier*sin(angle);
         posOut[3*i+2] = Pos0[i][2]
-        print(posOut)
 
     return posOut
 
@@ -75,6 +76,47 @@ def defaultShaking( objToAnimate, dt, factor, **param):
             objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value = [float(actualValue)]
 
             print ("Updated Value :"+str(actualValue)+'\n')
+
+def shakingLiver( objToAnimate, dt, factor, **param):
+    """
+    **Animation function made specifically to apply deformation on the liver scene.
+    
+    It's an example of what can be a custom shaking animation.
+    The animation consist on taking a position in entry, rotate it, and then update it in the component.
+
+    To use it the **params** parameters of :py:class:`.ObjToAnimate` which is a dictionnary will need 6 keys:
+
+    **Keys:**
+
+    +---------------+-------+-----------------------------------------------------------------------+
+    | argument      | type  | definition                                                            |
+    +===============+=======+=======================================================================+
+    | dataToWorkOn  | str   | Name of the Sofa datafield we will work on here it will be *position* |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | incrPeriod    | float | Period between each increment                                         |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | incr          | float | Value of each increment                                               |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | rangeOfAction | float | Until which value the data will increase                              |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | angle         | float | Initial angle value in radian                                         |
+    +---------------+-------+-----------------------------------------------------------------------+
+    | rodRadius     | float | Radius Lenght of the circle                                           |
+    +---------------+-------+-----------------------------------------------------------------------+
+    """
+    moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
+    # print("currentTime - startTime : "+str(factor * objToAnimate.duration))
+    if moduloResult == 0:
+        currentPositions = objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value
+
+        objToAnimate.params['angle'] = upDateValue( objToAnimate.params['angle'],
+                                                    objToAnimate.params['rangeOfAction'],
+                                                    objToAnimate.params['incr'])
+        
+        with objToAnimate.item.position.writeable() as positions:
+            newPositions = rotationPoint(positions, -objToAnimate.params['angle'], objToAnimate.params['rodRadius'])
+            for i in range(11):
+                positions[i] = newPositions[3*i:3*i+3]            
 
 def shakingSofia( objToAnimate, dt, factor, **param):
     """

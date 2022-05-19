@@ -11,11 +11,11 @@
 import os
 import sys
 path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path+'/../python') # TO CHANGE
+sys.path.append(path+'/../python3') # TO CHANGE
 
 
 # MOR IMPORT
-from mor.gui import utility
+#from mor.gui import utility
 from mor.reduction import ReduceModel
 from mor.reduction.container import ObjToAnimate
 
@@ -23,11 +23,11 @@ from mor.reduction.container import ObjToAnimate
 ####################       PARAMETERS       ###########################
 
 # Select Output Dir and original scene name & path
-from PyQt4 import QtCore, QtGui
-app = QtGui.QApplication(sys.argv)
+#from PyQt4 import QtCore, QtGui
+#app = QtGui.QApplication(sys.argv)
 
-#originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-#outputDir = utility.openDirName('Select the directory tha will contain all the results')
+originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 
 ### DIAMOND ROBOT PARAM
@@ -56,17 +56,17 @@ app = QtGui.QApplication(sys.argv)
 # addRigidBodyModes = [0,0,0]
 
 ### LIVER
-#nodeToReduce ='/liver'
-#actuator = ObjToAnimate("actuator/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
-#listObjToAnimate = [actuator]
-#addRigidBodyModes = [0,0,0]
+nodeToReduce ='/liver'
+actuator = ObjToAnimate("actuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
+listObjToAnimate = [actuator]
+addRigidBodyModes = [0,0,0]
 
 ### HEXABEAM
-nodeToReduce ='/M1'
-actuator = ObjToAnimate("M1/cableNodeTip", incr=1,incrPeriod=5,rangeOfAction=5)
-actuator2 = ObjToAnimate("M1/cableNodeSide", incr=1,incrPeriod=5,rangeOfAction=5)
-listObjToAnimate = [actuator, actuator2]
-addRigidBodyModes = [0,0,0]
+#nodeToReduce ='/M1'
+#actuator = ObjToAnimate("M1/cableNodeTip", incr=1,incrPeriod=5,rangeOfAction=5)
+#actuator2 = ObjToAnimate("M1/cableNodeSide", incr=1,incrPeriod=5,rangeOfAction=5)
+#listObjToAnimate = [actuator, actuator2]
+#addRigidBodyModes = [0,0,0]
 
 ### SNAKE
 #nodeToReduce ='/Snake'
@@ -114,7 +114,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #   add a writeState componant to save the shaking resulting states  #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase1()
+reduceMyModel.phase1()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -126,7 +126,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #                       the different mode                           #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase2()
+reduceMyModel.phase2()
 
 
 ####################    SOFA LAUNCHER       ##########################
@@ -144,7 +144,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase3()
+reduceMyModel.phase3()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -157,4 +157,4 @@ reduceMyModel = ReduceModel(    originalScene,
 #      with it. Additionnally we also compute the Active Nodes       #
 #                                                                    #
 ######################################################################
-#reduceMyModel.phase4()
+reduceMyModel.phase4()

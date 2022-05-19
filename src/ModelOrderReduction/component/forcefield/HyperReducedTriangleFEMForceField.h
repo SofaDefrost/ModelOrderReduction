@@ -149,11 +149,11 @@ public:
 protected :
 
     ////////////// small displacements method
-    void accumulateForceSmall( VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit = false );
-    void applyStiffnessSmall( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
+//    void accumulateForceSmall( VecCoord& f, const VecCoord & p, bool implicit = false );
+//    void applyStiffnessSmall( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
 
     ////////////// large displacements method
-    void accumulateForceLarge( VecCoord& f, const VecCoord & p, Index elementIndex, bool implicit=false );
+    void accumulateForceLarge( VecCoord& f, const VecCoord & p, bool implicit=false );
     void applyStiffnessLarge( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
 
     //// stiffness matrix assembly
