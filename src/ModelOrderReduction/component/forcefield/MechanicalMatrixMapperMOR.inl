@@ -30,6 +30,7 @@ namespace sofa::component::interactionforcefield
 {
 
 using sofa::component::loader::MatrixLoader;
+using namespace sofa::component::mapping::mappedmatrix;
 
 template<typename DataTypes1, typename DataTypes2>
 MechanicalMatrixMapperMOR<DataTypes1, DataTypes2>::MechanicalMatrixMapperMOR()

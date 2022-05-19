@@ -23,15 +23,16 @@
 namespace sofa::component::forcefield
 {
 
+using namespace solidmechanics::fem::elastic;
 
 /** This forceField is the HyperReduced version of HexahedronFEMForceField.
 *   At the moment, it is only implemented for the "large" method (i.e not for small, polar or svd).
 */
 template<class DataTypes>
-class HyperReducedHexahedronFEMForceField : public virtual solidmechanics::fem::elastic::HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
 {
 public:
-    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(solidmechanics::fem::elastic::HexahedronFEMForceField, DataTypes), HyperReducedHelper);
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(HexahedronFEMForceField, DataTypes), HyperReducedHelper);
 
     typedef typename core::behavior::ForceField<DataTypes> InheritForceField;
     typedef typename DataTypes::VecCoord VecCoord;
