@@ -17,7 +17,6 @@ def createScene(rootNode):
     liver.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
     liver.addObject('MeshVTKLoader', name="loader", filename=meshPath+'liverFine.vtu')
     liver.addObject('TetrahedronSetTopologyContainer', src="@loader")
-    liver.addObject('TetrahedronSetGeometryAlgorithms')
     liver.addObject('MechanicalObject')
     liver.addObject('BoxROI', name='ROI1', box='0 3 -1 2 5 2', drawBoxes='true')
     liver.addObject('BoxROI', name='boxROIactuation', box='-5 0 -0.5 -4 0.5 0.5', drawBoxes='true')
