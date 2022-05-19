@@ -15,7 +15,7 @@ sys.path.append(path+'/../python3') # TO CHANGE
 
 
 # MOR IMPORT
-#from mor.gui import utility
+from mor.gui import utility
 from mor.reduction import ReduceModel
 from mor.reduction.container import ObjToAnimate
 
@@ -23,12 +23,11 @@ from mor.reduction.container import ObjToAnimate
 ####################       PARAMETERS       ###########################
 
 # Select Output Dir and original scene name & path
-#from PyQt4 import QtCore, QtGui
-#app = QtGui.QApplication(sys.argv)
+from PyQt5 import QtWidgets
+app = QtWidgets.QApplication(sys.argv)
 
 originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
 outputDir = utility.openDirName('Select the directory tha will contain all the results')
-
 
 ### DIAMOND ROBOT PARAM
 # nodeToReduce = '/modelNode'
