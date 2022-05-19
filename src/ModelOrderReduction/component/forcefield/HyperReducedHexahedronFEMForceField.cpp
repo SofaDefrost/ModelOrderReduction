@@ -15,18 +15,12 @@
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDHEXAHEDRONFEMFORCEFIELD_CPP
-#include "HyperReducedHexahedronFEMForceField.inl"
+#include <ModelOrderReduction/component/forcefield/HyperReducedHexahedronFEMForceField.inl>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/core/ObjectFactory.h>
 
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using namespace sofa::defaulttype;
@@ -41,9 +35,5 @@ int HyperReducedHexahedronFEMForceFieldClass = core::RegisterObject("Hexahedral 
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<Vec3Types>;
 
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
+} // sofa::component::forcefield
 

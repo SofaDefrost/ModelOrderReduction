@@ -14,28 +14,20 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef MECHANICALMATRIXMAPPERMOR_H
-#define MECHANICALMATRIXMAPPERMOR_H
+#pragma once
 #include <ModelOrderReduction/config.h>
 
-#include <SofaGeneralAnimationLoop/MechanicalMatrixMapper.h>
+#include <sofa/component/mapping/mappedmatrix/MechanicalMatrixMapper.h>
 
-namespace sofa
+namespace sofa::component::interactionforcefield
 {
-
-namespace component
-{
-
-namespace interactionforcefield
-{
-
 
 template<typename TDataTypes1, typename TDataTypes2>
-class MechanicalMatrixMapperMOR : public MechanicalMatrixMapper<TDataTypes1, TDataTypes2>
+class MechanicalMatrixMapperMOR : public sofa::component::mapping::mappedmatrix::MechanicalMatrixMapper<TDataTypes1, TDataTypes2>
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE2(MechanicalMatrixMapperMOR, TDataTypes1, TDataTypes2), SOFA_TEMPLATE2(MechanicalMatrixMapper, TDataTypes1, TDataTypes2));
-    typedef MechanicalMatrixMapper<TDataTypes1, TDataTypes2> Inherit;
+    SOFA_CLASS(SOFA_TEMPLATE2(MechanicalMatrixMapperMOR, TDataTypes1, TDataTypes2), SOFA_TEMPLATE2(sofa::component::mapping::mappedmatrix::MechanicalMatrixMapper, TDataTypes1, TDataTypes2));
+    typedef sofa::component::mapping::mappedmatrix::MechanicalMatrixMapper<TDataTypes1, TDataTypes2> Inherit;
 
 
 protected:
@@ -81,11 +73,4 @@ extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sof
 extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec1Types, sofa::defaulttype::Rigid3Types>;
 extern template class SOFA_MODELORDERREDUCTION_API MechanicalMatrixMapperMOR<sofa::defaulttype::Vec1Types, sofa::defaulttype::Vec1Types>;
 #endif // !defined(SOFA_COMPONENT_FORCEFIELD_MECHANICALMATRIXMAPPERMOR_CPP)
-
-} // namespace interactionforcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // MechanicalMatrixMapperMOR_H
+} // namespace sofa::component::interactionforcefield

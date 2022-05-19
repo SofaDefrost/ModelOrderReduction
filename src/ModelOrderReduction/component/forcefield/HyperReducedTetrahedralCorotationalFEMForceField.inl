@@ -14,10 +14,9 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_INL
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_INL
+#pragma once
 
-#include "HyperReducedTetrahedralCorotationalFEMForceField.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
 #include <SofaBaseTopology/GridTopology.h>
@@ -29,14 +28,7 @@
 #include <set>
 
 
-
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 
@@ -763,13 +755,4 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::addKToMatrix(s
         }
     }
 }
-
-
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_INL
+} // namespace sofa::component::forcefield

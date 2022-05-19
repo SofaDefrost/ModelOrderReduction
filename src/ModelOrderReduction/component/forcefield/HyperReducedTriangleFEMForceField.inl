@@ -14,10 +14,9 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_INL
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_INL
+#pragma once
 
-#include "HyperReducedTriangleFEMForceField.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedTriangleFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/core/ObjectFactory.h>
@@ -27,19 +26,9 @@
 #include <iostream> //for debugging
 #include <vector>
 #include <sofa/defaulttype/VecTypes.h>
-#include "../loader/MatrixLoader.h"
+#include <ModelOrderReduction/component/loader/MatrixLoader.h>
 
-//#include "config.h"
-
-// #define DEBUG_TRIANGLEFEM
-
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using sofa::component::loader::MatrixLoader;
@@ -79,9 +68,10 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addForce(const core::Mechanic
     }
     else
     {
-        accumulateForceLarge( f1, x1, true );
+        hyperReducedAccumulateForceLarge( f1, x1, true );
     }
     f.endEdit();
+
     this->saveGieFile(this->_indexedElements->size());
 }
 
@@ -102,7 +92,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::Mechani
     }
     else
     {
-        applyStiffnessLarge( df1, h, dx1, kFactor );
+        hyperReducedApplyStiffnessLarge( df1, h, dx1, kFactor );
     }
 
     df.endEdit();
@@ -110,7 +100,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::Mechani
 
 
 template <class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord& f, const VecCoord& p, bool implicit)
+void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedAccumulateForceLarge(VecCoord& f, const VecCoord& p, bool implicit)
 {
 
     typename VecElement::const_iterator it;
@@ -268,7 +258,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::accumulateForceLarge(VecCoord
 
 
 template <class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessLarge(VecCoord &v, Real h, const VecCoord &x, const SReal &kFactor)
+void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedApplyStiffnessLarge(VecCoord &v, Real h, const VecCoord &x, const SReal &kFactor)
 {
     unsigned int i;
     typename VecElement::const_iterator it, it0;
@@ -317,6 +307,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::applyStiffnessLarge(VecCoord 
         // compute strain
         type::Vec<3, Real> strain(type::NOINIT);
         this->m_triangleUtils.computeStrain(strain, _strainDisplacements[i], dX, false);
+
 
         // compute stress
         type::Vec<3, Real> stress(type::NOINIT);
@@ -408,12 +399,4 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addKToMatrix(sofa::linearalge
         }
     }
 }
-
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // #ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_INL
+} // namespace sofa::component::forcefield

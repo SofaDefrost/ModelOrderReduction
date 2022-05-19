@@ -14,9 +14,7 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-
-#ifndef SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_INL
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_INL
+#pragma once
 
 #include <sofa/gl/gl.h>
 #include <SofaMiscFem/BoyceAndArruda.h>
@@ -27,7 +25,7 @@
 #include <SofaMiscFem/HyperelasticMaterial.h>
 #include <SofaMiscFem/Costa.h>
 #include <SofaMiscFem/Ogden.h>
-#include "HyperReducedTetrahedronHyperelasticityFEMForceField.h"
+#include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
@@ -41,15 +39,12 @@
 #include <iterator>
 
 #include <sofa/helper/system/thread/CTime.h>
-#include "../loader/MatrixLoader.h"
+#include <ModelOrderReduction/component/loader/MatrixLoader.h>
 
 
-namespace sofa
+namespace sofa::component::forcefield
 {
-namespace component
-{
-namespace forcefield
-{
+
 using namespace sofa::defaulttype;
 using namespace	sofa::component::topology;
 using namespace core::topology;
@@ -696,11 +691,4 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::draw(const 
           vparams->drawTool()->setPolygonMode(0,false);
 
 }
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
-
-#endif // SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRONHYPERELASTICITYFEMFORCEFIELD_INL
+} // namespace sofa::component::forcefield

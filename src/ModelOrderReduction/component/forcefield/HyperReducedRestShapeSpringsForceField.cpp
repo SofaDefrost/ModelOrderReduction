@@ -16,18 +16,12 @@
 ******************************************************************************/
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGSFORCEFIELD_CPP
 
-#include "HyperReducedRestShapeSpringsForceField.inl"
+#include <ModelOrderReduction/component/forcefield/HyperReducedRestShapeSpringsForceField.inl>
 
 #include <sofa/helper/visual/DrawTool.h>
 #include <sofa/core/ObjectFactory.h>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace forcefield
+namespace sofa::component::forcefield
 {
 
 using namespace sofa::defaulttype;
@@ -41,9 +35,4 @@ int HyperReducedRestShapeSpringsForceFieldClass = core::RegisterObject("Simple e
         ;
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<Vec3Types>;
-
-} // namespace forcefield
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::forcefield
