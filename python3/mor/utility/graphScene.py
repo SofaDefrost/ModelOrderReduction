@@ -55,19 +55,18 @@ def getGraphScene(node,getObj=False):
     # tmp.results = None
 
     def buildTree(node,dic):
-        if node.name != "root":
+        if node.name.value != "root":
             if getObj:
                 dic[node] = {}
             else:
-                dic[node.name] = {}
+                dic[node.name.value] = {}
                 # dic = AnyNode(node.name = )
-
-        for child in node.getChildren():
-            if node.name != "root":
+        for child in node.children:
+            if node.name.value != "root":
                 if getObj:
                     buildTree(child,dic[node])
                 else:
-                    buildTree(child,dic[node.name])
+                    buildTree(child,dic[node.name.value])
             else:
                 buildTree(child,dic)
     def objTree(node,dic):
@@ -75,17 +74,17 @@ def getGraphScene(node,getObj=False):
         if getObj:
             dic[node] = {}
         else:
-            dic[node.name] = {}
+            dic[node.name.value] = {}
 
-        for obj in node.getObjects():
+        for obj in node.objects:
             # print('root '+str(type(obj).__name__)+' '+obj.getName())
 
             if getObj:
                 dic[node][obj] = obj.getClassName()
             else:
-                dic[node.name][obj.getName()] = obj.getClassName()
+                dic[node.name.value][obj.getName()] = obj.getClassName()
 
-        for child in node.getChildren():
+        for child in node.children:
             if getObj:
                 objTree(child,dic)
             else:

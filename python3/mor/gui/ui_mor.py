@@ -76,19 +76,22 @@ var_semantic = "[a-z|A-Z|\d|\\-|\\_]{1,20}" # string with max 20 char & min 1 wi
 var_entry = var_semantic+"\\="+var_semantic # string of 2 var_semantic separated by '='
 var_all = "[^\\*]"
 
+double_validator = QtGui.QDoubleValidator()
+double_validator.setLocale(QtCore.QLocale("en_US"))
+
 # QtGui.QIntValidator()
 existingAnimation = OrderedDict()
-existingAnimation['defaultShaking'] = { 'incr':(QtGui.QDoubleValidator(),locate('float')),
-                                        'incrPeriod':(QtGui.QDoubleValidator(),locate('float')),
-                                        'rangeOfAction':(QtGui.QDoubleValidator(),locate('float'))}
-existingAnimation['shakingSofia'] = { 'incr':(QtGui.QDoubleValidator(),locate('float')),
-                                      'incrPeriod':(QtGui.QDoubleValidator(),locate('float')),
-                                      'rangeOfAction':(QtGui.QDoubleValidator(),locate('float')),
+existingAnimation['defaultShaking'] = { 'incr':(double_validator,locate('float')),
+                                        'incrPeriod':(double_validator,locate('float')),
+                                        'rangeOfAction':(double_validator,locate('float'))}
+existingAnimation['shakingSofia'] = { 'incr':(double_validator,locate('float')),
+                                      'incrPeriod':(double_validator,locate('float')),
+                                      'rangeOfAction':(double_validator,locate('float')),
                                       'dataToWorkOn':(var_semantic,locate('str')),
-                                      'angle':(QtGui.QDoubleValidator(),locate('float')),
-                                      'rodRadius':(QtGui.QDoubleValidator(),locate('float'))}
+                                      'angle':(double_validator,locate('float')),
+                                      'rodRadius':(double_validator,locate('float'))}
 
-preferenceKey = {'verbose':(QtGui.QDoubleValidator(),locate('bool')),
+preferenceKey = {'verbose':(double_validator,locate('bool')),
                  'nbrCPU':(QtGui.QIntValidator(),locate('int'))}
 
 green = '#c4df9b' 
@@ -162,8 +165,8 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
             # QtCore.QObject.connect(layout._title_frame, QtCore.SIGNAL('clicked()'), self.resizeHeight)
             layout._title_frame.c.clicked.connect(self.resizeHeight)
         # Add Validator
-        self.lineEdit_tolModes.setValidator(QtGui.QDoubleValidator())
-        self.lineEdit_tolGIE.setValidator(QtGui.QDoubleValidator())
+        self.lineEdit_tolModes.setValidator(double_validator)
+        self.lineEdit_tolGIE.setValidator(double_validator)
         self.lineEdit_moduleName.setValidator(QtGui.QRegExpValidator(self.exp_var))
         self.lineEdit_NodeToReduce.setValidator(QtGui.QRegExpValidator(self.exp_path))
         self.lineEdit_scene.setValidator(QtGui.QRegExpValidator(self.exp_all))
@@ -582,9 +585,9 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
         Save As, ask user .yml file to save & correct name if need be 
         '''
         # self.saveFile = u.openFileName('Save Configuration',"yaml file *.yml")
-        self.saveFile = str(QtWidgets.QFileDialog.getSaveFileName(self,
+        self.saveFile, *_ = QtWidgets.QFileDialog.getSaveFileName(self,
             'Save Configuration',filter="yaml file *.yml",
-            options=QtWidgets.QFileDialog.DontUseNativeDialog))
+            options=QtWidgets.QFileDialog.DontUseNativeDialog)
         if self.saveFile:
             if self.saveFile.find('.') == -1 :
                 self.saveFile = self.saveFile+'.yml'
@@ -708,7 +711,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
                                         child.cellWidget(row,column).setText('')
                                         u.setBackColor(child.cellWidget(row,column))
                                 elif column == 0:
-                                    child.cellWidget(row,column).setCurrentIndex(existingAnimation.keys().index(cfg[objectName][row][column]))
+                                    child.cellWidget(row,column).setCurrentIndex(list(existingAnimation.keys()).index(cfg[objectName][row][column]))
                                 elif column == 1:
                                     self.animationDialog[row].load(cfg[objectName][row][column])
                                     u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),self.animationDialog[row].currentValues.items())
@@ -800,9 +803,9 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
                         item = field.cellWidget(row,column)
                         if item:
                             if str(item.palette().color(QtGui.QPalette.Background).name()) in [yellow,red]:
-                                color = str(item.palette().color(QtGui.QPalette.Background).name())
-                        elif str(field.item(row,column).backgroundColor().name()) in [yellow,red]:
-                            color = str(field.item(row,column).backgroundColor().name())
+                                color = item.palette().color().name()
+                        elif field.item(row,column).background().color().name() in [yellow,red]:
+                            color = field.item(row,column).background().color().name()
             if color == yellow or color == red:
                 msg.append(field)
 
@@ -945,8 +948,8 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
             tab.setItem(row,1,item)
             backgrdColor = QtGui.QColor()
             backgrdColor.setNamedColor(yellow)
-            tab.item(row,1).setBackgroundColor(backgrdColor)
-            
+            tab.item(row,1).setBackground(backgrdColor)
+
             self.animationDialog.append(GenericDialogForm(animation,existingAnimation[animation]))
             self.addComboToTab(tab,existingAnimation.keys(),row,0)
 

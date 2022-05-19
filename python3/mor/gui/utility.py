@@ -31,10 +31,10 @@ def setCellColor(tab,dialog,row,column):
     backgrdColor = QtGui.QColor()
     if dialog.state:
         backgrdColor.setNamedColor(Color.good)
-        tab.item(row,column).setBackgroundColor(backgrdColor)
+        tab.item(row,column).setBackground(backgrdColor)
     else:
         backgrdColor.setNamedColor(Color.intermediate)
-        tab.item(row,column).setBackgroundColor(backgrdColor)
+        tab.item(row,column).setBackground(backgrdColor)
 
 def check_state(sender):
     # sender.blockSignals(True)
