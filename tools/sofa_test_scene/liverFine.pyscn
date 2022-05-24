@@ -35,4 +35,3 @@ def createScene(rootNode):
 
     actuator = rootNode.addChild('actuator')
     actuator.addObject('MechanicalObject', name = 'actuatorState', position = '@../liver/boxROIactuation.pointsInROI', template = 'Vec3d')
-    #actuator.addObject('PythonScriptController', filename="washingMachineController.py", classname="washingMachineController")

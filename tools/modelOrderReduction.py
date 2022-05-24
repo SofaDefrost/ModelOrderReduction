@@ -38,6 +38,12 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # listObjToAnimate = [nord,ouest,sud,est]
 # addRigidBodyModes = [0,0,0]
 
+## FINGER PARAM
+#nodeToReduce = '/finger'
+#cable = ObjToAnimate("finger/cable/cable", incr=5,incrPeriod=10,rangeOfAction=40)
+#listObjToAnimate = [cable]
+#addRigidBodyModes = [0,0,0]
+
 ### STARFISH ROBOT PARAM
 # nodeToReduce ='/model'
 # centerCavity = ObjToAnimate("model/centerCavity", incr=350,incrPeriod=2,rangeOfAction=3500)
@@ -56,7 +62,7 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 
 ### LIVER
 nodeToReduce ='/liver'
-actuator = ObjToAnimate("actuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
+actuator = ObjToAnimate("actuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.4)
 listObjToAnimate = [actuator]
 addRigidBodyModes = [0,0,0]
 
