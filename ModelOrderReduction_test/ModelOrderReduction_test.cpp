@@ -1,4 +1,4 @@
-#include <SofaTest/Sofa_test.h>
+#include <sofa/testing/BaseSimulationTest.h>
 #include <SofaSimulationGraph/DAGSimulation.h>
 
 namespace sofa {
@@ -11,7 +11,7 @@ namespace sofa {
    */
 
     template <typename _DataTypes>
-    struct ModelOrderReduction_test : public Sofa_test<typename _DataTypes::Real>
+    struct ModelOrderReduction_test : public sofa::testing::BaseTest
     {
         typedef _DataTypes DataTypes;
         typedef typename DataTypes::CPos CPos;
@@ -44,7 +44,6 @@ namespace sofa {
             if (root!=NULL)
                 sofa::simulation::getSimulation()->unload(root);
         }
-
     };
 
     // Define the list of DataTypes to instantiate
