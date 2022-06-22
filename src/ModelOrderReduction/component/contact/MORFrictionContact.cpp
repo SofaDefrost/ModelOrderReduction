@@ -20,8 +20,9 @@
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
 #include "MORFrictionContact.inl"
-#include <SofaMeshCollision/RigidContactMapper.inl>
-#include <SofaMeshCollision/BarycentricContactMapper.inl>
+#include <sofa/component/collision/response/mapper/RigidContactMapper.inl>
+#include <sofa/component/collision/response/mapper/BarycentricContactMapper.inl>
+
 
 namespace sofa::component::collision::geometry
 {

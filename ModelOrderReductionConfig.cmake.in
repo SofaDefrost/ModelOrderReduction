@@ -2,7 +2,7 @@
 
 @PACKAGE_INIT@
 
-find_package(SofaFramework REQUIRED)
+find_package(Sofa.Core REQUIRED)
 find_package(SofaGeneral REQUIRED)
 find_package(SofaBase REQUIRED)
 find_package(SofaCommon REQUIRED)

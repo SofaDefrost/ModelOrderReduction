@@ -6,7 +6,7 @@ include(CMakeDependentOption)
 include(cmake/environment.cmake)
 
 # Specify all required packages
-find_package(SofaFramework REQUIRED)
+find_package(Sofa.Core REQUIRED)
 find_package(SofaConstraint REQUIRED)
 find_package(SofaGeneralAnimationLoop REQUIRED)
 find_package(SofaGeneralSimpleFem REQUIRED)
@@ -94,7 +94,7 @@ add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILE
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
 target_link_libraries(${PROJECT_NAME}
-    SofaCore # SofaFramework
+    Sofa.Core
     SofaBaseMechanics SofaBaseTopology # SofaBase
     SofaRigid # SofaCommon
     SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral

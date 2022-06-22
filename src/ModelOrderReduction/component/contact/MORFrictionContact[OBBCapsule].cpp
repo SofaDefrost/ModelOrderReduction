@@ -21,6 +21,7 @@
 ******************************************************************************/
 #include <ModelOrderReduction/component/contact/MORFrictionContact.inl>
 #include <CollisionOBBCapsule/response/mapper/CapsuleContactMapper.h>
+#include <CollisionOBBCapsule/geometry/CapsuleModel.inl>
 #include <CollisionOBBCapsule/response/mapper/OBBContactMapper.h>
 
 namespace sofa::component::collision::geometry
