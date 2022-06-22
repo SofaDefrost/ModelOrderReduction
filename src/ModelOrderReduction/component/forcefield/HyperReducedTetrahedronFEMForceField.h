@@ -18,7 +18,7 @@
 #include <ModelOrderReduction/config.h>
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
-#include <SofaSimpleFem/TetrahedronFEMForceField.h>
+#include <sofa/component/solidmechanics/fem/elastic/TetrahedronFEMForceField.h>
 
 #define SIMPLEFEM_COLORMAP
 #define SOFAHYPERREDUCEDTETRAHEDRONFEMFORCEFIELD_COLORMAP
@@ -29,6 +29,10 @@
 
 namespace sofa::component::forcefield
 {
+namespace  {
+using sofa::component::solidmechanics::fem::elastic::TetrahedronFEMForceField;
+}
+
 
 
 /** This forceField is the HyperReduced version of TetrahedronFEMForceField.
@@ -108,6 +112,7 @@ protected:
 
     using TetrahedronFEMForceField<DataTypes>::_plasticStrains; ///< one plastic strain per element
 
+    using TetrahedronFEMForceField<DataTypes>::_showVonMisesStressPerElement;
     /// @name Full system matrix assembly support
     /// @{
 
@@ -187,6 +192,7 @@ public:
     using TetrahedronFEMForceField<DataTypes>::elemDisplacements;
 
     using TetrahedronFEMForceField<DataTypes>::updateVonMisesStress;
+    using TetrahedronFEMForceField<DataTypes>::d_componentState;
 
     // Reduced Order Variables
 
