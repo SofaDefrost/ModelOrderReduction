@@ -114,3 +114,4 @@ jobs:
           files: |
             artifacts/ModelOrderReduction_*_Linux.zip
             artifacts/ModelOrderReduction_*_Windows.zip
+            artifacts/ModelOrderReduction_*_macOS.zip
