@@ -23,7 +23,7 @@
 #define MOR_MORFRICTIONCONTACT_H
 #include <ModelOrderReduction/config.h>
 
-#include <SofaConstraint/FrictionContact.h>
+#include <sofa/component/collision/response/contact/FrictionContact.h>
 #include <sofa/core/collision/Contact.h>
 #include <sofa/core/collision/Intersection.h>
 #include <SofaBaseMechanics/BarycentricMapping.h>
