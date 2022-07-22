@@ -29,7 +29,7 @@ using namespace solidmechanics::fem::elastic;
 *   At the moment, it is only implemented for the "large" method (i.e not for small, polar or svd).
 */
 template<class DataTypes>
-class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedHexahedronFEMForceField : public virtual HexahedronFEMForceField<DataTypes>, public modelorderreduction::HyperReducedHelper
 {
 public:
     SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedHexahedronFEMForceField, DataTypes), SOFA_TEMPLATE(HexahedronFEMForceField, DataTypes), HyperReducedHelper);

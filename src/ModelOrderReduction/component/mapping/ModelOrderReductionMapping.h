@@ -20,13 +20,13 @@
 
 #include <vector>
 
-#include <SofaBaseLinearSolver/CompressedRowSparseMatrix.h>
+#include <sofa/linearalgebra/CompressedRowSparseMatrix.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
 
 #include <boost/scoped_ptr.hpp>
 
-#include <SofaEigen2Solver/EigenSparseMatrix.h>
+#include <sofa/linearalgebra/EigenSparseMatrix.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 #include <sofa/core/State.h>
 #include <sofa/core/objectmodel/DataFileName.h>
@@ -89,7 +89,7 @@ public:
     typedef core::topology::BaseMeshTopology::Tetra Element;
     typedef core::topology::BaseMeshTopology::SeqTetrahedra VecElement;
 
-    typedef linearsolver::EigenSparseMatrix<TIn, TOut> eigen_type;
+    typedef sofa::linearalgebra::EigenSparseMatrix<TIn, TOut> eigen_type;
     typedef type::vector< linearalgebra::BaseMatrix* > js_type;
 
 

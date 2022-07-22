@@ -18,15 +18,15 @@
 #include <ModelOrderReduction/config.h>
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
-#include <SofaGeneralSimpleFem/TetrahedralCorotationalFEMForceField.h>
+#include <sofa/component/solidmechanics/fem/elastic/TetrahedralCorotationalFEMForceField.h>
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::fem::elastic
 {
 
 /** Compute Finite Element forces based on tetrahedral elements.
  */
 template<class DataTypes>
-class HyperReducedTetrahedralCorotationalFEMForceField : public virtual TetrahedralCorotationalFEMForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedTetrahedralCorotationalFEMForceField : public virtual TetrahedralCorotationalFEMForceField<DataTypes>, public modelorderreduction::HyperReducedHelper
 {
 public:
     SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedTetrahedralCorotationalFEMForceField, DataTypes), SOFA_TEMPLATE(TetrahedralCorotationalFEMForceField, DataTypes),HyperReducedHelper);
@@ -153,4 +153,4 @@ protected:
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedralCorotationalFEMForceField<sofa::defaulttype::Vec3Types>;
 #endif // !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTETRAHEDRALCOROTATIONALFEMFORCEFIELD_CPP)
-} // namespace sofa
+} // namespace sofa::component::solidmechanics::fem::elastic

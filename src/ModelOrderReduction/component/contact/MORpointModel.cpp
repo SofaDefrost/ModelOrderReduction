@@ -20,18 +20,12 @@
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
 #define MOR_POINTCOLLISIONMODEL_CPP
-#include "MORpointModel.inl"
-#include <SofaMeshCollision/PointModel.inl>
+#include <ModelOrderReduction/component/contact/MORpointModel.inl>
+#include <sofa/component/collision/geometry/PointModel.inl>
 
 #include <sofa/core/ObjectFactory.h>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::geometry
 {
 
 using namespace sofa::defaulttype;
@@ -45,11 +39,5 @@ int MORPointCollisionModelClass = core::RegisterObject("Collision model which re
         ;
 
 template class SOFA_MODELORDERREDUCTION_API MORPointCollisionModel<defaulttype::Vec3Types>;
-
-
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::collision::geometry
 
