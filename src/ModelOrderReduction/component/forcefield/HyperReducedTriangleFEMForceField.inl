@@ -28,7 +28,7 @@
 #include <sofa/defaulttype/VecTypes.h>
 #include <ModelOrderReduction/component/loader/MatrixLoader.h>
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::fem::elastic
 {
 
 using sofa::component::loader::MatrixLoader;
@@ -399,4 +399,4 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addKToMatrix(sofa::linearalge
         }
     }
 }
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::fem::elastic

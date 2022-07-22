@@ -23,12 +23,12 @@
 #define SOFA_COMPONENT_MAPPING_MORCONTACTMAPPING_H
 #include <ModelOrderReduction/config.h>
 #include <sofa/core/Mapping.h>
-#include <SofaBaseLinearSolver/CompressedRowSparseMatrix.h>
+#include <sofa/linearalgebra/CompressedRowSparseMatrix.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
 #include <vector>
 #include <memory>
-#include <SofaEigen2Solver/EigenSparseMatrix.h>
+#include <sofa/linearalgebra/EigenSparseMatrix.h>
 #include <sofa/core/objectmodel/DataFileName.h>
 
 
@@ -132,7 +132,7 @@ public:
 
 protected:
 
-    typedef linearsolver::EigenSparseMatrix<TIn, TOut> eigen_type;
+    typedef sofa::linearalgebra::EigenSparseMatrix<TIn, TOut> eigen_type;
     eigen_type J;
 
     typedef type::vector< linearalgebra::BaseMatrix* > js_type;

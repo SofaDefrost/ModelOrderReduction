@@ -23,26 +23,20 @@
 #define MOR_POINTCOLLISIONMODEL_H
 #include <ModelOrderReduction/config.h>
 
-#include <SofaMeshCollision/PointModel.h>
-#include <SofaMeshCollision/PointModel.inl>
+#include <sofa/component/collision/geometry/PointModel.h>
+#include <sofa/component/collision/geometry/PointModel.inl>
 
 #include <sofa/core/CollisionModel.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
+#include <sofa/component/statecontainer/MechanicalObject.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
 #include <sofa/defaulttype/VecTypes.h>
-#include <SofaMeshCollision/fwd.h>
+#include <sofa/component/collision/geometry/fwd.h>
 
 #include <vector>
 #include <Eigen/Sparse>
 
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::geometry
 {
 
 
@@ -86,11 +80,6 @@ extern template class SOFA_MODELORDERREDUCTION_API MORPointCollisionModel<defaul
 #endif
 
 //bool Point::testLMD(const Vector3 &PQ, double &coneFactor, double &coneExtension);
-
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::collision::geometry
 
 #endif

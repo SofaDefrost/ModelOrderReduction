@@ -19,7 +19,7 @@
 
 #include "ModelOrderReductionMapping.h"
 #include <sofa/defaulttype/RigidTypes.h>
-#include <SofaBaseTopology/GridTopology.h>
+#include <sofa/component/topology/container/grid/GridTopology.h>
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <iostream>

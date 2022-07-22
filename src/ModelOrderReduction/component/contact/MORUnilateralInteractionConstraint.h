@@ -28,16 +28,10 @@
 #include <iostream>
 #include <map>
 #include <deque>
-#include <SofaConstraint/UnilateralInteractionConstraint.h>
+#include <sofa/component/constraint/lagrangian/model/UnilateralInteractionConstraint.h>
 #include <Eigen/Sparse>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace constraintset
+namespace sofa::component::constraint::lagrangian::model
 {
 class MORUnilateralConstraintResolution : public UnilateralConstraintResolution
 {
@@ -161,11 +155,6 @@ public:
 #if  !defined(MOR_MORUNILATERALINTERACTIONCONSTRAINT_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API MORUnilateralInteractionConstraint<defaulttype::Vec3Types>;
 #endif
-
-} // namespace constraintset
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::constraint::lagrangian::model
 
 #endif // SOFA_COMPONENT_CONSTRAINTSET_UNILATERALINTERACTIONCONSTRAINT_H
