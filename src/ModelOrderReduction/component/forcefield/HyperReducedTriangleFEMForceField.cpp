@@ -22,7 +22,7 @@
 
 // #define DEBUG_TRIANGLEFEM
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::fem::elastic
 {
 
 SOFA_DECL_CLASS(HyperReducedTriangleFEMForceField)
@@ -35,4 +35,4 @@ int HyperReducedTriangleFEMForceFieldClass = core::RegisterObject("Triangular fi
         ;
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<Vec3Types>;
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::fem::elastic

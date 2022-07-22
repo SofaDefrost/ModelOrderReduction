@@ -16,7 +16,7 @@
 ******************************************************************************/
 #include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
 
-namespace sofa::component::forcefield
+namespace modelorderreduction
 {
 
 HyperReducedHelper::HyperReducedHelper()

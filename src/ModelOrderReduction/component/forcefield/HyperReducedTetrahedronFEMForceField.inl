@@ -18,7 +18,7 @@
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedronFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
-#include <SofaBaseTopology/GridTopology.h>
+#include <sofa/component/topology/container/grid/GridTopology.h>
 #include <sofa/simulation/Simulation.h>
 #include <sofa/core/behavior/MultiMatrixAccessor.h>
 #include <sofa/core/MechanicalParams.h>
@@ -31,7 +31,7 @@
 #include <algorithm>
 #include <limits>
 #include <set>
-#include <SofaBaseLinearSolver/CompressedRowSparseMatrix.h>
+#include <sofa/linearalgebra/CompressedRowSparseMatrix.h>
 #include <sofa/simulation/AnimateBeginEvent.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <sofa/core/topology/BaseMeshTopology.h>
@@ -674,7 +674,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::lineara
         nbElementsConsidered = m_RIDsize;
     SReal kTimesWeight;
 
-    if (sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,double> > * crsmat = dynamic_cast<sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,double> > * >(mat))
+    if (sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,double> > * crsmat = dynamic_cast<sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,double> > * >(mat))
     {
 
 
@@ -734,7 +734,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::lineara
         }
 
     }
-    else if (sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,float> > * crsmat = dynamic_cast<sofa::component::linearsolver::CompressedRowSparseMatrix<type::Mat<3,3,float> > * >(mat))
+    else if (sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,float> > * crsmat = dynamic_cast<sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,float> > * >(mat))
     {
         for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
         {

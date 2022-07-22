@@ -22,23 +22,17 @@
 #ifndef MOR_MORFRICTIONCONTACT_INL
 #define MOR_MORFRICTIONCONTACT_INL
 
-#include <SofaConstraint/FrictionContact.inl>
-#include "MORFrictionContact.h"
+#include <sofa/component/collision/response/contact/FrictionContact.inl>
+#include <ModelOrderReduction/component/contact/MORFrictionContact.h>
 #include <sofa/core/visual/VisualParams.h>
-#include <SofaBaseCollision/DefaultContactManager.h>
-#include <SofaMeshCollision/BarycentricContactMapper.h>
-#include <SofaMeshCollision/IdentityContactMapper.h>
-#include <SofaMeshCollision/RigidContactMapper.inl>
+#include <sofa/component/collision/response/contact/DefaultContactManager.h>
+#include <sofa/component/collision/response/mapper/BarycentricContactMapper.h>
+#include <sofa/component/collision/response/mapper/IdentityContactMapper.h>
+#include <sofa/component/collision/response/mapper/RigidContactMapper.inl>
 #include <sofa/simulation/Node.h>
 #include <iostream>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::response::contact
 {
 
 template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
@@ -80,7 +74,7 @@ void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::cl
             parent->removeObject(m_constraint);}
         msg_warning() << "plap!";
         parent = NULL;
-        constraintset::MORUnilateralInteractionConstraint<sofa::defaulttype::Vec3Types>::SPtr tmp( dynamic_cast<constraintset::MORUnilateralInteractionConstraint<sofa::defaulttype::Vec3Types>*>(m_constraint.get()) );
+        sofa::component::constraint::lagrangian::model::MORUnilateralInteractionConstraint<sofa::defaulttype::Vec3Types>::SPtr tmp( dynamic_cast<sofa::component::constraint::lagrangian::model::MORUnilateralInteractionConstraint<sofa::defaulttype::Vec3Types>*>(m_constraint.get()) );
         tmp.reset();
 //        m_MORconstraint.reset();
         msg_warning() << "plup!";
@@ -189,8 +183,7 @@ void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::ac
         msg_warning() << "mu is: " << mu.getValue();
 
         msg_warning() << "********************************************************************************************************************";
-//        m_constraint = sofa::core::objectmodel::New<constraintset::MORUnilateralInteractionConstraint<defaulttype::Vec3Types> >(mmodel1, mmodel2);
-        m_constraint = sofa::core::objectmodel::New<constraintset::MORUnilateralInteractionConstraint<defaulttype::Vec3Types> >(mmodel1, mmodel2, d_lambdaModesPath.getValue(), d_lambdaModesCoeffsPath.getValue());
+        m_constraint = sofa::core::objectmodel::New<sofa::component::constraint::lagrangian::model::MORUnilateralInteractionConstraint<defaulttype::Vec3Types> >(mmodel1, mmodel2, d_lambdaModesPath.getValue(), d_lambdaModesCoeffsPath.getValue());
         m_constraint->setName( this->getName() );
         this->setInteractionTags(mmodel1, mmodel2);
         m_constraint->setCustomTolerance( tol.getValue() );
@@ -247,10 +240,6 @@ void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::ac
 }
 
 
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::collision::response::contact
 
 #endif

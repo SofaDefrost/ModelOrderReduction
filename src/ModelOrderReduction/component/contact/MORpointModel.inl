@@ -30,24 +30,19 @@
 #include <iostream>
 #include <algorithm>
 
-#include "MORpointModel.h"
+#include <ModelOrderReduction/component/contact/MORpointModel.h>
 #include <sofa/core/visual/VisualParams.h>
-#include <SofaBaseCollision/CubeModel.h>
+#include <sofa/component/collision/geometry/CubeModel.h>
 #include <sofa/core/ObjectFactory.h>
 #include <vector>
 
 #include <sofa/core/topology/BaseMeshTopology.h>
 
 #include <sofa/simulation/Simulation.h>
-#include "../loader/MatrixLoader.h"
-#include "../loader/MatrixLoader.inl"
-namespace sofa
-{
+#include <ModelOrderReduction/component/loader/MatrixLoader.h>
+#include <ModelOrderReduction/component/loader/MatrixLoader.inl>
 
-namespace component
-{
-
-namespace collision
+namespace sofa::component::collision::geometry
 {
 using sofa::component::loader::MatrixLoader;
 template<class DataTypes>
@@ -152,12 +147,6 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
     if (this->getPrevious() != nullptr && vparams->displayFlags().getShowBoundingCollisionModels())
         this->getPrevious()->draw(vparams);
 }
-
-
-} // namespace collision
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::collision::geometry
 
 #endif
