@@ -24,6 +24,7 @@ namespace sofa::component::forcefield
 using namespace std;
 using namespace sofa::defaulttype;
 using namespace sofa::core::topology;
+using namespace solidmechanics::fem::hyperelastic;
 
 //***************** Tetrahedron FEM code for several elastic models: TotalLagrangianForceField************************//
 
