@@ -21,7 +21,7 @@
 #include <sofa/helper/visual/DrawTool.h>
 #include <sofa/core/ObjectFactory.h>
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::spring
 {
 
 using namespace sofa::defaulttype;
@@ -35,4 +35,4 @@ int HyperReducedRestShapeSpringsForceFieldClass = core::RegisterObject("Simple e
         ;
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<Vec3Types>;
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::spring

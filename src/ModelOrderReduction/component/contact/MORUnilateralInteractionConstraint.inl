@@ -23,7 +23,7 @@
 #define MOR_MORUNILATERALINTERACTIONCONSTRAINT_INL
 
 #include "MORUnilateralInteractionConstraint.h"
-#include <SofaConstraint/UnilateralInteractionConstraint.inl>
+#include <sofa/component/constraint/lagrangian/model/UnilateralInteractionConstraint.inl>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/type/Vec.h>
 #include <sofa/type/RGBAColor.h>
@@ -31,13 +31,7 @@
 #include "../loader/MatrixLoader.h"
 #include "../loader/MatrixLoader.inl"
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace constraintset
+namespace sofa::component::constraint::lagrangian::model
 {
 using sofa::component::loader::MatrixLoader;
 template<class DataTypes>
@@ -252,7 +246,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::getConstraintViolation(const
         break;
 
     default :
-        serr << "UnilateralInteractionConstraint doesn't implement " << cparams->getName() << " constraint violation\n";
+        msg_error() << this->getClassName() << " doesn't implement " << cparams->getName() << " constraint violation";
         break;
     }
 }
@@ -413,11 +407,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::getConstraintResolution(cons
         }
     }
 }
-
-} // namespace constraintset
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::constraint::lagrangian::model
 
 #endif

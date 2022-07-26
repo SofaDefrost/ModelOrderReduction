@@ -18,8 +18,8 @@
 
 #include <ModelOrderReduction/component/forcefield/MechanicalMatrixMapperMOR.h>
 #include <sofa/component/mapping/mappedmatrix/MechanicalMatrixMapper.inl>
-#include <SofaDeformable/SpringForceField.h>
-#include <SofaDeformable/StiffSpringForceField.h>
+#include <sofa/component/solidmechanics/spring/SpringForceField.h>
+#include <sofa/component/solidmechanics/spring/StiffSpringForceField.h>
 #include <ModelOrderReduction/component/loader/MatrixLoader.h>
 
 

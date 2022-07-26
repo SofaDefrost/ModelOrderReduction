@@ -1,5 +1,5 @@
 #include <sofa/testing/BaseSimulationTest.h>
-#include <SofaSimulationGraph/DAGSimulation.h>
+#include <sofa/simulation/graph/DAGSimulation.h>
 
 namespace sofa {
 

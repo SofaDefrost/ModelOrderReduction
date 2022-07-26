@@ -39,7 +39,7 @@ using sofa::component::solidmechanics::fem::elastic::TetrahedronFEMForceField;
 *   At the moment, it is only implemented for the "large" method (i.e not for small, polar or svd).
 */
 template<class DataTypes>
-class HyperReducedTetrahedronFEMForceField : public virtual TetrahedronFEMForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedTetrahedronFEMForceField : public virtual TetrahedronFEMForceField<DataTypes>, public modelorderreduction::HyperReducedHelper
 {
 public:
     SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedTetrahedronFEMForceField, DataTypes), SOFA_TEMPLATE(TetrahedronFEMForceField, DataTypes), HyperReducedHelper);
