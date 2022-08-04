@@ -18,11 +18,11 @@
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.inl>
 #include <sofa/defaulttype/VecTypes.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
+#include <sofa/component/statecontainer/MechanicalObject.h>
 #include <sofa/core/ObjectFactory.h>
 
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::fem::elastic
 {
 
 using namespace sofa::defaulttype;
@@ -36,5 +36,5 @@ int HyperReducedTetrahedralCorotationalFEMForceFieldClass = core::RegisterObject
         ;
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types>;
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::fem::elastic
 

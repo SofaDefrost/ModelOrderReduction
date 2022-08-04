@@ -26,26 +26,18 @@
 #include <sofa/component/collision/response/contact/FrictionContact.h>
 #include <sofa/core/collision/Contact.h>
 #include <sofa/core/collision/Intersection.h>
-#include <SofaBaseMechanics/BarycentricMapping.h>
-#include <SofaConstraint/UnilateralInteractionConstraint.h>
-#include "MORUnilateralInteractionConstraint.h"
+#include <sofa/component/mapping/linear/BarycentricMapping.h>
+#include <sofa/component/constraint/lagrangian/model/UnilateralInteractionConstraint.h>
+#include <ModelOrderReduction/component/contact/MORUnilateralInteractionConstraint.h>
 #include <sofa/helper/Factory.h>
-#include <SofaBaseCollision/BaseContactMapper.h>
+#include <sofa/component/collision/response/mapper/BaseContactMapper.h>
 #include <sofa/core/behavior/MechanicalState.h>
 #include <sofa/core/BaseMapping.h>
 
-#include <SofaConstraint/ContactIdentifier.h>
+#include <sofa/component/collision/response/contact/ContactIdentifier.h>
 
-namespace sofa
+namespace sofa::component::collision::response::contact
 {
-
-namespace component
-{
-
-namespace collision
-{
-
-
 
 template <class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes = sofa::defaulttype::Vec3Types >
 class MORFrictionContact : public FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>
@@ -108,11 +100,6 @@ public:
 
 //    void removeResponse() override;
 };
-
-} // collision
-
-} // component
-
-} // sofa
+} // namespace sofa::component::collision::response::contact
 
 #endif // SOFA_COMPONENT_COLLISION_MORFRICTIONCONTACT_H

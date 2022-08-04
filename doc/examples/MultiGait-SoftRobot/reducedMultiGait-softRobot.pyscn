@@ -39,6 +39,85 @@ performECSWBoolMembrane = "true"
 performECSWBoolMappedMatrix = "true"
 prepareECSWBool = "false"
 
+class keyInteractiveController(Sofa.Core.Controller):
+    def __init__(self, *args, **kwargs):
+        Sofa.Core.Controller.__init__(self, *args, **kwargs)        
+        self.node = kwargs.get("node", None)
+
+
+    def init(self):
+            
+            self.rearLeftCavityNode = self.node.rearLeftCavity   # 1
+            self.rearRightCavityNode = self.node.rearRightCavity # 2
+            self.frontLeftCavityNode = self.node.frontLeftCavity # 3
+            self.frontRightCavityNode = self.node.frontRightCavity # 4
+            self.centerCavityNode = self.node.centerCavity # 0
+            self.controlledItem = 0
+
+    def onKeypressedEvent(self,c):
+            increment = 100
+            key = c['key']
+            print ('key is: ', key)
+            if (key  == "0"):
+                self.controlledItem = 0
+            elif (key  == "1"):
+                self.controlledItem = 1
+            elif (key  == "2"):
+                self.controlledItem = 2
+            elif (key  == "3"):
+                self.controlledItem = 3
+            elif (key  == "4"):
+                self.controlledItem = 4
+            
+            if (key  == "+"):
+                pressureValue = 0
+                if (self.controlledItem == 0):
+                    pressureValue = self.centerCavityNode.SurfacePressureConstraint.value.value[0] + increment
+                    if (pressureValue <= 3500):
+                        self.centerCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                elif (self.controlledItem == 1):
+                    pressureValue = self.rearLeftCavityNode.SurfacePressureConstraint.value.value[0] + increment
+                    if (pressureValue <= 2000):
+                        self.rearLeftCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                elif (self.controlledItem == 2):
+                    pressureValue = self.rearRightCavityNode.SurfacePressureConstraint.value.value[0] + increment
+                    if (pressureValue <= 2000):
+                        self.rearRightCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                elif (self.controlledItem == 3):
+                    pressureValue = self.frontLeftCavityNode.SurfacePressureConstraint.value.value[0] + increment
+                    if (pressureValue <= 2000):
+                        self.frontLeftCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                else:
+                    pressureValue = self.frontRightCavityNode.SurfacePressureConstraint.value.value[0] + increment
+                    if (pressureValue <= 2000):
+                        self.frontRightCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                    
+
+            if (key  == "-"):
+                if (self.controlledItem == 0):
+                    pressureValue = self.centerCavityNode.SurfacePressureConstraint.value.value[0] - increment
+                    if (pressureValue >= 0):
+                        self.centerCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                elif (self.controlledItem == 1):
+                    pressureValue = self.rearLeftCavityNode.SurfacePressureConstraint.value.value[0] - increment
+                    if (pressureValue >= 0):
+                        self.rearLeftCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                elif (self.controlledItem == 2):
+                    pressureValue = self.rearRightCavityNode.SurfacePressureConstraint.value.value[0] - increment
+                    if (pressureValue >= 0):
+                        self.rearRightCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                elif (self.controlledItem == 3):
+                    pressureValue = self.frontLeftCavityNode.SurfacePressureConstraint.value.value[0] - increment
+                    if (pressureValue >= 0):
+                        self.frontLeftCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+                else:
+                    pressureValue = self.frontRightCavityNode.SurfacePressureConstraint.value.value[0] - increment
+                    if (pressureValue >= 0):
+                        self.frontRightCavityNode.SurfacePressureConstraint.value.value = [pressureValue]
+
+
+
+
 class waveController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)        
@@ -58,7 +137,7 @@ class waveController(Sofa.Core.Controller):
     
 
     def onAnimateBeginEvent(self, event):
-        increment = 250
+        increment = 50
         if (self.inflation == True):
             pressureValue = 0
             if (self.controlledItem == 1):
@@ -122,28 +201,25 @@ class waveController(Sofa.Core.Controller):
 
 def createScene(rootNode):
                 rootNode.addObject('RequiredPlugin', name='SoftRobots', pluginName='SoftRobots')
-                #rootNode.addObject('RequiredPlugin', name='SofaPython', pluginName='SofaPython')
                 rootNode.addObject('RequiredPlugin', name='ModelOrderReduction', pluginName='ModelOrderReduction')
-                #rootNode.findData('dt').value=0.05
                 rootNode.dt.value = 0.05
 
-                #rootNode.findData('gravity').value='0 0 -9810';
                 rootNode.gravity.value=[0, 0, -9810]
                 rootNode.addObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels hideCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
 
                 rootNode.addObject('FreeMotionAnimationLoop')
-                rootNode.addObject('GenericConstraintSolver', printLog=False, tolerance="1e-10", maxIterations="100000")
+                rootNode.addObject('GenericConstraintSolver', printLog=False, tolerance="1e-4", maxIterations="1000")
                 rootNode.addObject('CollisionPipeline')
                 rootNode.addObject('BruteForceDetection', name="N2")
                 rootNode.addObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.7")
-                rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.5", angleCone="0.5")
+                rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.5", angleCone="0.01")
                 rootNode.addObject('BackgroundSetting', color='0 0.168627 0.211765')
                 rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
                 solverNode = rootNode.addChild('solverNode')
-                solverNode.addObject('EulerImplicit', name='odesolver',firstOrder="false", rayleighStiffness='0.1', rayleighMass='0.1', printLog=False)
+                solverNode.addObject('EulerImplicit', name='odesolver',firstOrder="false", rayleighStiffness='0.01', rayleighMass='0.01', printLog=False)
                 solverNode.addObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrixMat3x3d")
                 solverNode.addObject('GenericConstraintCorrection', solverName='preconditioner')
-                solverNode.addObject('MechanicalMatrixMapperMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', nodeToParse='@./reducedModel/model', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = True,timeInvariantMapping2 = True, saveReducedMass=False, usePrecomputedMass=False, precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', printLog=False)
+                solverNode.addObject('MechanicalMatrixMapperMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', nodeToParse='@./reducedModel/model', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = True,timeInvariantMapping2 = True, saveReducedMass=False, usePrecomputedMass=False, precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', fastMatrixProduct=False, printLog=False)
 
 
                 ##########################################
@@ -159,13 +235,12 @@ def createScene(rootNode):
                 model.addObject('TetrahedronSetTopologyContainer',src = '@loader')
                 model.addObject('MechanicalObject', name='tetras', template='Vec3d', showIndices=False, showIndicesScale='4e-5', rx='0',printLog=False)
                 model.addObject('ModelOrderReductionMapping', input='@../alpha', output='@./tetras',modesPath=modesRobot, printLog=False, mapMatrices = '0')
-                model.addObject('UniformMass',name='quadrupedMass', totalMass='0.0035', printLog=False)
+                model.addObject('UniformMass',name='quadrupedMass', totalMass='0.035', printLog=False)
                 model.addObject('HyperReducedTetrahedronFEMForceField', template='Vec3d', name='Append_HyperReducedFF_QuadrupedWellConverged_'+str(nbModes)+'modes', method='large', poissonRatio='0.05',  youngModulus='70', prepareECSW=prepareECSWBool, performECSW=performECSWBoolBody, nbModes=str(nbModes), modesPath=modesRobot, RIDPath=RIDFile, weightsPath=weightsFile, nbTrainingSet="93", periodSaveGIE="50",printLog=False)		  
                 model.addObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes=True) 
                 model.addObject('BoxROI', name='membraneROISubTopo', box='0 0 -0.1 150 -100 0.1',computeTetrahedra="false", drawBoxes=True) 
-                #model.addObject('PythonScriptController', filename="keyInteractiveController.py", classname="keyInteractiveController")
-                model.addObject(waveController(name='toto',node=model))
-
+                #model.addObject(waveController(name='toto',node=model))
+                model.addObject(keyInteractiveController(name='toto',node=model))
 
                 ##########################################
                 # Sub topology                           #
@@ -209,7 +284,6 @@ def createScene(rootNode):
                 frontRightCavity = model.addChild('frontRightCavity')
                 frontRightCavity.addObject('MeshSTLLoader', name='loader', filename=pathMesh+'quadriped_Front-Right-cavity_finer.stl')
                 frontRightCavity.addObject('Mesh', src='@loader', name='topo')
-                #frontRightCavity.addObject('MechanicalObject', name='frontRightCavity', translation='-80 55 0')
                 frontRightCavity.addObject('MechanicalObject', name='frontRightCavity')
                 frontRightCavity.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.0000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="volumeGrowth")
                 frontRightCavity.addObject('BarycentricMapping', name='mapping',  mapForces=False, mapMasses=False)

@@ -18,7 +18,7 @@
 #include <ModelOrderReduction/config.h>
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
-#include <SofaMiscFem/TriangleFEMForceField.h>
+#include <sofa/component/solidmechanics/fem/elastic/TriangleFEMForceField.h>
 
 
 // corotational triangle from
@@ -34,7 +34,7 @@
 // }
 
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::fem::elastic
 {
 
 
@@ -44,7 +44,7 @@ namespace sofa::component::forcefield
   The method for small displacements has not been validated and we suspect that it is broke. Use it very carefully, and compare with the method for large displacements.
   */
 template<class DataTypes>
-class HyperReducedTriangleFEMForceField : public virtual TriangleFEMForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedTriangleFEMForceField : public virtual TriangleFEMForceField<DataTypes>, public modelorderreduction::HyperReducedHelper
 {
 public:
     SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedTriangleFEMForceField, DataTypes), SOFA_TEMPLATE(TriangleFEMForceField, DataTypes),HyperReducedHelper);
@@ -116,12 +116,12 @@ public:
     using HyperReducedHelper::m_RIDsize;
 
 
-    virtual void init() override;
-    virtual void addForce(const core::MechanicalParams* mparams, DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv& v) override;
-    virtual void addDForce(const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx) override;
-    virtual SReal getPotentialEnergy(const core::MechanicalParams* /*mparams*/, const DataVecCoord&  /* x */) const override
+    void init() override;
+    void addForce(const core::MechanicalParams* mparams, DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv& v) override;
+    void addDForce(const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx) override;
+    SReal getPotentialEnergy(const core::MechanicalParams* /*mparams*/, const DataVecCoord&  /* x */) const override
     {
-        serr << "Get potentialEnergy not implemented" << sendl;
+        msg_error() << "Get potentialEnergy not implemented";
         return 0.0;
     }
 
@@ -149,4 +149,4 @@ protected :
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<sofa::defaulttype::Vec3Types>;
 #endif // !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDTRIANGLEFEMFORCEFIELD_CPP)
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::fem::elastic
