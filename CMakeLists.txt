@@ -6,7 +6,7 @@ include(CMakeDependentOption)
 include(cmake/environment.cmake)
 
 # Specify all required packages
-sofa_find_package(Sofa.Core REQUIRED)
+find_package(Sofa.Core REQUIRED)
 sofa_find_package(Sofa.Component.Collision.Response.Contact REQUIRED)
 sofa_find_package(Sofa.Component.Mapping.MappedMatrix REQUIRED)
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.HyperElastic REQUIRED)
