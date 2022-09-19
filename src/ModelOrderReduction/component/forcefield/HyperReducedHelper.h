@@ -27,7 +27,6 @@
 #include <sofa/core/objectmodel/Data.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 #include <sofa/core/behavior/ForceField.h>
-#include <SofaDeformable/config.h>
 #include <fstream> // for reading the file
 #include <iostream>
 #include <Eigen/Sparse>

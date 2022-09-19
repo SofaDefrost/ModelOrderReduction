@@ -7,17 +7,12 @@ include(cmake/environment.cmake)
 
 # Specify all required packages
 find_package(Sofa.Core REQUIRED)
-find_package(SofaConstraint REQUIRED)
-find_package(SofaGeneralAnimationLoop REQUIRED)
-find_package(SofaGeneralSimpleFem REQUIRED)
-find_package(SofaUserInteraction REQUIRED)
-find_package(SofaBase REQUIRED)
-find_package(SofaRigid REQUIRED)
-find_package(SofaMiscFem REQUIRED)
-find_package(SofaMiscMapping REQUIRED)
-find_package(SofaMiscCollision REQUIRED)
-find_package(Sofa.GL REQUIRED)
-find_package(CollisionOBBCapsule QUIET)
+sofa_find_package(Sofa.Component.Collision.Response.Contact REQUIRED)
+sofa_find_package(Sofa.Component.Mapping.MappedMatrix REQUIRED)
+sofa_find_package(Sofa.Component.SolidMechanics.FEM.HyperElastic REQUIRED)
+sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic REQUIRED)
+sofa_find_package(Sofa.GL REQUIRED)
+sofa_find_package(CollisionOBBCapsule QUIET)
 if (NOT CollisionOBBCapsule_FOUND)
     message(WARNING "The package CollisionOBBCapsule has not been found. It is required to compile all the features of ${PROJECT_NAME}")
 endif()
@@ -95,12 +90,13 @@ add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${README_FILE
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MODELORDERREDUCTION")
 target_link_libraries(${PROJECT_NAME}
     Sofa.Core
-    SofaBaseMechanics SofaBaseTopology # SofaBase
-    SofaRigid # SofaCommon
-    SofaConstraint SofaGeneralAnimationLoop  SofaGeneralSimpleFem SofaUserInteraction # SofaGeneral
-    SofaMiscFem SofaMiscMapping SofaMiscCollision # SofaMisc
+    Sofa.Component.Collision.Response.Contact
+    Sofa.Component.Mapping.MappedMatrix
+    Sofa.Component.SolidMechanics.FEM.HyperElastic
+    Sofa.Component.SolidMechanics.FEM.Elastic
     Sofa.GL
-    )
+)
+
 if (CollisionOBBCapsule_FOUND)
     target_link_libraries(${PROJECT_NAME} CollisionOBBCapsule)
 endif()
