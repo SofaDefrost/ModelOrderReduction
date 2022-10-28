@@ -18,14 +18,14 @@
 #include <ModelOrderReduction/config.h>
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
-#include <SofaDeformable/RestShapeSpringsForceField.h>
+#include <sofa/component/solidmechanics/spring/RestShapeSpringsForceField.h>
 
 namespace sofa::core::behavior
 {
 template< class T > class MechanicalState;
 } // namespace sofa::core::behavior
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::spring
 {
 
 /**
@@ -35,7 +35,7 @@ namespace sofa::component::forcefield
 * An external MechanicalState reference can also be passed to the ForceField as rest shape position.
 */
 template<class DataTypes>
-class HyperReducedRestShapeSpringsForceField : public virtual RestShapeSpringsForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedRestShapeSpringsForceField : public virtual RestShapeSpringsForceField<DataTypes>, public modelorderreduction::HyperReducedHelper
 {
 public:
     SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedRestShapeSpringsForceField, DataTypes), SOFA_TEMPLATE(RestShapeSpringsForceField, DataTypes), HyperReducedHelper);
@@ -131,4 +131,4 @@ private :
 extern template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<sofa::defaulttype::Vec3Types>;
 
 #endif
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::spring

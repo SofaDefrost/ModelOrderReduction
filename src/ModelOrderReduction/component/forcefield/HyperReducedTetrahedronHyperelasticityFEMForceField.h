@@ -17,23 +17,25 @@
 #pragma once
 #include <ModelOrderReduction/config.h>
 #include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
-#include <SofaMiscFem/TetrahedronHyperelasticityFEMForceField.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/TetrahedronHyperelasticityFEMForceField.h>
 
 namespace sofa::component::forcefield
 {
 using namespace std;
 using namespace sofa::defaulttype;
 using namespace sofa::core::topology;
+using namespace solidmechanics::fem::hyperelastic;
 
 //***************** Tetrahedron FEM code for several elastic models: TotalLagrangianForceField************************//
 
 /** Compute Finite Element forces based on tetrahedral elements.
 */
 template<class DataTypes>
-class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual TetrahedronHyperelasticityFEMForceField<DataTypes>, public HyperReducedHelper
+class HyperReducedTetrahedronHyperelasticityFEMForceField : public virtual solidmechanics::fem::hyperelastic::TetrahedronHyperelasticityFEMForceField<DataTypes>, public modelorderreduction::HyperReducedHelper
 {
   public:
-    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedTetrahedronHyperelasticityFEMForceField, DataTypes), SOFA_TEMPLATE(TetrahedronHyperelasticityFEMForceField, DataTypes), HyperReducedHelper);
+    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedTetrahedronHyperelasticityFEMForceField, DataTypes),
+        SOFA_TEMPLATE(solidmechanics::fem::hyperelastic::TetrahedronHyperelasticityFEMForceField, DataTypes), HyperReducedHelper);
 
     typedef typename DataTypes::VecCoord VecCoord;
     typedef typename DataTypes::VecDeriv VecDeriv;

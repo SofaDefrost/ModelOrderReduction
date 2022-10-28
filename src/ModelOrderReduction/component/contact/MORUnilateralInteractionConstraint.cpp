@@ -20,18 +20,12 @@
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
 #define MOR_MORUNILATERALINTERACTIONCONSTRAINT_CPP
-#include "MORUnilateralInteractionConstraint.inl"
+#include <ModelOrderReduction/component/contact/MORUnilateralInteractionConstraint.inl>
 #include <sofa/defaulttype/VecTypes.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
+#include <sofa/component/statecontainer/MechanicalObject.h>
 #include <sofa/core/ObjectFactory.h>
 
-namespace sofa
-{
-
-namespace component
-{
-
-namespace constraintset
+namespace sofa::component::constraint::lagrangian::model
 {
 
 using namespace sofa::defaulttype;
@@ -45,14 +39,5 @@ int MORUnilateralInteractionConstraintClass = core::RegisterObject("TODO-MORUnil
 
 
 template class SOFA_MODELORDERREDUCTION_API MORUnilateralInteractionConstraint<Vec3Types>;
-
-
-
-
-
-} // namespace constraintset
-
-} // namespace component
-
-} // namespace sofa
+} // namespace sofa::component::constraint::lagrangian::model
 

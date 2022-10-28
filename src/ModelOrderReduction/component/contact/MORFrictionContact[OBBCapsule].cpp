@@ -25,12 +25,13 @@
 #include <CollisionOBBCapsule/response/mapper/OBBContactMapper.h>
 #include <sofa/component/collision/response/mapper/BarycentricContactMapper.inl>
 
-namespace sofa::component::collision::geometry
+namespace sofa::component::collision::response::contact
 {
 
 using sofa::core::collision::Contact;
 using sofa::defaulttype::Vec3Types;
 using sofa::defaulttype::Rigid3Types;
+using namespace sofa::component::collision::geometry;
 
 Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, CapsuleCollisionModel<Vec3Types>> > CapsuleCapsuleMORFrictionContactClass("MORFrictionContact",true);
 Creator<Contact::Factory, MORFrictionContact<CapsuleCollisionModel<Vec3Types>, TriangleCollisionModel<Vec3Types>> > CapsuleTriangleMORFrictionContactClass("MORFrictionContact",true);

@@ -28,7 +28,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::spring
 {
 
 using helper::WriteAccessor;
@@ -488,6 +488,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
     }
 }
 
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::spring
 
 

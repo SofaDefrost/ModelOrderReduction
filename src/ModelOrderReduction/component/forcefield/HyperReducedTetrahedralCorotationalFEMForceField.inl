@@ -19,16 +19,16 @@
 #include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
-#include <SofaBaseTopology/GridTopology.h>
+#include <sofa/component/topology/container/grid/GridTopology.h>
 #include <sofa/simulation/Simulation.h>
 #include <sofa/helper/decompose.h>
-#include <SofaBaseTopology/TopologyData.inl>
+#include <sofa/core/topology/TopologyData.inl>
 #include <assert.h>
 #include <iostream>
 #include <set>
 
 
-namespace sofa::component::forcefield
+namespace sofa::component::solidmechanics::fem::elastic
 {
 
 
@@ -564,7 +564,8 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     }
     else
     {
-        serr << "TODO(HyperReducedTetrahedralCorotationalFEMForceField): support for assembling system matrix when using polar method."<<sendl;
+        // TODO: support for assembling system matrix when using polar method.
+        msg_error() << this->getClassName() << " does not support assembling system matrix when using polar method.";
     }
 
     tetrahedronInfo.endEdit();
@@ -755,4 +756,4 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::addKToMatrix(s
         }
     }
 }
-} // namespace sofa::component::forcefield
+} // namespace sofa::component::solidmechanics::fem::elastic

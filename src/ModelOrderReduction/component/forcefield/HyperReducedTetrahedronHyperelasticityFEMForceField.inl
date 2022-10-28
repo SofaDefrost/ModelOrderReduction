@@ -17,24 +17,24 @@
 #pragma once
 
 #include <sofa/gl/gl.h>
-#include <SofaMiscFem/BoyceAndArruda.h>
-#include <SofaMiscFem/NeoHookean.h>
-#include <SofaMiscFem/MooneyRivlin.h>
-#include <SofaMiscFem/VerondaWestman.h>
-#include <SofaMiscFem/STVenantKirchhoff.h>
-#include <SofaMiscFem/HyperelasticMaterial.h>
-#include <SofaMiscFem/Costa.h>
-#include <SofaMiscFem/Ogden.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/BoyceAndArruda.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/NeoHookean.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/MooneyRivlin.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/VerondaWestman.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/STVenantKirchhoff.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/HyperelasticMaterial.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/Costa.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/material/Ogden.h>
 #include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/defaulttype/VecTypes.h>
-#include <SofaBaseMechanics/MechanicalObject.h>
+#include <sofa/component/statecontainer/MechanicalObject.h>
 #include <sofa/core/ObjectFactory.h>
 #include <fstream> // for reading the file
 #include <iostream> //for debugging
 #include <sofa/gl/template.h>
 #include <sofa/core/behavior/ForceField.inl>
-#include <SofaBaseTopology/TopologyData.inl>
+#include <sofa/core/topology/TopologyData.inl>
 #include <algorithm>
 #include <iterator>
 
@@ -46,7 +46,6 @@ namespace sofa::component::forcefield
 {
 
 using namespace sofa::defaulttype;
-using namespace	sofa::component::topology;
 using namespace core::topology;
 using sofa::component::loader::MatrixLoader;
 

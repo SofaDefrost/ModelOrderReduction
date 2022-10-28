@@ -36,16 +36,17 @@
 #include <sofa/core/objectmodel/BaseContext.h>
 
 
-namespace sofa::component::forcefield
+namespace modelorderreduction
 {
 
+using namespace sofa;
 using sofa::component::loader::MatrixLoader;
 
-class SOFA_MODELORDERREDUCTION_API HyperReducedHelper : public virtual core::objectmodel::BaseObject
+class SOFA_MODELORDERREDUCTION_API HyperReducedHelper : public virtual sofa::core::objectmodel::BaseObject
 {
 public:
 
-    SOFA_CLASS(HyperReducedHelper,core::objectmodel::BaseObject);
+    SOFA_CLASS(HyperReducedHelper, sofa::core::objectmodel::BaseObject);
 
     // Reduced order model SOFA Data parameters
     Data< bool > d_prepareECSW;
@@ -108,5 +109,5 @@ void HyperReducedHelper::updateGie(const std::vector<unsigned> indexList,
     }
 
 }
-} // namespace sofa::component::forcefield
+} // namespace modelorderreduction
 
