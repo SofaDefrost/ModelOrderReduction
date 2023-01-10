@@ -63,31 +63,24 @@ MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::~MORFri
 template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
 void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::cleanup()
 {
-    msg_warning() << "Cleaning up MORfrictionContact!!!";
     if (m_constraint)
     {
-        msg_warning() << "plop!";
         m_constraint->cleanup();
-        msg_warning() << "plip!";
-        if (parent != NULL){
-            msg_warning() << "Really Cleaning up frictionContact!!!";
-            parent->removeObject(m_constraint);}
-        msg_warning() << "plap!";
+        if (parent != NULL)
+        {
+            parent->removeObject(m_constraint);
+        }
         parent = NULL;
         sofa::component::constraint::lagrangian::model::MORUnilateralInteractionConstraint<sofa::defaulttype::Vec3Types>::SPtr tmp( dynamic_cast<sofa::component::constraint::lagrangian::model::MORUnilateralInteractionConstraint<sofa::defaulttype::Vec3Types>*>(m_constraint.get()) );
         tmp.reset();
 //        m_MORconstraint.reset();
-        msg_warning() << "plup!";
         mapper1.cleanup();
-        msg_warning() << "plep!";
         if (!selfCollision)
             mapper2.cleanup();
-        msg_warning() << "plyp!";
     }
 
     contacts.clear();
     mappedContacts.clear();
-    msg_warning() << "Done cleaning up MORfrictionContact!!!";
 }
 
 //template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
@@ -177,12 +170,7 @@ void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::ac
         {
             mmodel2 = mapper2.createMapping(this->getName().c_str());
         }
-        msg_warning() << "Creating new UnilateralInteractionConstraint!!!!!!!!!!!!!!!!!";
-        msg_warning() << "lambdapath is: " << d_lambdaModesPath.getValue();
-        msg_warning() << "lambdaCoeffspath is: " << d_lambdaModesCoeffsPath.getValue();
-        msg_warning() << "mu is: " << mu.getValue();
 
-        msg_warning() << "********************************************************************************************************************";
         m_constraint = sofa::core::objectmodel::New<sofa::component::constraint::lagrangian::model::MORUnilateralInteractionConstraint<defaulttype::Vec3Types> >(mmodel1, mmodel2, d_lambdaModesPath.getValue(), d_lambdaModesCoeffsPath.getValue());
         m_constraint->setName( this->getName() );
         this->setInteractionTags(mmodel1, mmodel2);
@@ -190,7 +178,7 @@ void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::ac
     }
 
     int size = contacts.size();
-    msg_warning() << "size of contacts in frictionContact:" << size;
+
     m_constraint->clear(size);
     if (selfCollision)
         mapper1.resize(2*size);

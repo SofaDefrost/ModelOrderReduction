@@ -107,15 +107,10 @@ void MORContactMapping<TIn, TOut>::init()
 //            msg_warning("MatrixLoader") << "Lambda Modes:" << m_matrix(i,j);
 //    MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
 //    matLoader->setFileName(d_contactIndices.getValue());
-//    msg_warning(this) << "Name of data file read";
 
 //    matLoader->load();
-//    msg_warning(this) << "file loaded";
 
 //    matLoader->getMatrix(contactIndices);
-//    msg_warning(this) << "Matrix Obtained";
-//    for (int i=0; i<m_nbRows; i++)
-//        msg_warning("MatrixLoader") << "Lambda coeffs:" << contactIndices(i);
 
     std::ofstream myLambdaIndices (d_lambdaIndicesPath.getValue());
     myLambdaIndices.close();
@@ -188,8 +183,6 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::ConstraintParams * /*cpar
                         typename In::MatrixDeriv::RowIterator o = out.writeLine(j);
                         data = colIt.val()*m_matrix(contactIndices(rowIt.index()),j);
                         o.addCol(colIt.index(),data);
-//                        msg_warning() << "row: " << o.index() << " col: " << colIt.index() << " val: " << data << " colit " << colIt.val();
-//                        msg_warning() << "nbCols: " << m_nbCols;
                     }
                     ++colIt;
                 }
@@ -197,22 +190,17 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::ConstraintParams * /*cpar
             else
             {
                 typename In::MatrixDeriv::RowIterator o = out.writeLine(rowIt.index());
-//                myLambdaIndices << o.index() << " [ ";
                 while (colIt != colItEnd)
                 {
                     InDeriv data;
                     helper::eq(data, colIt.val());
-//                    msg_warning() << "row: " << o.index() << " col: " << colIt.index() << " val: " << data;
                     myLambdaIndices << colIt.index() << " ";
-//                    msg_warning() << "Writing:" << colIt.index();
-//                    msg_warning() << "writing in file: " << colIt.index();
 
                     o.addCol(colIt.index(), data);
 
                     ++colIt;
 
                 }
-//                myLambdaIndices << " ] ";
             }
 
         }

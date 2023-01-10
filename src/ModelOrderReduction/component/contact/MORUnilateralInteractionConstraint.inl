@@ -54,41 +54,29 @@ MORUnilateralInteractionConstraint<DataTypes>::MORUnilateralInteractionConstrain
 template<class DataTypes>
 MORUnilateralInteractionConstraint<DataTypes>::~MORUnilateralInteractionConstraint()
 {
-    msg_warning() << "Destroying MORuni";
 //    if(contactsStatus)
 //        delete[] contactsStatus;
-//    msg_warning() << "Done Destroying MORuni";
 //    UnilateralInteractionConstraint<DataTypes>::~UnilateralInteractionConstraint();
-    msg_warning() << "Done Destroying MORuni";
 }
 
 template<class DataTypes>
 void MORUnilateralInteractionConstraint<DataTypes>::init()
 {
 //        UnilateralInteractionConstraint<DataTypes>::init();
-        msg_warning(this) << "Calling iniiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiit of MORUnilateralInteractionConstraint";
 //        MatrixLoader<Eigen::MatrixXd>* matLoaderModes = new MatrixLoader<Eigen::MatrixXd>();
 //        matLoaderModes->setFileName("lambdaModesNG2.txt");
-//        msg_warning(this) << "Name of data file readddddddddddddddddddddddddd";
 
 //        matLoaderModes->load();
-//        msg_warning(this) << "file loaded";
 
 //        matLoaderModes->getMatrix(lambdaModes);
-//        msg_warning(this) << "Matrix Obtained";
 
 
 //        MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
 //        matLoader->setFileName("lambdaCoeffsReverseNG2.txt");
-//        msg_warning(this) << "Name of data file read";
 
 //        matLoader->load();
-//        msg_warning(this) << "file loaded";
 
 //        matLoader->getMatrix(contactIndices);
-//        msg_warning(this) << "Matrix Obtained";
-//        for (int i=0; i<10; i++)
-//            msg_warning("MatrixLoader") << "Lambda coeffs:" << contactIndices(i);
 
 }
 
@@ -99,13 +87,11 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
 {
     assert(this->mstate1);
     assert(this->mstate2);
-    msg_warning() << "MORUnilateralInteractionConstraint id is : " << contactId;
     double myMuForAllContacts;
     reducedContacts.resize(0);
     if (this->mstate1 == this->mstate2)
     {
         MatrixDeriv& c1 = *c1_d.beginEdit();
-        msg_warning() << "contacts.size() is : " << contacts.size();
         for (unsigned int i = 0; i < contacts.size(); i++)
         {
             auto& c = contacts[i];
@@ -136,13 +122,11 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
     {
         MatrixDeriv& c1 = *c1_d.beginEdit();
         MatrixDeriv& c2 = *c2_d.beginEdit();
-//        msg_warning() << "2: contacts.size() is : " << contacts.size();
         unsigned int line = 0;
         bool somethingAdded;
 
         for (unsigned int numMode=0; numMode < lambdaModes.cols(); numMode++)
         {
-//            msg_warning() << "Building H: numMode is :" << numMode;
             somethingAdded = false;
             MatrixDerivRowIterator c1_it = c1.writeLine(line);
             MatrixDerivRowIterator c2_it = c2.writeLine(line);
@@ -157,10 +141,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
                         c1_it.addCol(c.m1, -lambdaModes(contactIndices(c.m2),numMode)*c.norm);
                         c2_it.addCol(c.m2, lambdaModes(contactIndices(c.m2),numMode)*c.norm);
                         somethingAdded = true;
-//                        msg_warning() << "c.m2::::: " << c.m2;
-//                        msg_warning() << "lambdaModes(contactIndices(c.m2),numMode):" << lambdaModes(contactIndices(c.m2),numMode);
-//                        msg_warning() << "c.norm:" << c.norm;
-//                        msg_warning() << "lambdaModes(contactIndices(c.m2),numMode)*c.norm:" << lambdaModes(contactIndices(c.m2),numMode)*c.norm;
                     }
 
                 if (c.mu > 0.0)
@@ -169,10 +149,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
                         c1_it.addCol(c.m1, -lambdaModes(contactIndices(3*c.m2),numMode)*c.norm);
                         c2_it.addCol(c.m2, lambdaModes(contactIndices(3*c.m2),numMode)*c.norm);
                         somethingAdded = true;
-//                        msg_warning() << "c.m2::::: " << c.m2;
-//                        msg_warning() << "lambdaModes(contactIndices(c.m2),numMode):" << lambdaModes(contactIndices(3*c.m2),numMode);
-//                        msg_warning() << "c.norm:" << c.norm;
-//                        msg_warning() << "lambdaModes(contactIndices(c.m2),numMode)*c.norm:" << lambdaModes(contactIndices(3*c.m2),numMode)*c.norm;
 
                         MatrixDerivRowIterator c1_it_1 = c1.writeLine(line+1);
 
@@ -196,8 +172,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
 
             }
             if (somethingAdded){
-//                msg_warning() << "Something was added at line:" << line;
-//                msg_warning() << "myMuForAllContacts:" << myMuForAllContacts;
                 if (myMuForAllContacts == 0.0)
                 {
                     reducedContacts.resize(line+1);
@@ -226,7 +200,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
 //        contactId = contactId - 1;
 //    else
 //       contactId = contactId - 3;
-    msg_warning() << "MORUnilateralInteractionConstraint id is in the end: " << contactId;
 }
 
 template<class DataTypes>
@@ -256,8 +229,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(lineara
 {
     const VecCoord &PfreeVec = this->getMState2()->read(core::ConstVecCoordId::freePosition())->getValue();
     const VecCoord &QfreeVec = this->getMState1()->read(core::ConstVecCoordId::freePosition())->getValue();
-    msg_warning() << " getPOsitionViolation: size is: " << v->size();
-     msg_warning() << "reducedContacts size is: " << reducedContacts.size();
     Real dfree = (Real)0.0;
     Real dfree_t = (Real)0.0;
     Real dfree_s = (Real)0.0;
@@ -321,7 +292,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(lineara
 
         // Sets dfree in global violation vector
         if (c.mu == 0.0){
-//            msg_warning() << "dfree for contact " << i << ": " << dfree;
 
             for (int k=0;k<reducedContacts.size();k++){
                 if (contactIndices(c.m2) != -1)
@@ -342,16 +312,11 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(lineara
 
 
 
-//        msg_warning() << " c.id in violation is: " << c.id;
         c.dfree = dfree; // PJ : For isActive() method. Don't know if it's still usefull.
     }
-     msg_warning() << " v size is: " << v->size();
     for (int k=0;k<reducedContacts.size();k++){
-//        msg_warning() << "dfreeRed "  << dfreeRed(k);
         v->set(k, dfreeRed(k));
     }
-//    msg_warning() << " v is: " << v[0];
-
 
 }
 
@@ -376,7 +341,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::getConstraintResolution(cons
 //            resTab[offset++] = new UnilateralConstraintResolution();
 //    }
 
-    msg_warning("MORUnilateralInteractionConstraint") << " in getConstraintResolution @@@@@@@@@@@@@";
     if(contactsStatus)
     {
         delete[] contactsStatus;
