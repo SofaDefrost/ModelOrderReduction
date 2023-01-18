@@ -638,7 +638,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
         vparams->drawTool()->setPolygonMode(0,true);
 
 
-    std::vector< type::Vector3 > points[4];
+    std::vector< type::Vec3 > points[4];
     for(unsigned int i = 0 ; i<m_RIDsize ;++i)
     {
         const core::topology::BaseMeshTopology::Tetrahedron t=_topology->getTetrahedron(reducedIntegrationDomain(i));

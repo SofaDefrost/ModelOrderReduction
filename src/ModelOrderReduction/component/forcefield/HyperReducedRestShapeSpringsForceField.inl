@@ -39,7 +39,7 @@ using core::behavior::ForceField;
 using linearalgebra::BaseMatrix;
 using core::VecCoordId;
 using core::MechanicalParams;
-using type::Vector3;
+using type::Vec3;
 using type::Vec4f;
 using type::vector;
 using core::visual::VisualParams;
@@ -368,15 +368,15 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
     const VecIndex& indices = m_indices;
     const VecIndex& ext_indices = (useRestMState ? m_ext_indices : m_indices);
 
-    vector<Vector3> vertices;
+    vector<type::Vec3> vertices;
     if (d_performECSW.getValue()){
         for (unsigned int i=0; i<m_RIDsize; i++)
         {
             const unsigned int index = indices[reducedIntegrationDomain(i)];
             const unsigned int ext_index = ext_indices[reducedIntegrationDomain(i)];
 
-            Vector3 v0(0.0, 0.0, 0.0);
-            Vector3 v1(0.0, 0.0, 0.0);
+            type::Vec3 v0(0.0, 0.0, 0.0);
+            type::Vec3 v1(0.0, 0.0, 0.0);
             for(unsigned int j=0 ; j<DataTypes::spatial_dimensions ; j++)
             {
                 v0[j] = p[index][j];
@@ -394,8 +394,8 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
             const unsigned int index = indices[i];
             const unsigned int ext_index = ext_indices[i];
 
-            Vector3 v0(0.0, 0.0, 0.0);
-            Vector3 v1(0.0, 0.0, 0.0);
+            type::Vec3 v0(0.0, 0.0, 0.0);
+            type::Vec3 v1(0.0, 0.0, 0.0);
             for(unsigned int j=0 ; j<DataTypes::spatial_dimensions ; j++)
             {
                 v0[j] = p[index][j];

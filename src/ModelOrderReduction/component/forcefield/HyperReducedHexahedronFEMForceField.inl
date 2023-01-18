@@ -487,7 +487,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
         }
         it = it0 + i;
 
-        std::vector< type::Vector3 > points[6];
+        std::vector< type::Vec3 > points[6];
 
         Index a = (*it)[0];
         Index b = (*it)[1];

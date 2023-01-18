@@ -85,15 +85,12 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
         if (mstate->getSize() != size)
             return;
 
-        std::vector< type::Vector3 > pointsP;
-        std::vector< type::Vector3 > pointsL;
-        msg_warning() << "Displaying Points. Size is:" << size;
+        std::vector< type::Vec3 > pointsP;
+        std::vector< type::Vec3 > pointsL;
         int numMode;
         double val;
         double step =  this->getContext()->getTime()/this->getContext()->getDt();
         numMode = (int) step - 1;
-        msg_warning() << "numMode is:" << numMode;
-        msg_warning() << "size is:" << size;
         for (int i = 0; i < size; i++)
         {
             TPoint<DataTypes> p(this, i);
@@ -126,7 +123,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
 
         if (m_displayFreePosition.getValue())
         {
-            std::vector< type::Vector3 > pointsPFree;
+            std::vector< type::Vec3 > pointsPFree;
 
             for (int i = 0; i < size; i++)
             {
