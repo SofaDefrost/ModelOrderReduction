@@ -60,5 +60,5 @@ def MyReducedModel(
 
     """
 
-    modelRoot = attachedTo.createChild(name)
+    modelRoot = attachedTo.addChild(name)
 

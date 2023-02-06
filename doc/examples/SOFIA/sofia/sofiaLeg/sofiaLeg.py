@@ -2,7 +2,7 @@ import Sofa
 import os
 
 from numpy import add,subtract,multiply
-from splib.numerics import *
+from splib3.numerics import *
 
 from controller import SofiaLegController
 
@@ -62,23 +62,23 @@ def SofiaLeg(
 
         totalMass (float):   The mass is distributed according to the geometry of the object.
     """
-    leg = attachedTo.createChild(name)
-    leg.createObject('EulerImplicit' , firstOrder = '0', name = 'odesolver')
-    leg.createObject('SparseLDLSolver' , name = 'preconditioner')
+    leg = attachedTo.addChild(name)
+    leg.addObject('EulerImplicitSolver' , firstOrder = '0', name = 'odesolver')
+    leg.addObject('SparseLDLSolver' , name = 'preconditioner')
 
 
-    leg.createObject('MeshVTKLoader' ,name = 'loader', scale3d = scale, translation = translation, rotation = rotation, filename = meshPath+volumeMeshFileName)
-    leg.createObject('TetrahedronSetTopologyContainer' ,name = 'container',  position = '@loader.position',tetrahedra = '@loader.tetrahedra', checkConnexity = '1', createTriangleArray = '1')
-    leg.createObject('MechanicalObject' , name = 'tetras', showIndices = 'false', showIndicesScale = '4e-5', template = 'Vec3d', position = '@loader.position')
-    leg.createObject('UniformMass' , totalmass = totalMass)
-    leg.createObject('TetrahedronFEMForceField' , youngModulus = youngModulus, poissonRatio = poissonRatio)
+    leg.addObject('MeshVTKLoader' ,name = 'loader', scale3d = scale, translation = translation, rotation = rotation, filename = meshPath+volumeMeshFileName)
+    leg.addObject('TetrahedronSetTopologyContainer' ,name = 'container',  position = '@loader.position',tetrahedra = '@loader.tetrahedra', checkConnexity = '1', createTriangleArray = '1')
+    leg.addObject('MechanicalObject' , name = 'tetras', showIndices = 'false', showIndicesScale = '4e-5', template = 'Vec3d', position = '@loader.position')
+    leg.addObject('UniformMass' , totalMass = totalMass)
+    leg.addObject('TetrahedronFEMForceField' , youngModulus = youngModulus, poissonRatio = poissonRatio)
 
     #To fix the Top part of the leg
-    leg.createObject('BoxROI' , name= 'boxROITop' , orientedBox= newBox([[-12.0, 53.0, 0], [12.0, 53.0, 0], [12.0, 64.0, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[16.0]).tolist(),drawBoxes=False)
-    leg.createObject('RestShapeSpringsForceField' , name = 'fixedTopForceField', points = '@boxROITop.indices', stiffness = '1e12')
+    leg.addObject('BoxROI' , name= 'boxROITop' , orientedBox= newBox([[-12.0, 53.0, 0], [12.0, 53.0, 0], [12.0, 64.0, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[16.0]).tolist(),drawBoxes=False)
+    leg.addObject('RestShapeSpringsForceField' , name = 'fixedTopForceField', points = '@boxROITop.indices', stiffness = '1e12')
     
     #Box to add collisions only on the tip of the leg
-    leg.createObject('BoxROI', name='boxROICollision', orientedBox= newBox(
+    leg.addObject('BoxROI', name='boxROICollision', orientedBox= newBox(
                                                                     [[-25.0, -41.0, 0],[25.0, -42, 0],[25.0, -39, 0]], [0.0, 0.0, 0.0],
                                                                     translation,rotation,[0, 0, -7.0],scale) + multiply(scale[2],[2.0]).tolist()
                                                                 +newBox(
@@ -88,31 +88,31 @@ def SofiaLeg(
                                                     computeHexahedra='0', computeQuad='0',drawSize=5, drawBoxes=False)
 
     #To Actuate our leg we select some elements in the middle of our leg, add a Spring to them, then add an external_rest_shape that will allow us 
-    leg.createObject('BoxROI' , name= 'boxROIMiddle' , orientedBox= newBox([[-2.5, -8.5, 0], [2.5, -8.5, 0], [2.5, -3.5, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[18.0]).tolist(),drawBoxes=False)
-    leg.createObject('RestShapeSpringsForceField' , external_points = [0, 1, 2], points = '@boxROIMiddle.indices', name = 'actuatorSpring', stiffness = '1e12', external_rest_shape = '@../'+name+'_actuator/actuatorState')
+    leg.addObject('BoxROI' , name= 'boxROIMiddle' , orientedBox= newBox([[-2.5, -8.5, 0], [2.5, -8.5, 0], [2.5, -3.5, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[18.0]).tolist(),drawBoxes=False)
+    leg.addObject('RestShapeSpringsForceField' , external_points = [0, 1, 2], points = '@boxROIMiddle.indices', name = 'actuatorSpring', stiffness = '1e12', external_rest_shape = '@../'+name+'_actuator/actuatorState')
 
-    SofiaLeg_actuator = attachedTo.createChild(name+'_actuator')
-    SofiaLeg_actuator.createObject('MechanicalObject' , name = 'actuatorState', position = '@../'+name+'/boxROIMiddle.pointsInROI', template = 'Vec3d', showObject = False)
+    SofiaLeg_actuator = attachedTo.addChild(name+'_actuator')
+    SofiaLeg_actuator.addObject('MechanicalObject' , name = 'actuatorState', position = '@../'+name+'/boxROIMiddle.pointsInROI', template = 'Vec3d', showObject = False)
 
     ## Visualization
     if surfaceMeshFileName:
-        visu = leg.createChild('Visual')
+        visu = leg.addChild('Visual')
 
         meshType = surfaceMeshFileName.split('.')[-1]
         if meshType == 'stl':
-            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+            visu.addObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
         elif meshType == 'obj':
-            visu.createObject(  'MeshObjLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+            visu.addObject(  'MeshOBJLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
 
-        visu.createObject(  'OglModel',
+        visu.addObject(  'OglModel',
                             src='@loader',
-                            template='ExtVec3f',
+                            template='Vec3d',
                             color=surfaceColor,
                             rotation= rotation,
                             translation = translation,
                             scale3d = scale)
 
-        visu.createObject('BarycentricMapping')
+        visu.addObject('BarycentricMapping')
 
     if controller != None:
         myController = SofiaLegController(SofiaLeg_actuator)
@@ -123,7 +123,7 @@ def SofiaLeg(
     return leg
 
 def createScene(rootNode):
-    from stlib.scene import MainHeader
+    from stlib3.scene import MainHeader
     surfaceMeshFileName = 'sofia_leg.stl'
 
     MainHeader(rootNode,plugins=["SofaPython","ModelOrderReduction"],

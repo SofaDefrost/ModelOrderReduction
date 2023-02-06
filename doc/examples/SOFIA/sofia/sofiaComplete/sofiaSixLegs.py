@@ -3,7 +3,7 @@ import Sofa
 import os
 import sys
 from numpy import add,multiply
-from splib.numerics import *
+from splib3.numerics import *
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -53,7 +53,7 @@ def SofiaSixLegs(
 
         totalMass (float):   The mass is distributed according to the geometry of the object.
     """
-    sofia = attachedTo.createChild(name)
+    sofia = attachedTo.addChild(name)
 
     axes = [0,0,0,1]
     tmp = transformPosition([0,15,0],TRS_to_matrix(translation, eulerRotation=rotation,scale=scale))
@@ -101,28 +101,28 @@ def SofiaSixLegs(
 
 
     # Body of the robot: rigid !
-    BodyNode = sofia.createChild('rigidBody')
-    BodyNode.createObject('EulerImplicit', name='odesolver', firstOrder=0);
-    BodyNode.createObject('PCGLinearSolver', name='linearSolver',iterations=2,tolerance=1.0e-18,threshold=1.0e-30, preconditioners="preconditioner")
-    BodyNode.createObject('SparseLDLSolver', name='preconditioner')
-    BodyNode.createObject('MechanicalObject', template='Rigid',name='frame1', position=rigidBodyPosition) # , showObject='1', showObjectScale=15)
-    BodyNode.createObject('UniformMass', showAxisSizeFactor='0.01',totalMass=0.5) #mass=rigidBodyMass) # 
+    BodyNode = sofia.addChild('rigidBody')
+    BodyNode.addObject('EulerImplicitSolver', name='odesolver', firstOrder=0);
+    BodyNode.addObject('PCGLinearSolver', name='linearSolver',iterations=2,tolerance=1.0e-18,threshold=1.0e-30, preconditioners="preconditioner")
+    BodyNode.addObject('SparseLDLSolver', name='preconditioner')
+    BodyNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=rigidBodyPosition) # , showObject='1', showObjectScale=15)
+    BodyNode.addObject('UniformMass', showAxisSizeFactor='0.01',totalMass=0.5) #mass=rigidBodyMass) #
 
-    BodyNode.createObject('LinearSolverConstraintCorrection', solverName='preconditioner');
-    # BodyNode.createObject('GenericConstraintCorrection', solverName='preconditioner')
+    BodyNode.addObject('LinearSolverConstraintCorrection', solverName='preconditioner');
+    # BodyNode.addObject('GenericConstraintCorrection', solverName='preconditioner')
 
     # Frame
-    FramesNode= BodyNode.createChild('frames')
-    FramesNode.createObject('MechanicalObject', template='Rigid',name='frame1', position=framePosition, showObject='1', showObjectScale=15)
-    # FramesNode.createObject('UniformMass', totalMass=0.05, showAxisSizeFactor=0.010) # we comment it because we don't see its use
-    FramesNode.createObject('RigidRigidMapping', mapMasses=0, mapForces=0)
+    FramesNode= BodyNode.addChild('frames')
+    FramesNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=framePosition, showObject='1', showObjectScale=15)
+    # FramesNode.addObject('UniformMass', totalMass=0.05, showAxisSizeFactor=0.010) # we comment it because we don't see its use
+    FramesNode.addObject('RigidRigidMapping', mapMasses=0, mapForces=0)
 
 
     # RigidMappedBody
-    mappedframesNode=FramesNode.createChild('mappedframesNode')
-    mappedframesNode.createObject('MeshObjLoader', filename=meshPath+'body_surf.obj', name='loader', scale3d=scale, rotation=rotation, translation=translation)
-    mappedframesNode.createObject('OglModel', name='mappedBodyVisual', src='@loader' ,color='blue')
-    mappedframesNode.createObject('RigidMapping', globalToLocalCoords='1')
+    mappedframesNode=FramesNode.addChild('mappedframesNode')
+    mappedframesNode.addObject('MeshOBJLoader', filename=meshPath+'body_surf.obj', name='loader', scale3d=scale, rotation=rotation, translation=translation)
+    mappedframesNode.addObject('OglModel', name='mappedBodyVisual', src='@loader' ,color='blue')
+    mappedframesNode.addObject('RigidMapping', globalToLocalCoords='1')
 
     # LEG MAPPING
 
@@ -154,7 +154,7 @@ def SofiaSixLegs(
                                         controller=actuatorArg[i],
                                         surfaceMeshFileName=surfaceMeshFileName)
 
-        leg.createObject('LinearSolverConstraintCorrection', solverName='preconditioner')
+        leg.addObject('LinearSolverConstraintCorrection', solverName='preconditioner')
 
         actuators.append(myController)
 
@@ -162,30 +162,30 @@ def SofiaSixLegs(
             leg = leg.getChildren()[0]                          
 
         # map on rigid
-        mappedLeg=leg.createChild('mappedLeg'+str(i))
+        mappedLeg=leg.addChild('mappedLeg'+str(i))
         FramesNode.addChild(mappedLeg)
-        mappedLeg.createObject('Mesh', position='@../../'+strLink0+strLink1+str(i)+strLink2+'/loader.position', tetrahedra='@../../'+strLink0+strLink1+str(i)+strLink2+'/loader.tetrahedra')
-        mappedLeg.createObject('MechanicalObject', template='Vec3d', name='mappedLeg') # , showObject='1', showObjectScale=5)
-        mappedLeg.createObject('DeformableOnRigidFrameMapping', input2='@../../'+strLink0+'rigidBody/frames', input1='@../../'+strLink0+strLink1+str(i)+strLink2+'/tetras', output='@./mappedLeg', globalToLocalCoords='0', index=i)
+        mappedLeg.addObject('Mesh', position='@../../'+strLink0+strLink1+str(i)+strLink2+'/loader.position', tetrahedra='@../../'+strLink0+strLink1+str(i)+strLink2+'/loader.tetrahedra')
+        mappedLeg.addObject('MechanicalObject', template='Vec3d', name='mappedLeg') # , showObject='1', showObjectScale=5)
+        mappedLeg.addObject('DeformableOnRigidFrameMapping', input2='@../../'+strLink0+'rigidBody/frames', input1='@../../'+strLink0+strLink1+str(i)+strLink2+'/tetras', output='@./mappedLeg', globalToLocalCoords='0', index=i)
 
         #visual model
-        mappedVisualLeg=mappedLeg.createChild('mappedVisaulLeg'+str(i))
+        mappedVisualLeg=mappedLeg.addChild('mappedVisaulLeg'+str(i))
 
-        mappedVisualLeg.createObject(  'MeshSTLLoader', name= 'loader', filename=meshPath+'sofia_leg.stl')
-        mappedVisualLeg.createObject(  'OglModel',
+        mappedVisualLeg.addObject(  'MeshSTLLoader', name= 'loader', filename=meshPath+'sofia_leg.stl')
+        mappedVisualLeg.addObject(  'OglModel',
                             src='@loader',
-                            template='ExtVec3f',
+                            template='Vec3d',
                             color=surfaceColor,
                             rotation= rotation,
                             translation = legVisualPosition[i],
                             scale3d = scale)
-        mappedVisualLeg.createObject('BarycentricMapping')
+        mappedVisualLeg.addObject('BarycentricMapping')
 
         #mapped collision (with reduce size)
-        mappedCollisionLeg=mappedLeg.createChild('mappedCollisionLeg'+str(i))
-        mappedCollisionLeg.createObject('MechanicalObject', template='Vec3d', name='mappedCollisionLeg') # , showObject='1', showObjectScale=10, showColor=[1,0,1,1])
-        mappedCollisionLeg.createObject('Point', color='1 0 0 1', group='1' )
-        mappedCollisionLeg.createObject('SubsetMapping', indices='@../../../'+strLink0+strLink1+str(i)+strLink2+'/boxROICollision.indices', input='@../../mappedLeg'+str(i)+'/mappedLeg')
+        mappedCollisionLeg=mappedLeg.addChild('mappedCollisionLeg'+str(i))
+        mappedCollisionLeg.addObject('MechanicalObject', template='Vec3d', name='mappedCollisionLeg') # , showObject='1', showObjectScale=10, showColor=[1,0,1,1])
+        mappedCollisionLeg.addObject('PointCollisionModel', color='1 0 0 1', group='1' )
+        mappedCollisionLeg.addObject('SubsetMapping', indices='@../../../'+strLink0+strLink1+str(i)+strLink2+'/boxROICollision.indices', input='@../../mappedLeg'+str(i)+'/mappedLeg')
 
     if True:
         # print actuators
@@ -196,23 +196,23 @@ def SofiaSixLegs(
 
 
 def createScene(rootNode):
-    from stlib.scene import MainHeader
-    from stlib.scene import ContactHeader
-    from stlib.physics.rigid import Floor
+    from stlib3.scene import MainHeader
+    from stlib3.scene import ContactHeader
+    from stlib3.physics.rigid import Floor
 
-    rootNode.createObject('RequiredPlugin', pluginName='ModelOrderReduction');
-    rootNode.createObject('VisualStyle', displayFlags='showVisualModels showBehaviorModels showCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe');
+    rootNode.addObject('RequiredPlugin', pluginName='ModelOrderReduction');
+    rootNode.addObject('VisualStyle', displayFlags='showVisualModels showBehaviorModels showCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe');
 
     rootNode.findData('dt').value= 0.01;
     rootNode.findData('gravity').value= [0, -9810, 0]
 
-    rootNode.createObject('FreeMotionAnimationLoop'); 
-    rootNode.createObject('LCPConstraintSolver', mu=str(1), tolerance="1.0e-15", maxIt="10000");
-    rootNode.createObject('CollisionPipeline', verbose="0");
-    rootNode.createObject('BruteForceBroadPhase', name="N2")
-    rootNode.createObject('BVHNarrowPhase')
-    rootNode.createObject('CollisionResponse', response="FrictionContact");
-    rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance=10, contactDistance=1.5);
+    rootNode.addObject('FreeMotionAnimationLoop');
+    rootNode.addObject('LCPConstraintSolver', mu=str(1), tolerance="1.0e-15", maxIt="10000");
+    rootNode.addObject('CollisionPipeline', verbose="0");
+    rootNode.addObject('BruteForceBroadPhase', name="N2")
+    rootNode.addObject('BVHNarrowPhase')
+    rootNode.addObject('CollisionResponse', response="FrictionContact");
+    rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance=10, contactDistance=1.5);
 
 
     Floor(rootNode,

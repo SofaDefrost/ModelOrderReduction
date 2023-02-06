@@ -2,9 +2,9 @@ import Sofa
 import os
 
 #   STLIB IMPORT
-from stlib.scene import MainHeader
-from stlib.scene import ContactHeader
-from stlib.physics.rigid import Floor
+from stlib3.scene import MainHeader
+from stlib3.scene import ContactHeader
+from stlib3.physics.rigid import Floor
 
 # SOFIA IMPORT
 from sofia.sofiaLeg import SofiaLeg
@@ -21,14 +21,14 @@ def createScene(rootNode):
                         dt=0.01,
                         gravity=[0, -9810, 0])
     rootNode.VisualStyle.displayFlags='showVisualModels'
-    rootNode.createObject('FreeMotionAnimationLoop'); 
-    rootNode.createObject('LCPConstraintSolver', mu=str(1), tolerance="1.0e-15", maxIt="10000");
-    rootNode.createObject('CollisionPipeline', verbose="0");
-    rootNode.createObject('BruteForceBroadPhase', name="N2")
-    rootNode.createObject('BVHNarrowPhase')
-    rootNode.createObject('CollisionResponse', response="FrictionContact");
-    rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance=10, contactDistance=1.5);
-    rootNode.createObject('SparseLDLSolver' , name = 'preconditioner')
+    rootNode.addObject('FreeMotionAnimationLoop');
+    rootNode.addObject('LCPConstraintSolver', mu=str(1), tolerance="1.0e-15", maxIt="10000");
+    rootNode.addObject('CollisionPipeline', verbose="0");
+    rootNode.addObject('BruteForceBroadPhase', name="N2")
+    rootNode.addObject('BVHNarrowPhase')
+    rootNode.addObject('CollisionResponse', response="FrictionContact");
+    rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance=10, contactDistance=1.5);
+    rootNode.addObject('SparseLDLSolver' , name = 'preconditioner')
 
 
     Floor(rootNode,

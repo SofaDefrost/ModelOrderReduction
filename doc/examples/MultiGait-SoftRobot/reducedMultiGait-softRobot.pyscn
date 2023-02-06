@@ -216,7 +216,7 @@ def createScene(rootNode):
                 rootNode.addObject('BackgroundSetting', color='0 0.168627 0.211765')
                 rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
                 solverNode = rootNode.addChild('solverNode')
-                solverNode.addObject('EulerImplicit', name='odesolver',firstOrder="false", rayleighStiffness='0.01', rayleighMass='0.01', printLog=False)
+                solverNode.addObject('EulerImplicitSolver', name='odesolver',firstOrder="false", rayleighStiffness='0.01', rayleighMass='0.01', printLog=False)
                 solverNode.addObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrixMat3x3d")
                 solverNode.addObject('GenericConstraintCorrection', solverName='preconditioner')
                 solverNode.addObject('MechanicalMatrixMapperMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', nodeToParse='@./reducedModel/model', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = True,timeInvariantMapping2 = True, saveReducedMass=False, usePrecomputedMass=False, precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', fastMatrixProduct=False, printLog=False)
@@ -303,11 +303,11 @@ def createScene(rootNode):
                 ##########################################
                 modelVisu = model.addChild('visu')        
                 modelVisu.addObject('MeshSTLLoader', name='loader', filename=pathMesh+"quadriped_collision.stl")
-                modelVisu.addObject('OglModel', src='@loader', template='ExtVec3f', color='0.7 0.7 0.7 0.6')
+                modelVisu.addObject('OglModel', src='@loader', template='Vec3d', color='0.7 0.7 0.7 0.6')
                 modelVisu.addObject('BarycentricMapping')
 
                 planeNode = rootNode.addChild('Plane')
-                planeNode.addObject('MeshObjLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true")
+                planeNode.addObject('MeshOBJLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true")
                 planeNode.addObject('Mesh', src="@loader")
                 planeNode.addObject('MechanicalObject', src="@loader", rotation="90 0 0", translation="0 35 -1", scale="15")
                 planeNode.addObject('TriangleCollisionModel',simulated="0", moving="0",group="1")

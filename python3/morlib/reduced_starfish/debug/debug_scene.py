@@ -3,7 +3,7 @@ import imp
 from sys import argv
 
 #   STLIB IMPORT
-from stlib.scene.wrapper import Wrapper
+from stlib3.scene.wrapper import Wrapper
 
 # MOR IMPORT
 from mor.script import sceneCreationUtility as u
