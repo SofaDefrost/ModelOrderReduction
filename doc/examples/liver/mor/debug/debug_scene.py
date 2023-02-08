@@ -2,7 +2,7 @@
 import imp
 
 #	STLIB IMPORT
-from stlib.scene.wrapper import Wrapper
+from stlib3.scene.wrapper import Wrapper
 
 import sys
 import os
@@ -32,7 +32,7 @@ def findSolver(node,type,newParam,initialParam):
                 solverToDelete[node.name] = []
             #   Find the differents solver to move them in order to have them before the MechanicalMatrixMapperMOR
             # print(type)
-            if str(type).find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
+            if str(type).find('Solver') != -1 or type == 'EulerImplicitSolver' or type == 'GenericConstraintCorrection':
                 if 'name' in initialParam:
                     solverToDelete[node.name].append(initialParam['name'])
                 else: 
@@ -61,7 +61,7 @@ def searchObjectAndDestroy(node):
                             child.removeObject(obj)
 
                     if solverToDelete[child.name]:
-                        child.createObject('ReadState', filename="../../diplayNormalModes.state") 
+                        child.addObject('ReadState', filename="../../diplayNormalModes.state")
                     
                     childs = child.getChildren()
                     for node in childs:
@@ -102,7 +102,7 @@ def createScene(rootNode):
     # print('nodeToKeep ',nodeToKeep)
     # print('solverToDelete :',solverToDelete)
     searchObjectAndDestroy(rootNode)
-    rootNode.createObject('VisualStyle', displayFlags='showVisualModels showForceFields')
+    rootNode.addObject('VisualStyle', displayFlags='showVisualModels showForceFields')
 
     
 

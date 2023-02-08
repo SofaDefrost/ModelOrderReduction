@@ -3,7 +3,7 @@ import os
 import Sofa
 from numpy import add,subtract,multiply
 try:
-    from splib.numerics import *
+    from splib3.numerics import *
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
@@ -60,108 +60,108 @@ def Reduced_test(
 
     """
 
-    modelRoot = attachedTo.createChild(name)
+    modelRoot = attachedTo.addChild(name)
 
-    Snake_MOR = modelRoot.createChild('Snake_MOR')
-    Snake_MOR.createObject('EulerImplicitSolver' , rayleighStiffness = '0.1', rayleighMass = '0.1')
-    Snake_MOR.createObject('SparseLDLSolver' , name = 'preconditioner')
-    Snake_MOR.createObject('GenericConstraintCorrection' , solverName = 'preconditioner')
-    Snake_MOR.createObject('MechanicalObject' , position = [0]*nbrOfModes, template = 'Vec1d')
-    Snake_MOR.createObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + r'/data/listActiveNodes.txt', template = 'Vec1d,Vec1d', usePrecomputedMass = True, timeInvariantMapping2 = True, performECSW = hyperReduction, timeInvariantMapping1 = True, precomputedMassPath = path + r'/data/UniformMass_reduced.txt', nodeToParse = '@./Snake')
-
-
-    actuatorDummy = modelRoot.createChild('actuatorDummy')
-    actuatorDummy.createObject('MechanicalObject' , name = 'actuatorState', template = 'Vec3d')
+    Snake_MOR = modelRoot.addChild('Snake_MOR')
+    Snake_MOR.addObject('EulerImplicitSolver' , rayleighStiffness = '0.1', rayleighMass = '0.1')
+    Snake_MOR.addObject('SparseLDLSolver' , name = 'preconditioner')
+    Snake_MOR.addObject('GenericConstraintCorrection' , solverName = 'preconditioner')
+    Snake_MOR.addObject('MechanicalObject' , position = [0]*nbrOfModes, template = 'Vec1d')
+    Snake_MOR.addObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + r'/data/listActiveNodes.txt', template = 'Vec1d,Vec1d', usePrecomputedMass = True, timeInvariantMapping2 = True, performECSW = hyperReduction, timeInvariantMapping1 = True, precomputedMassPath = path + r'/data/UniformMass_reduced.txt', nodeToParse = '@./Snake')
 
 
-    Snake = Snake_MOR.createChild('Snake')
-    Snake.createObject('MeshVTKLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), rotation = add(rotation,[-90, 0, 0]), translation = add(translation,[0, 5, 0]), name = 'loader', filename = path + r'/mesh/snake0.vtu')
-    Snake.createObject('TetrahedronSetTopologyContainer' , src = '@loader')
-    Snake.createObject('MechanicalObject')
-    Snake.createObject('UniformMass' , totalMass = '1.0')
-    Snake.createObject('HyperReducedTetrahedronFEMForceField' , RIDPath = path + r'/data/reducedFF_Snake_0_RID.txt', name = 'reducedFF_Snake_0', weightsPath = path + r'/data/reducedFF_Snake_0_weight.txt', youngModulus = '10000.0', modesPath = path + r'/data/modes.txt', performECSW = hyperReduction, method = 'large', poissonRatio = '0.4', nbModes = nbrOfModes)
-    Snake.createObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + r'/data/modes.txt', output = '@./MechanicalObject')
+    actuatorDummy = modelRoot.addChild('actuatorDummy')
+    actuatorDummy.addObject('MechanicalObject' , name = 'actuatorState', template = 'Vec3d')
 
 
-    collis = Snake.createChild('collis')
-    collis.createObject('MeshObjLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0, 5, 0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/meca_snake_900tri.obj')
-    collis.createObject('Mesh' , src = '@loader', name = 'topo')
-    collis.createObject('MechanicalObject' , name = 'CollisModel')
-    collis.createObject('Triangle' , selfCollision = True)
-    collis.createObject('Line' , selfCollision = True)
-    collis.createObject('Point' , selfCollision = True)
-    collis.createObject('BarycentricMapping')
+    Snake = Snake_MOR.addChild('Snake')
+    Snake.addObject('MeshVTKLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), rotation = add(rotation,[-90, 0, 0]), translation = add(translation,[0, 5, 0]), name = 'loader', filename = path + r'/mesh/snake0.vtu')
+    Snake.addObject('TetrahedronSetTopologyContainer' , src = '@loader')
+    Snake.addObject('MechanicalObject')
+    Snake.addObject('UniformMass' , totalMass = '1.0')
+    Snake.addObject('HyperReducedTetrahedronFEMForceField' , RIDPath = path + r'/data/reducedFF_Snake_0_RID.txt', name = 'reducedFF_Snake_0', weightsPath = path + r'/data/reducedFF_Snake_0_weight.txt', youngModulus = '10000.0', modesPath = path + r'/data/modes.txt', performECSW = hyperReduction, method = 'large', poissonRatio = '0.4', nbModes = nbrOfModes)
+    Snake.addObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + r'/data/modes.txt', output = '@./MechanicalObject')
 
 
-    VisuBody = Snake.createChild('VisuBody')
-    VisuBody.createObject('MeshObjLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/snake_body.obj')
-    VisuBody.createObject('OglModel' , color = [1, 1, 1, 0.6], src = '@loader', translation = [0, 5, 0], texturename = 'textures/snakeColorMap.png', name = 'VisualBody')
-    VisuBody.createObject('BarycentricMapping')
+    collis = Snake.addChild('collis')
+    collis.addObject('MeshOBJLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0, 5, 0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/meca_snake_900tri.obj')
+    collis.addObject('Mesh' , src = '@loader', name = 'topo')
+    collis.addObject('MechanicalObject' , name = 'CollisModel')
+    collis.addObject('TriangleCollisionModel' , selfCollision = True)
+    collis.addObject('LineCollisionModel' , selfCollision = True)
+    collis.addObject('PointCollisionModel' , selfCollision = True)
+    collis.addObject('BarycentricMapping')
 
 
-    VisuCornea = Snake.createChild('VisuCornea')
-    VisuCornea.createObject('MeshObjLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/snake_cornea.obj')
-    VisuCornea.createObject('OglModel' , src = '@loader', translation = [0, 5, 0], name = 'VisuCornea')
-    VisuCornea.createObject('BarycentricMapping')
+    VisuBody = Snake.addChild('VisuBody')
+    VisuBody.addObject('MeshOBJLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/snake_body.obj')
+    VisuBody.addObject('OglModel' , color = [1, 1, 1, 0.6], src = '@loader', translation = [0, 5, 0], texturename = 'textures/snakeColorMap.png', name = 'VisualBody')
+    VisuBody.addObject('BarycentricMapping')
 
 
-    VisualEye = Snake.createChild('VisualEye')
-    VisualEye.createObject('MeshObjLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/snake_yellowEye.obj')
-    VisualEye.createObject('OglModel' , src = '@loader', translation = [0, 5, 0], name = 'VisualEye')
-    VisualEye.createObject('BarycentricMapping')
+    VisuCornea = Snake.addChild('VisuCornea')
+    VisuCornea.addObject('MeshOBJLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/snake_cornea.obj')
+    VisuCornea.addObject('OglModel' , src = '@loader', translation = [0, 5, 0], name = 'VisuCornea')
+    VisuCornea.addObject('BarycentricMapping')
+
+
+    VisualEye = Snake.addChild('VisualEye')
+    VisualEye.addObject('MeshOBJLoader' , scale3d = multiply(scale,[1.0, 1.0, 1.0]), translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), name = 'loader', filename = path + r'/mesh/snake_yellowEye.obj')
+    VisualEye.addObject('OglModel' , src = '@loader', translation = [0, 5, 0], name = 'VisualEye')
+    VisualEye.addObject('BarycentricMapping')
 
     return Snake
 
 
 #   STLIB IMPORT
-from stlib.scene import MainHeader
+from stlib3.scene import MainHeader
 def createScene(rootNode):
     surfaceMeshFileName = False
 
-    MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=["SofaPython3","SoftRobots","ModelOrderReduction"],
                         dt=0.02,
                         gravity=[0.0, -981.0, 0.0])
     rootNode.VisualStyle.displayFlags="showForceFields"
-    rootNode.createObject('FreeMotionAnimationLoop')
-    rootNode.createObject('GenericConstraintSolver', printLog='0', tolerance="1e-6", maxIterations="500")
-    rootNode.createObject('CollisionPipeline', verbose="0")
-    rootNode.createObject('BruteForceBroadPhase', name="N2")
-    rootNode.createObject('BVHNarrowPhase')
-    rootNode.createObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.7")
-    rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.1", angleCone="0.05")
+    rootNode.addObject('FreeMotionAnimationLoop')
+    rootNode.addObject('GenericConstraintSolver', printLog='0', tolerance="1e-6", maxIterations="500")
+    rootNode.addObject('CollisionPipeline', verbose="0")
+    rootNode.addObject('BruteForceBroadPhase', name="N2")
+    rootNode.addObject('BVHNarrowPhase')
+    rootNode.addObject('CollisionResponse', response="FrictionContactConstraint", responseParams="mu=0.7")
+    rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.1", angleCone="0.05")
 
     Reduced_test(rootNode,
                         name="Reduced_test",
                         surfaceMeshFileName=surfaceMeshFileName)
-    base = rootNode.createChild("base")
+    base = rootNode.addChild("base")
     
-    stick = base.createChild("stick")
-    stick.createObject('MeshObjLoader',name="loader", filename="mesh/collision_batons.obj")
-    stick.createObject('Mesh', src='@loader', name='topo')
-    stick.createObject('MechanicalObject', name='stickCollisModel')
-    stick.createObject('Line',simulated="false", moving="false")
-    stick.createObject('Point',simulated="false", moving="false")
-    stick.createObject('UncoupledConstraintCorrection')
+    stick = base.addChild("stick")
+    stick.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_batons.obj")
+    stick.addObject('Mesh', src='@loader', name='topo')
+    stick.addObject('MechanicalObject', name='stickCollisModel')
+    stick.addObject('LineCollisionModel',simulated="false", moving="false")
+    stick.addObject('PointCollisionModel',simulated="false", moving="false")
+    stick.addObject('UncoupledConstraintCorrection')
     
-    blobs = base.createChild("blobs")
-    blobs.createObject('MeshObjLoader',name="loader", filename="mesh/collision_boules_V3.obj")
-    blobs.createObject('Mesh', src='@loader', name='topo')
-    blobs.createObject('MechanicalObject', name='blobsCollisModel')
-    blobs.createObject('Triangle',simulated="false", moving="false")
-    blobs.createObject('Line',simulated="false", moving="false")
-    blobs.createObject('Point',simulated="false", moving="false")
-    blobs.createObject('UncoupledConstraintCorrection')
+    blobs = base.addChild("blobs")
+    blobs.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_boules_V3.obj")
+    blobs.addObject('Mesh', src='@loader', name='topo')
+    blobs.addObject('MechanicalObject', name='blobsCollisModel')
+    blobs.addObject('TriangleCollisionModel',simulated="false", moving="false")
+    blobs.addObject('LineCollisionModel',simulated="false", moving="false")
+    blobs.addObject('PointCollisionModel',simulated="false", moving="false")
+    blobs.addObject('UncoupledConstraintCorrection')
 
-    foot = base.createChild("foot")
-    foot.createObject('MeshObjLoader',name="loader", filename="mesh/collision_pied.obj")
-    foot.createObject('Mesh', src='@loader', name='topo')
-    foot.createObject('MechanicalObject', name='footCollisModel')
-    foot.createObject('Triangle',simulated="false", moving="false")
-    foot.createObject('Line',simulated="false", moving="false")
-    foot.createObject('Point',simulated="false", moving="false")
-    foot.createObject('UncoupledConstraintCorrection')
+    foot = base.addChild("foot")
+    foot.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_pied.obj")
+    foot.addObject('Mesh', src='@loader', name='topo')
+    foot.addObject('MechanicalObject', name='footCollisModel')
+    foot.addObject('TriangleCollisionModel',simulated="false", moving="false")
+    foot.addObject('LineCollisionModel',simulated="false", moving="false")
+    foot.addObject('PointCollisionModel',simulated="false", moving="false")
+    foot.addObject('UncoupledConstraintCorrection')
     
-    visu = base.createChild("visu")
-    visu.createObject('MeshObjLoader', name="SOFA_pod", filename="mesh/SOFA_pod.obj", handleSeams="1" )
-    visu.createObject('OglModel' , src = '@SOFA_pod', name = 'VisuPOD',color=[1,69.0/255.0,0])
+    visu = base.addChild("visu")
+    visu.addObject('MeshOBJLoader', name="SOFA_pod", filename="mesh/SOFA_pod.obj", handleSeams="1" )
+    visu.addObject('OglModel' , src = '@SOFA_pod', name = 'VisuPOD',color=[1,69.0/255.0,0])
 

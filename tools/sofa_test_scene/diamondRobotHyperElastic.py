@@ -4,10 +4,10 @@ import os
 import sys
 
 #   STLIB IMPORT
-from stlib.scene import MainHeader
-from stlib.solver import DefaultSolver
-from stlib.physics.deformable import ElasticMaterialObject
-from stlib.physics.constraints import FixedBox
+from stlib3.scene import MainHeader
+from stlib3.solver import DefaultSolver
+from stlib3.physics.deformable import ElasticMaterialObject
+from stlib3.physics.constraints import FixedBox
 
 # SOFTROBOTS IMPORT
 from softrobots.actuators import PullingCable
@@ -35,37 +35,37 @@ meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
 
 def createScene(rootNode):
 
-    rootNode.createObject('VisualStyle', displayFlags='showVisualModels showForceFields')
+    rootNode.addObject('VisualStyle', displayFlags='showVisualModels showForceFields')
 
     rootNode.findData('gravity').value=[0.0,0.0,-9810];
     rootNode.findData('dt').value=0.1
 
     plugins=["SofaPython","SoftRobots","ModelOrderReduction"]
     for name in plugins:
-        rootNode.createObject('RequiredPlugin', name=name, printLog=False)
+        rootNode.addObject('RequiredPlugin', name=name, printLog=False)
         
-    rootNode.createObject('OglSceneFrame', style="Arrows", alignment="TopRight")
+    rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
 
-    rootNode.createObject('FreeMotionAnimationLoop')
-    rootNode.createObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
+    rootNode.addObject('FreeMotionAnimationLoop')
+    rootNode.addObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
 
-    modelNode = rootNode.createChild('modelNode')
-    modelNode.createObject('EulerImplicitSolver', rayleighStiffness='0.1', rayleighMass='0.1')
-    modelNode.createObject('SparseLDLSolver', name="solver")
-    modelNode.createObject('MeshVTKLoader', name="loader", filename=meshPath+'siliconeV0.vtu', rotation=[90,0,0], translation=[0,0,35]) 
-    modelNode.createObject('TetrahedronSetTopologyContainer', src="@loader")
-    modelNode.createObject('MechanicalObject', name="tetras", template="Vec3d", showIndices="false", showIndicesScale="4e-5")
-    modelNode.createObject('UniformMass', totalMass="0.5")
+    modelNode = rootNode.addChild('modelNode')
+    modelNode.addObject('EulerImplicitSolver', rayleighStiffness='0.1', rayleighMass='0.1')
+    modelNode.addObject('SparseLDLSolver', name="solver")
+    modelNode.addObject('MeshVTKLoader', name="loader", filename=meshPath+'siliconeV0.vtu', rotation=[90,0,0], translation=[0,0,35])
+    modelNode.addObject('TetrahedronSetTopologyContainer', src="@loader")
+    modelNode.addObject('MechanicalObject', name="tetras", template="Vec3d", showIndices="false", showIndicesScale="4e-5")
+    modelNode.addObject('UniformMass', totalMass="0.5")
     poissonRatio = 0.45
     youngModulus = 450
     mu_ = youngModulus/(2*(1+poissonRatio))
     lambda_ = youngModulus*poissonRatio/((1-2*poissonRatio)*(1+poissonRatio))
     k0_ = youngModulus/(3*(1-2*poissonRatio))
-    modelNode.createObject('TetrahedronHyperelasticityFEMForceField',materialName="StVenantKirchhoff", ParameterSet=str(mu_) + " " + str(lambda_),AnisotropyDirections="",printLog=False)
-    #modelNode.createObject('TetrahedronHyperelasticityFEMForceField',materialName="NeoHookean", ParameterSet=str(mu_) + " " + str(k0_), AnisotropyDirections="")        	 
+    modelNode.addObject('TetrahedronHyperelasticityFEMForceField',materialName="StVenantKirchhoff", ParameterSet=str(mu_) + " " + str(lambda_),AnisotropyDirections="",printLog=False)
+    #modelNode.addObject('TetrahedronHyperelasticityFEMForceField',materialName="NeoHookean", ParameterSet=str(mu_) + " " + str(k0_), AnisotropyDirections="")
 
     
-    modelNode.createObject('GenericConstraintCorrection', solverName='solver')
+    modelNode.addObject('GenericConstraintCorrection', solverName='solver')
 
     FixedBox(
         atPositions=[-15, -15, -40,  15, 15, 10],

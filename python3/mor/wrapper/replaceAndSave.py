@@ -224,7 +224,7 @@ def MORreplace(node,type,newParam,initialParam):
 
         if save:
             if currentPath == path :
-                if type.find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
+                if type.find('Solver') != -1 or type == 'EulerImplicitSolver' or type == 'GenericConstraintCorrection':
                     myMORModel.append((str(type),initialParam))
                 else:
                     if currentPath not in myModel:

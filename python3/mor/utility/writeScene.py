@@ -223,7 +223,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                     # print(type+' : '+str(arg)+'\n')
                     if arg :
                         # print(type+' : '+str(arg)+'\n')
-                        tmpList = ['MeshGmshLoader','MeshVTKLoader','MeshSTLLoader','MeshObjLoader']
+                        tmpList = ['MeshGmshLoader','MeshVTKLoader','MeshSTLLoader','MeshOBJLoader']
                         if type in tmpList:
                             print(arg['filename'])
                             if arg['filename'] not in filesName:

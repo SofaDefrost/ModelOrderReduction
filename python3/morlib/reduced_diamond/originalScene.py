@@ -4,10 +4,10 @@ import os
 import sys
 
 #	STLIB IMPORT
-from stlib.scene import MainHeader
-from stlib.solver import DefaultSolver
-from stlib.physics.deformable import ElasticMaterialObject
-from stlib.physics.constraints import FixedBox
+from stlib3.scene import MainHeader
+from stlib3.solver import DefaultSolver
+from stlib3.physics.deformable import ElasticMaterialObject
+from stlib3.physics.constraints import FixedBox
 
 # SOFTROBOTS IMPORT
 from softrobots.actuators import PullingCable
@@ -53,8 +53,8 @@ def createScene(rootNode):
 		poissonRatio=0.45,
 		youngModulus=450)
 	
-	modelNode.createObject('GenericConstraintCorrection', solverName='Solver')
-	# modelNode.createObject('WriteState', filename="init_myDiamondQuiteFine.vtu.state", period='0.1',writeX="0", writeX0="1", writeV="0") 
+	modelNode.addObject('GenericConstraintCorrection', solverName='Solver')
+	# modelNode.addObject('WriteState', filename="init_myDiamondQuiteFine.vtu.state", period='0.1',writeX="0", writeX0="1", writeV="0")
 
 	FixedBox(
 		atPositions=[-15, -15, -40,  15, 15, 10],

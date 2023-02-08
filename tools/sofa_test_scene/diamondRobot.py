@@ -35,19 +35,19 @@ meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
 
 def createScene(rootNode):
 
-    rootNode.createObject('VisualStyle', displayFlags='showVisualModels showForceFields')
+    rootNode.addObject('VisualStyle', displayFlags='showVisualModels showForceFields')
 
     rootNode.findData('gravity').value=[0.0,0.0,-9810];
     rootNode.findData('dt').value=1
 
     plugins=["SofaPython","SoftRobots","ModelOrderReduction"]
     for name in plugins:
-        rootNode.createObject('RequiredPlugin', name=name, printLog=False)
+        rootNode.addObject('RequiredPlugin', name=name, printLog=False)
         
-    rootNode.createObject('OglSceneFrame', style="Arrows", alignment="TopRight")
+    rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
 
-    rootNode.createObject('FreeMotionAnimationLoop')
-    rootNode.createObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
+    rootNode.addObject('FreeMotionAnimationLoop')
+    rootNode.addObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
 
 
     modelNode = ElasticMaterialObject(
@@ -63,7 +63,7 @@ def createScene(rootNode):
         poissonRatio=0.45,
         youngModulus=450)
     
-    modelNode.createObject('GenericConstraintCorrection', solverName='solver')
+    modelNode.addObject('GenericConstraintCorrection', solverName='solver')
 
     FixedBox(
         atPositions=[-15, -15, -40,  15, 15, 10],

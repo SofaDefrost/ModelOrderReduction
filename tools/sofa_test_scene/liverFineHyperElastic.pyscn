@@ -34,7 +34,7 @@ def createScene(rootNode):
     liver.addObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
     
     visu = liver.addChild('visu')
-    visu.addObject(  'MeshObjLoader', name= 'loader', filename=meshPath+'liver-smoothUV.obj')
+    visu.addObject(  'MeshOBJLoader', name= 'loader', filename=meshPath+'liver-smoothUV.obj')
     visu.addObject('OglModel', src="@loader")
     visu.addObject('BarycentricMapping')
 

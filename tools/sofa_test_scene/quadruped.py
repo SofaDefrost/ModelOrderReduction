@@ -16,7 +16,7 @@ def createScene(rootNode):
                           displayFlags='showVisualModels showBehaviorModels hideCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
 
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('EulerImplicit', name='odesolver', firstOrder="false", rayleighStiffness='0.1',
+    rootNode.addObject('EulerImplicitSolver', name='odesolver', firstOrder="false", rayleighStiffness='0.1',
                        rayleighMass='0.1')
     rootNode.addObject('GenericConstraintSolver', printLog='0', tolerance="1e-15", maxIterations="5000")
     rootNode.addObject('CollisionPipeline', verbose="0")
@@ -137,13 +137,13 @@ def createScene(rootNode):
 
     modelVisu.addObject('OglModel',
                            src='@loader',
-                           template='ExtVec3f',
+                           template='Vec3d',
                            color='0.7 0.7 0.7 0.6')
 
     modelVisu.addObject('BarycentricMapping')
 
     planeNode = rootNode.addChild('Plane')
-    planeNode.addObject('MeshObjLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true")
+    planeNode.addObject('MeshOBJLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true")
     planeNode.addObject('Mesh', src="@loader")
     planeNode.addObject('MechanicalObject', src="@loader", rotation="90 0 0", translation="0 35 -1", scale="15")
     planeNode.addObject('TriangleCollisionModel', simulated="0", moving="0", group="1")
