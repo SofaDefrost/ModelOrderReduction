@@ -119,7 +119,7 @@ def createScene(rootNode):
     #<BVHNarrowPhase />
     #<MinProximityIntersection name="Proximity" alarmDistance="1.5" contactDistance="1" />
 
-    #<DefaultContactManager name="Response" response="FrictionContact" />
+    #<CollisionResponse name="Response" response="FrictionContact" />
 
     #<Camera position="0 30 90" lookAt="0 30 0"/>
     #<LightManager />
