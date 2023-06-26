@@ -20,6 +20,7 @@
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
 #include <ModelOrderReduction/component/contact/MORFrictionContact.inl>
+#include <sofa/component/collision/response/mapper/BarycentricContactMapper.inl>
 #include <CollisionOBBCapsule/response/mapper/CapsuleContactMapper.h>
 #include <CollisionOBBCapsule/geometry/CapsuleModel.inl>
 #include <CollisionOBBCapsule/response/mapper/OBBContactMapper.h>
