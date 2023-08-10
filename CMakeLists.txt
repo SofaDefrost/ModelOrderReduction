@@ -116,7 +116,9 @@ else()
 endif()
 if(SofaPython3Tools OR SofaPython3_FOUND)
     message("-- Python3 packages will be installed.")
-    set(SP3_PYTHON_PACKAGES_DIRECTORY "python3/site-packages")
+    if(NOT SP3_PYTHON_PACKAGES_DIRECTORY)
+        set(SP3_PYTHON_PACKAGES_DIRECTORY "python3/site-packages")
+    endif()
     SP3_add_python_package(
             SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python3/mor
             TARGET_DIRECTORY mor
