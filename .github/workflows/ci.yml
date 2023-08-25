@@ -125,7 +125,8 @@ jobs:
         with:
           name: ${{ github.ref_name }}
           tag_name: release-${{ github.ref_name }}
-          fail_on_unmatched_files: true 
+          fail_on_unmatched_files: false
           files: |
             artifacts/ModelOrderReduction_*_Linux.zip
             artifacts/ModelOrderReduction_*_Windows.zip
+            artifacts/ModelOrderReduction_*_macOS.zip
