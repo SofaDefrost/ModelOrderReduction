@@ -30,11 +30,11 @@ where there are complete robot which are completely or partially reduced and tes
 
 - Package dependencies
 
-	- [Python 2.7.X](https://www.python.org/downloads/)
+	- [Python >=3.7](https://www.python.org/downloads/)
 
 	- For the GUI (*optional*):
 
-		- [PyQt4](https://wiki.python.org/moin/PyQt)
+		- [PyQt5](https://wiki.python.org/moin/PyQt)
 
 		- [yaml](https://pypi.org/project/PyYAML/)
 
