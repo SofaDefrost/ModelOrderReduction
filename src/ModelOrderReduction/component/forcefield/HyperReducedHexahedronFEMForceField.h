@@ -101,7 +101,6 @@ public:
     using HexahedronFEMForceField<DataTypes>::f_poissonRatio;
     using HexahedronFEMForceField<DataTypes>::f_youngModulus;
     using HexahedronFEMForceField<DataTypes>::f_updateStiffnessMatrix;
-    using HexahedronFEMForceField<DataTypes>::f_assembling;
     using HexahedronFEMForceField<DataTypes>::_gatherPt; ///< use in GPU version
     using HexahedronFEMForceField<DataTypes>::_gatherBsize; ///< use in GPU version
     using HexahedronFEMForceField<DataTypes>::f_drawing; ///<  draw the forcefield if true
