@@ -16,6 +16,7 @@
 ******************************************************************************/
 #pragma once
 
+#include "sofa/core/behavior/BaseLocalForceFieldMatrix.h"
 #include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedronFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/component/topology/container/grid/GridTopology.h>
@@ -380,13 +381,22 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
 template<class DataTypes>
 inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addDForce(const core::MechanicalParams* mparams, DataVecDeriv& d_df, const DataVecDeriv& d_dx)
 {
-    VecDeriv& df = *d_df.beginEdit();
+//    VecDeriv& df = *d_df.beginEdit();
+//    const VecDeriv& dx = d_dx.getValue();
+//    Real kFactor = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
+
+//    sofa::helper::AdvancedTimer::stepBegin("time in AddDDDForce");
+
+//    df.resize(dx.size());
+
+    auto dfAccessor = sofa::helper::getWriteAccessor(d_df);
+    VecDeriv& df = dfAccessor.wref();
+
     const VecDeriv& dx = d_dx.getValue();
-    Real kFactor = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
-
-    sofa::helper::AdvancedTimer::stepBegin("time in AddDDDForce");
-
     df.resize(dx.size());
+
+    const Real kFactor = (Real)sofa::core::mechanicalparams::kFactorIncludingRayleighDamping(mparams, this->rayleighStiffness.getValue());
+
     unsigned int i;
     typename VecElement::const_iterator it,it0;
     if( method == SMALL )
@@ -637,211 +647,59 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 
 }
 
-template<class DataTypes>
-void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix )
+template <class DataTypes>
+void HyperReducedTetrahedronFEMForceField<DataTypes>::buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
 {
-    sofa::core::behavior::MultiMatrixAccessor::MatrixRef r = matrix->getMatrix(this->mstate);
-    if (r)
-        addKToMatrix(r.matrix, mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue()), r.offset);
-    else msg_error(this) << "addKToMatrix found no valid matrix accessor." ;
-}
+    StiffnessMatrix JKJt, RJKJtRt;
+    sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
 
-template<class DataTypes>
-void HyperReducedTetrahedronFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
-{
-    // Build Matrix Block for this ForceField
-    unsigned int i,j,n1, n2, row, column, ROW, COLUMN , IT;
+    static constexpr Transformation identity = []
+    {
+        Transformation i;
+        i.identity();
+        return i;
+    }();
 
-    Transformation Rot;
-    StiffnessMatrix JKJt,tmp;
+    constexpr auto S = DataTypes::deriv_total_size; // size of node blocks
+    constexpr auto N = Element::size();
 
-    typename VecElement::const_iterator it, it0;
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                       .withRespectToPositionsIn(this->mstate);
 
-    Index noeud1, noeud2;
-    int offd3 = offset/3;
+    sofa::Size tetraId = 0;
 
-    Rot[0][0]=Rot[1][1]=Rot[2][2]=1;
-    Rot[0][1]=Rot[0][2]=0;
-    Rot[1][0]=Rot[1][2]=0;
-    Rot[2][0]=Rot[2][1]=0;
-
-
-    it0=_indexedElements->begin();
-    unsigned int nbElementsConsidered;
+    typename VecElement::const_iterator it;
+    auto it0=_indexedElements->begin();
+    int nbElementsConsidered;
     if (!d_performECSW.getValue())
         nbElementsConsidered = _indexedElements->size();
     else
         nbElementsConsidered = m_RIDsize;
-    SReal kTimesWeight;
 
-    if (sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,double> > * crsmat = dynamic_cast<sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,double> > * >(mat))
+    for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     {
-
-
-        for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
-        {
-            if (!d_performECSW.getValue()){
-                IT = numElem;
-            }
-            else
-            {
-                IT = reducedIntegrationDomain(numElem);
-            }
-            it = it0 + IT;
-
-            if (method == SMALL) this->computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],Rot);
-            else this->computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],rotations[IT]);
-
-            if (!d_performECSW.getValue())
-                kTimesWeight = k;
-            else
-                kTimesWeight = k*weights(IT);
-
-            type::Mat<3,3,double> tmpBlock[4][4];
-            // find index of node 1
-            for (n1=0; n1<4; n1++)
-            {
-                for(i=0; i<3; i++)
-                {
-                    for (n2=0; n2<4; n2++)
-                    {
-                        for (j=0; j<3; j++)
-                        {
-                            tmpBlock[n1][n2][i][j] = - tmp[n1*3+i][n2*3+j]*kTimesWeight;
-                        }
-                    }
-                }
-            }
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[0],true) +=  tmpBlock[0][0];
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[1],true) +=  tmpBlock[0][1];
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[2],true) +=  tmpBlock[0][2];
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[3],true) +=  tmpBlock[0][3];
-
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[0],true) +=  tmpBlock[1][0];
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[1],true) +=  tmpBlock[1][1];
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[2],true) +=  tmpBlock[1][2];
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[3],true) +=  tmpBlock[1][3];
-
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[0],true) +=  tmpBlock[2][0];
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[1],true) +=  tmpBlock[2][1];
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[2],true) +=  tmpBlock[2][2];
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[3],true) +=  tmpBlock[2][3];
-
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[0],true) +=  tmpBlock[3][0];
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[1],true) +=  tmpBlock[3][1];
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[2],true) +=  tmpBlock[3][2];
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[3],true) +=  tmpBlock[3][3];
+        if (!d_performECSW.getValue()){
+            tetraId = numElem;
         }
-
-    }
-    else if (sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,float> > * crsmat = dynamic_cast<sofa::linearalgebra::CompressedRowSparseMatrix<type::Mat<3,3,float> > * >(mat))
-    {
-        for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
+        else
         {
-            if (!d_performECSW.getValue()){
-                IT = numElem;
-            }
-            else
-            {
-                IT = reducedIntegrationDomain(numElem);
-            }
-            it = it0 + IT;
-
-            if (method == SMALL) this->computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],Rot);
-            else this->computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],rotations[IT]);
-
-
-            if (!d_performECSW.getValue())
-                kTimesWeight = k;
-            else
-                kTimesWeight = k*weights(IT);
-
-            type::Mat<3,3,double> tmpBlock[4][4];
-            // find index of node 1
-            for (n1=0; n1<4; n1++)
-            {
-                for(i=0; i<3; i++)
-                {
-                    for (n2=0; n2<4; n2++)
-                    {
-                        for (j=0; j<3; j++)
-                        {
-                            tmpBlock[n1][n2][i][j] = - tmp[n1*3+i][n2*3+j]*kTimesWeight;
-                        }
-                    }
-                }
-            }
-
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[0],true) += tmpBlock[0][0];
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[1],true) += tmpBlock[0][1];
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[2],true) += tmpBlock[0][2];
-            *crsmat->wbloc(offd3 + (*it)[0], offd3 + (*it)[3],true) += tmpBlock[0][3];
-
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[0],true) += tmpBlock[1][0];
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[1],true) += tmpBlock[1][1];
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[2],true) += tmpBlock[1][2];
-            *crsmat->wbloc(offd3 + (*it)[1], offd3 + (*it)[3],true) += tmpBlock[1][3];
-
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[0],true) += tmpBlock[2][0];
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[1],true) += tmpBlock[2][1];
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[2],true) += tmpBlock[2][2];
-            *crsmat->wbloc(offd3 + (*it)[2], offd3 + (*it)[3],true) += tmpBlock[2][3];
-
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[0],true) += tmpBlock[3][0];
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[1],true) += tmpBlock[3][1];
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[2],true) += tmpBlock[3][2];
-            *crsmat->wbloc(offd3 + (*it)[3], offd3 + (*it)[3],true) += tmpBlock[3][3];
+            tetraId = reducedIntegrationDomain(numElem);
         }
-    }
-    else
-    {
-        for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
+        it = it0 + tetraId;
+
+        const auto& rotation = method == SMALL ? identity : rotations[tetraId];
+        this->computeStiffnessMatrix(JKJt, RJKJtRt, materialsStiffnesses[tetraId], strainDisplacements[tetraId], rotation);
+
+        for (sofa::Index n1 = 0; n1 < N; n1++)
         {
-            if (!d_performECSW.getValue()){
-                IT = numElem;
-            }
-            else
+            for (sofa::Index n2 = 0; n2 < N; n2++)
             {
-                IT = reducedIntegrationDomain(numElem);
+                RJKJtRt.getsub(S * n1, S * n2, localMatrix); //extract the submatrix corresponding to the coupling of nodes n1 and n2
+                dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(tetraId);
             }
-            it = it0 + IT;
-
-            if (method == SMALL)
-                this->computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],Rot);
-            else
-                this->computeStiffnessMatrix(JKJt,tmp,materialsStiffnesses[IT], strainDisplacements[IT],rotations[IT]);
-
-            if (!d_performECSW.getValue())
-                kTimesWeight = k;
-            else
-                kTimesWeight = k*weights(IT);
-
-            // find index of node 1
-            for (n1=0; n1<4; n1++)
-            {
-                noeud1 = (*it)[n1];
-
-                for(i=0; i<3; i++)
-                {
-                    ROW = offset+3*noeud1+i;
-                    row = 3*n1+i;
-                    // find index of node 2
-                    for (n2=0; n2<4; n2++)
-                    {
-                        noeud2 = (*it)[n2];
-
-
-                        for (j=0; j<3; j++)
-                        {
-                            COLUMN = offset+3*noeud2+j;
-                            column = 3*n2+j;
-                            mat->add(ROW, COLUMN, -  tmp[row][column]*kTimesWeight);
-                        }
-                    }
-                }
-            }
-
         }
     }
 }
+
+
 } // namespace sofa::component::forcefield
