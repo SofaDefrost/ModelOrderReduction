@@ -695,7 +695,11 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::buildStiffnessMatrix(core:
             for (sofa::Index n2 = 0; n2 < N; n2++)
             {
                 RJKJtRt.getsub(S * n1, S * n2, localMatrix); //extract the submatrix corresponding to the coupling of nodes n1 and n2
-                dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(tetraId);
+                if (!d_performECSW.getValue())
+                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix;
+                else
+                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(tetraId);
+
             }
         }
     }
