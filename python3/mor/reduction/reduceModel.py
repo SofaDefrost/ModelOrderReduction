@@ -374,9 +374,13 @@ class ReduceModel():
 
         for fileName in self.reductionParam.savedElementsFilesNames :
             u.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+slash+fileName,self.packageBuilder.debugDir+fileName)
-        self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
-        # print("massName -----------------------> ",self.reductionParam.massName)
-        u.copy(self.reductionParam.massName,self.reductionParam.dataDir)
+        
+        ### commented out waiting for change in c++ code
+        # optimization done in MMM but now removed
+        # self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
+        # # print("massName -----------------------> ",self.reductionParam.massName)
+        # u.copy(self.reductionParam.massName,self.reductionParam.dataDir)
+        #####
 
         files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_Gie.txt")
         if files: 
@@ -460,13 +464,12 @@ class ReduceModel():
                     self.reductionParam.savedElementsFilesNames[j] = self.reductionParam.savedElementsFilesNames[i]
                     self.reductionParam.savedElementsFilesNames[i] = tmp
 
-        # print(self.reductionParam.savedElementsFilesNames)
-        # print(self.reductionParam.gieFilesNames)
-        tmp = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0]
-        tmp = os.path.normpath(tmp)
-        self.reductionParam.massName = tmp.split(slash)[-1]
-        # print("massName -----------------------> ",self.reductionParam.massName)
-
+        ### commented out waiting for change in c++ code
+        # optimization done in MMM but now removed
+        # tmp = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0]
+        # tmp = os.path.normpath(tmp)
+        # self.reductionParam.massName = tmp.split(slash)[-1]
+        ####
 
         self.reductionParam.RIDFilesNames = []
         self.reductionParam.weightsFilesNames = []
