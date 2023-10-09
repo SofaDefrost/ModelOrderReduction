@@ -63,7 +63,7 @@ def createScene(rootNode):
     model.addObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes='true')
     model.addObject('BoxROI', name='membraneROISubTopo', box='0 0 -0.1 150 -100 0.1', computeTetrahedra="false",
                        drawBoxes='true')
-    model.addObject('GenericConstraintCorrection', solverName='preconditioner')
+    model.addObject('GenericConstraintCorrection', linearSolver='@preconditioner')
     ##########################################
     # Sub topology
     modelSubTopo = model.addChild('modelSubTopo')

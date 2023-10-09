@@ -40,7 +40,22 @@ def createScene(rootNode):
     rootNode.findData('gravity').value=[0.0,0.0,-9810];
     rootNode.findData('dt').value=1
 
-    plugins=["SofaPython","SoftRobots","ModelOrderReduction"]
+    plugins=["SofaPython3","SoftRobots","ModelOrderReduction","STLIB",
+             "Sofa.Component.Visual",
+             "Sofa.Component.AnimationLoop",
+             "Sofa.GL.Component.Rendering3D",
+             "Sofa.Component.Constraint.Lagrangian.Solver",
+             'Sofa.Component.Constraint.Lagrangian.Correction', # Needed to use components [GenericConstraintCorrection]  
+             'Sofa.Component.Engine.Select', # Needed to use components [BoxROI]  
+             'Sofa.Component.LinearSolver.Direct', # Needed to use components [SparseLDLSolver]  
+             'Sofa.Component.Mapping.Linear', # Needed to use components [BarycentricMapping]  
+             'Sofa.Component.Mass', # Needed to use components [UniformMass]  
+             'Sofa.Component.ODESolver.Backward', # Needed to use components [EulerImplicitSolver]  
+             'Sofa.Component.SolidMechanics.FEM.Elastic', # Needed to use components [TetrahedronFEMForceField]  
+             'Sofa.Component.SolidMechanics.Spring', # Needed to use components [RestShapeSpringsForceField]  
+             'Sofa.Component.StateContainer', # Needed to use components [MechanicalObject]  
+             'Sofa.Component.Topology.Container.Dynamic'] # Needed to use components [TetrahedronSetTopologyContainer]  
+
     for name in plugins:
         rootNode.addObject('RequiredPlugin', name=name, printLog=False)
         
@@ -50,7 +65,7 @@ def createScene(rootNode):
     rootNode.addObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
 
 
-    modelNode = ElasticMaterialObject(
+    modelNode = rootNode.addChild(ElasticMaterialObject(
         attachedTo=rootNode,
         volumeMeshFileName=meshPath+'siliconeV0.vtu',
         name='modelNode',
@@ -61,9 +76,9 @@ def createScene(rootNode):
         surfaceMeshFileName=meshPath+'surface.stl',
         surfaceColor=[0.7, 0.7, 0.7, 0.7],
         poissonRatio=0.45,
-        youngModulus=450)
+        youngModulus=450))
     
-    modelNode.addObject('GenericConstraintCorrection', solverName='solver')
+    modelNode.addObject('GenericConstraintCorrection', linearSolver='@solver')
 
     FixedBox(
         atPositions=[-15, -15, -40,  15, 15, 10],
