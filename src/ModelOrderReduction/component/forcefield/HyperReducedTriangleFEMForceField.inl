@@ -380,13 +380,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::buildStiffnessMatrix(core::be
     StiffnessMatrix JKJt, RJKJtRt;
     sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
 
-    static constexpr Transformation identity = []
-    {
-      Transformation i;
-      i.identity();
-      return i;
-    }();
-
     constexpr auto S = DataTypes::deriv_total_size; // size of node blocks
     constexpr auto N = Element::size();
 
@@ -403,9 +396,11 @@ void HyperReducedTriangleFEMForceField<DataTypes>::buildStiffnessMatrix(core::be
     else
         nbElementsConsidered = m_RIDsize;
 
+    const bool performECSW = d_performECSW.getValue();
     for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     {
-        if (!d_performECSW.getValue()){
+        if (!performECSW)
+        {
             triangleId = numElem;
         }
         else

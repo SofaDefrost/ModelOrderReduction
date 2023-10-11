@@ -82,11 +82,6 @@ protected:
     /// Stiffness matrix ( = RJKJtRt  with K the Material stiffness matrix, J the strain-displacement matrix, and R the transformation matrix if any )
     typedef type::Mat<9, 9, Real> StiffnessMatrix;
 
-    /// Vector of material stiffness matrices of each tetrahedron
-    VecMaterialStiffness materialsStiffnesses;
-    VecStrainDisplacement strainDisplacements;   ///< the strain-displacement matrices vector
-    type::vector<Transformation> rotations;
-
 
     using TriangleFEMForceField<DataTypes>::m_topology;
     using TriangleFEMForceField<DataTypes>::_indexedElements;
