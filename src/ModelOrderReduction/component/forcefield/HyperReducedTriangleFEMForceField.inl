@@ -16,8 +16,8 @@
 ******************************************************************************/
 #pragma once
 
-#include "sofa/core/behavior/BaseLocalForceFieldMatrix.h"
 #include <ModelOrderReduction/component/forcefield/HyperReducedTriangleFEMForceField.h>
+#include <sofa/core/behavior/BaseLocalForceFieldMatrix.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/core/ObjectFactory.h>
@@ -373,33 +373,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::Visu
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif /* SOFA_NO_OPENGL */
 }
-
-
-/*template<class DataTypes>
-void HyperReducedTriangleFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
-{
-    if (d_performECSW.getValue())
-    {
-        int iECSW;
-        for(unsigned i = 0 ; i<m_RIDsize ;++i)
-        {
-            iECSW = reducedIntegrationDomain(i);
-            StiffnessMatrix JKJt,RJKJtRt;
-            this->computeElementStiffnessMatrix(JKJt, RJKJtRt, _materialsStiffnesses[iECSW], _strainDisplacements[iECSW], _rotations[iECSW]);
-            this->addToMatrix(mat,offset,(*_indexedElements)[iECSW],weights(iECSW)*RJKJtRt,-k);
-
-        }
-    }
-    else
-    {
-        for(unsigned i=0; i< _indexedElements->size() ; i++)
-        {
-            StiffnessMatrix JKJt,RJKJtRt;
-            this->computeElementStiffnessMatrix(JKJt, RJKJtRt, _materialsStiffnesses[i], _strainDisplacements[i], _rotations[i]);
-            this->addToMatrix(mat,offset,(*_indexedElements)[i],RJKJtRt,-k);
-        }
-    }
-}*/
 
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
