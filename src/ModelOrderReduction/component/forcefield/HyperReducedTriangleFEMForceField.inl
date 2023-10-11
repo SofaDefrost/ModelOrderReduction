@@ -103,10 +103,10 @@ void HyperReducedTriangleFEMForceField<DataTypes>::addDForce(const core::Mechani
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedAccumulateForceLarge(VecCoord& f, const VecCoord& p, bool implicit)
 {
-
     typename VecElement::const_iterator it;
     unsigned int elementIndex(0);
-    if (d_performECSW.getValue()){
+    if (d_performECSW.getValue())
+    {
         for( elementIndex = 0 ; elementIndex<m_RIDsize ;++elementIndex)
         {
             // triangle vertex indices
@@ -253,8 +253,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedAccumulateForceLa
             }
         }
     }
-
-
 }
 
 
@@ -266,16 +264,20 @@ void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedApplyStiffnessLar
 
     it0=_indexedElements->begin();
     unsigned int nbElementsConsidered;
-    if (!d_performECSW.getValue()){
+    const bool performECSW = d_performECSW.getValue();
+    if (!performECSW)
+    {
         nbElementsConsidered = _indexedElements->size();
     }
     else
     {
         nbElementsConsidered = m_RIDsize;
     }
+
     for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     {
-        if (!d_performECSW.getValue()){
+        if (!performECSW)
+        {
             i = numElem;
         }
         else
@@ -318,7 +320,8 @@ void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedApplyStiffnessLar
         Displacement F(type::NOINIT);
         this->m_triangleUtils.computeForceLarge(F, _strainDisplacements[i], stress);
 
-        if (!d_performECSW.getValue()){
+        if (!performECSW)
+        {
             v[a] += (_rotations[i] * Coord(-h * F[0], -h * F[1], 0)) * kFactor;
             v[b] += (_rotations[i] * Coord(-h * F[2], -h * F[3], 0)) * kFactor;
             v[c] += (_rotations[i] * Coord(-h * F[4], -h * F[5], 0)) * kFactor;
@@ -330,8 +333,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedApplyStiffnessLar
             v[c] += weights(i) * (_rotations[i] * Coord(-h * F[4], -h * F[5], 0)) * kFactor;
         }
     }
-
-
 }
 
 template<class DataTypes>
@@ -391,13 +392,14 @@ void HyperReducedTriangleFEMForceField<DataTypes>::buildStiffnessMatrix(core::be
     typename VecElement::const_iterator it;
     auto it0=_indexedElements->begin();
     int nbElementsConsidered;
-    if (!d_performECSW.getValue())
+
+    const bool performECSW = d_performECSW.getValue();
+    if (!performECSW)
         nbElementsConsidered = _indexedElements->size();
     else
         nbElementsConsidered = m_RIDsize;
 
-    const bool performECSW = d_performECSW.getValue();
-    for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
+    for(unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     {
         if (!performECSW)
         {
@@ -409,7 +411,6 @@ void HyperReducedTriangleFEMForceField<DataTypes>::buildStiffnessMatrix(core::be
         }
         it = it0 + triangleId;
 
-
         this->computeElementStiffnessMatrix(JKJt, RJKJtRt, _materialsStiffnesses[triangleId], _strainDisplacements[triangleId], _rotations[triangleId]);
 
         for (sofa::Index n1 = 0; n1 < N; n1++)
@@ -417,7 +418,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::buildStiffnessMatrix(core::be
             for (sofa::Index n2 = 0; n2 < N; n2++)
             {
                 RJKJtRt.getsub(S * n1, S * n2, localMatrix); //extract the submatrix corresponding to the coupling of nodes n1 and n2
-                if (!d_performECSW.getValue())
+                if (!performECSW)
                   dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix;
                 else
                   dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(triangleId);
