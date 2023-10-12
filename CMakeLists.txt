@@ -37,8 +37,6 @@ set(HEADER_FILES
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.inl
     ${MOR_SRC}/component/forcefield/HyperReducedTriangleFEMForceField.h
     ${MOR_SRC}/component/forcefield/HyperReducedTriangleFEMForceField.inl
-#    ${MOR_SRC}/component/forcefield/MechanicalMatrixMapperMOR.h
-#    ${MOR_SRC}/component/forcefield/MechanicalMatrixMapperMOR.inl
 
     ${MOR_SRC}/component/loader/MatrixLoader.h
     ${MOR_SRC}/component/loader/MatrixLoader.inl
@@ -65,7 +63,6 @@ set(SOURCE_FILES
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronFEMForceField.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedTriangleFEMForceField.cpp
-#    ${MOR_SRC}/component/forcefield/MechanicalMatrixMapperMOR.cpp
 
     ${MOR_SRC}/component/loader/MatrixLoader.cpp
 
