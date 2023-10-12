@@ -61,13 +61,13 @@ def Reduced_liver(
     liver_MOR = attachedTo.addChild(name)
     liver_MOR.addObject('EulerImplicitSolver' , rayleighStiffness=0.1, rayleighMass=0.1)
     liver_MOR.addObject('SparseLDLSolver',name='preconditioner')
-    liver_MOR.addObject('GenericConstraintCorrection', solverName='preconditioner')
+    liver_MOR.addObject('GenericConstraintCorrection', linearSolver='@preconditioner')
 
     if POD:
         liver_MOR.addObject('MechanicalObject' , position = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], template = 'Vec1d')
     else:
         liver_MOR.addObject('MechanicalObject' , position = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], template = 'Vec1d')
-    liver_MOR.addObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_liver.txt', template = 'Vec1d,Vec1d', performECSW = True, nodeToParse = '@./liver',printLog=False)
+    #liver_MOR.addObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_liver.txt', template = 'Vec1d,Vec1d', performECSW = True, nodeToParse = '@./liver',printLog=False)
 
 
     liver = liver_MOR.addChild('liver')
@@ -123,7 +123,7 @@ from stlib3.scene import MainHeader
 def createScene(rootNode):
     surfaceMeshFileName = 'liver-smoothUV.obj'
 
-    MainHeader(rootNode,plugins=["SofaPython","SoftRobots","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=["SofaPython3","SoftRobots","ModelOrderReduction"],
                         dt=0.01,
                         gravity=[0.0,-981, 0.0])
     rootNode.addObject('FreeMotionAnimationLoop')

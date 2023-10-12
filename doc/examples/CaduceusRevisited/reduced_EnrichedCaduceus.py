@@ -65,9 +65,9 @@ def Reduced_test(
     Snake_MOR = modelRoot.addChild('Snake_MOR')
     Snake_MOR.addObject('EulerImplicitSolver' , rayleighStiffness = '0.1', rayleighMass = '0.1')
     Snake_MOR.addObject('SparseLDLSolver' , name = 'preconditioner')
-    Snake_MOR.addObject('GenericConstraintCorrection' , solverName = 'preconditioner')
+    Snake_MOR.addObject('GenericConstraintCorrection' , linearSolver = "@preconditioner")
     Snake_MOR.addObject('MechanicalObject' , position = [0]*nbrOfModes, template = 'Vec1d')
-    Snake_MOR.addObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + r'/data/listActiveNodes.txt', template = 'Vec1d,Vec1d', usePrecomputedMass = True, timeInvariantMapping2 = True, performECSW = hyperReduction, timeInvariantMapping1 = True, precomputedMassPath = path + r'/data/UniformMass_reduced.txt', nodeToParse = '@./Snake')
+    #Snake_MOR.addObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + r'/data/listActiveNodes.txt', template = 'Vec1d,Vec1d', usePrecomputedMass = True, timeInvariantMapping2 = True, performECSW = hyperReduction, timeInvariantMapping1 = True, precomputedMassPath = path + r'/data/UniformMass_reduced.txt', nodeToParse = '@./Snake')
 
 
     actuatorDummy = modelRoot.addChild('actuatorDummy')
@@ -132,7 +132,7 @@ def createScene(rootNode):
 
     Reduced_test(rootNode,
                         name="Reduced_test",
-                        surfaceMeshFileName=surfaceMeshFileName)
+                        surfaceMeshFileName=surfaceMeshFileName, hyperReduction=True)
     base = rootNode.addChild("base")
     
     stick = base.addChild("stick")

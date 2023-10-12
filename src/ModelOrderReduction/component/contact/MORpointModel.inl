@@ -24,6 +24,7 @@
 #define MOR_POINTMODEL_INL
 
 #include <sofa/helper/config.h>
+#include <sofa/geometry/proximity/PointTriangle.h>
 #include <sofa/type/Mat.h>
 #include <sofa/type/Vec.h>
 #include <iostream>

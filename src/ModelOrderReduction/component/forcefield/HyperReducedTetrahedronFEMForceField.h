@@ -240,9 +240,7 @@ public:
     // Make other overloaded version of getPotentialEnergy() to show up in subclass.
     using TetrahedronFEMForceField<DataTypes>::getPotentialEnergy;
 
-    virtual void addKToMatrix(sofa::linearalgebra::BaseMatrix *m, SReal kFactor, unsigned int &offset) override;
-    virtual void addKToMatrix(const core::MechanicalParams* /*mparams*/, const sofa::core::behavior::MultiMatrixAccessor* /*matrix*/ ) override;
-
+    virtual void buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix) override;
     void draw(const core::visual::VisualParams* vparams) override;
 
 protected:
