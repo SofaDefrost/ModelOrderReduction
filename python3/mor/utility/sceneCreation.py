@@ -243,11 +243,8 @@ def modifyGraphScene(node,nbrOfModes,newParam):
                     modelMOR.addObject(obj)
                 modelMOR.addObject('MechanicalObject', **argMecha)
                 # print param['paramMappedMatrixMapping']
-                # modelMOR.addObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
-                # print 'Create MechanicalMatrixMapperMOR in modelMOR'
                 if save:
                     replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
-                    # replaceAndSave.myMORModel.append(('MechanicalMatrixMapperMOR',param['paramMappedMatrixMapping']))
 
                 if 'paramMORMapping' in param:
                     #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
