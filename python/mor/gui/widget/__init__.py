@@ -15,7 +15,7 @@
 """
 __all__=["completer","frameLayout","genericDialogForm","treeModel"]
 
-from frameLayout import FrameLayout
-from completer import Completer
-from treeModel import TreeModel
-from genericDialogForm import GenericDialogForm
+from mor.gui.widget.frameLayout import FrameLayout
+from mor.gui.widget.completer import Completer
+from mor.gui.widget.treeModel import TreeModel
+from mor.gui.widget.genericDialogForm import GenericDialogForm

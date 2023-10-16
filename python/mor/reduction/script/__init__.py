@@ -22,6 +22,7 @@ __all__=[	"ConvertRIDinActiveNodes",
             "ReadMechanicalMatricesAndComputeVibrationModes",
             "ReadStateFilesAndComputeModes"]
 
-from ConvertRIDinActiveNodes import convertRIDinActiveNodes
-from ReadGieFileAndComputeRIDandWeights import readGieFileAndComputeRIDandWeights
-from ReadStateFilesAndComputeModes import readStateFilesAndComputeModes
+from mor.reduction.script.ConvertRIDinActiveNodes import convertRIDinActiveNodes
+from mor.reduction.script.ReadGieFileAndComputeRIDandWeights import readGieFileAndComputeRIDandWeights
+from mor.reduction.script.ReadStateFilesAndComputeModes import readStateFilesAndComputeModes
+

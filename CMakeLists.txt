@@ -99,8 +99,6 @@ if (CollisionOBBCapsule_FOUND)
 endif()
 
 # Config files and install rules for pythons scripts
-sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
-
 sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python3")
 
 find_file(SofaPython3Tools NAMES "SofaPython3/lib/cmake/SofaPython3/SofaPython3Tools.cmake")
@@ -117,11 +115,11 @@ if(SofaPython3Tools OR SofaPython3_FOUND)
     endif()
     message("-- Python3 packages will be installed in: ${SP3_PYTHON_PACKAGES_DIRECTORY}.")
     SP3_add_python_package(
-            SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python3/mor
+            SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/mor
             TARGET_DIRECTORY mor
     )
     SP3_add_python_package(
-            SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python3/morlib
+            SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/morlib
             TARGET_DIRECTORY morlib
     )
 endif()

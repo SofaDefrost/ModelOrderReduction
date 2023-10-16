@@ -30,7 +30,7 @@ list of tuple (type,argument) each one coresponding to a component
 
 '''
 from collections import OrderedDict
-from Sofa import getCategories
+
 
 forceFieldImplemented = {   'TetrahedralCorotationalFEMForceField':('HyperReducedTetrahedralCorotationalFEMForceField','tetrahedra'),
                             'TetrahedronHyperelasticityFEMForceField':('HyperReducedTetrahedronHyperelasticityFEMForceField','tetrahedra'),
@@ -69,7 +69,7 @@ def modifyPath(currentPath,type,initialParam,newParam):
     return_bool = False
     initialParam_copy = initialParam.copy()
     # print(currentPath,type)#,initialParam,newParam)
-    for key , value in initialParam_copy.iteritems():
+    for key , value in initialParam_copy.items():
         if isinstance(value, str):
             if '@' in value:
                 # print(value)
@@ -170,10 +170,11 @@ def MORreplace(node,type,newParam,initialParam):
 
     '''
     global tmp
+    from  SofaRuntime import  getCategories
     currentPath = node.getPathName()
-    # print('NODE : '+node.name)
+    # print('NODE : '+node.name.value)
     # print('TYPE : '+str(type))
-    # print('PARAM  :'+str(newParam[0][0]) )
+    #print('PARAM  :'+str(newParam[0][0]) )
     save = False
     if 'save' in newParam[1]:
         save = True
@@ -182,16 +183,16 @@ def MORreplace(node,type,newParam,initialParam):
     # print(currentPath,path)
     if path in currentPath :
         # print('\n')
-
         #   Change the initial Forcefield by the HyperReduced one with the new argument
-        # print('----------->',getCategories(type))
         if "ForceField" in getCategories(type):
+            # print('NODE : ' + node.name.value)
+            # print('TYPE : ' + str(type))
+            # print(getCategories(type))
             if type in forceFieldImplemented :
+                # print("---------------------------------> here")
                 type , valueType = forceFieldImplemented[type]
-                # print str(type)
-
-                name = 'reducedFF_'+ node.name + '_' + str(tmp)
-                tmp += 1    
+                name = 'reducedFF_'+ node.name.value + '_' + str(tmp)
+                tmp += 1
                 initialParam['name'] = name
                 initialParam['nbModes'] = param['nbrOfModes']
 
@@ -199,7 +200,7 @@ def MORreplace(node,type,newParam,initialParam):
                     initialParam[key] = param['paramForcefield'][key]
 
                 # We've already put the path to the "data" folder we now have to add the right file
-                if param['paramForcefield'].get('performECSW') == True: 
+                if param['paramForcefield'].get('performECSW') == True:
                     initialParam['RIDPath'] += name + '_RID.txt'
                     initialParam['weightsPath'] += name + '_weight.txt'
 
@@ -214,15 +215,16 @@ def MORreplace(node,type,newParam,initialParam):
                         myModel[currentPath].append((str(type),initialParam))
 
                 forcefield.append(currentPath+'/'+initialParam.get("name",str(type)))
+                # print(type, initialParam)
                 return type , initialParam
             else:
                 print("[WARNING]        No HyperReducedForceField exist for "+type)
-        
+
         saveParam = modifyPath(currentPath,type,initialParam,newParam)
 
         if save:
             if currentPath == path :
-                if type.find('Solver') != -1 or type == 'EulerImplicit' or type == 'GenericConstraintCorrection':
+                if type.find('Solver') != -1 or type == 'EulerImplicitSolver' or type == 'GenericConstraintCorrection':
                     myMORModel.append((str(type),initialParam))
                 else:
                     if currentPath not in myModel:
@@ -246,7 +248,7 @@ def MORreplace(node,type,newParam,initialParam):
         # this way we will take the path we want "to keep" and all its parents
         if newParam[1]['animationPaths']:
             for path in newParam[1]['animationPaths']:
-                # If the animationPaths contain the name of the obj 
+                # If the animationPaths contain the name of the obj
                 currentObjPath = currentPath + '/' + initialParam.get("name",str(type))
                 if currentPath.find(path) != -1 or currentObjPath.find(path) != -1:
                     if currentPath not in myModel:

@@ -3,7 +3,7 @@ import os
 import Sofa
 from numpy import add,subtract,multiply
 try:
-    from splib.numerics import *
+    from splib3.numerics import *
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
@@ -60,5 +60,5 @@ def MyReducedModel(
 
     """
 
-    modelRoot = attachedTo.createChild(name)
+    modelRoot = attachedTo.addChild(name)
 

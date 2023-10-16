@@ -4,9 +4,9 @@ import numpy as np
 
 #   STLIB IMPORT
 try:
-    from splib.animation import AnimationManager , animate
-    from stlib.scene.wrapper import Wrapper
-    from splib.scenegraph import *
+    from splib3.animation import AnimationManager , animate
+    from stlib3.scene.wrapper import Wrapper
+    from splib3.scenegraph import *
 
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
@@ -46,7 +46,7 @@ def createScene(rootNode):
     phase1_snapshots.createScene(Wrapper(rootNode, replaceAndSave.MORreplace, paramWrapper))
 
     # Add MOR plugin if not found
-    u.addPlugin(rootNode,"ModelOrderReduction")
+    #u.addPlugin(rootNode,"ModelOrderReduction")
 
     # Save connectivity list that will allow us after work only on the necessary elements
 
@@ -61,7 +61,7 @@ def createScene(rootNode):
 
 
     # We Update the link 
-    for path , item in replaceAndSave.pathToUpdate.iteritems():
+    for path , item in replaceAndSave.pathToUpdate.items():
         data , newValue = item
         obj = get(rootNode,path)
         setattr(obj,data,newValue)

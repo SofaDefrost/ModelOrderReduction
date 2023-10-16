@@ -31,18 +31,18 @@ from pydoc import locate
 from subprocess import Popen, PIPE, call
 
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import QMainWindow
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMainWindow
 
 
 # This file holds our MainWindow and all design related things
-import ui_design
+from mor.gui import ui_design
 
 # GUI Tools
 from widget import Completer
 from widget import TreeModel
 from widget import GenericDialogForm
-import utility as u
+from mor.gui import utility as u
 
 path = os.path.dirname(os.path.abspath(__file__))
 pathToIcon = path+'/icons/'
@@ -76,19 +76,22 @@ var_semantic = "[a-z|A-Z|\d|\\-|\\_]{1,20}" # string with max 20 char & min 1 wi
 var_entry = var_semantic+"\\="+var_semantic # string of 2 var_semantic separated by '='
 var_all = "[^\\*]"
 
+double_validator = QtGui.QDoubleValidator()
+double_validator.setLocale(QtCore.QLocale("en_US"))
+
 # QtGui.QIntValidator()
 existingAnimation = OrderedDict()
-existingAnimation['defaultShaking'] = { 'incr':(QtGui.QDoubleValidator(),locate('float')),
-                                        'incrPeriod':(QtGui.QDoubleValidator(),locate('float')),
-                                        'rangeOfAction':(QtGui.QDoubleValidator(),locate('float'))}
-existingAnimation['shakingSofia'] = { 'incr':(QtGui.QDoubleValidator(),locate('float')),
-                                      'incrPeriod':(QtGui.QDoubleValidator(),locate('float')),
-                                      'rangeOfAction':(QtGui.QDoubleValidator(),locate('float')),
+existingAnimation['defaultShaking'] = { 'incr':(double_validator,locate('float')),
+                                        'incrPeriod':(double_validator,locate('float')),
+                                        'rangeOfAction':(double_validator,locate('float'))}
+existingAnimation['shakingSofia'] = { 'incr':(double_validator,locate('float')),
+                                      'incrPeriod':(double_validator,locate('float')),
+                                      'rangeOfAction':(double_validator,locate('float')),
                                       'dataToWorkOn':(var_semantic,locate('str')),
-                                      'angle':(QtGui.QDoubleValidator(),locate('float')),
-                                      'rodRadius':(QtGui.QDoubleValidator(),locate('float'))}
+                                      'angle':(double_validator,locate('float')),
+                                      'rodRadius':(double_validator,locate('float'))}
 
-preferenceKey = {'verbose':(QtGui.QDoubleValidator(),locate('bool')),
+preferenceKey = {'verbose':(double_validator,locate('bool')),
                  'nbrCPU':(QtGui.QIntValidator(),locate('int'))}
 
 green = '#c4df9b' 
@@ -105,7 +108,6 @@ readOnly = True
 
 class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
     def __init__(self):
-
         # Init of inherited class 
         super(self.__class__, self).__init__()
 
@@ -160,11 +162,11 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
                             self.layout_advancedParam,self.layout_execution]
 
         for layout in self.listLayout:
-            QtCore.QObject.connect(layout._title_frame, QtCore.SIGNAL('clicked()'), self.resizeHeight)
-
+            # QtCore.QObject.connect(layout._title_frame, QtCore.SIGNAL('clicked()'), self.resizeHeight)
+            layout._title_frame.c.clicked.connect(self.resizeHeight)
         # Add Validator
-        self.lineEdit_tolModes.setValidator(QtGui.QDoubleValidator())
-        self.lineEdit_tolGIE.setValidator(QtGui.QDoubleValidator())
+        self.lineEdit_tolModes.setValidator(double_validator)
+        self.lineEdit_tolGIE.setValidator(double_validator)
         self.lineEdit_moduleName.setValidator(QtGui.QRegExpValidator(self.exp_var))
         self.lineEdit_NodeToReduce.setValidator(QtGui.QRegExpValidator(self.exp_path))
         self.lineEdit_scene.setValidator(QtGui.QRegExpValidator(self.exp_all))
@@ -257,7 +259,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
 
         settings = QtCore.QSettings("ModelOrderReduction", "settings")
         tmp = {}
-        for key , value in preferenceKey.iteritems():
+        for key , value in preferenceKey.items():
             # print (settings.value(key, type=str))
             dataType = value[1]
             tmp[key] = settings.value(key, type=dataType)
@@ -270,7 +272,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
 
         # preference_dialog = PreferencesDialog(default_config_value=default_config_value, parent=self)
         if self.dialogMenu.exec_():
-            for key , value in self.dialogMenu.currentValues.iteritems():
+            for key , value in self.dialogMenu.currentValues.items():
                 settings.setValue(key, value)
 
             # this writes the settings to storage
@@ -327,14 +329,14 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
     def addButton(self,widget):
 
         # CheckBox
-        checkBox = QtGui.QCheckBox()
+        checkBox = QtWidgets.QCheckBox()
         checkBox.setObjectName(_fromUtf8("checkBox"))
         checkBox.setFixedWidth(30)
         checkBox.setStyleSheet("border:0px")
         checkBox.setTristate(False)
 
         # Reset Button
-        btn = QtGui.QPushButton(self.grpBox_Execution)
+        btn = QtWidgets.QPushButton(self.grpBox_Execution)
         btn.setObjectName(_fromUtf8("button"))
 
         icon = QtGui.QIcon()
@@ -418,10 +420,12 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
                         # item.setText(1,"ToDo")
                         return
 
-                except IOError as (errno, strerror):
-                    print "I/O error({0}): {1}".format(errno, strerror)
+                # except IOError as (errno, strerror):
+                #     print("I/O error({0}): {1}".format(errno, strerror))
+                except IOError as error:
+                    print('I/O error occurred: {}'.format(error))
                 except:
-                    print "Unexpected error:", sys.exc_info()[0]
+                    print("Unexpected error:", sys.exc_info()[0])
                     raise
 
             def test(phase,item,globing=False):
@@ -473,7 +477,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
         # print(self.width(),self.height())
         self.setMaximumSize(800,height)
         self.setMinimumSize(630, 320) #290)
-        QtGui.QMainWindow.resizeEvent(self, event)
+        QtWidgets.QMainWindow.resizeEvent(self, event)
 
     def resizeTab(self):
         # print('---------------> resizeTab')
@@ -539,7 +543,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
         if column == col_parameters :
             dialog = self.animationDialog[row]
             if dialog.exec_():
-                u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),dialog.currentValues.iteritems())
+                u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),dialog.currentValues.items())
                 u.setCellColor(self.tableWidget_animationParam,dialog,row,column)
 
     def reset(self,state=False):
@@ -581,9 +585,9 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
         Save As, ask user .yml file to save & correct name if need be 
         '''
         # self.saveFile = u.openFileName('Save Configuration',"yaml file *.yml")
-        self.saveFile = str(QtGui.QFileDialog.getSaveFileName(self,
+        self.saveFile, *_ = QtWidgets.QFileDialog.getSaveFileName(self,
             'Save Configuration',filter="yaml file *.yml",
-            options=QtGui.QFileDialog.DontUseNativeDialog))
+            options=QtWidgets.QFileDialog.DontUseNativeDialog)
         if self.saveFile:
             if self.saveFile.find('.') == -1 :
                 self.saveFile = self.saveFile+'.yml'
@@ -617,7 +621,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
             completer.setCompletionColumn(0)
             completer.setCompletionRole(QtCore.Qt.DisplayRole)
             completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-            completer.setCompletionMode(QtGui.QCompleter.PopupCompletion)
+            completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             # print(model.dumpObjectTree())
             self.lineEdit_NodeToReduce.setCompleter(completer)
             self.lineEdit_NodeToReduce.clicked.connect(completer.complete)
@@ -707,10 +711,10 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
                                         child.cellWidget(row,column).setText('')
                                         u.setBackColor(child.cellWidget(row,column))
                                 elif column == 0:
-                                    child.cellWidget(row,column).setCurrentIndex(existingAnimation.keys().index(cfg[objectName][row][column]))
+                                    child.cellWidget(row,column).setCurrentIndex(list(existingAnimation.keys()).index(cfg[objectName][row][column]))
                                 elif column == 1:
                                     self.animationDialog[row].load(cfg[objectName][row][column])
-                                    u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),self.animationDialog[row].currentValues.iteritems())
+                                    u.setAnimationParamStr(self.tableWidget_animationParam.item(row,column),self.animationDialog[row].currentValues.items())
                                     u.setCellColor(self.tableWidget_animationParam,self.animationDialog[row],row,column)
 
                         # print(self.tableWidget_animationParam.width(),self.tableWidget_animationParam.height())
@@ -799,9 +803,9 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
                         item = field.cellWidget(row,column)
                         if item:
                             if str(item.palette().color(QtGui.QPalette.Background).name()) in [yellow,red]:
-                                color = str(item.palette().color(QtGui.QPalette.Background).name())
-                        elif str(field.item(row,column).backgroundColor().name()) in [yellow,red]:
-                            color = str(field.item(row,column).backgroundColor().name())
+                                color = item.palette().color().name()
+                        elif field.item(row,column).background().color().name() in [yellow,red]:
+                            color = field.item(row,column).background().color().name()
             if color == yellow or color == red:
                 msg.append(field)
 
@@ -845,7 +849,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
             arguments['listObjToAnimate'] = []
             for row in data[pageName]['tableWidget_animationParam']:
                 animation = data[pageName]['tableWidget_animationParam'][row][0]
-                for key,value in data[pageName]['tableWidget_animationParam'][row][1].iteritems():
+                for key,value in data[pageName]['tableWidget_animationParam'][row][1].items():
                     typ = existingAnimation[animation][key][1]
                     data[pageName]['tableWidget_animationParam'][row][1][key] = typ(value)
                 arguments['listObjToAnimate'].append(ObjToAnimate(  location = data[pageName]['tableWidget_animationParam'][row][2],
@@ -865,7 +869,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
 
 
             # Preference Arguments
-            for key , value in self.dialogMenu.currentValues.iteritems():
+            for key , value in self.dialogMenu.currentValues.items():
                 # print(key,type(value))
                 arguments[str(key)] = value
 
@@ -940,12 +944,12 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
             u.setBackColor(tmp)
             tab.setCellWidget(row,2,tmp)
 
-            item = QtGui.QTableWidgetItem()
+            item = QtWidgets.QTableWidgetItem()
             tab.setItem(row,1,item)
             backgrdColor = QtGui.QColor()
             backgrdColor.setNamedColor(yellow)
-            tab.item(row,1).setBackgroundColor(backgrdColor)
-            
+            tab.item(row,1).setBackground(backgrdColor)
+
             self.animationDialog.append(GenericDialogForm(animation,existingAnimation[animation]))
             self.addComboToTab(tab,existingAnimation.keys(),row,0)
 
@@ -955,7 +959,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
         '''
         addComboToTab will add a QComboBox to an QTableWidget[row][column] and fill it with different value 
         '''
-        combo = QtGui.QComboBox()
+        combo = QtWidgets.QComboBox()
         combo.setObjectName(_fromUtf8("combo"+str(row)+str(column)))
         combo.activated.connect(lambda: self.addAnimationDialog(tab,row,column,column+1))
         for value in values:
@@ -981,7 +985,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
         self.resizeTab()
 
 def main():
-    app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
+    app = QtWidgets.QtWidgets(sys.argv)  # A new instance of QApplication
     gui_mor = UI_mor()  # We set the form to be our ExampleApp (design)
     gui_mor.show()  # Show the form
     app.exec_()  # and execute the app

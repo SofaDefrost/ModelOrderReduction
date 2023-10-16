@@ -8,20 +8,20 @@ from sys import argv
 
 def convertRIDinActiveNodes(RIDFileName,connectivityFileName,listActiveNodesFileName, verbose=False ):
 
-    print "###################################################"
-    print "Executing convertRIDinActiveNodes.py\n"
-    print "Arguments :\n"
-    print "     INPUT  :"
-    print "         -RIDFileName                :",RIDFileName
-    print "         -connectivityFileName       :",connectivityFileName
-    print "     OUTPUT :"
-    print "         -listActiveNodesFileName    :",listActiveNodesFileName,"\n"
-    print "###################################################"
+    print("###################################################")
+    print("Executing convertRIDinActiveNodes.py\n")
+    print("Arguments :\n")
+    print("     INPUT  :")
+    print("         -RIDFileName                :",RIDFileName)
+    print("         -connectivityFileName       :",connectivityFileName)
+    print("     OUTPUT :")
+    print("         -listActiveNodesFileName    :",listActiveNodesFileName,'\n')
+    print("###################################################")
 
     ##############################################################################
 
     fRID = open(RIDFileName,'r')
-    if verbose : print "Reading file :",RIDFileName
+    if verbose : print("Reading file :",RIDFileName)
     fRID.readline()
     RIDlist = []
     for line in fRID:
@@ -29,21 +29,21 @@ def convertRIDinActiveNodes(RIDFileName,connectivityFileName,listActiveNodesFile
         RIDlist.append(int(lineSplit[0]))
     fRID.close()
     #print RIDlist
-    if verbose : print "Done reading file :",RIDFileName,'\n'
+    if verbose : print("Done reading file :",RIDFileName,'\n')
 
 
     fconnec = open(connectivityFileName,'r')
-    if verbose : print "Reading file :",connectivityFileName
+    if verbose : print("Reading file :",connectivityFileName)
     connecList = []
     for line in fconnec:
         lineSplit = line.split();
-        connecList.append(map(int,lineSplit))
+        connecList.append(list(map(int,lineSplit)))
     fconnec.close()
     #print connecList
-    if verbose : print "Done reading file :",connectivityFileName,'\n'
+    if verbose : print("Done reading file :",connectivityFileName,'\n')
 
 
-    if verbose : print "Generating listActiveNodes\n"
+    if verbose : print("Generating listActiveNodes\n")
     dimension = len(lineSplit)
     listActiveNodes = []
     for i in RIDlist:
@@ -63,16 +63,16 @@ def convertRIDinActiveNodes(RIDFileName,connectivityFileName,listActiveNodesFile
 
     listActiveNodes.sort()
 
-    if verbose : print "Filling file :",listActiveNodesFileName,"\n"
+    if verbose : print("Filling file :",listActiveNodesFileName,"\n")
     fActiveNodes = open(listActiveNodesFileName,'w')
     for item in listActiveNodes:
         fActiveNodes.write("%d\n" % item)
     fActiveNodes.close()
 
     if verbose :
-        print "listActiveNodes :"
-        print listActiveNodes
-        print "===> Success convertRIDinActiveNodes.py\n"
+        print("listActiveNodes :")
+        print(listActiveNodes)
+        print("===> Success convertRIDinActiveNodes.py\n")
 
     return listActiveNodes
 

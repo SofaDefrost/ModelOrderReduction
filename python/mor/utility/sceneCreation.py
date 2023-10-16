@@ -23,11 +23,10 @@
 '''
 import sys
 import yaml
-from Sofa import getCategories
 
 try:
-    from splib.animation import animate
-    from splib.scenegraph import *
+    from splib3.animation import animate
+    from splib3.scenegraph import *
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
@@ -62,9 +61,9 @@ def removeNodes(nodes):
 
 def getNodeSolver(node):
     solver = []
-    for obj in node.getObjects():
+    for obj in node.objects:
         className = obj.getClassName()
-        categories = getCategories(obj.getClassName())
+        categories = obj.getCategories()
         solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
         if any(x in solverCategories for x in categories):
             solver.append(obj)
@@ -72,7 +71,7 @@ def getNodeSolver(node):
 
 def getContainer(node):
     container = None
-    for obj in node.getObjects():
+    for obj in node.objects:
         className = obj.getClassName()
         if className.find('TopologyContainer') != -1:
             # print obj.getName()
@@ -105,15 +104,13 @@ def searchObjectClassInGraphScene(node,toFind):
 
     def search(node,toFind):
 
-        for obj in node.getObjects():
+        for obj in node.objects:
             if obj.getClassName() == toFind:
                 tmp.results.append(obj)
-
-        for child in node.getChildren():
+        for child in node.children:
             search(child,toFind)
 
     search(node,toFind)
-
     return tmp.results
 
 def searchPlugin(rootNode,pluginName):
@@ -122,16 +119,17 @@ def searchPlugin(rootNode,pluginName):
     '''
     found = False
     plugins = searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
+    print(plugins)
     for plugin in plugins:
-        for name in plugin.pluginName:
-            if name == ["pluginName"]:
+        for name in plugin.pluginName.value:
+            if name == pluginName:
                 found = True
     return found
 
 def addPlugin(rootNode,pluginName):
 
     if not searchPlugin(rootNode,pluginName):
-        rootNode.createObject('RequiredPlugin', pluginName=pluginName)
+        rootNode.addObject('RequiredPlugin', pluginName=pluginName)
 
 def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     '''
@@ -173,9 +171,10 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     tmp = 0
     for objToAnimate in listObjToAnimate:
         if phase[tmp] :
+            # print("----------------------------------> ",objToAnimate)
             if type(toAnimate[tmp]).__name__ == "Node":
                 objToAnimate.item = toAnimate[tmp]
-                for obj in objToAnimate.item.getObjects():
+                for obj in objToAnimate.item.objects:
                     # print(obj.getClassName())
                     if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
                         objToAnimate.item = obj
@@ -228,22 +227,23 @@ def modifyGraphScene(node,nbrOfModes,newParam):
     try :
         currentNode = get(node,pathTmp[1:])
         solver = getNodeSolver(currentNode)
-        # print("node.getPathName()",currentNode.getPathName())
+        print("node.getPathName()",currentNode.getPathName())
+        print(solver)
         if currentNode.getPathName() == pathTmp:
             if 'paramMappedMatrixMapping' in param:
                 print('Create new child modelMOR and move node in it')
-                myParent = currentNode.getParents()[0]
-                modelMOR = myParent.createChild(currentNode.name+'_MOR')
-                for parents in currentNode.getParents():
-                    parents.removeChild(currentNode)
+                myParent = list(currentNode.parents)
+                modelMOR = myParent[0].addChild(currentNode.name.value+'_MOR')
+                myParent[0].removeChild(currentNode)
                 modelMOR.addChild(currentNode)
                 for obj in solver:
                     # print('To move!')
+                    # print(obj.name.value)
                     currentNode.removeObject(obj)
-                    currentNode.getParents()[0].addObject(obj)
-                modelMOR.createObject('MechanicalObject', **argMecha)
+                    modelMOR.addObject(obj)
+                modelMOR.addObject('MechanicalObject', **argMecha)
                 # print param['paramMappedMatrixMapping']
-                modelMOR.createObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
+                modelMOR.addObject('MechanicalMatrixMapperMOR', **param['paramMappedMatrixMapping'] )
                 # print 'Create MechanicalMatrixMapperMOR in modelMOR'
                 if save:
                     replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
@@ -251,15 +251,15 @@ def modifyGraphScene(node,nbrOfModes,newParam):
 
                 if 'paramMORMapping' in param:
                     #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
-                    param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name
+                    param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name.value
                     if save:
                         replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
 
-                    currentNode.createObject('ModelOrderReductionMapping', **param['paramMORMapping'])
+                    currentNode.addObject('ModelOrderReductionMapping', **param['paramMORMapping'])
                     print ("Create ModelOrderReductionMapping in node")
                 # else do error !!
     except :
-        print("Problem with path : "+pathTmp[1:])
+        print("[ERROR]    In modifyGraphScene , cannot modify scene from path : "+pathTmp[1:])
 
 def saveElements(node,dt,forcefield):
     '''
@@ -283,19 +283,21 @@ def saveElements(node,dt,forcefield):
     To do that we use :py:func:`splib.animation.animate`
     **of the** `STLIB <https://github.com/SofaDefrost/STLIB>`_ **SOFA plugin**
     '''
+
     import numpy as np
-    # print('--------------------->  Gonna Try to Save the Elements')
+    #print('--------------------->  Gonna Try to Save the Elements')
     def save(node,container,valueType, **param):
         global tmp
         elements = container.findData(valueType).value
-        np.savetxt('reducedFF_'+ node.name + '_' + str(tmp)+'_'+valueType+'_elmts.txt', elements,fmt='%i')
+        np.savetxt('reducedFF_'+ node.name.value + '_' + str(tmp)+'_'+valueType+'_elmts.txt', elements,fmt='%i')
         tmp += 1
-        print('save : '+'elmts_'+node.name+' from '+container.name+' with value Type '+valueType)
+        print('save : '+'elmts_'+node.name.value+' from '+container.name.value+' with value Type '+valueType)
 
     # print('--------------------->  ',forcefield)
     for objPath in forcefield:
         nodePath = '/'.join(objPath.split('/')[:-1])
         # print(nodePath,objPath)
+        #print("----------->", type(node))
         obj = get(node,objPath[1:])
         currentNode = get(node,nodePath[1:])
 
@@ -305,13 +307,11 @@ def saveElements(node,dt,forcefield):
             container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
         else:
             container = getContainer(currentNode)
-
         # print(container)
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
 
             # print('--------------------->  ',valueType)
-
             if valueType:
                 animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
@@ -331,26 +331,27 @@ def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     +------------+-----------+--------------------------------------------------------------+
 
     '''
-
+    print("---------------------------------------------------")
     node = get(rootNode,pathToNode)
     nodeName = node.name
 
     solver = getNodeSolver(node)
     removeObjects(solver)
 
-    for obj in rootNode.getObjects():
+    for obj in rootNode.objects:
         rootNode.removeObject(obj)
 
-    rootNode.createObject('VisualStyle', displayFlags='showForceFields')
+    rootNode.addObject('VisualStyle', displayFlags='showForceFields')
     rootNode.dt = 1
 
-    for child in rootNode.getChildren():
+    for child in rootNode.children:
         rootNode.removeChild(child)
 
-    for child in node.getChildren():
-        if not (child.name in nodeName):
+    for child in node.children:
+        print(child)
+        if not child.name.value in nodeName:
             # print '--------------------------> remove   '+child.name
             node.removeChild(child)
 
-    node.createObject('ReadState', filename=stateFile)
+    node.addObject('ReadState', filename=stateFile)
     rootNode.addChild(node)
