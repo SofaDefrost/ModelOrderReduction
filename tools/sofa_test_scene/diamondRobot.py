@@ -75,7 +75,7 @@ def createScene(rootNode):
 
     modelNode = rootNode.addChild('modelNode')
     modelNode.addObject('EulerImplicitSolver', name='integration')
-    modelNode.addObject('SparseLDLSolver', name="solver", template='CompressedRowSparseMatrixd')
+    modelNode.addObject('SparseLDLSolver', name="solver", template='CompressedRowSparseMatrixMat3x3d')
     loader = modelNode.addObject('MeshVTKLoader', name='loader', filename=volumeMeshFileName,
                                  rotation=list(rotation), translation=list(translation),
                                  scale3d=list(scale))
