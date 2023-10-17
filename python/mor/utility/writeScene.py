@@ -181,7 +181,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                     parentNode = nodeName+"_MOR"
                 elif childName.find('/'+nodeName+'/') == -1:
                     print(childName,1)
-                    tmp = filter(None, childName.split('/'))
+                    tmp = list(filter(None, childName.split('/')))
                     if len(tmp) > 2: # Add all the parents that haven't been created yet 
                         for i, node in enumerate(tmp):
                             if i < len(tmp)-2:
@@ -194,7 +194,6 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                                     # print(toFind)
                                     logFile.write(toFind)
                         parentNode = childName.split('/')[-2]
-
                     else:
                         parentNode = 'modelRoot'
 
@@ -204,7 +203,7 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                     if childName.split('/')[-2] == nodeName:
                         parentNode = nodeName
                     else:
-                        tmp = filter(None, childName.split('/'))
+                        tmp = list(filter(None, childName.split('/')))
                         parentNode = tmp[-2]
                         if len(tmp) > 2:
                             for i, node in enumerate(tmp):

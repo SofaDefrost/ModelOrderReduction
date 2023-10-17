@@ -3,8 +3,8 @@ import sys
 import os
 
 #   STLIB IMPORT
+from stlib3.scene import MainHeader
 from stlib3.physics.constraints import FixedBox
-from stlib3.visuals import VisualModel
 from stlib3.physics.deformable import ElasticMaterialObject
 
 # SOFTROBOTS IMPORT
@@ -52,55 +52,28 @@ meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
 
 def createScene(rootNode):
 
+    MainHeader(rootNode,plugins=plugins,
+               dt=1.0,
+               gravity=[0.0, 0.0, -9810.0])
+
+    # not in Mainheader anymore, need some update
     rootNode.addObject('FreeMotionAnimationLoop')
     rootNode.addObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
-    rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
-    rootNode.addObject('VisualStyle', displayFlags='showVisualModels showForceFields')
-    rootNode.addObject('RequiredPlugin', pluginName=plugins, printLog=False)
+    rootNode.VisualStyle.displayFlags = 'showVisualModels showForceFields'
+    # -------------------------------------------
 
-    rootNode.findData('gravity').value=[0.0,0.0,-9810];
-    rootNode.findData('dt').value=1
-
-
-    volumeMeshFileName=meshPath+'siliconeV0.vtu'
-    rotation=[90, 0.0, 0.0]
-    translation=[0.0, 0.0, 35]
-    totalMass=0.5
-    surfaceMeshFileName=meshPath+'surface.stl'
-    surfaceColor=[0.7, 0.7, 0.7, 0.7]
-    poissonRatio=0.45
-    youngModulus=450
-    scale=[1., 1., 1.]
-
-
-    modelNode = rootNode.addChild('modelNode')
-    modelNode.addObject('EulerImplicitSolver', name='integration')
-    modelNode.addObject('SparseLDLSolver', name="solver", template='CompressedRowSparseMatrixMat3x3d')
-    loader = modelNode.addObject('MeshVTKLoader', name='loader', filename=volumeMeshFileName,
-                                 rotation=list(rotation), translation=list(translation),
-                                 scale3d=list(scale))
-
-    # loader.tetras.getLinkPath() AND loader.position.getLinkPath() ---> DO NOT WORK
-    # When you change the scene for the HyperReduction, seems to update the link path to correct new path
-    # BUT does not load the loader data anymore
-    modelNode.addObject('TetrahedronSetTopologyContainer', position='@loader.position',
-                                    tetras='@loader.tetrahedra', name='container')
-    modelNode.addObject('MechanicalObject', template='Vec3', name='dofs')
-    modelNode.addObject('UniformMass', totalMass=totalMass, name='mass')
-    modelNode.addObject('TetrahedronFEMForceField', template='Vec3',
-                                     method='large', name='forcefield',
-                                     poissonRatio=poissonRatio, youngModulus=youngModulus)
-
-    visualmodel = modelNode.addChild('visualmodel')
-    visualmodel.addObject('MeshSTLLoader', name='loader', filename=surfaceMeshFileName)
-    visualmodel.addObject('OglModel', name="OglModel", src="@loader",
-                   rotation=list(rotation),
-                   translation=list(translation),
-                   scale3d=list(scale),
-                   color=list(surfaceColor), updateNormals=False)
-    visualmodel.addObject('BarycentricMapping', name='mapping')
-
-    modelNode.addObject('GenericConstraintCorrection', linearSolver='@solver')
+    modelNode = ElasticMaterialObject(
+        parent=rootNode,
+        volumeMeshFileName=meshPath+'siliconeV0.vtu',
+        name='modelNode',
+        rotation=[90, 0.0, 0.0],
+        translation=[0.0, 0.0, 35],
+        totalMass=0.5,
+        withConstrain=False,
+        surfaceMeshFileName=meshPath+'surface.stl',
+        surfaceColor=[0.7, 0.7, 0.7, 0.7],
+        poissonRatio=0.45,
+        youngModulus=450)
 
     FixedBox(
         atPositions=[-15, -15, -40,  15, 15, 10],
