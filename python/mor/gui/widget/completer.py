@@ -2,8 +2,8 @@
 '''
 **Class used to create an auto-completion help**
 '''
-from PyQt4.QtGui import QCompleter
-from PyQt4.QtCore import Qt
+from PyQt5.QtWidgets import QCompleter
+from PyQt5.QtCore import Qt
 counter = 0
 
 class Completer(QCompleter):

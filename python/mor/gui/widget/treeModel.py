@@ -15,8 +15,8 @@ and give it as input to our :py:class:`.TreeModel` Class
 
     model = TreeModel(cfg)
 '''
-from PyQt4 import QtCore
-from PyQt4.QtCore import QAbstractItemModel
+from PyQt5 import QtCore
+from PyQt5.QtCore import QAbstractItemModel
 
 
 class TreeModel(QAbstractItemModel):

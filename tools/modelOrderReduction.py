@@ -11,7 +11,7 @@
 import os
 import sys
 path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path+'/../python3') # TO CHANGE
+sys.path.append(path+'/../python') # TO CHANGE
 
 
 # MOR IMPORT
@@ -30,13 +30,13 @@ originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
 outputDir = utility.openDirName('Select the directory tha will contain all the results')
 
 ### DIAMOND ROBOT PARAM
-# nodeToReduce = '/modelNode'
-# nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
-# sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
-# est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
-# ouest = ObjToAnimate("modelNode/ouest", incr=5,incrPeriod=10,rangeOfAction=40)
-# listObjToAnimate = [nord,ouest,sud,est]
-# addRigidBodyModes = [0,0,0]
+nodeToReduce = '/modelNode'
+nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
+sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
+est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
+ouest = ObjToAnimate("modelNode/ouest", incr=5,incrPeriod=10,rangeOfAction=40)
+listObjToAnimate = [nord,ouest,sud,est]
+addRigidBodyModes = [0,0,0]
 
 ## FINGER PARAM
 #nodeToReduce = '/finger'
@@ -61,10 +61,10 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 # addRigidBodyModes = [0,0,0]
 
 ### LIVER
-nodeToReduce ='/liver'
-actuator = ObjToAnimate("actuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.4)
-listObjToAnimate = [actuator]
-addRigidBodyModes = [0,0,0]
+# nodeToReduce ='/liver'
+# actuator = ObjToAnimate("actuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.4)
+# listObjToAnimate = [actuator]
+# addRigidBodyModes = [0,0,0]
 
 ### HEXABEAM
 #nodeToReduce ='/M1'
@@ -107,7 +107,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #######################################################################
 ####################       EXECUTION        ###########################
 ### TO PERFORM THE REDUCTION ALL AT ONCE:
-#reduceMyModel.performReduction()
+reduceMyModel.performReduction()
 
 ### TO PERFORM THE REDUCTION STEP BY STEP:
 ####################    SOFA LAUNCHER       ##########################
@@ -119,7 +119,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #   add a writeState componant to save the shaking resulting states  #
 #                                                                    #
 ######################################################################
-reduceMyModel.phase1()
+# reduceMyModel.phase1()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -131,7 +131,7 @@ reduceMyModel.phase1()
 #                       the different mode                           #
 #                                                                    #
 ######################################################################
-reduceMyModel.phase2()
+# reduceMyModel.phase2()
 
 
 ####################    SOFA LAUNCHER       ##########################
@@ -149,7 +149,7 @@ reduceMyModel.phase2()
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-reduceMyModel.phase3()
+# reduceMyModel.phase3()
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -162,4 +162,4 @@ reduceMyModel.phase3()
 #      with it. Additionnally we also compute the Active Nodes       #
 #                                                                    #
 ######################################################################
-reduceMyModel.phase4()
+# reduceMyModel.phase4()

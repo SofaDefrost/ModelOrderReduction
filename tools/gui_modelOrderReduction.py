@@ -6,7 +6,7 @@ import os,sys
 from PyQt5 import QtWidgets
 
 path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path+'/../python3/') # TO CHANGE
+sys.path.append(path+'/../python/') # TO CHANGE
 
 from mor.gui.ui_mor import UI_mor
 

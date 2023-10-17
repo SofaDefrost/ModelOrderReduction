@@ -5,9 +5,9 @@ import platform
 
 #   STLIB IMPORT
 try:
-    from splib.animation import AnimationManager , animate
-    from stlib.scene.wrapper import Wrapper
-    from splib.scenegraph import *
+    from splib3.animation import AnimationManager , animate
+    from stlib3.scene.wrapper import Wrapper
+    from splib3.scenegraph import *
 except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
@@ -47,7 +47,7 @@ def createScene(rootNode):
     # Import Original scene
 
     originalScene.createScene(rootNode)
-    dt = rootNode.dt
+    dt = rootNode.dt.value
     timeExe = nbIterations * dt
 
     # Add Animation Manager to Scene
@@ -55,9 +55,9 @@ def createScene(rootNode):
     # more details at splib.animation.AnimationManager (https://stlib.readthedocs.io/en/latest/)
 
     if isinstance(rootNode, Wrapper):
-        AnimationManager(rootNode.node)
+        rootNode.addObject(AnimationManager(rootNode.node))
     else:
-        AnimationManager(rootNode)
+        rootNode.addObject(AnimationManager(rootNode))
 
     # Now that we have the AnimationManager & a list of the nodes we want to animate
     # we can add an animation to then according to the arguments in listObjToAnimate
@@ -73,15 +73,15 @@ def createScene(rootNode):
     # We need rest_position and because it is normally always the same we record it one time
     # during the first phase with the argument writeX0 put to True
     if phase == phaseToSave:
-        myParent.createObject('WriteState', filename="stateFile.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
+        myParent.addObject('WriteState', filename="stateFile.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="1", writeV="0")
     else :
-        myParent.createObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
+        myParent.addObject('WriteState', filename="stateFile.state", period=listObjToAnimate[0].params["incrPeriod"]*dt,
                                             writeX="1", writeX0="0", writeV="0")
 
     # If you want to save also the velocity uncomment the what is below.
     # Then after if you give to **ReduceModel** *saveVelocitySnapshots = True* as parameter
     # all the different velocity saved will be added to one file as the stateFile
 
-    # myParent.createObject('WriteState', filename="stateFileVelocity.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
+    # myParent.addObject('WriteState', filename="stateFileVelocity.state",period=listObjToAnimate[0].params["incrPeriod"]*dt,
     #                                       writeX = "0", writeX0 = "0", writeV = "1")

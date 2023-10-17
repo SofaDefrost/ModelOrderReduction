@@ -171,7 +171,7 @@ class ReduceModel():
 
         """
         self.listSofaScene = []
-        phaseNumClass = [self.reductionAnimations.phaseNumClass[i] for i in phasesToExecute]
+
         if not phasesToExecute:
             phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
 
@@ -181,8 +181,8 @@ class ReduceModel():
         for i in phasesToExecute:
             if i >= self.reductionAnimations.nbPossibility or i < 0 :
                 raise ValueError("phasesToExecute incorrect, select an non-existent phase : "+phasesToExecute)
-            if self.phaseToSave == phaseNumClass:
-                self.phaseToSaveIndex = phaseNumClass.index(self.phaseToSave)
+            if self.phaseToSave == self.reductionAnimations.phaseNumClass[i]:
+                self.phaseToSaveIndex = self.reductionAnimations.phaseNumClass.index(self.phaseToSave)
                 # print("INDEX -------------------> "+str(self.phaseToSaveIndex))
 
             self.listSofaScene.append({ "ORIGINALSCENE": self.originalScene,
@@ -278,7 +278,7 @@ class ReduceModel():
 
         """
         # MOR IMPORT
-        from script import readStateFilesAndComputeModes
+        from mor.reduction.script import readStateFilesAndComputeModes
 
         start_time = time.time()
 
@@ -355,7 +355,6 @@ class ReduceModel():
         filesandtemplates = []
         for filename in filenames:                
             filesandtemplates.append( (open(pathToTemplate+filename).read(), filename) )
-             
         results = startSofa(self.listSofaScene, filesandtemplates, launcher=ParallelLauncher(self.nbrCPU))
 
         if self.verbose:
@@ -375,11 +374,13 @@ class ReduceModel():
 
         for fileName in self.reductionParam.savedElementsFilesNames :
             u.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+slash+fileName,self.packageBuilder.debugDir+fileName)
-
-        self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
-        # print("massName -----------------------> ",self.reductionParam.massName)
-        u.copy(self.reductionParam.massName,self.reductionParam.dataDir)
-
+        
+        ### commented out waiting for change in c++ code
+        # optimization done in MMM but now removed
+        # self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
+        # # print("massName -----------------------> ",self.reductionParam.massName)
+        # u.copy(self.reductionParam.massName,self.reductionParam.dataDir)
+        #####
 
         files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_Gie.txt")
         if files: 
@@ -418,7 +419,7 @@ class ReduceModel():
 
         """
         # MOR IMPORT
-        from script import readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
+        from . script import readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
 
         start_time = time.time()
 
@@ -463,13 +464,12 @@ class ReduceModel():
                     self.reductionParam.savedElementsFilesNames[j] = self.reductionParam.savedElementsFilesNames[i]
                     self.reductionParam.savedElementsFilesNames[i] = tmp
 
-        # print(self.reductionParam.savedElementsFilesNames)
-        # print(self.reductionParam.gieFilesNames)
-        tmp = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0]
-        tmp = os.path.normpath(tmp)
-        self.reductionParam.massName = tmp.split(slash)[-1]
-        # print("massName -----------------------> ",self.reductionParam.massName)
-
+        ### commented out waiting for change in c++ code
+        # optimization done in MMM but now removed
+        # tmp = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0]
+        # tmp = os.path.normpath(tmp)
+        # self.reductionParam.massName = tmp.split(slash)[-1]
+        ####
 
         self.reductionParam.RIDFilesNames = []
         self.reductionParam.weightsFilesNames = []

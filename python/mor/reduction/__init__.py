@@ -13,4 +13,4 @@
 
 """
 __all__=["reduceModel","script","container"]
-from reduceModel import ReduceModel
+from mor.reduction.reduceModel import ReduceModel

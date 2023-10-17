@@ -2,7 +2,7 @@
 import os
 import Sofa
 from numpy import add,subtract
-from splib.numerics import *
+from splib3.numerics import *
 
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -54,70 +54,70 @@ def Reduced_diamond(
         totalMass (float):   The mass is distributed according to the geometry of the object.
     """
 
-    modelNode_MOR = attachedTo.createChild(name)
-    modelNode_MOR.createObject('EulerImplicit')
-    modelNode_MOR.createObject('SparseLDLSolver' , name = 'Solver')
-    modelNode_MOR.createObject('GenericConstraintCorrection' , solverName = 'Solver')
-    modelNode_MOR.createObject('MechanicalObject' , position = '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0', template = 'Vec1d')
-    modelNode_MOR.createObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_modelNode.txt', template = 'Vec1d,Vec1d', performECSW = 'True', nodeToParse = '@./modelNode')
+    modelNode_MOR = attachedTo.addChild(name)
+    modelNode_MOR.addObject('EulerImplicitSolver')
+    modelNode_MOR.addObject('SparseLDLSolver' , name = 'Solver')
+    modelNode_MOR.addObject('GenericConstraintCorrection' , solverName = 'Solver')
+    modelNode_MOR.addObject('MechanicalObject' , position = '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0', template = 'Vec1d')
+    modelNode_MOR.addObject('MechanicalMatrixMapperMOR' , object1 = '@./MechanicalObject', object2 = '@./MechanicalObject', listActiveNodesPath = path + '/data/conectivity_modelNode.txt', template = 'Vec1d,Vec1d', performECSW = 'True', nodeToParse = '@./modelNode')
 
 
-    modelNode = modelNode_MOR.createChild('modelNode')
-    modelNode.createObject('MeshVTKLoader' , rotation = add(rotation,[90, 0.0, 0.0]), translation = add(translation,[0.0, 0.0, 35]), name = 'MeshLoader', filename = path + '/mesh/siliconeV0.vtu')
-    modelNode.createObject('TetrahedronSetTopologyContainer' , src = '@MeshLoader', name = 'container')
-    modelNode.createObject('MechanicalObject' , template = 'Vec3d')
-    modelNode.createObject('UniformMass' , totalmass = '0.5')
-    modelNode.createObject('HyperReducedTetrahedronFEMForceField' , RIDPath = path + '/data/RID_modelNode.txt', name = 'HyperReducedFEMForceField_modelNode', weightsPath = path + '/data/weight_modelNode.txt', youngModulus = '450', modesPath = path + '/data/test_modes.txt', performECSW = 'True', poissonRatio = '0.45', nbModes = '28')
-    modelNode.createObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + '/data/test_modes.txt', output = '@./MechanicalObject')
+    modelNode = modelNode_MOR.addChild('modelNode')
+    modelNode.addObject('MeshVTKLoader' , rotation = add(rotation,[90, 0.0, 0.0]), translation = add(translation,[0.0, 0.0, 35]), name = 'MeshLoader', filename = path + '/mesh/siliconeV0.vtu')
+    modelNode.addObject('TetrahedronSetTopologyContainer' , src = '@MeshLoader', name = 'container')
+    modelNode.addObject('MechanicalObject' , template = 'Vec3d')
+    modelNode.addObject('UniformMass' , totalMass = '0.5')
+    modelNode.addObject('HyperReducedTetrahedronFEMForceField' , RIDPath = path + '/data/RID_modelNode.txt', name = 'HyperReducedFEMForceField_modelNode', weightsPath = path + '/data/weight_modelNode.txt', youngModulus = '450', modesPath = path + '/data/test_modes.txt', performECSW = 'True', poissonRatio = '0.45', nbModes = '28')
+    modelNode.addObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + '/data/test_modes.txt', output = '@./MechanicalObject')
 
 
-    nord = modelNode.createChild('nord')
-    nord.createObject('MechanicalObject' , position = TRSinOrigin([[0, 97, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    nord.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([0, 10, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
-    nord.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
+    nord = modelNode.addChild('nord')
+    nord.addObject('MechanicalObject' , position = TRSinOrigin([[0, 97, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    nord.addObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([0, 10, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
+    nord.addObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
 
-    ouest = modelNode.createChild('ouest')
-    ouest.createObject('MechanicalObject' , position = TRSinOrigin([[-97, 0, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    ouest.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([-10, 0, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
-    ouest.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
+    ouest = modelNode.addChild('ouest')
+    ouest.addObject('MechanicalObject' , position = TRSinOrigin([[-97, 0, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    ouest.addObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([-10, 0, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
+    ouest.addObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
 
-    sud = modelNode.createChild('sud')
-    sud.createObject('MechanicalObject' , position = TRSinOrigin([[0, -97, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    sud.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([0, -10, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
-    sud.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
+    sud = modelNode.addChild('sud')
+    sud.addObject('MechanicalObject' , position = TRSinOrigin([[0, -97, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    sud.addObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([0, -10, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
+    sud.addObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
 
-    est = modelNode.createChild('est')
-    est.createObject('MechanicalObject' , position = TRSinOrigin([[97, 0, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
-    est.createObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([10, 0, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
-    est.createObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
+    est = modelNode.addChild('est')
+    est.addObject('MechanicalObject' , position = TRSinOrigin([[97, 0, 45]] , [0.0, 0.0, 35],translation,rotation), rotation = [0.0, 0.0, 0.0], scale = '1.0', translation = [0.0, 0.0, 0.0])
+    est.addObject('CableConstraint' , indices = [0], hasPullPoint = 'True', valueType = 'displacement', pullPoint = TRSinOrigin([10, 0, 30] , [0.0, 0.0, 35],translation,rotation), value = '0.0')
+    est.addObject('BarycentricMapping' , mapMasses = 'False', name = 'Mapping', mapForces = 'False')
 
     ## Visualization
     if surfaceMeshFileName:
 
-        visu = modelNode.createChild('Visual')
+        visu = modelNode.addChild('Visual')
         meshType = surfaceMeshFileName.split('.')[-1]
         if meshType == 'stl':
-            visu.createObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+            visu.addObject(  'MeshSTLLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
         elif meshType == 'obj':
-            visu.createObject(  'MeshObjLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
+            visu.addObject(  'MeshOBJLoader', name= 'loader', filename=path+'/mesh/'+surfaceMeshFileName)
 
-        visu.createObject(  'OglModel',
+        visu.addObject(  'OglModel',
                             src='@loader',
-                            template='ExtVec3f',
+                            template='Vec3d',
                             color=surfaceColor,
                             rotation= add(rotation,[90, 0.0, 0.0]),
                             translation = add(translation,[0.0, 0.0, 35]))
 
-        visu.createObject('BarycentricMapping')
+        visu.addObject('BarycentricMapping')
 
     return modelNode
 
 
 #   STLIB IMPORT
-from stlib.scene import MainHeader
+from stlib3.scene import MainHeader
 def createScene(rootNode):
     surfaceMeshFileName = 'surface.stl'
 
