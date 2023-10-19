@@ -756,4 +756,12 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::addKToMatrix(s
         }
     }
 }
+
+template <class DataTypes>
+void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::
+buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
+{
+    core::behavior::ForceField<DataTypes>::buildStiffnessMatrix(matrix);
+}
+
 } // namespace sofa::component::solidmechanics::fem::elastic

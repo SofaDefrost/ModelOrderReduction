@@ -488,6 +488,13 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const Mecha
     }
 }
 
+template <class DataTypes>
+void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
+    core::behavior::StiffnessMatrix* matrix)
+{
+    core::behavior::ForceField<DataTypes>::buildStiffnessMatrix(matrix);
+}
+
 } // namespace sofa::component::solidmechanics::spring
 
 

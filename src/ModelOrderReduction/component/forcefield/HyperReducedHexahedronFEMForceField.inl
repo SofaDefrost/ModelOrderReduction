@@ -451,6 +451,13 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addKToMatrix(const core::Me
     }
 }
 
+template <class DataTypes>
+void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
+    core::behavior::StiffnessMatrix* matrix)
+{
+    core::behavior::ForceField<DataTypes>::buildStiffnessMatrix(matrix);
+}
+
 
 template<class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::VisualParams* vparams)
