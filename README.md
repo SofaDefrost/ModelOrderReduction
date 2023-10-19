@@ -1,3 +1,5 @@
+[![Documentation](https://img.shields.io/badge/doc-on_website-green.svg)](https://modelorderreduction.readthedocs.io/en/latest/index.html)
+
 # ModelOrderReduction
 
 This Sofa package contains c++ components with python utilitaries allowing
