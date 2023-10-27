@@ -48,7 +48,17 @@ set_type_checking_flag = False  # Enable 'expensive' imports for sphinx_autodoc_
 # nbsphinx_allow_errors = True  # Continue through Jupyter errors
 #autodoc_typehints = "description" # Sphinx-native method. Not as good as sphinx_autodoc_typehints
 add_module_names = False # Remove namespaces from class/method signatures
-
+#################################
+### THEME
+#################################
+extensions.extend([
+    # Doc Theme
+    'sphinx_rtd_theme',])
+html_theme = "sphinx_rtd_theme"
+# see here for options
+# https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
+# html_theme_options = {'navigation_depth': 4,}#"collapse_navigation":True,}
+#show_nav_level": 2,}
 #################################
 ###     MYST_PARSER
 #################################
@@ -124,16 +134,6 @@ exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
-
-# -- Options for HTML output -------------------------------------------------
-
-# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-html_theme = 'sphinx_rtd_theme'
-# html_theme_options = {'navigation_depth': 4,}#"collapse_navigation":True,}
-#show_nav_level": 2,}
 
 # -- Custom html visual -------------------------------------------------
 
