@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
+"""
+Implemented animation functions
+"""
 from math import cos
 from math import sin
 
 def upDateValue(actualValue,actuatorMaxPull,actuatorIncrement):
+    """
+    Utility function for default animation.
+
+    Increment a sofa data value until fixed amount
+
+    :param actualValue:
+    :param actuatorMaxPull:
+    :param actuatorIncrement:
+    :return: actualValue :
+    """
     if actualValue < actuatorMaxPull:
         print ("INCREMENT ++")
         return actualValue + actuatorIncrement
@@ -11,6 +24,14 @@ def upDateValue(actualValue,actuatorMaxPull,actuatorIncrement):
         return actualValue
 
 def rotationPoint(Pos0, angle, brasLevier):
+    """
+    Utility function applying rotation on a given position with some lever arm
+
+    :param Pos0:
+    :param angle:
+    :param brasLevier:
+    :return: New updated position
+    """
     print ("In rotation POint")
     size0 = len(Pos0);
     posOut = [0.0]*3*size0;
@@ -45,6 +66,8 @@ def defaultShaking( objToAnimate, dt, factor, **param):
     +---------------+-------+---------------------------------------------------------------------------------+
     | rangeOfAction | float | Until which value the data will increase                                        |
     +---------------+-------+---------------------------------------------------------------------------------+
+
+    :return: None
     """
     import Sofa
     global lastTime
@@ -79,7 +102,7 @@ def defaultShaking( objToAnimate, dt, factor, **param):
 
 def shakingLiver( objToAnimate, dt, factor, **param):
     """
-    **Animation function made specifically to apply deformation on the liver scene.
+    **Animation function made specifically to apply deformation on the liver scene.**
     
     It's an example of what can be a custom shaking animation.
     The animation consist on taking a position in entry, rotate it, and then update it in the component.
@@ -121,7 +144,7 @@ def shakingLiver( objToAnimate, dt, factor, **param):
 def shakingSofia( objToAnimate, dt, factor, **param):
     """
     **Animation function made specifically to shake the leg of 
-    the** `6-legged Robot <https://modelorderreduction.readthedocs.io/en/latest/usage/examples/Sofia/sofia.html>`_
+    the** :doc:`6-legged Robot </usage/examples/Sofia/sofia>`.
     
     It's an example of what can be a custom shaking animation.
     The animation consist on taking a position in entry, rotate it, and then update it in the component.
@@ -163,9 +186,10 @@ def shakingSofia( objToAnimate, dt, factor, **param):
 
 def shakingInverse( objToAnimate, dt, factor, **param):
     """
+    **Animation function to use with iinverse simulation**
+
     """
     moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
-    # print("currentTime - startTime : "+str(factor * objToAnimate.duration))
     if moduloResult == 0:
         print("For Actuator : "+objToAnimate.location)
 

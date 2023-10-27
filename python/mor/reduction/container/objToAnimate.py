@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-'''
-**Class allowing us to store in 1 object all the information about a specific animation**
-'''
 
 class ObjToAnimate():
     '''
@@ -9,27 +6,27 @@ class ObjToAnimate():
 
     **Args**
 
-    +----------+-----------+---------------------------------------------------------------------------------------+
-    | argument | type      | definition                                                                            |
-    +==========+===========+=======================================================================================+
-    | location | Str       | Path to obj/node we want to animate                                                   |
-    +----------+-----------+---------------------------------------------------------------------------------------+
-    | animFct  | Str       || Name of our function we want to use to animate.                                      |
-    |          |           || During execution of the Sofa Scene, it will import the module                        |
-    |          |           || mor.animation.animFct where your function has to be located in order to be used      |
-    +----------+-----------+---------------------------------------------------------------------------------------+
-    | item     | Sofa.Node/||pointer to Sofa node/obj in which we are working on (will be set during execution)    |
-    |          | Sofa.Obj  ||                                                                                      |
-    +----------+-----------+---------------------------------------------------------------------------------------+
-    | duration | seconde   || Total time in second of the animation (put by default to -1                          |
-    |          |(in float) || & will be calculated & set later during the execution)                               |
-    +----------+-----------+---------------------------------------------------------------------------------------+
-    | **params | undefined || You can put in addition whatever parameters you will need                            |
-    |          |           || for your specific animation function, they will be passed                            |
-    |          |           || to the *animFct* you have chosen during execution                                    |
-    |          |           || See :py:mod:`.animation` for the specific parameters                                 |
-    |          |           || you need to give to each animation function                                          |
-    +----------+-----------+---------------------------------------------------------------------------------------+
+    +------------+-----------+---------------------------------------------------------------------------------------+
+    | argument   | type      | definition                                                                            |
+    +============+===========+=======================================================================================+
+    | location   | Str       | Path to obj/node we want to animate                                                   |
+    +------------+-----------+---------------------------------------------------------------------------------------+
+    | animFct    | Str       |  Name of our function we want to use to animate.                                      |
+    |            |           |  During execution of the Sofa Scene, it will import the module                        |
+    |            |           |  mor.animation.animFct where your function has to be located in order to be used.     |
+    +------------+-----------+---------------------------------------------------------------------------------------+
+    | item       | Sofa.Node | pointer to Sofa node/obj                                                              |
+    |            | Sofa.Obj  | in which we are working on (will be set during execution).                            |
+    +------------+-----------+---------------------------------------------------------------------------------------+
+    | duration   | seconde   |  Total time in second of the animation \(put by default to -1                         |
+    |            |(in float) |  \& will be calculated & set later during the execution)                              |
+    +------------+-----------+---------------------------------------------------------------------------------------+
+    | \*\*params | undefined |  You can put in addition whatever parameters you will need                            |
+    |            |           |  for your specific animation function, they will be passed                            |
+    |            |           |  to the *animFct* you have chosen during execution                                    |
+    |            |           |  See :mod:`mor.animation` for the specific parameters                                 |
+    |            |           |  you need to give to each animation function                                          |
+    +------------+-----------+---------------------------------------------------------------------------------------+
 
     **Example**
 

@@ -4,13 +4,7 @@
 
 **Content:**
 
-.. autosummary::
-    :toctree: _autosummary
-
-    mor.reduction.reduceModel
-    mor.reduction.container
-    mor.reduction.script
-
 """
 __all__=["reduceModel","script","container"]
+
 from mor.reduction.reduceModel import ReduceModel

@@ -4,14 +4,6 @@
 
 **Content:**
 
-.. autosummary::
-    :toctree: _autosummary
-
-    mor.gui.widget.completer
-    mor.gui.widget.frameLayout
-    mor.gui.widget.genericDialogForm
-    mor.gui.widget.treeModel
-
 """
 __all__=["completer","frameLayout","genericDialogForm","treeModel"]
 

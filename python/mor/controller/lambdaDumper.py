@@ -7,14 +7,14 @@ class storeLambda(Sofa.PythonScriptController):
 
     def onLoaded(self,node):
         
-            print '############## Python example: variables ##############'
-            print '### This example scene demonstrates how to pass string variables from a SOFA scn to the python script'
-            print '### Note that the variables can be modified in the SOFA GUI'
-            print '##########################################################'
+            print('############## Python example: variables ##############')
+            print('### This example scene demonstrates how to pass string variables from a SOFA scn to the python script')
+            print('### Note that the variables can be modified in the SOFA GUI')
+            print('##########################################################')
             
             self.lambdaValuesFile = self.findData('variables').value[0][0]
             
-            print 'At initialization, variables = ', self.lambdaValuesFile
+            print('At initialization, variables = ', self.lambdaValuesFile)
                                 
             return 0
 
@@ -26,7 +26,7 @@ class storeLambda(Sofa.PythonScriptController):
 
     def onEndAnimationStep(self,dt):
             lambdaTab = self.node.getObject('GSSolver').findData('constraintForces')
-            print('Coucoucoucoucou: contraint forces:', lambdaTab.value, len(lambdaTab.value))
+            print('Contraint forces:', lambdaTab.value, len(lambdaTab.value))
             with open(self.lambdaValuesFile, "a") as myfile:
                 for i in lambdaTab.value:                   
                     myfile.write(str(i[0])+ " ")

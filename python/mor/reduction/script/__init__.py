@@ -7,22 +7,15 @@ the needed data to construct our reduced model : modes/RID/Weights & elements to
 
 **Content:**
 
-.. autosummary::
-    :toctree: _autosummary
-
-	mor.reduction.script.ConvertRIDinActiveNodes
-	mor.reduction.script.ReadGieFileAndComputeRIDandWeights
-	mor.reduction.script.ReadStateFilesAndComputeModes
-	mor.reduction.script.prepareStateFiletoDisplayModes
-	mor.reduction.script.ReadMechanicalMatricesAndComputeVibrationModes
-
 """
 __all__=[	"ConvertRIDinActiveNodes",
             "ReadGieFileAndComputeRIDandWeights",
             "ReadMechanicalMatricesAndComputeVibrationModes",
-            "ReadStateFilesAndComputeModes"]
+            "ReadStateFilesAndComputeModes",
+            "prepareStateFiletoDisplayModes"]
 
 from mor.reduction.script.ConvertRIDinActiveNodes import convertRIDinActiveNodes
 from mor.reduction.script.ReadGieFileAndComputeRIDandWeights import readGieFileAndComputeRIDandWeights
 from mor.reduction.script.ReadStateFilesAndComputeModes import readStateFilesAndComputeModes
-
+from mor.reduction.script.ReadMechanicalMatricesAndComputeVibrationModes import readMechanicalMatricesAndComputeVibrationModes
+from mor.reduction.script.ReadLambdaFilesAndComputeNNMF import readLambdaFilesAndComputeNNMF

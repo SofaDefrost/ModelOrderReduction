@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+:code:`python readStateFilesAndComputeModes.py stateFilename tol modesFilename addRigidBodyModesBOOL`
+"""
 
-## Usage: python readStateFilesAndComputeModes.py stateFilename tol modesFilename addRigidBodyModesBOOL
 import os
 import math
 import numpy as np

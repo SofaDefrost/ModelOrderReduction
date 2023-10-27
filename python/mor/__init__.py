@@ -1,13 +1,24 @@
 # -*- coding: utf-8 -*-
 """
+
+**General API to do reduction**
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
+
+   animation
+   reduction
+   utility
+   wrapper
+
+**User Interface library**
+
 .. autosummary::
     :toctree: _autosummary
 
-    mor.reduction
-    mor.animation
-    mor.wrapper
-    mor.utility
-    mor.gui
+    gui
 
 """
-__all__=["reduction","animation","wrapper","gui",'utility']
+__all__=["reduction","animation","wrapper",'utility','gui']

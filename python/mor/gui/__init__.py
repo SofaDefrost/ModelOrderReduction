@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-**Set of class/function used to created the MOR GUI**
+**Set of class/functions used to created the MOR GUI**
 
 **Content:**
 

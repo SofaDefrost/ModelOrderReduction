@@ -4,11 +4,6 @@
 
 **Content:**
 
-.. autosummary::
-    :toctree: _autosummary
-
-    mor.wrapper.replaceAndSave
-
 """
 __all__=["replaceAndSave"]
 from mor.wrapper.replaceAndSave import MORreplace

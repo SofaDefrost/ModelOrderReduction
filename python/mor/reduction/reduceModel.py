@@ -16,16 +16,9 @@
 # Contact information: https://project.inria.fr/modelorderreduction/contact   #
 ###############################################################################
 """
-**Main class performing ModelReduction**
-
-**Content:**
-
-.. autosummary::
-    :toctree: _autosummary
-
-    mor.reduction.reduceModel.ReduceModel
-
+**Main module to perform reduction**
 """
+
 import os,sys
 import time
 import datetime
@@ -45,10 +38,10 @@ pathToReducedModel = path+'/../../morlib/'
 sys.path.insert(0,path+'/../../')
 
 from mor.utility import utility as u
-from mor.reduction.container import ObjToAnimate
 from mor.reduction.container import ReductionAnimations
 from mor.reduction.container import PackageBuilder
 from mor.reduction.container import ReductionParam
+from mor.reduction import script
 
 slash = '/'
 if "Windows" in platform.platform():
@@ -270,21 +263,18 @@ class ReduceModel():
 
     def phase2(self):
         """
-        **With the previous result obtain in during :py:func:`phase1` we compute the modes**
+        **With the previous result obtain in during :meth:`phase1` we compute the modes**
 
         See :py:mod:`.ReadStateFilesAndComputeModes` for the way the modes are determined.
 
-        It will set ``nbrOfModes`` to its maximum, but it can be changed has argument to the next step : :py:func:`phase3`
+        It will set ``nbrOfModes`` to its maximum, but it can be changed has argument to the next step : :meth:`phase3`
 
         """
-        # MOR IMPORT
-        from mor.reduction.script import readStateFilesAndComputeModes
-
         start_time = time.time()
 
         u.checkExistance(self.packageBuilder.dataDir)
  
-        self.reductionParam.nbrOfModes = readStateFilesAndComputeModes(stateFilePath = self.packageBuilder.debugDir+self.reductionParam.stateFileName,
+        self.reductionParam.nbrOfModes = script.readStateFilesAndComputeModes(stateFilePath = self.packageBuilder.debugDir+self.reductionParam.stateFileName,
                                                         modesFileName = self.packageBuilder.dataDir+self.reductionParam.modesFileName,
                                                         tol = self.reductionParam.tolModes,
                                                         addRigidBodyModes = self.reductionParam.addRigidBodyModes,
@@ -304,7 +294,7 @@ class ReduceModel():
         | argument        | type      | definition                                               |
         +=================+===========+==========================================================+
         | phasesToExecute | list(int) || Allow to choose which phase to execute for the reduction|
-        |                 |           || *more details see* :py:func:`setListSofaScene`          |
+        |                 |           || *more details see* :meth:`setListSofaScene`             |
         +-----------------+-----------+----------------------------------------------------------+
         | nbrOfModes      | int       || Number of modes you want to keep                        |
         |                 |           || ``by default will keep them all``                       |
@@ -418,9 +408,6 @@ class ReduceModel():
             - add it to the plugin library if option activated
 
         """
-        # MOR IMPORT
-        from . script import readGieFileAndComputeRIDandWeights, convertRIDinActiveNodes
-
         start_time = time.time()
 
         if not os.path.isfile(self.packageBuilder.dataDir+self.reductionParam.modesFileName):
@@ -488,7 +475,7 @@ class ReduceModel():
         for i , fileName in enumerate(self.reductionParam.gieFilesNames) :
 
             # index = self.reductionParam.gieFilesNames.index(fileName)
-            readGieFileAndComputeRIDandWeights( self.packageBuilder.debugDir+fileName,
+            script.readGieFileAndComputeRIDandWeights( self.packageBuilder.debugDir+fileName,
                                                 self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[i],
                                                 self.packageBuilder.dataDir+self.reductionParam.weightsFilesNames[i],
                                                 self.reductionParam.tolGIE,
@@ -496,7 +483,7 @@ class ReduceModel():
             # print(index)
             # print(len(self.reductionParam.savedElementsFilesNames))
             # if index-1 < len(self.reductionParam.savedElementsFilesNames):
-            self.activesNodesLists.append(  convertRIDinActiveNodes(self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[i],
+            self.activesNodesLists.append(  script.convertRIDinActiveNodes(self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[i],
                                                                     self.packageBuilder.debugDir+self.reductionParam.savedElementsFilesNames[i],
                                                                     self.packageBuilder.dataDir+self.reductionParam.listActiveNodesFilesNames[i],
                                                                     verbose= self.verbose))
