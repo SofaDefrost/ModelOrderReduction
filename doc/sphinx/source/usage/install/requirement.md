@@ -1,114 +1,114 @@
-# Requirement
+# Dependencies
 
-This work is a plugin of [SOFA](https://www.sofa-framework.org/) which a simulation software.
+Model order reduction dependencies required and optional and what they are used for.
+
+::::::{dropdown} REQUIRED
+:open:
+:animate: fade-in-slide-down
+:color: warning
+:icon: alert-fill
+:margin: 0
+
+:::::{grid} 2
+:gutter: 1
+:margin: 0
+
+::::{grid-item-card}
+:margin: 0
+
+SOFA
+
+:::{dropdown} <a href="https://www.sofa-framework.org/" target="_blank"><b>SOFA itself</b></a>
+:animate: fade-in-slide-down
+:icon: info
+
+This work is a plugin of [SOFA](https://www.sofa-framework.org/) which a simulation software. 
 For the moment we haven't got any pre-made SOFA version with our work so the first thing you will need to do is compile SOFA
+:::
 
-## Step 1: Compile SOFA
+:::{dropdown} <a href="https://github.com/sofa-framework/sofa/tree/master/tools/sofa-launcher" target="_blank"><b>Sofa Launcher</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-For that follow these [instructions](https://www.sofa-framework.org/community/doc/getting-started/build/linux/) (here is for linux but instruction exist for Mac & Windows also)
+We use a tool of SOFA named **sofa-launcher** allowing us to gain a lot of calculation time thanks to parallel execution of multiple SOFA scene.
+:::
 
-## Step 2: Install Required dependencies
+:::{dropdown} <a href="https://github.com/SofaDefrost/STLIB" target="_blank"><b>STLIB</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-### Ubuntu
+Plugin easing the way to write SOFA scene in python.
+We use some utilities of this plugin to reduce our model, especially the {class}`stlib:stlib.scene.Wrapper`  feature.
+:::
 
-------------------------------------------------------------------------------------------------
-**SOFA Plugin Dependencies**
+::::
 
-(The best way to add plugin to SOFA is explained [here](https://www.sofa-framework.org/community/doc/using-sofa/build-a-plugin/))
+::::{grid-item-card}
+:margin: 0
 
-- [STLIB](https://github.com/SofaDefrost/STLIB)
+PYTHON
 
-	Plugin easing the way to write SOFA scene in python.
-	We use some utilities of this plugin to reduce our model, especially the [wrapper](linkTodoc) feature.
+:::{dropdown} <a href="https://www.python.org/downloads/" target="_blank"><b>Python 3.X</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-	```
-	git clone https://github.com/SofaDefrost/STLIB.git
-	```
+python3 version
+:::
 
-	<span style="color:orange">*optional* </span>
+:::{dropdown} <a href="http://cheetahtemplate.org/" target="_blank"><b>Cheetah</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-	- [SoftRobots](https://github.com/SofaDefrost/SoftRobots)
+Cheetah is needed in order to use the **sofa-launcher** of SOFA.
+:::
 
-		The different examples present in the plugin are based on scene requiring SoftRobots
+:::{dropdown} <a href="https://pypi.org/project/PyYAML/" target="_blank"><b>yaml</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-		```
-		git clone https://github.com/SofaDefrost/SoftRobots.git
-		```
+python3 version
+:::
 
-------------------------------------------------------------------------------------------------
-**Package dependencies**
+::::
+:::::
 
-<span style="color:red">*version of python used* </span>
+::::::
 
-- [Python 2.7.X](https://www.python.org/downloads/)
+<br>
 
-<span style="color:red">*Install all* </span>
+--------------------------------------------------------------------------
 
-```
-sudo apt-get install python-cheetah python-pyqt4 python-yaml
-```
+<br>
 
-<span style="color:red">*then add to your .bashrc* </span>
+::::{dropdown} OPTIONAL
+:open:
+:animate: fade-in-slide-down
+:color: light
+:icon: plus-circle
 
-```
-export PYTHONPATH=$PYTHONPATH:/PathToYourSofaSrcFolder/tools/sofa-launcher
-```
 
-------------------------------------------------------------------------------------------------
-**If you don't want to install all the dependencies, here a description of them separately:**
+:::{dropdown} <a href="https://github.com/SofaDefrost/SoftRobot" target="_blank"><b>SoftRobot</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-*to reduce model*
+Plugin easing the way to write SOFA scene in python.
+We use some utilities of this plugin to reduce our model, especially the {doc}`constraints component  <softrobotscomponents:_autosummary/component.constraint>` feature.
+:::
 
-- Sofa Launcher
+:::{dropdown} <a href="https://pypi.org/project/PyQt5/" target="_blank"><b>PyQt5</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-	We use a tool of SOFA named **sofa-launcher** allowing us to gain a lot of calculation time thanks to parallel execution of multiple SOFA scene.
-	For that you have to add to your *.bashrc* in the end the following line:
+We use pyqt5 for our interface
+:::
 
-	```
-	export PYTHONPATH=$PYTHONPATH:/PathToYourSofaSrcFolder/tools/sofa-launcher
-	```
+:::{dropdown} <a href="http://jupyter.readthedocs.io/en/latest/install.html" target="_blank"><b>Jupyter</b></a>
+:animate: fade-in-slide-down
+:icon: info
 
-	- [Cheetah](http://cheetahtemplate.org/)
-
-		Cheetah is needed in order to use the **sofa-launcher** of SOFA.
-
-		```
-		sudo apt-get install python-cheetah
-		```
-
-*To use the gui*
-
-- [PyQt](https://wiki.python.org/moin/PyQt)
-
-	We use pyqt4 for our interface
-
-	```
-	sudo apt-get install python-pyqt4
-	```
-
-- yaml
-
-	```
-	sudo apt-get install python-yaml
-	```
-
-*To test our notebook*
-
-To learn how to reduce your own model we have done a tutorial which will make you learn step by step the process. For this interactive tutorial we use 
+To learn how to reduce your own model we have done a tutorial which will make you learn step by step the process. For this interactive tutorial we use
 a [python notebook](https://ipython.org/notebook.html).
+:::
 
-So to be able to do it please install [jupyter](http://jupyter.readthedocs.io/en/latest/install.html)
+::::
 
-the easiest way:
-```
-pip install jupyter
-```
-------------------------------------------------------------------------------------------------
-
-### OSX
-
-*TODO*
-
-### Windows
-
-*TODO*

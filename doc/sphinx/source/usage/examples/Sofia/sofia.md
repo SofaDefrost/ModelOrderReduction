@@ -29,13 +29,13 @@ Here we only reduce the leg of our robot not its core.
 To make a reduced model of one leg of this robot, we had to create a new special function to explore its workspace.
 To create the rotation mouvement we see on the different previous videos we rotate a point that will be followed by the model creating the rotation.
 
-[here](../../../_autosummary/_autosummary/mor.animation.defaultShaking.html) how it was implemented
+:meth:`mor.animation.defaultShaking` how it was implemented
 
 We have only one actuator here, so our *listObjToAnimate* contains only one object:
 
 	ObjToAnimate("actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 
-With these different parameters we will after perform the reduction like explained [here](../../tutorial/modelOrderReduction.html#reduction-process-tutoriel)
+With these different parameters we will after perform the reduction like explained {doc}`here </usage/tutorial/modelOrderReduction>`
 
 
 ## Results 
@@ -44,18 +44,20 @@ With these different parameters we will after perform the reduction like explain
 
 ![reduction_coarseMesh](reduction_coarseMesh.png)
 
-<table style="width:100%">
-  <tr>
-    <td>\</td>
-    <td>not reduced</td> 
-    <td>reduced</td>
-  </tr>
-  <tr>
-    <td>Fps</td>
-    <td>90</td>
-    <td>300</td>
-  </tr>
-</table>
+.. raw:: html
+
+    <table style="width:100%">
+        <tr>
+        <td>\</td>
+        <td>not reduced</td> 
+        <td>reduced</td>
+      </tr>
+      <tr>
+        <td>Fps</td>
+        <td>90</td>
+        <td>300</td>
+      </tr>
+    </table>
 
 ---
 
@@ -64,15 +66,17 @@ With these different parameters we will after perform the reduction like explain
 
 ![reduction_fineMesh](reduction_fineMesh.png)
 
-<table style="width:100%">
-  <tr>
-    <td>\</td>
-    <td>not reduced</td> 
-    <td>reduced</td>
-  </tr>
-  <tr>
-    <td>Fps</td>
-    <td>3.8</td>
-    <td>190</td>
-  </tr>
-</table>
+.. raw:: html
+
+    <table style="width:100%">
+      <tr>
+        <td>\</td>
+        <td>not reduced</td> 
+        <td>reduced</td>
+      </tr>
+      <tr>
+        <td>Fps</td>
+        <td>3.8</td>
+        <td>190</td>
+      </tr>
+    </table>
