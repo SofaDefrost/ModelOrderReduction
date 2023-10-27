@@ -8,7 +8,7 @@ Welcome to ModelOrderReduction's documentation!
 	usage/tutorial/tutorial
 	usage/examples/examples
 	tools
-	components
+.. 	components
 
 Indices and tables
 ==================
