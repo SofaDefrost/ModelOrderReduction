@@ -1,4 +1,5 @@
 sphinx
+mock
 sphinx-rtd-theme
 pydata-sphinx-theme
 sphinx-autodoc-typehints

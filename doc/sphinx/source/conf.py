@@ -200,8 +200,6 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
-from unittest import *
-from mock import MagicMock
 
 autodoc_mock_imports = ['Sofa',
                         'stlib3','splib3',
@@ -224,6 +222,8 @@ autodoc_mock_imports = ['Sofa',
 #
 # MockingClass = type('MockingClass', (), {})
 #
+# from unittest import *
+# from mock import MagicMock
 # class Mock(MagicMock):
 #     @classmethod
 #     def __getattr__(cls, name):
