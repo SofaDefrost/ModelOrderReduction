@@ -3,7 +3,6 @@
 ::::::{card}
 **SOFA setup**
 ^^^
-Card content
 
 You can either build it from sources:
 
@@ -57,7 +56,6 @@ Or download the binaries:
 :::::::{card}
 **ModelOrderReduction setup**
 ^^^
-Card content
 
 You can either build it from the [source](https://github.com/SofaDefrost/ModelOrderReduction) as explained [here](https://www.sofa-framework.org/community/doc/plugins/build-a-plugin-from-sources/) with SOFA.
 Or take the binaries generated [here](https://github.com/SofaDefrost/ModelOrderReduction/releases/tag/release-master) and link them to your SOFA build/binaries.
