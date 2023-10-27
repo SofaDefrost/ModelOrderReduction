@@ -1,0 +1,8 @@
+sphinx
+sphinx-rtd-theme
+pydata-sphinx-theme
+sphinx-autodoc-typehints
+myst-parser
+sphinx_design
+sphinx-copybutton
+sphinxemoji
