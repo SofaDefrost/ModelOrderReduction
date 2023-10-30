@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
 '''
-**Set of function to extract the graph a scene** 
+**Set of functions to extract the graph a scene**
 
-The extracted results will be put into 2 dictionnary as follow:
+The extracted results will be put into 2 dictionnary as follow
 
-tree:
-    node1:
+.. code-block:: python
+
+    tree:
+        node1:
+            child1:
+        node2:
+            child2:
+
+    obj:
+        node1:
+            obj1:
         child1:
-    node2:
-        child2:
+            obj2
+        node2:
+            obj3
 
-obj:
-    node1:
-        obj1:
-    child1:
-        obj2
-    node2:
-        obj3:
+-------------------------------------
 
-    ...
-------------------------------------------------------------------
 '''
 
 import os
@@ -122,9 +124,10 @@ def importScene(filePath):
     **Return the graph of a SOFA scene**
 
     Thanks to the SOFA Launcher, it will launch a templated scene that 
-    will extract from an original scene its content as 2 dictionnaries containing: 
-        - The different Sofa.node of the scene keeping there hierarchy
-        - All the SOFA component contained in each node with the node.name as key
+    will extract from an original scene its content as 2 dictionnaries containing\:
+
+    * The different Sofa.node of the scene keeping there hierarchy.
+    * All the SOFA component contained in each node with the node.name as key.
 
     +----------+------+---------------------------------+
     | argument | type | definition                      |

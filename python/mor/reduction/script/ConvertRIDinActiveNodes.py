@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+:code:`python convertRIDinActiveNodes RIDfilename connectivityFilename listActiveNodesFileName`
+"""
 
-## Usage: python convertRIDinActiveNodes RIDfilename connectivityFilename listActiveNodesFileName
-
-import math
 from sys import argv
 
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+:code:`python prepareStateFiletoDisplayModes.py originalStateFilename modesFilename displayModesFilename scalar`
+"""
 
-## Usage: python prepareStateFiletoDisplayModes.py originalStateFilename modesFilename displayModesFilename scalar
-
-import math
 import numpy as np
 import os
 
@@ -12,7 +12,7 @@ from sys import argv
 def prepareStateFiletoDisplayModes(originalStateFilename, modesFilename, displayModesFilename, scalar):
 
     f = open(originalStateFilename,'r')
-    print "Reading file %r:" % originalStateFilename
+    print("Reading file %r:" % originalStateFilename)
 
     for line in f:
       lineSplit = line.split();
@@ -34,16 +34,16 @@ def prepareStateFiletoDisplayModes(originalStateFilename, modesFilename, display
       print(lineSplit[0])
       if (cnt > 1):  
         nbSnap = nbSnap + 1
-        print "Reading modes line number: ", nbSnap
+        print("Reading modes line number: ", nbSnap)
         lineFloat = map(float,lineSplit)
         modes.append(lineFloat);
     f.close()
 
     nbDOfs, nbModes = np.shape(modes)
-    print 'nbDOfs, nbModes: ', nbDOfs, nbModes
+    print('nbDOfs, nbModes: ', nbDOfs, nbModes)
     modes = np.array(modes)
     for i in range(nbDOfs):
-        print modes[i,0], ' ', modes[i,1], ' ', modes[i,2]
+        print(modes[i,0], ' ', modes[i,1], ' ', modes[i,2])
 
     lambdaTimesMode = np.zeros(np.shape(modes))
     displayMode = np.zeros(np.shape(modes))
@@ -52,7 +52,7 @@ def prepareStateFiletoDisplayModes(originalStateFilename, modesFilename, display
         lambdaTimesMode[:,k] = np.multiply(modes[:,k],float(scalar))
         displayMode[:,k] = np.add(initialPos,lambdaTimesMode[:,k])
         
-    print 'display size', np.shape(np.transpose(displayMode))
+    print('display size', np.shape(np.transpose(displayMode)))
 
 
     np.savetxt(displayModesFilename+'Tmp', np.transpose(displayMode),header= '', comments='', fmt='%10.5f')
@@ -61,7 +61,7 @@ def prepareStateFiletoDisplayModes(originalStateFilename, modesFilename, display
     fout = open(displayModesFilename,'w')
     time = 0
     for line in f:
-        print 'time is ', time
+        print('time is ', time)
         fout.write('T= ' + str(time) + '\n X= ' + line)
         time = time + 0.01
     f.close()

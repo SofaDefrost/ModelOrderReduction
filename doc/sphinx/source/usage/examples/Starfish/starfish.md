@@ -4,7 +4,7 @@
 
 ## Presentation
 
-The multigait soft robot is a pneumatic robot from the work of R. Shepherd et. al, described here : [paper link](http://www.pnas.org/content/108/51/20400)
+The multigait soft robot is a pneumatic robot from the work of R. Shepherd et. al{footcite:ps}`Shepherd2011`.
 
 **Brief description :**
 
@@ -20,7 +20,8 @@ various sequences each cavities, the robot can move along the floor.
 
 The simulation of this crawling robot has to be really precise in order to simulate properly the differents deformations and the contact with the floor has showned in the previous video.
 
-This needs of precision results with heavy calculations when the simulation is running preventing the fluidity of it, by reducing it we will be able to resolve this issue and also show that we the reduce model can move and handle contact in comparison with the previous example *[Diamond robot](../Diamond/diamond.html#diamond)* that was fixed.
+This needs of precision results with heavy calculations when the simulation is running preventing the fluidity of it, by reducing it we will be able to resolve this issue and also show 
+that we the reduce model can move and handle contact in comparison with the previous example {doc}`Diamond Robot </usage/examples/Diamond/diamond>` that was fixed.
 
 ## Reduction Parameters
 
@@ -30,7 +31,7 @@ After that with a raisonnable tolerance (here *0.001*) we will select different 
 
 ![Starfish robot modes](SartfishRobot_modes.png)
 
-With these different parameters we will after perform the reduction like explained [here](../../tutorial/modelOrderReduction.html#reduction-process-tutoriel)
+With these different parameters we will after perform the reduction like explained {doc}`here </usage/tutorial/modelOrderReduction>`.
 
 ## Results 
 
@@ -44,4 +45,9 @@ exemple results with a fine mesh:
 
 ![reduced mesh](Starfish_Reduced.png)
 
-For more details about the results, displacement error comparison, test with different mesh and other, you can read the paper affiliated with this plugin [here](https://hal.inria.fr/hal-01834483)
+For more details about the results, displacement error comparison, test with different mesh and other,
+you can read the paper affiliated with this plugin{footcite:ps}`Goury2018`.
+
+
+```{footbibliography}
+```

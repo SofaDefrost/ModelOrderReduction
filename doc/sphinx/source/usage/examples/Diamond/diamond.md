@@ -37,7 +37,7 @@ After that with a raisonnable tolerance (here *0.001*) we will select different 
 
 ![Diamond robot modes](DiamondRobot_modes_5367x1342.png)
 
-With these different parameters we will after perform the reduction like explained [here](../../tutorial/modelOrderReduction.html#reduction-process-tutoriel)
+With these different parameters we will after perform the reduction like explained {doc}`here </usage/tutorial/modelOrderReduction>`
 
 ## Results 
 
@@ -51,4 +51,7 @@ exemple results with a fine mesh:
 
 ![reduced mesh](DiamondRobot_Reduced.png)
 
-For more details about the results, displacmeent error comparison, test with different mesh and other, you can read the paper affiliated with this plugin here(link!)
+For more details about the results, displacmeent error comparison, test with different mesh and other, you can read the paper affiliated with this plugin{footcite:ps}`Goury2018`.
+
+```{footbibliography}
+```

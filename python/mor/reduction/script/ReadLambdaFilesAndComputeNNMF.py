@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+:code:`python readLambdaFilesAndComputeNNMF.py stateFilename tol modesFilename addRigidBodyModesBOOL`
+"""
 
-## Usage: python readLambdaFilesAndComputeNNMF.py stateFilename tol modesFilename addRigidBodyModesBOOL
-import os
-import math
 import numpy as np
 from scipy.linalg import solve
 import platform
@@ -63,7 +63,7 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
         lineFloat = map(float,lineSplit)
         #print('lineFloat ------------: ',lineFloat)
         #print('sizeLine ------------: ',sizeLine)
-        print nbCol
+        print(nbCol)
         if nbSnap%Nskip == 0:
             for i in range(sizeLine-nbOtherConstraints):
                 if withFriction:
@@ -189,7 +189,7 @@ def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFr
                         #W[ii+1,jj]=0
                         #W[ii+2,jj]=0
 
-        print 'iteration', j
+        print('iteration', j)
         #print ('W at the end:', W)
     print('Min Error in W after zeroing: ----- ',minErr)
     #H = solve( np.dot(np.transpose(W),W) , np.dot(np.transpose(W),lambdaSnapVeryCleaned) )

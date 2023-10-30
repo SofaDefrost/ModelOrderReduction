@@ -11,25 +11,21 @@ Each function has to have 3 mandatory arguments:
 +--------------+---------------------------+----------------------------------------------------------------------+
 | dt           | seconde (in float)        | Time step of the Sofa scene                                          |
 +--------------+---------------------------+----------------------------------------------------------------------+
-| factor       | float                     ||  Argument given by the Animation class from STLIB.                  |
-|              |                           ||  It indicate where we are in the animation sequence:                |
-|              |                           |-  0.0 ------> beginning of sequence                                  |
-|              |                           |-  1.0 ------> end of sequence                                        |
-|              |                           ||  It is calculated as follow:                                        |
-|              |                           ||  ``factor = (currentTime-startTime) / duration``                    |
+| factor       | float                     |  Argument given by the Animation class from STLIB.                   |
+|              |                           |  It indicate where we are in the animation sequence:                 |
+|              |                           |                                                                      |
+|              |                           |  *  0.0 ------> beginning of sequence.                               |
+|              |                           |  *  1.0 ------> end of sequence.                                     |
+|              |                           |                                                                      |
+|              |                           |  It is calculated as follow:                                         |
+|              |                           |                                                                      |
+|              |                           |  ``factor = (currentTime-startTime) / duration``                     |
 +--------------+---------------------------+----------------------------------------------------------------------+
 
 the animation implemented in :py:mod:`mor.animation` will be added
-to the templated scene thanks to the :py:func:`splib.animation.animate`
+to the templated scene thanks to the :func:`stlib:splib.animation.animate`
 
-**Content:**
-
-.. autosummary::
-    :toctree: _autosummary
-
-    mor.animation.defaultShaking
-    mor.animation.shakingSofia
-    mor.animation.shakingInverse
+---------------------------------
 
 """
 __all__=["shakingAnimations"]

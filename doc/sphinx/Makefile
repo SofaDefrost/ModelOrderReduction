@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    =
+SPHINXOPTS    = -v
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = ModelOrderReduction
 SOURCEDIR     = source
@@ -18,6 +18,8 @@ help:
 
 clean:
 	rm -rf source/doxyoutput/ source/api/
+	rm -rf source/_autosummary
+	find ../../ -name __pycache__ -type d -print0|xargs -0 rm -r --
 	@$(SPHINXBUILD) -M clean "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Catch-all target: route all unknown targets to Sphinx using the new

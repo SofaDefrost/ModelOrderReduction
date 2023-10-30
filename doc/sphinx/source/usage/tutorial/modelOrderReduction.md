@@ -1,7 +1,6 @@
 # Model Order Reduction Example
 
 ## Introduction <a name="introduction"></a>
-***
 
 In this python notebook exemple we will see with 2 real examples how to reduce a model from one of your sofa scene thanks to the **Model Order Reduction** plugin done by the INRIA research team **Defrost**.
 
@@ -16,10 +15,9 @@ the two examples will be :
 ![Starfish robot](../examples/Starfish/Starfish_Real.png)
 
 After these expample presentation we can now proceed to the reduction.
-First we have to prepare it by setting a bunch of parameters while explaining there purpose (here the parameters will be set twice, one for the diamond and one for the starfish so you will be able to switch easily between each example) 
+First we have to prepare it by setting a bunch of parameters while explaining there purpose (here the parameters will be set twice, one for the diamond and one for the starfish so you will be able to switch easily between each example)
 
-## User Paramters <a name="User Paramters"></a> 
-***
+## User Paramters <a name="User Paramters"></a>
 
 Before defining the reduction parameters, here are some "import" commands that will be useful for this python notebook:
 
@@ -37,10 +35,10 @@ from mor.reduction import ReduceModel
 from mor.reduction.container import ObjToAnimate
 ```
 
-### 1.  Paths to the SOFA scene, mesh and outputs: <a name="Important Path"></a> 
- - The scene you want to work on
- - The folder containing its mesh
- - The folder where you want the results to be put in
+### 1.  Paths to the SOFA scene, mesh and outputs: <a name="Important Path"></a>
+- The scene you want to work on
+- The folder containing its mesh
+- The folder where you want the results to be put in
 
 
 ```python
@@ -61,7 +59,7 @@ outputDir = utility.openDirName('Select the directory tha will contain all the r
 
 #### nodesToReduce <a name="nodesToReduce"></a>
 - *ie : list containing the SOFA path from the rootnode to the model you want to reduce
-        
+
 
 
 ```python
@@ -70,21 +68,21 @@ nodesToReduce_STARFISH =['/model']
 ```
 
 #### listObjToAnimate <a name="listObjToAnimate"></a>
-   
-Contain a list of object from the class [ObjToAnimate](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ObjToAnimate.html).
-        
+
+Contain a list of object from the class {py:class}`.ObjToAnimate`.
+
 A ObjToAnimate will define an object to "animate" during the shaking.
 
 There are 3 main parameter to this object :
 - location : Path to obj/node we want to animate
-- animFct : the animation function we will use (here we use [defaultShaking](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/mor.animation.defaultShaking.html))
+- animFct : the animation function we will use (here we use {py:func}`.defaultShaking`).
 - all the argument that will be passed to the animFct we have chose
-        
+
 For example here we want to animate the node named "nord", but we won't specify the animFct so the default animation function will be used and be applied on the first default object it will find. The default function will need 3 additionnal parameters :
 - incrPeriod (float):   Period between each increment
 - incr (float):    Value of each increment
 - rangeOfAction (float):    Until which value the data will increase
-            
+
 nord = ObjToAnimate("nord", incr=5,incrPeriod=10,rangeOfAction=40)
 
 
@@ -111,7 +109,7 @@ listObjToAnimate_STARFISH = [centerCavity,rearLeftCavity,rearRightCavity,frontLe
 #### Modes parameters <a name="Modes parameters"></a>
 
 - addRigidBodyModes (Defines if our reduce model will be able to translate along the x, y , z directions)
-- tolModes ( Defines the level of accuracy we want to select the reduced basis modes)  
+- tolModes ( Defines the level of accuracy we want to select the reduced basis modes)
 
 
 ```python
@@ -122,7 +120,7 @@ tolModes = 0.001
 ```
 
 - tolGIE
-    - *tolerance used in the greedy algorithm selecting the reduced integration domain(RID). Values are between 0 and 0.1 . High values will lead to RIDs with very few elements, while values approaching 0 will lead to large RIDs.  Typically set to 0.05.* 
+    - *tolerance used in the greedy algorithm selecting the reduced integration domain(RID). Values are between 0 and 0.1 . High values will lead to RIDs with very few elements, while values approaching 0 will lead to large RIDs.  Typically set to 0.05.*
 
 
 ```python
@@ -144,12 +142,11 @@ addToLib = False
 We can now execute one of the reduction we choose with all these parameters
 
 ## Execution <a name="Execution"></a>
-***
 
 
 ### Initialization
 
-The execution is done with an object from the class *[ReduceModel](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel)*.
+The execution is done with an object from the class {py:class}`.ReduceModel`.
 we initialize it with all the previous argument either for the Diamond or Starfish example
 
 
@@ -170,25 +167,22 @@ reduceMyModel = ReduceModel(    originalScene,
                                 addRigidBodyModes = addRigidBodyModes)
 ```
 
-We can finally perform the actual reduction. here is a schematic to resume the differents steps we will perform : 
+We can finally perform the actual reduction. here is a schematic to resume the differents steps we will perform :
 
-![MOR Process Schematic](../doc/images/MOR_plugin_execution_v2.png "MOR Process Schematic")
+![MOR Process Schematic](../images/MOR_plugin_execution_v2.png "MOR Process Schematic")
 
-### Phase 1 <a name="Phase 1"></a> 
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase1)*
+### {py:meth}`.phase1`
 
-We modify the original scene to do the first step of MOR :   
-- We add animation to each actuators we want for our model 
-- And add a writeState componant to save the shaking resulting states  
+We modify the original scene to do the first step of MOR :
+- We add animation to each actuators we want for our model
+- And add a writeState componant to save the shaking resulting states
 
 
 ```python
 reduceMyModel.phase1()
 ```
 
-### Phase 2 <a name="Phase 2"></a>
-
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase2)*
+### {py:meth}`.phase2`
 
 With the previous result we combine all the generated state files into one to be able to extract from it the different mode
 
@@ -217,9 +211,7 @@ print("Maximum number of Modes : ")
 reduceMyModel.reductionParam.nbrOfModes
 ```
 
-### Phase 3 <a name="Phase 3"></a>
-
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase3)*
+### {py:meth}`.phase3`
 
 We launch again a set of sofa scene with the sofa launcher with the same previous arguments but with a different scene
 
@@ -233,9 +225,7 @@ This scene take the previous one and add the model order reduction component:
 reduceMyModel.phase3()
 ```
 
-### Phase 4 <a name="Phase 4"></a>
-
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase4)*
+### {py:meth}`.phase4`
 
 Final step : we gather again all the results of the previous scenes into one and then compute the RID and Weigts with it. Additionnally we also compute the Active Nodes
 
@@ -248,7 +238,6 @@ reducedScene = reduceMyModel.phase4()
 End of example you can now go test the results in the folder you have designed at the beginning of this tutorial
 
 ## To go Further <a name="To go Further"></a>
-***
 
 Links to additional information about the plugin:
 

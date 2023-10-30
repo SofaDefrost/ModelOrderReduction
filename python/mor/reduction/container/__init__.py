@@ -4,14 +4,6 @@
 
 **Content:**
 
-.. autosummary::
-    :toctree: _autosummary
-
-    mor.reduction.container.objToAnimate
-    mor.reduction.container.reductionAnimations
-    mor.reduction.container.packageBuilder
-    mor.reduction.container.reductionParam
-
 """
 __all__=["objToAnimate","reductionAnimations","packageBuilder","reductionParam"]
 

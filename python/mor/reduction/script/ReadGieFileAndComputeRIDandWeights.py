@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+:code:`python readGieFileAndComputeRIDandWeights.py gieFilename RIDFileName weightsFileName tol`
 
-## Usage: python readGieFileAndComputeRIDandWeights.py gieFilename RIDFileName weightsFileName tol  
-## tol is typically between 0.1 and 0.01
+tol is typically between 0.1 and 0.01
+"""
 
-import math
 import numpy as np
 import os , sys
 from sys import argv
+
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path+'/../../gui')
 
@@ -28,7 +30,7 @@ def selectECSW(G,b,tau,verbose):
 
     while (currentValue > valTarget):
 
-        if verbose : 
+        if verbose :
             print ("Current Error: ", currentValue,"Target Error:", valTarget)
         else :
             u.update_progress( round( ( 100 - ((currentValue - valTarget)*100) / marge) / 100 , 4) )
@@ -62,7 +64,7 @@ def selectECSW(G,b,tau,verbose):
 
                 ind = ind + 1
 
-            vec1 = -xi[ECSWindexNegative] 
+            vec1 = -xi[ECSWindexNegative]
             vec2 = (etaTildeNegative-xi[ECSWindexNegative])
             maxFeasibleStep = np.amin(vec1/vec2);
             xi[list(ECSWindex)] = xi[list(ECSWindex)] + maxFeasibleStep*(etaTilde - xi[list(ECSWindex)]);
@@ -86,7 +88,7 @@ def selectECSW(G,b,tau,verbose):
 
     if verbose :
         print ("Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget)
-    else :    
+    else :
         u.update_progress( 1 )
 
     return (ECSWindex,xi)
@@ -137,7 +139,7 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
         # np.set_printoptions(precision=5)
         # print("DONE -------------> "+str(gie[0][0]))
 
-        if verbose : 
+        if verbose :
             print("nbLines "+str(nbLines)+"  lenght "+str(lenght))
             print("Done reading file %r:" % gieFilename,'\n')
 
@@ -148,7 +150,7 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
     bECSW = np.transpose(bECSW)
 
     ####################################
-    if verbose : 
+    if verbose :
         print("INFO pre-process")
         # print "     size GIE (nbLine,lenght) :   ", '('+str(nbLines)+', '+str(lenght)+')'
         print("     size cleaned GIE :               ", np.shape(gie))
@@ -160,7 +162,7 @@ def readGieFileAndComputeRIDandWeights(gieFilename, RIDFileName, weightsFileName
     ECSWindex = np.array(sorted(list(ECSWindex)))
     sizeRID = ECSWindex.size
 
-    #Store results in files 
+    #Store results in files
     np.savetxt(RIDFileName,ECSWindex, header=str(sizeRID)+' 1', comments='', fmt='%d')
     np.savetxt(weightsFileName,xi, header=str(xi.size)+' 1', comments='',fmt='%10.5f')
 
