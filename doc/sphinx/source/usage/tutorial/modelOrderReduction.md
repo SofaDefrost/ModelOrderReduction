@@ -69,13 +69,13 @@ nodesToReduce_STARFISH =['/model']
 
 #### listObjToAnimate <a name="listObjToAnimate"></a>
 
-Contain a list of object from the class [ObjToAnimate](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ObjToAnimate.html).
+Contain a list of object from the class {py:class}`.ObjToAnimate`.
 
 A ObjToAnimate will define an object to "animate" during the shaking.
 
 There are 3 main parameter to this object :
 - location : Path to obj/node we want to animate
-- animFct : the animation function we will use (here we use [defaultShaking](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/mor.animation.defaultShaking.html))
+- animFct : the animation function we will use (here we use {py:func}`.defaultShaking`).
 - all the argument that will be passed to the animFct we have chose
 
 For example here we want to animate the node named "nord", but we won't specify the animFct so the default animation function will be used and be applied on the first default object it will find. The default function will need 3 additionnal parameters :
@@ -146,7 +146,7 @@ We can now execute one of the reduction we choose with all these parameters
 
 ### Initialization
 
-The execution is done with an object from the class *[ReduceModel](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel)*.
+The execution is done with an object from the class {py:class}`.ReduceModel`.
 we initialize it with all the previous argument either for the Diamond or Starfish example
 
 
@@ -171,8 +171,7 @@ We can finally perform the actual reduction. here is a schematic to resume the d
 
 ![MOR Process Schematic](../images/MOR_plugin_execution_v2.png "MOR Process Schematic")
 
-### Phase 1 <a name="Phase 1"></a>
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase1)*
+### {py:meth}`.phase1`
 
 We modify the original scene to do the first step of MOR :
 - We add animation to each actuators we want for our model
@@ -183,9 +182,7 @@ We modify the original scene to do the first step of MOR :
 reduceMyModel.phase1()
 ```
 
-### Phase 2 <a name="Phase 2"></a>
-
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase2)*
+### {py:meth}`.phase2`
 
 With the previous result we combine all the generated state files into one to be able to extract from it the different mode
 
@@ -214,9 +211,7 @@ print("Maximum number of Modes : ")
 reduceMyModel.reductionParam.nbrOfModes
 ```
 
-### Phase 3 <a name="Phase 3"></a>
-
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase3)*
+### {py:meth}`.phase3`
 
 We launch again a set of sofa scene with the sofa launcher with the same previous arguments but with a different scene
 
@@ -230,9 +225,7 @@ This scene take the previous one and add the model order reduction component:
 reduceMyModel.phase3()
 ```
 
-### Phase 4 <a name="Phase 4"></a>
-
-*[doc](https://modelorderreduction.readthedocs.io/en/latest/_autosummary/_autosummary/_autosummary/mor.reduction.reduceModel.ReduceModel.html#mor.reduction.reduceModel.ReduceModel.phase4)*
+### {py:meth}`.phase4`
 
 Final step : we gather again all the results of the previous scenes into one and then compute the RID and Weigts with it. Additionnally we also compute the Active Nodes
 

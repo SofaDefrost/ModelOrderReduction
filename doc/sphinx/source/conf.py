@@ -36,18 +36,14 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
 
+    'sphinxcontrib.bibtex',
+
     # Generate pdf
     # 'rst2pdf.pdfbuilder'
 ]
 
-autosummary_generate = True  # Turn on sphinx.ext.autosummary
-autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
-html_show_sourcelink = False  # Remove 'view source code' from top of page (for html, not python)
-autodoc_inherit_docstrings = False  # If no docstring, inherit from base class
-set_type_checking_flag = False  # Enable 'expensive' imports for sphinx_autodoc_typehints
-# nbsphinx_allow_errors = True  # Continue through Jupyter errors
-#autodoc_typehints = "description" # Sphinx-native method. Not as good as sphinx_autodoc_typehints
-add_module_names = False # Remove namespaces from class/method signatures
+bibtex_bibfiles = ['references.bib']
+
 #################################
 ### THEME
 #################################
@@ -84,6 +80,14 @@ myst_enable_extensions = ["colon_fence", "deflist", "substitution", "html_image"
 #################################
 ###     sphinx.ext.autodoc
 #################################
+autosummary_generate = True  # Turn on sphinx.ext.autosummary
+autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
+html_show_sourcelink = False  # Remove 'view source code' from top of page (for html, not python)
+autodoc_inherit_docstrings = False  # If no docstring, inherit from base class
+#autodoc_typehints = "description" # Sphinx-native method. Not as good as sphinx_autodoc_typehints
+set_type_checking_flag = False  # Enable 'expensive' imports for sphinx_autodoc_typehints
+add_module_names = False # Remove namespaces from class/method signatures
+
 ## Include Python objects as they appear in source files
 ## Default: alphabetically ('alphabetical')
 autodoc_member_order = 'bysource'

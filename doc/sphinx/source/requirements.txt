@@ -7,3 +7,4 @@ myst-parser
 sphinx_design
 sphinx-copybutton
 sphinxemoji
+sphinxcontrib-bibtex

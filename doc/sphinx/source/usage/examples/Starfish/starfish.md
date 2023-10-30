@@ -4,7 +4,7 @@
 
 ## Presentation
 
-The multigait soft robot is a pneumatic robot from the work of R. Shepherd et. al, described here : [paper link](http://www.pnas.org/content/108/51/20400)
+The multigait soft robot is a pneumatic robot from the work of R. Shepherd et. al{footcite:ps}`Shepherd2011`.
 
 **Brief description :**
 
@@ -45,4 +45,9 @@ exemple results with a fine mesh:
 
 ![reduced mesh](Starfish_Reduced.png)
 
-For more details about the results, displacement error comparison, test with different mesh and other, you can read the paper affiliated with this plugin [here](https://hal.inria.fr/hal-01834483)
+For more details about the results, displacement error comparison, test with different mesh and other,
+you can read the paper affiliated with this plugin{footcite:ps}`Goury2018`.
+
+
+```{footbibliography}
+```

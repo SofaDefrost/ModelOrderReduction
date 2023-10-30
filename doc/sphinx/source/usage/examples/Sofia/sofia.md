@@ -44,20 +44,15 @@ With these different parameters we will after perform the reduction like explain
 
 ![reduction_coarseMesh](reduction_coarseMesh.png)
 
-.. raw:: html
+```{list-table} FPS before/after reduction 
+:header-rows: 1
+:name: perf_comparison_coarse
 
-    <table style="width:100%">
-        <tr>
-        <td>\</td>
-        <td>not reduced</td> 
-        <td>reduced</td>
-      </tr>
-      <tr>
-        <td>Fps</td>
-        <td>90</td>
-        <td>300</td>
-      </tr>
-    </table>
+* - not reduced
+  - reduced
+* - 90
+  - 300
+```
 
 ---
 
@@ -66,17 +61,12 @@ With these different parameters we will after perform the reduction like explain
 
 ![reduction_fineMesh](reduction_fineMesh.png)
 
-.. raw:: html
+```{list-table} FPS before/after reduction 
+:header-rows: 1
+:name: perf_comparison_fine
 
-    <table style="width:100%">
-      <tr>
-        <td>\</td>
-        <td>not reduced</td> 
-        <td>reduced</td>
-      </tr>
-      <tr>
-        <td>Fps</td>
-        <td>3.8</td>
-        <td>190</td>
-      </tr>
-    </table>
+* - not reduced
+  - reduced
+* - 3.8
+  - 190
+```

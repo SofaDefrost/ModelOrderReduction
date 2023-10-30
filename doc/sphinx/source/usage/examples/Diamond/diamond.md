@@ -51,4 +51,7 @@ exemple results with a fine mesh:
 
 ![reduced mesh](DiamondRobot_Reduced.png)
 
-For more details about the results, displacmeent error comparison, test with different mesh and other, you can read the paper affiliated with this plugin here(link!)
+For more details about the results, displacmeent error comparison, test with different mesh and other, you can read the paper affiliated with this plugin{footcite:ps}`Goury2018`.
+
+```{footbibliography}
+```
