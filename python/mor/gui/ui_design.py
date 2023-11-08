@@ -25,12 +25,20 @@ from PyQt5.QtCore import QObject
 
 import os
 import sys
+from collections import OrderedDict
 
 # MOR IMPORT
 path = os.path.dirname(os.path.abspath(__file__))
 pathToIcon = path+'/icons/'
 
 from mor.gui.widget import FrameLayout
+from mor.gui.widget import GenericDialogForm
+from mor.gui.widget import LineEdit
+from mor.gui.widget import AnimationTableWidget
+
+from mor.gui.widget import widgetUtility
+
+from mor.gui.settings.ui_colors import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -46,49 +54,7 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtWidgets.QApplication.translate(context, text, disambig)
 
-color_frame = '#fff79a'
-color_mainWindow = '#f2f1f0'
-color_grpBox = '#f2f1f0'
 
-
-class LineEdit(QLineEdit):
-    clicked = QtCore.pyqtSignal() # signal when the text entry is left clicked
-    focused = QtCore.pyqtSignal() # signal when the text entry is focused
-    leftArrowBtnClicked = QtCore.pyqtSignal(bool)
-
-    def __init__(self, value):
-
-        super(LineEdit, self).__init__(value)
-
-        self.leftArrowBtn = QtWidgets.QToolButton(self)
-        self.leftArrowBtn.setIcon(QtGui.QIcon(pathToIcon+'leftArrow.png'))
-        self.leftArrowBtn.setStyleSheet('border: 0px; padding: 0px;')
-        self.leftArrowBtn.setCursor(QtCore.Qt.ArrowCursor)
-        self.leftArrowBtn.clicked.connect(self.leftArrowBtnClicked.emit)
-        self.leftArrowBtn.resize(12,12)
-
-        frameWidth = self.style().pixelMetric(QtWidgets.QStyle.PM_DefaultFrameWidth)
-        leftArrowBtnSize = self.leftArrowBtn.sizeHint()
-
-        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' % (leftArrowBtnSize.width() + frameWidth + 1))
-        self.setMinimumSize(max(self.minimumSizeHint().width(), leftArrowBtnSize.width() + frameWidth*2 - 2),
-                            max(self.minimumSizeHint().height(), leftArrowBtnSize.height() + frameWidth*2 + 2))
-
-    def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton: self.clicked.emit()
-        else: super().mousePressEvent(event)
-
-    def focusInEvent(self,event):
-        super(LineEdit, self).focusInEvent(event)
-        self.focused.emit()
-
-    def resizeEvent(self, event):
-        buttonSize = self.leftArrowBtn.sizeHint()
-        frameWidth = self.style().pixelMetric(QtWidgets.QStyle.PM_DefaultFrameWidth)
-        self.leftArrowBtn.move(self.rect().right() - frameWidth - buttonSize.width() + 5,
-                         (self.rect().bottom() - buttonSize.height() + 10 )/2)
-
-        super(LineEdit, self).resizeEvent(event)
 
 class Ui_MainWindow(object):
 
@@ -191,7 +157,7 @@ class Ui_MainWindow(object):
         self.layout_advancedParam = FrameLayout(self.centralwidget,title="Advanced Parameter")
         self.layout_advancedParam.setObjectName('AdvancedParameter')
 
-        self.groupBoxAdvancedParam(fontTitle,fontLabel,fontLineEdit,fontCheckBox)
+        self.groupBoxAdvancedParam(fontTitle,fontLabel,fontLineEdit,fontCheckBox,fontButton)
 
         self.layout_advancedParam.addWidget(self.grpBox_AdvancedParam)
         self.scrollArea_layout.addWidget(self.layout_advancedParam) #, 0, QtCore.Qt.AlignTop)
@@ -327,6 +293,35 @@ class Ui_MainWindow(object):
 
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
+        # Set the different grpBoxes of our application
+        # It will ease the way we iterate on them
+        self.grpBoxes = [ self.grpBox_Path,
+                          self.grpBox_AdvancedParam,
+                          self.grpBox_ReductionParam,
+                          self.grpBox_AnimationParam,
+                          self.grpBox_Execution]
+
+        # Main layout of app
+        self.listLayout = [self.layout_path,self.layout_aniamationParam,self.layout_reductionParam,
+                           self.layout_advancedParam,self.layout_execution]
+
+        # to ease access
+        self.phases = [self.phase1,self.phase2,self.phase3,self.phase4]
+        self.phaseItem = []
+        for phase in self.phases:
+            self.phaseItem.append(widgetUtility.addButton(phase,self.grpBox_Execution))
+
+
+        self.mandatoryFields = OrderedDict([
+            (self.lineEdit_scene,                self.label_scene),
+            (self.lineEdit_output,               self.label_output),
+            (self.lineEdit_NodeToReduce,         self.label_NodeToReduce),
+            (self.tab_animation,                 self.layout_aniamationParam),
+            (self.lineEdit_tolGIE,               self.label_tolGIE),
+            (self.lineEdit_tolModes,             self.label_tolModes)
+            # (self.lineEdit_phasesToExecute,      self.label_phasesToExecute)
+        ])
+
     def groupBoxScene(self,fontTitle,fontLabel,fontLineEdit,fontButton):
 
         # Container
@@ -422,6 +417,7 @@ class Ui_MainWindow(object):
         self.lineEdit_NodeToReduce = LineEdit(self.grpBox_ReductionParam)
         self.lineEdit_NodeToReduce.setFont(fontLineEdit)
         self.lineEdit_NodeToReduce.setObjectName(_fromUtf8("lineEdit_NodeToReduce"))
+        self.lineEdit_NodeToReduce.setReadOnly(True)
 
         # Label
 
@@ -449,7 +445,7 @@ class Ui_MainWindow(object):
         self.formLayout_ReductionParam.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_AddTranslation)
         self.formLayout_ReductionParam.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.checkBox_AddTranslation)
 
-    def groupBoxAdvancedParam(self,fontTitle,fontLabel,fontLineEdit,fontCheckBox):
+    def groupBoxAdvancedParam(self,fontTitle,fontLabel,fontLineEdit,fontCheckBox,fontButton):
 
         # Container
         self.grpBox_AdvancedParam = QtWidgets.QGroupBox(self.layout_advancedParam)
@@ -459,8 +455,14 @@ class Ui_MainWindow(object):
 
         # Layout
 
-        self.formLayout_AdvancedParam = QtWidgets.QFormLayout(self.grpBox_AdvancedParam)
+        self.vLayout_advancedParam = QtWidgets.QVBoxLayout(self.grpBox_AdvancedParam)
+        self.vLayout_advancedParam.setObjectName(_fromUtf8("verticalLayout_advancedParam"))
+
+        self.formLayout_AdvancedParam = QtWidgets.QFormLayout()
         self.formLayout_AdvancedParam.setObjectName(_fromUtf8("formLayout_AdvancedParam"))
+
+        self.gridLayout_Phase = QtWidgets.QGridLayout()
+        self.gridLayout_Phase.setObjectName(_fromUtf8("gridLayout_Path"))
 
         ########    CONTENTS    ########
 
@@ -471,7 +473,23 @@ class Ui_MainWindow(object):
         self.checkBox_addToLib.setText(_fromUtf8(""))
         self.checkBox_addToLib.setObjectName(_fromUtf8("checkBox_addToLib"))
 
+        self.checkBox_auto = QtWidgets.QCheckBox(self.grpBox_AdvancedParam)
+        self.checkBox_auto.setFont(fontCheckBox)
+        self.checkBox_auto.setText(_fromUtf8(""))
+        self.checkBox_auto.setObjectName(_fromUtf8("checkBox_auto"))
+        self.checkBox_auto.setCheckState(True)
+        self.checkBox_auto.setTristate(False)
+
+        # Button
+        buttonWidth = 30
+
+        self.btn_animationPath = QtWidgets.QPushButton(self.grpBox_AdvancedParam)
+        self.btn_animationPath.setFixedWidth(buttonWidth)
+        self.btn_animationPath.setFont(fontButton)
+        self.btn_animationPath.setObjectName(_fromUtf8("btn_animationPath"))
+
         # LineEdit
+        readOnly = True
 
         self.lineEdit_tolModes = QtWidgets.QLineEdit(self.grpBox_AdvancedParam)
         self.lineEdit_tolModes.setFont(fontLineEdit)
@@ -482,6 +500,18 @@ class Ui_MainWindow(object):
         self.lineEdit_tolGIE.setFont(fontLineEdit)
         self.lineEdit_tolGIE.setText(_fromUtf8(""))
         self.lineEdit_tolGIE.setObjectName(_fromUtf8("lineEdit_tolGIE"))
+
+        self.lineEdit_phasesToExecute = QtWidgets.QLineEdit(self.grpBox_AdvancedParam)
+        self.lineEdit_phasesToExecute.setFont(fontLineEdit)
+        self.lineEdit_phasesToExecute.setText(_fromUtf8(""))
+        self.lineEdit_phasesToExecute.setObjectName(_fromUtf8("lineEdit_phasesToExecute"))
+        self.lineEdit_phasesToExecute.setDisabled(True)
+
+        self.lineEdit_animationPath = QtWidgets.QLineEdit(self.grpBox_AdvancedParam)
+        self.lineEdit_animationPath.setFont(fontLineEdit)
+        self.lineEdit_animationPath.setText(_fromUtf8(""))
+        self.lineEdit_animationPath.setReadOnly(readOnly)
+        self.lineEdit_animationPath.setObjectName(_fromUtf8("lineEdit_animationPath"))
 
         # Label
 
@@ -497,16 +527,36 @@ class Ui_MainWindow(object):
         self.label_tolGIE.setFont(fontLabel)
         self.label_tolGIE.setObjectName(_fromUtf8("label_tolGIE"))
 
+        self.label_phasesToExecute = QtWidgets.QLabel(self.grpBox_AdvancedParam)
+        self.label_phasesToExecute.setFont(fontLabel)
+        self.label_phasesToExecute.setObjectName(_fromUtf8("label_phasesToExecute"))
+
+        self.label_animationPath = QtWidgets.QLabel(self.grpBox_AdvancedParam)
+        self.label_animationPath.setFont(fontLabel)
+        self.label_animationPath.setObjectName(_fromUtf8("label_animationPath"))
         ################################
 
         # Add Contents to Layout
         self.formLayout_AdvancedParam.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_addToLib)
-        self.formLayout_AdvancedParam.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_tolModes)
-        self.formLayout_AdvancedParam.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_tolGIE)
+        self.formLayout_AdvancedParam.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_tolModes)
+        self.formLayout_AdvancedParam.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_tolGIE)
+        # self.formLayout_AdvancedParam.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_phasesToExecute)
 
         self.formLayout_AdvancedParam.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.checkBox_addToLib)
-        self.formLayout_AdvancedParam.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_tolModes)
-        self.formLayout_AdvancedParam.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_tolGIE)
+        self.formLayout_AdvancedParam.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_tolModes)
+        self.formLayout_AdvancedParam.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_tolGIE)
+        # self.formLayout_AdvancedParam.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_phasesToExecute)
+
+        self.gridLayout_Phase.addWidget(self.label_phasesToExecute, 0, 0, 1, 1)
+        self.gridLayout_Phase.addWidget(self.lineEdit_phasesToExecute, 0, 1, 1, 1)
+        self.gridLayout_Phase.addWidget(self.checkBox_auto, 0, 2, 1, 1)
+
+        self.gridLayout_Phase.addWidget(self.label_animationPath, 2, 0, 1, 1)
+        self.gridLayout_Phase.addWidget(self.lineEdit_animationPath, 2, 1, 1, 1)
+        self.gridLayout_Phase.addWidget(self.btn_animationPath, 2, 2, 1, 1)
+
+        self.vLayout_advancedParam.addLayout(self.formLayout_AdvancedParam)
+        self.vLayout_advancedParam.addLayout(self.gridLayout_Phase)
 
     def grouprBoxAnimationParam(self,fontTitle,fontTable,fontButton):
 
@@ -527,29 +577,38 @@ class Ui_MainWindow(object):
         ########    CONTENTS    ########
 
         # Table
+        var_semantic = "[a-z|A-Z|\d|\\-|\\_]{1,20}" # string with max 20 char & min 1 with char from a to z/A to Z/-/_
+        self.tab_animation = AnimationTableWidget(self.grpBox_AnimationParam,QtCore.QRegExp("^("+var_semantic+"){1}(\\/"+var_semantic+")*$"))
+        self.tab_animation.setFont(fontTable)
+        self.tab_animation.setObjectName(_fromUtf8("tab_animation"))
+        self.tab_animation.setColumnCount(4)
+        self.tab_animation.setRowCount(0)
 
-        self.tableWidget_animationParam = QtWidgets.QTableWidget(self.grpBox_AnimationParam)
-        self.tableWidget_animationParam.setFont(fontTable)
-        self.tableWidget_animationParam.setObjectName(_fromUtf8("tableWidget_animationParam"))
-        self.tableWidget_animationParam.setColumnCount(3)
-        self.tableWidget_animationParam.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        item.setText(_translate("MainWindow", "", None))
+        self.tab_animation.setHorizontalHeaderItem(0, item)
 
         item = QtWidgets.QTableWidgetItem()
         item.setText(_translate("MainWindow", "animation function", None))
-        self.tableWidget_animationParam.setHorizontalHeaderItem(0, item)
-        self.tableWidget_animationParam.setColumnWidth(1, 80)
+        self.tab_animation.setHorizontalHeaderItem(1, item)
 
         item = QtWidgets.QTableWidgetItem()
         item.setText(_translate("MainWindow", "parameters", None))
-        self.tableWidget_animationParam.setHorizontalHeaderItem(1, item)
-        self.tableWidget_animationParam.setColumnWidth(2, 90)
+        self.tab_animation.setHorizontalHeaderItem(2, item)
 
         item = QtWidgets.QTableWidgetItem()
         item.setText(_translate("MainWindow", "to Animate", None))
-        self.tableWidget_animationParam.setHorizontalHeaderItem(2, item)
-        self.tableWidget_animationParam.setColumnWidth(0, 90)
+        self.tab_animation.setHorizontalHeaderItem(3, item)
 
-        self.tableWidget_animationParam.verticalHeader().hide()
+        header = self.tab_animation.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
+
+
+        self.tab_animation.verticalHeader().hide()
+        self.tab_animation.horizontalHeader().setMinimumSectionSize(16)
 
         # Button
 
@@ -561,6 +620,10 @@ class Ui_MainWindow(object):
         self.btn_removeLine.setFont(fontButton)
         self.btn_removeLine.setObjectName(_fromUtf8("btn_removeLine"))
 
+        self.btn_test1 = QtWidgets.QPushButton(self.grpBox_AnimationParam)
+        self.btn_test1.setFont(fontButton)
+        self.btn_test1.setObjectName(_fromUtf8("btn_test1"))
+
         # Spacer
 
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -568,11 +631,12 @@ class Ui_MainWindow(object):
         ################################
 
         # Add Contents to Layout
-        self.layout_addRemoveRow.addWidget(self.btn_removeLine, 1, 2, 1, 1)
-        self.layout_addRemoveRow.addWidget(self.btn_addLine, 1, 1, 1, 1)
-        self.layout_addRemoveRow.addItem(spacerItem, 1, 0, 1, 1)
+        self.layout_addRemoveRow.addWidget(self.btn_test1, 1, 0, 1, 1)
+        self.layout_addRemoveRow.addWidget(self.btn_removeLine, 1, 3, 1, 1)
+        self.layout_addRemoveRow.addWidget(self.btn_addLine, 1, 2, 1, 1)
+        self.layout_addRemoveRow.addItem(spacerItem, 1, 1, 1, 1)
 
-        self.verticalLayout_1.addWidget(self.tableWidget_animationParam)
+        self.verticalLayout_1.addWidget(self.tab_animation)
         self.verticalLayout_1.addLayout(self.layout_addRemoveRow)
 
     def groupBoxExecution(self,fontTitle,fontLineEdit,fontButton):
@@ -616,6 +680,9 @@ class Ui_MainWindow(object):
         self.phase1 = FrameLayout(self.grpBox_Execution,title="Phase 1: Snapshot Database Computation")
         self.phase1.setObjectName('Phase 1')
 
+        # self.layout_phase1TestDebug = QtWidgets.QGridLayout(self.phase1)
+        # self.layout_phase1TestDebug.setObjectName(_fromUtf8("layout_phase1TestDebug"))
+
         self.phase2 = FrameLayout(self.grpBox_Execution,title="Phase 2: Computation of the reduced basis")
         self.phase2.setObjectName('Phase 2')
 
@@ -656,6 +723,14 @@ class Ui_MainWindow(object):
         self.btn_debug1.setFont(fontButton)
         self.btn_debug1.setObjectName(_fromUtf8("btn_debug1"))
         self.phase1.addWidget(self.btn_debug1)
+
+        # self.layout_phase1TestDebug.addWidget(self.btn_test, 0, 0, 1, 1)
+        # self.layout_phase1TestDebug.addWidget(self.btn_debug1, 0, 1, 1, 1)
+
+        self.btn_test2 = QtWidgets.QPushButton(self.phase3)
+        self.btn_test2.setFont(fontButton)
+        self.btn_test2.setObjectName(_fromUtf8("btn_test2"))
+        self.phase3.addWidget(self.btn_test2)
 
         self.btn_debug2 = QtWidgets.QPushButton(self.phase3)
         self.btn_debug2.setFont(fontButton)
@@ -704,19 +779,25 @@ class Ui_MainWindow(object):
         self.label_addToLib.setText(_translate("MainWindow", "Add to lib", None))
         self.label_tolModes.setText(_translate("MainWindow", "Tolerance Modes", None))
         self.label_tolGIE.setText(_translate("MainWindow", "Tolerance GIE", None))
+        self.label_phasesToExecute.setText(_translate("MainWindow", "Phase to execute", None))
+        self.label_animationPath.setText(_translate("MainWindow", "Path to Animation", None))
+
+        self.btn_animationPath.setText(_translate("MainWindow", "...", None))
 
         ##########################      GROUPBOX ANIAMATION PARAM     ########################
 
-        self.tableWidget_animationParam.horizontalHeader().setStretchLastSection(True)
+        self.tab_animation.horizontalHeader().setStretchLastSection(True)
 
+        self.btn_test1.setText(_translate("MainWindow", "Test animation", None))
         self.btn_addLine.setText(_translate("MainWindow", "Add", None))
         self.btn_removeLine.setText(_translate("MainWindow", "Remove", None))
 
-        self.tableWidget_animationParam.resizeColumnsToContents()
+        self.tab_animation.resizeColumnsToContents()
 
         ##########################      GROUPBOX EXECUTION     ###############################
 
         self.btn_debug1.setText(_translate("MainWindow", "launch debug phase", None))
+        self.btn_test2.setText(_translate("MainWindow", "Test reduction", None))
         self.btn_debug2.setText(_translate("MainWindow", "launch debug phase", None))
         self.btn_results.setText(_translate("MainWindow", "launch result", None))
 
@@ -773,12 +854,13 @@ class Ui_MainWindow(object):
 
         self.label_tolModes.setToolTip(_translate("MainWindow", "Defines the level of accuracy we want to select the reduced basis modes,\nhight/low tolerance wil select many/few modes", None))
         self.label_tolGIE.setToolTip(_translate("MainWindow", "tolerance used in the greedy algorithm selecting the reduced integration domain(RID).\nValues are between 0 and 0.1 .\nHigh values will lead to RIDs with very few elements, while values approaching 0 will lead to large RIDs.  Typically set to 0.05", None))
+        self.label_phasesToExecute.setToolTip(_translate("MainWindow", "Actuation pattern you want to execute during the reduction", None))
 
         ##########################      GROUPBOX ANIAMATION PARAM     ########################
         self.layout_aniamationParam._title_frame.setToolTip(_translate("MainWindow", "contains the parameters allowing to define our model animation", None))
-        self.tableWidget_animationParam.horizontalHeaderItem(0).setToolTip(_translate("MainWindow", "Select with which animation fct to work", None))
-        self.tableWidget_animationParam.horizontalHeaderItem(1).setToolTip(_translate("MainWindow", "Parameters for the animation function", None))
-        self.tableWidget_animationParam.horizontalHeaderItem(2).setToolTip(_translate("MainWindow", "Path in the SOFA scene toward the SOFA.node/obj you want to aply the animation fct on", None))
+        self.tab_animation.horizontalHeaderItem(0).setToolTip(_translate("MainWindow", "Select with which animation fct to work", None))
+        self.tab_animation.horizontalHeaderItem(1).setToolTip(_translate("MainWindow", "Parameters for the animation function", None))
+        self.tab_animation.horizontalHeaderItem(2).setToolTip(_translate("MainWindow", "Path in the SOFA scene toward the SOFA.node/obj you want to aply the animation fct on", None))
 
         ##########################      GROUPBOX EXECUTION     ###############################
         self.layout_execution._title_frame.setToolTip(_translate("MainWindow", "contains the different execution you can perform", None))

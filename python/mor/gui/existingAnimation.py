@@ -1,0 +1,38 @@
+from collections import OrderedDict
+
+'''
+File in which you can easily add animation function that you want to be able to select in the GUI
+
+To do that we declare an `OrderedDict` in which we will append the animation we want.
+We give as dictionnary entry the name of the animation function and as value another 
+dictionnary containing its arguments name with their default values.
+
+example:
+
+existingAnimation['MyNewAnimationFunc'] = { 'incr':5.,
+                                        'incrPeriod':10.,
+                                        'rangeOfAction':40.,
+                                        'additionalArg1':'can be a string',
+                                        'additionalArg2':42
+                                        ... 
+                                        }
+'''
+
+
+existingAnimation = OrderedDict()
+
+existingAnimation['defaultShaking'] = { 'incr':5.,
+                                        'incrPeriod':10.,
+                                        'rangeOfAction':40.}
+
+existingAnimation['shakingSofia'] = { 'incr':1.,
+                                      'incrPeriod':2.,
+                                      'rangeOfAction':10.,
+                                      'dataToWorkOn':'',
+                                      'angle':10.,
+                                      'rodRadius':10.}
+
+
+existingAnimation['defaultTest'] = { 'incr':5.,
+                                        'incrPeriod':10.,
+                                        'rangeOfAction':40.}

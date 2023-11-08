@@ -1,0 +1,22 @@
+grpBox_AdvancedParam:
+  checkBox_addToLib: 'False'
+  checkBox_auto: 'True'
+  lineEdit_phasesToExecute: ''
+  lineEdit_tolGIE: '0.05'
+  lineEdit_tolModes: '0.001'
+grpBox_Execution:
+  Phase 1:
+    checkBox: 'True'
+  Phase 2:
+    checkBox: 'True'
+  Phase 3:
+    checkBox: 'True'
+  Phase 4:
+    checkBox: 'True'
+grpBox_Path:
+  lineEdit_output: ''
+  lineEdit_scene: ''
+grpBox_ReductionParam:
+  checkBox_AddTranslation: 'False'
+  lineEdit_NodeToReduce: ''
+  lineEdit_moduleName: myReducedModel
