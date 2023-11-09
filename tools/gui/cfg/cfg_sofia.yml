@@ -1,19 +1,23 @@
 grpBox_AdvancedParam:
   checkBox_addToLib: 'False'
+  checkBox_auto: 'True'
+  lineEdit_animationPath: ''
+  lineEdit_phasesToExecute: '[0, 1]'
   lineEdit_tolGIE: '0.05'
   lineEdit_tolModes: '0.001'
 grpBox_AnimationParam:
-  tableWidget_animationParam:
+  tab_animation:
     0:
-      0: shakingSofia
-      1:
-        angle: '0.0'
+      0: 'True'
+      1: shakingSofia
+      2:
+        angle: '0'
         dataToWorkOn: position
         incr: '0.05'
-        incrPeriod: '3.0'
+        incrPeriod: '3'
         rangeOfAction: '6.4'
         rodRadius: '0.7'
-      2: SofiaLeg_actuator/actuatorState
+      3: SofiaLeg_actuator/actuatorState
 grpBox_Execution:
   Phase 1:
     checkBox: 'False'
