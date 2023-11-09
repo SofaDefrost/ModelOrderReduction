@@ -68,7 +68,7 @@ class GenericDialogForm(QDialog):
                 widget.textChanged.connect(lambda: u.check_state(self.sender()))
 
                 if type(value[1][0]) == str:
-                    widget.setValidator(QtWidgets.QRegExpValidator(QRegExp("^("+value[1][0]+")$")))
+                    widget.setValidator(QtGui.QRegExpValidator(QRegExp("^("+value[1][0]+")$")))
                 else:
                     widget.setValidator(value[1][0])
 
