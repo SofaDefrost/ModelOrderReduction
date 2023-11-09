@@ -25,14 +25,21 @@ existingAnimation['defaultShaking'] = { 'incr':5.,
                                         'incrPeriod':10.,
                                         'rangeOfAction':40.}
 
-existingAnimation['shakingSofia'] = { 'incr':1.,
-                                      'incrPeriod':2.,
-                                      'rangeOfAction':10.,
-                                      'dataToWorkOn':'',
-                                      'angle':10.,
-                                      'rodRadius':10.}
-
+existingAnimation['shakingSofia'] = { 'incr':0.05,
+                                      'incrPeriod':3,
+                                      'rangeOfAction':6.4,
+                                      'dataToWorkOn':'position',
+                                      'angle':0,
+                                      'rodRadius':0.7}
 
 existingAnimation['defaultTest'] = { 'incr':5.,
                                         'incrPeriod':10.,
                                         'rangeOfAction':40.}
+
+
+existingAnimation['shakingLiver'] = { 'incr':0.4,
+                                      'incrPeriod':2.5,
+                                      'rangeOfAction':6.2,
+                                      'dataToWorkOn':'position',
+                                      'angle':0,
+                                      'rodRadius':0.4}

@@ -655,7 +655,6 @@ class Ui_MainWindow(object):
                         "We launch again a set of sofa scene with the sofa launcher with the same previous arguments but with a different scene\n"
                         "This scene take the previous one and add the model order reduction component:\n"
                         "    - HyperReducedFEMForceField\n"
-                        "    - MechanicalMatrixMapperMOR\n"
                         "    - ModelOrderReductionMapping and produce an Hyper Reduced description of the model")
 
         phase4Info = (  "Computation of the reduced integration domain in terms of elements and nodes\n\n"

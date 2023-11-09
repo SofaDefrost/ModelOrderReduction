@@ -52,6 +52,8 @@ except:
 from mor.gui import ui_design
 # Colors specifications 
 from mor.gui.settings.ui_colors import *
+from mor.gui.settings import existingAnimation as anim
+
 # gui custom widget
 from mor.gui.widget import Completer
 from mor.gui.widget import TreeModel
@@ -165,7 +167,6 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
 
     def initValuesValidator(self):
 
-        import existingAnimation as anim
         self.existingAnimation = anim.existingAnimation.copy()
 
         var_int = '\d{1,10}'
@@ -802,6 +803,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
             print("STEP : "+str(steps))
             if len(steps) == 4:
                 reduceMyModel.performReduction()
+                self.executeSofaScene(str(self.lineEdit_output.text())+"/reduced_"+str(self.lineEdit_moduleName.text())+".py")
             elif len(steps) == 0:
                 print("Select a step to perform")
             else:

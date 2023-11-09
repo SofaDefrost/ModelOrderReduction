@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QTableWidget
 
 # Colors specifications 
 from mor.gui.settings.ui_colors import * 
+from mor.gui.settings import existingAnimation as anim
 
 from mor.gui.widget import LineEdit
 from mor.gui.widget import Completer
@@ -16,7 +17,6 @@ from mor.gui.widget import TreeModel
 from mor.gui.widget import GenericDialogForm
 
 from mor.gui import utility as u
-from mor.gui import existingAnimation as anim
 
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path+'/../')
@@ -74,9 +74,7 @@ class AnimationTableWidget(QTableWidget):
             checkBox.setObjectName(_fromUtf8("checkBox"))
             checkBox.setFixedWidth(30)
             checkBox.setStyleSheet("border:0px")
-            checkBox.setCheckState(True)
             self.setCellWidget(row,0,checkBox)
-            checkBox.setTristate(False)
             model = TreeModel(cfg,obj=True)
 
             completer = Completer(tmp)
@@ -96,6 +94,8 @@ class AnimationTableWidget(QTableWidget):
 
             completer.activated.connect(lambda: u.display(completer))
             checkBox.stateChanged.connect(lambda: self.phaseSelected())
+            checkBox.setCheckState(True)
+            checkBox.setTristate(False)
             tmp.leftArrowBtnClicked.connect(lambda:  u.left(tmp))
 
 
