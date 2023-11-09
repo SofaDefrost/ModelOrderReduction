@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
-import importlib
 import platform
+import importlib
+from importlib.util import spec_from_loader, module_from_spec
+from importlib.machinery import SourceFileLoader 
 
 #   STLIB IMPORT
 try:
@@ -40,9 +42,10 @@ globals().update({k: getattr(animationFct, k) for k in names})
 
 # Our Original Scene IMPORT
 pathScene = r'$ORIGINALSCENE'
-scene = pathScene.split(slash)[-1].split('.')[0]
-os.sys.path.insert(0,os.path.dirname(os.path.abspath(pathScene)))
-originalScene = importlib.import_module(scene)
+scene = pathScene.split(slash)[-1]
+spec = spec_from_loader(scene, SourceFileLoader(scene, pathScene))
+originalScene = module_from_spec(spec)
+spec.loader.exec_module(originalScene)
 
 
 # Animation parameters
