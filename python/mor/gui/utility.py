@@ -236,7 +236,6 @@ def left(lineEdit):
     lineEdit.setText(newTxt)
 
     lineEdit.completer().setCompletionPrefix(newTxt)
-    # lineEdit.completer().complete()
 
 def right(lineEdit):
     newTxt = str(lineEdit.text())

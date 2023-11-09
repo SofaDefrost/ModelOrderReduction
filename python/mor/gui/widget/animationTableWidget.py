@@ -34,7 +34,6 @@ class AnimationTableWidget(QTableWidget):
     def __init__(self,value,exp_path):
 
         super(AnimationTableWidget, self).__init__(value)
-        # QTableWidget.__init__(self,exp_path)
 
         # Validator
         self.exp_path = exp_path
@@ -217,10 +216,8 @@ class AnimationTableWidget(QTableWidget):
         if nbrRow > 5:
             nbrRow = 5
 
-        # print(self.width())
         size = QtCore.QSize(width,sizeForRow*nbrRow+sizeHeader)
 
-        # print(self.size(),size,sizeHeader)
         self.setMinimumSize(size)
         size.setWidth(maxWidth)
         self.setMaximumSize(size)

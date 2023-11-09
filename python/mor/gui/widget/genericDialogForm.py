@@ -116,15 +116,6 @@ class GenericDialogForm(QDialog):
                     else:
                         widget.setText('')
             self.setCurrentValues()
-        # else:
-        #     for label,widget in self.row.items():
-        #         print(label,widget)
-        #         if dataType == bool:
-        #             widget.setCheckState(False)
-        #         else:
-        #             widget.setText('')
-        #
-        #     self.setCurrentValues()
 
     def setCurrentValues(self):
         for label,widget in self.row.items():

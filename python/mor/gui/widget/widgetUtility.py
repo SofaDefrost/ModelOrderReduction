@@ -27,7 +27,6 @@ def updatePhasesState(index,phase,phaseItem):
     phase.blockSignals(True)
 
     if checkBox.isChecked() == True:
-        # checkBox.setDisabled(False)
 
         for box,btn in phaseItem[:index]:
             box.setCheckState(True)
@@ -54,7 +53,7 @@ def addButton(phaseWidget,grpBox_Execution):
     '''
 
     # CheckBox
-    checkBox = QtWidgets.QCheckBox()
+    checkBox = QtWidgets.QCheckBox(grpBox_Execution)
     checkBox.setObjectName(_fromUtf8("checkBox"))
     checkBox.setFixedWidth(30)
     checkBox.setStyleSheet("border:0px")
@@ -74,7 +73,5 @@ def addButton(phaseWidget,grpBox_Execution):
     phaseWidget._title_frame._hlayout.addWidget(checkBox)
     phaseWidget._title_frame._hlayout.addWidget(btn)
 
-    # checkBox.setParent(self.grpBox_Execution)
-    # btn.setParent(self.grpBox_Execution)
 
     return (checkBox,btn)
