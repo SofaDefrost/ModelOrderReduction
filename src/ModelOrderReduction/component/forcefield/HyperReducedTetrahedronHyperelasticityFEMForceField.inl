@@ -573,6 +573,12 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatri
     m_edgeInfo.endEdit();
 }
 
+template <class DataTypes>
+void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::
+buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
+{
+    core::behavior::ForceField<DataTypes>::buildStiffnessMatrix(matrix);
+}
 
 
 template<class DataTypes>
