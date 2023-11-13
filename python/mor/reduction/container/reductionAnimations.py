@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import math
+import math, os
+
+path = os.path.dirname(os.path.abspath(__file__))
+pathToAnimation = path+"/../../animation/shakingAnimations.py"
 
 class ReductionAnimations():
     """
     **Contain all the parameters & functions related to the animation of the reduction**
 
     """
-    def __init__(self,listObjToAnimate):
+    def __init__(self,listObjToAnimate,listPathToAnimation=[]):
 
         # A list of what you want to animate in your scene and with which parameters
         self.listObjToAnimate = listObjToAnimate
+        self.listPathToAnimation = [pathToAnimation] + listPathToAnimation
 
         self.listOfLocation = []
         for obj in self.listObjToAnimate:

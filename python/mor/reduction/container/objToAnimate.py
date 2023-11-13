@@ -50,10 +50,7 @@ class ObjToAnimate():
 
     def __init__(self,location, animFct='defaultShaking', item=None, duration=-1, **params):
         self.location = location # #: location var
-        if isinstance(animFct, str):
-            self.animFct = 'animation.shakingAnimations.'+animFct
-        else:
-            self.animFct = animFct
+        self.animFct = animFct
         self.item = item
         self.duration = duration
         self.params = params 

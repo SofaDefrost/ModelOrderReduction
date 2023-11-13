@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
-import imp
 import platform
+import importlib
+from importlib.util import spec_from_loader, module_from_spec
+from importlib.machinery import SourceFileLoader 
 
 #   STLIB IMPORT
 try:
@@ -13,7 +15,6 @@ except:
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
-from mor import animation
 from mor.reduction.container import ObjToAnimate
 from mor.utility import sceneCreation as u
 
@@ -21,10 +22,31 @@ slash = '/'
 if "Windows" in platform.platform():
     slash = "\\"
 
+# Import animation
+#for $file in $LISTANIMATIONTOIMPORT:
+fileToImport = os.path.normpath(r'$file')
+scene = fileToImport.split(slash)[-1].split('.')[0]
+os.sys.path.insert(0,os.path.dirname(os.path.abspath(fileToImport)))
+animationFct = importlib.import_module(scene)
+
+# is there an __all__?  if so respect it
+if "__all__" in animationFct.__dict__:
+    names = animationFct.__dict__["__all__"]
+else:
+    # otherwise we import all names that don't begin with _
+    names = [x for x in animationFct.__dict__ if not x.startswith("_")]
+
+# now drag them in
+globals().update({k: getattr(animationFct, k) for k in names})
+#end for
+
 # Our Original Scene IMPORT
-originalScene = r'$ORIGINALSCENE'
-originalScene = os.path.normpath(originalScene)
-originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
+pathScene = r'$ORIGINALSCENE'
+scene = pathScene.split(slash)[-1]
+spec = spec_from_loader(scene, SourceFileLoader(scene, pathScene))
+originalScene = module_from_spec(spec)
+spec.loader.exec_module(originalScene)
+
 
 # Animation parameters
 listObjToAnimate = []

@@ -87,3 +87,22 @@ def copyFileIntoAnother(fileToCopy,fileToPasteInto):
 
     except:
         raise
+
+from Cheetah.Template import Template
+def customLauncher(filesandtemplates,param,resultDir):
+
+    files=[]
+    for (content,filename) in filesandtemplates:
+        files.append( resultDir+filename )
+        param["FILE"+str(len(files)-1)] = files[-1]
+
+    if not os.path.exists(resultDir):
+        os.makedirs(resultDir)
+
+    i=0
+    for (content,filename) in filesandtemplates:
+        theFile = open(files[i], "w+")
+        t = Template(content, searchList=param)
+        theFile.write(str(t))
+        theFile.close()
+        i+=1

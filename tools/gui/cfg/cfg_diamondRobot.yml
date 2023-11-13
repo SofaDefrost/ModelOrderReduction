@@ -1,37 +1,43 @@
 grpBox_AdvancedParam:
   checkBox_addToLib: 'False'
+  checkBox_auto: 'True'
+  lineEdit_phasesToExecute: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]'
   lineEdit_tolGIE: '0.05'
   lineEdit_tolModes: '0.001'
 grpBox_AnimationParam:
-  tableWidget_animationParam:
+  tab_animation:
     0:
-      0: defaultShaking
-      1:
+      0: 'True'
+      1: defaultShaking
+      2:
         incr: '5.0'
         incrPeriod: '10.0'
         rangeOfAction: '40.0'
-      2: modelNode/nord
+      3: modelNode/est
     1:
-      0: defaultShaking
-      1:
+      0: 'True'
+      1: defaultShaking
+      2:
         incr: '5.0'
         incrPeriod: '10.0'
         rangeOfAction: '40.0'
-      2: modelNode/est
+      3: modelNode/nord
     2:
-      0: defaultShaking
-      1:
+      0: 'True'
+      1: defaultShaking
+      2:
         incr: '5.0'
         incrPeriod: '10.0'
         rangeOfAction: '40.0'
-      2: modelNode/ouest
+      3: modelNode/ouest
     3:
-      0: defaultShaking
-      1:
+      0: 'True'
+      1: defaultShaking
+      2:
         incr: '5.0'
         incrPeriod: '10.0'
         rangeOfAction: '40.0'
-      2: modelNode/sud
+      3: modelNode/sud
 grpBox_Execution:
   Phase 1:
     checkBox: 'False'

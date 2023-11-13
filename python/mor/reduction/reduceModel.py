@@ -33,9 +33,10 @@ except:
                      +"export PYTHONPATH=/PathToYourSofaSrcFolder/tools/sofa-launcher")
 
 path = os.path.dirname(os.path.abspath(__file__))
-pathToTemplate = path+'/template/'
-pathToReducedModel = path+'/../../morlib/'
-sys.path.insert(0,path+'/../../')
+pathToTemplate = path+"/template/"
+pathToReducedModel = path+"/../../morlib/"
+pathToAnimation = path+"/../animation/shakingAnimations.py"
+sys.path.insert(0,path+"/../../")
 
 from mor.utility import utility as u
 from mor.reduction.container import ReductionAnimations
@@ -94,13 +95,14 @@ class ReduceModel():
         addRigidBodyModes = False,
         nbrCPU = 4,
         phaseToSave = None,
-        saveVelocitySnapshots = None):
+        saveVelocitySnapshots = None,
+        listPathToAnimation = []):
 
         self.originalScene = os.path.normpath(originalScene)
         self.nodeToReduce = nodeToReduce
 
         ### Obj Containing all the argument & function about how the shaking will be done and with which actuators
-        self.reductionAnimations = ReductionAnimations(listObjToAnimate)
+        self.reductionAnimations = ReductionAnimations(listObjToAnimate,listPathToAnimation)
 
         ### Obj Containing all the argument & function about how to create the end package and where 
         outputDir = os.path.normpath(outputDir)
@@ -118,8 +120,11 @@ class ReduceModel():
 
         self.reductionParam.setFilesName()
 
+        # remove: it's done automatically no need to specifiy one, or do we ?
         self.phaseToSave = phaseToSave
         self.phaseToSaveIndex = 0
+        ###
+
         self.nbrCPU = nbrCPU
         self.verbose = verbose
 
@@ -133,7 +138,7 @@ class ReduceModel():
         strInfo += "##################################################"
         print(strInfo)
 
-    def setListSofaScene(self,phasesToExecute=None):
+    def setListSofaScene(self,phasesToExecute=None,phase=None):
         """
         **Will generate a list containing dictionnaries, 
         where each dictionnary is a set of argument for the execution of one SOFA scene.**
@@ -169,22 +174,42 @@ class ReduceModel():
             phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
 
         if not self.phaseToSave:
-            self.phaseToSave = [0]*len(self.reductionAnimations.phaseNumClass[0])
+            self.phaseToSave = self.reductionAnimations.phaseNumClass[phasesToExecute[0]]
+            self.phaseToSaveIndex = 0
 
-        for i in phasesToExecute:
-            if i >= self.reductionAnimations.nbPossibility or i < 0 :
-                raise ValueError("phasesToExecute incorrect, select an non-existent phase : "+phasesToExecute)
-            if self.phaseToSave == self.reductionAnimations.phaseNumClass[i]:
-                self.phaseToSaveIndex = self.reductionAnimations.phaseNumClass.index(self.phaseToSave)
-                # print("INDEX -------------------> "+str(self.phaseToSaveIndex))
-
+        if (phase != None):
             self.listSofaScene.append({ "ORIGINALSCENE": self.originalScene,
                                         "LISTOBJTOANIMATE": self.reductionAnimations.listObjToAnimate,
-                                        "PHASE": self.reductionAnimations.phaseNumClass[i],
+                                        "PHASE": phase,
                                         "PERIODSAVEGIE" : self.reductionParam.periodSaveGIE,
                                         "PARAMWRAPPER" : self.reductionParam.paramWrapper,
                                         "nbIterations":self.reductionAnimations.nbIterations,
-                                        "PHASETOSAVE" : self.phaseToSave})
+                                        "PHASETOSAVE" : self.phaseToSave,
+                                        "LISTANIMATIONTOIMPORT": self.reductionAnimations.listPathToAnimation})
+        else:
+            for i in phasesToExecute:
+                if i >= self.reductionAnimations.nbPossibility or i < 0 :
+                    raise ValueError("phasesToExecute incorrect, select an non-existent phase : "+phasesToExecute)
+
+                self.listSofaScene.append({ "ORIGINALSCENE": self.originalScene,
+                                            "LISTOBJTOANIMATE": self.reductionAnimations.listObjToAnimate,
+                                            "PHASE": self.reductionAnimations.phaseNumClass[i],
+                                            "PERIODSAVEGIE" : self.reductionParam.periodSaveGIE,
+                                            "PARAMWRAPPER" : self.reductionParam.paramWrapper,
+                                            "nbIterations":self.reductionAnimations.nbIterations,
+                                            "PHASETOSAVE" : self.phaseToSave,
+                                            "LISTANIMATIONTOIMPORT": self.reductionAnimations.listPathToAnimation})
+
+    def generateTestScene(self,phase,template="phase1_snapshots.py"):            
+
+        self.setListSofaScene(phase=phase)
+        if(template=="phase2_prepareECSW.py"):
+            nbrOfModesPossible = self.packageBuilder.checkNodeNbr(self.reductionParam.modesFileName)
+            self.listSofaScene[0]['NBROFMODES'] = nbrOfModesPossible
+
+        filesandtemplates = [(open(pathToTemplate+template).read(), template)]
+
+        u.customLauncher(filesandtemplates,self.listSofaScene[0],self.packageBuilder.debugDir)
 
     def performReduction(self,phasesToExecute=None,nbrOfModes=None):
         """
@@ -236,7 +261,6 @@ class ReduceModel():
 
         """
         start_time = time.time()
-
         if not phasesToExecute:
             phasesToExecute = list(range(self.reductionAnimations.nbPossibility))
 
@@ -513,6 +537,6 @@ class ReduceModel():
         results = startSofa([finalScene], filesandtemplates, launcher=ParallelLauncher(1))
         self.packageBuilder.finalizePackage(results[0])
 
-        # print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
-        # print('The reduction is now finished !')
+        print("PHASE 4 --- %s seconds ---\n" % (time.time() - start_time))
+        print('The reduction is now finished !')
         # return self.packageBuilder.outputDir+'/'+self.packageBuilder.packageName+'.py'
