@@ -27,6 +27,8 @@ except:
     raise ImportError("ModelOrderReduction plugin depend on SPLIB"\
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
 
+from mor.wrapper import replaceAndSave
+
 forceFieldImplemented = {   'HyperReducedTetrahedralCorotationalFEMForceField':'tetrahedra',
                             'HyperReducedTetrahedronHyperelasticityFEMForceField':'tetrahedra',
                             'HyperReducedHexahedronFEMForceField':'hexahedra',
@@ -35,8 +37,8 @@ forceFieldImplemented = {   'HyperReducedTetrahedralCorotationalFEMForceField':'
                             'HyperReducedRestShapeSpringsForceField':'points'
                         }
 
-
 tmp = 0
+
 
 def removeObject(obj):
     '''
@@ -136,9 +138,7 @@ def getContainer(node):
     for obj in node.objects:
         className = obj.getClassName()
         if className.find('TopologyContainer') != -1:
-            # print obj.getName()
             container = obj
-    print(container)
     return container
 
 def searchObjectClassInGraphScene(node,toFind):
@@ -192,7 +192,6 @@ def searchPlugin(rootNode,pluginName):
     '''
     found = False
     plugins = searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
-    print(plugins)
     for plugin in plugins:
         for name in plugin.pluginName.value:
             if name == pluginName:
@@ -249,7 +248,6 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     toAnimate = []
     for obj in listObjToAnimate:
         nodeFound = get(node,obj.location)
-        # print(nodeFound.name)
         toAnimate.append(nodeFound)
 
     if len(toAnimate) != len(listObjToAnimate):
@@ -258,11 +256,9 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     tmp = 0
     for objToAnimate in listObjToAnimate:
         if phase[tmp] :
-            # print("----------------------------------> ",objToAnimate)
             if type(toAnimate[tmp]).__name__ == "Node":
                 objToAnimate.item = toAnimate[tmp]
                 for obj in objToAnimate.item.objects:
-                    # print(obj.getClassName())
                     if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
                         objToAnimate.item = obj
                         objToAnimate.params["dataToWorkOn"] = 'value'
@@ -314,12 +310,10 @@ def modifyGraphScene(node,nbrOfModes,newParam):
         save = True
 
     pathTmp , param = newParam
-    # print('pathTmp -----------------> '+pathTmp)
+
     try :
         currentNode = get(node,pathTmp[1:])
         solver = getNodeSolver(currentNode)
-        print("node.getPathName()",currentNode.getPathName())
-        print(solver)
         if currentNode.getPathName() == pathTmp:
             if 'paramMappedMatrixMapping' in param:
                 print('Create new child modelMOR and move node in it')
@@ -327,22 +321,21 @@ def modifyGraphScene(node,nbrOfModes,newParam):
                 modelMOR = myParent[0].addChild(currentNode.name.value+'_MOR')
                 myParent[0].removeChild(currentNode)
                 modelMOR.addChild(currentNode)
+
                 for obj in solver:
-                    # print('To move!')
-                    # print(obj.name.value)
                     currentNode.removeObject(obj)
                     modelMOR.addObject(obj)
+
                 modelMOR.addObject('MechanicalObject', **argMecha)
-                # print param['paramMappedMatrixMapping']
+
                 if save:
-                    # replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
-                    print("tata")
+                    replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
+
                 if 'paramMORMapping' in param:
                     #Find MechanicalObject name to be able to save to link it to the ModelOrderReductionMapping
                     param['paramMORMapping']['output'] = '@./'+currentNode.getMechanicalState().name.value
                     if save:
-                        # replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
-                        print("tata")
+                        replaceAndSave.myModel[pathTmp].append(('ModelOrderReductionMapping',param['paramMORMapping']))
 
                     currentNode.addObject('ModelOrderReductionMapping', **param['paramMORMapping'])
                     print ("Create ModelOrderReductionMapping in node")
@@ -375,7 +368,6 @@ def saveElements(node,dt,forcefield):
     '''
 
     import numpy as np
-    #print('--------------------->  Gonna Try to Save the Elements')
     def save(node,container,valueType, **param):
         global tmp
         elements = container.findData(valueType).value
@@ -383,11 +375,9 @@ def saveElements(node,dt,forcefield):
         tmp += 1
         print('save : '+'elmts_'+node.name.value+' from '+container.name.value+' with value Type '+valueType)
 
-    # print('--------------------->  ',forcefield)
     for objPath in forcefield:
         nodePath = '/'.join(objPath.split('/')[:-1])
-        # print(nodePath,objPath)
-        #print("----------->", type(node))
+
         obj = get(node,objPath[1:])
         currentNode = get(node,nodePath[1:])
 
@@ -397,11 +387,10 @@ def saveElements(node,dt,forcefield):
             container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
         else:
             container = getContainer(currentNode)
-        # print(container)
+
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
 
-            # print('--------------------->  ',valueType)
             if valueType:
                 animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
