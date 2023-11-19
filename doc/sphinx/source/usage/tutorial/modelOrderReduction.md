@@ -48,7 +48,7 @@ app = QtGui.QApplication(sys.argv)
 
 originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
 meshes = utility.openFilesNames('Select the meshes & visual of your scene')
-outputDir = utility.openDirName('Select the directory tha will contain all the results')
+outputDir = utility.openDirName('Select the directory that will contain all the results')
 
 # if you haven't install PyQt the previous function won't work
 # As an alternative you can enter the absolute path to the conresponding files directly:

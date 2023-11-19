@@ -127,7 +127,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
 
         # QPushButton Action
         self.btn_scene.clicked.connect(lambda: u.openFileName('Select the SOFA scene you want to reduce',display=self.lineEdit_scene))
-        self.btn_output.clicked.connect(lambda: u.openDirName('Select the directory tha will contain all the results',display=self.lineEdit_output))
+        self.btn_output.clicked.connect(lambda: u.openDirName('Select the directory that will contain all the results',display=self.lineEdit_output))
         self.btn_animationPath.clicked.connect(lambda: u.openFileName('Select the python file containing your animation function',display=self.lineEdit_animationPath))
         self.btn_addLine.clicked.connect(lambda: self.tab_animation.addLine(self.cfg))
         self.btn_addLine.clicked.connect(lambda: self.updatePhasesToExecute())
