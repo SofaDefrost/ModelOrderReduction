@@ -116,10 +116,13 @@ def getNodeSolver(node):
     solver = []
     for obj in node.objects:
         className = obj.getClassName()
-        categories = obj.getCategories()
-        solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
-        if any(x in solverCategories for x in categories):
-            solver.append(obj)
+        if(className !="MeshTopology"):
+            categories = obj.getCategories()
+
+            solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
+            if any(x in solverCategories for x in categories):
+                solver.append(obj)
+
     return solver
 
 def getContainer(node):
@@ -138,8 +141,11 @@ def getContainer(node):
     for obj in node.objects:
         className = obj.getClassName()
         if className.find('TopologyContainer') != -1:
-            container = obj
-    return container
+            return obj
+        if className.find('MeshTopology') != -1:
+            return obj
+        if className.find('RegularGridTopology') != -1:
+            return obj
 
 def searchObjectClassInGraphScene(node,toFind):
     '''
@@ -383,8 +389,6 @@ def saveElements(node,dt,forcefield):
 
         if obj.getClassName() == 'HyperReducedRestShapeSpringsForceField':
             container = obj
-        elif obj.getClassName() == 'HyperReducedHexahedronFEMForceField':
-            container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
         else:
             container = getContainer(currentNode)
 
