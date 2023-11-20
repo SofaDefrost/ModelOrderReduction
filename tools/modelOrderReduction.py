@@ -27,7 +27,7 @@ from PyQt5 import QtWidgets
 app = QtWidgets.QApplication(sys.argv)
 
 originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-outputDir = utility.openDirName('Select the directory tha will contain all the results')
+outputDir = utility.openDirName('Select the directory that will contain all the results')
 
 ### DIAMOND ROBOT PARAM
 nodeToReduce = '/modelNode'
