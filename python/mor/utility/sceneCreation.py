@@ -394,6 +394,7 @@ def saveElements(node,dt,forcefield):
 
         if obj.getClassName() in forceFieldImplemented and container:
             valueType = forceFieldImplemented[obj.getClassName()]
+
             if valueType:
                 animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 

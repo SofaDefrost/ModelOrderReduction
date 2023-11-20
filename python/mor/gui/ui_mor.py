@@ -802,7 +802,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
 
             print("STEP : "+str(steps))
             if len(steps) == 4:
-                reduceMyModel.performReduction()
+                reduceMyModel.performReduction(phasesToExecute=phasesToExecute)
                 self.executeSofaScene(str(self.lineEdit_output.text())+"/reduced_"+str(self.lineEdit_moduleName.text())+".py")
             elif len(steps) == 0:
                 print("Select a step to perform")
