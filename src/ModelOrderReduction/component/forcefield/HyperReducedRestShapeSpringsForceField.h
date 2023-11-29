@@ -86,7 +86,7 @@ public:
     using RestShapeSpringsForceField<DataTypes>::d_drawSpring;
     using RestShapeSpringsForceField<DataTypes>::d_springColor;
     using RestShapeSpringsForceField<DataTypes>::l_restMState;
-
+    using RestShapeSpringsForceField<DataTypes>::d_activeDirections;
     using RestShapeSpringsForceField<DataTypes>::matS;
 
 protected:

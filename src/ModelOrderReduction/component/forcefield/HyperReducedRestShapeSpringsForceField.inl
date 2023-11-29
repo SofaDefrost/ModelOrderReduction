@@ -24,9 +24,35 @@
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
 #include <sofa/type/RGBAColor.h>
+#include <sofa/core/behavior/BaseLocalForceFieldMatrix.h>
+
 
 #include <assert.h>
 #include <iostream>
+
+namespace // anonymous
+{
+    // Boiler-plate code to test if a type implements a method
+    // explanation https://stackoverflow.com/a/30848101
+
+    template <typename...>
+    using void_t = void;
+
+    // Primary template handles all types not supporting the operation.
+    template <typename, template <typename> class, typename = void_t<>>
+    struct detect : std::false_type {};
+
+    // Specialization recognizes/validates only types supporting the archetype.
+    template <typename T, template <typename> class Op>
+    struct detect<T, Op, void_t<Op<T>>> : std::true_type {};
+
+    // Actual test if DataType::Coord implements getOrientation() (hence is a RigidType)
+    template <typename T>
+    using isRigid_t = decltype(std::declval<typename T::Coord>().getOrientation());
+
+    template <typename T>
+    using isRigidType = detect<T, isRigid_t>;
+} // anonymous
 
 namespace sofa::component::solidmechanics::spring
 {
@@ -492,7 +518,61 @@ template <class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
     core::behavior::StiffnessMatrix* matrix)
 {
-    core::behavior::ForceField<DataTypes>::buildStiffnessMatrix(matrix);
+    const VecReal& k = d_stiffness.getValue();
+    const VecReal& k_a = d_angularStiffness.getValue();
+    const auto activeDirections = d_activeDirections.getValue();
+
+    constexpr sofa::Size space_size = Deriv::spatial_dimensions; // == total_size if DataTypes = VecTypes
+    constexpr sofa::Size total_size = Deriv::total_size;
+
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                       .withRespectToPositionsIn(this->mstate);
+    unsigned int nbIndicesConsidered;
+    sofa::Index curIndex;
+
+    if (d_performECSW.getValue())
+        nbIndicesConsidered = m_RIDsize;
+    else
+        nbIndicesConsidered = m_indices.size();
+
+    for (sofa::Index index = 0; index < nbIndicesConsidered ; index++)
+
+//    for (const auto index : m_indices)
+    {
+        if (!d_performECSW.getValue())
+            curIndex = index;
+        else
+            curIndex = m_indices[reducedIntegrationDomain(index)];
+
+        // translation
+        const auto vt = -k[(curIndex < k.size()) * curIndex];
+        for(sofa::Index i = 0; i < space_size; i++)
+        {
+            if (!d_performECSW.getValue())
+                dfdx(total_size * curIndex + i, total_size * curIndex + i) += vt;
+            else
+                dfdx(total_size * curIndex + i, total_size * curIndex + i) += vt*weights(reducedIntegrationDomain(index));
+
+        }
+
+        // rotation (if applicable)
+        if constexpr (isRigidType<DataTypes>())
+        {
+            const auto vr = -k_a[(curIndex < k_a.size()) * curIndex];
+            for (sofa::Size i = space_size; i < total_size; ++i)
+            {
+                // Contribution to the stiffness matrix are only taken into
+                // account for 1 values in d_activeDirections
+                if (activeDirections[i])
+                {
+                    if (!d_performECSW.getValue())
+                        dfdx(total_size * index + i, total_size * index + i) += vr;
+                    else
+                        dfdx(total_size * index + i, total_size * index + i) += vr*weights(reducedIntegrationDomain(index));
+                }
+            }
+        }
+    }
 }
 
 } // namespace sofa::component::solidmechanics::spring
