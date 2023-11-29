@@ -455,46 +455,49 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addKToMatrix(const core::Me
 template <class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
     core::behavior::StiffnessMatrix* matrix)
-{
-    sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
+{    
+    sofa::Index e { 0 }; //index of the element in the topology
 
     constexpr auto S = DataTypes::deriv_total_size; // size of node blocks
     constexpr auto N = Element::size();
 
+    const auto& stiffnesses = _elementStiffnesses.getValue();
+    const auto* indexedElements = this->getIndexedElements();
+    sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
+
     auto dfdx = matrix->getForceDerivativeIn(this->mstate)
                        .withRespectToPositionsIn(this->mstate);
 
-    sofa::Size hexaId = 0;
 
-    typename VecElement::const_iterator it;
+    typename VecElement::const_iterator it, it0;
 
-    auto it0=this->getIndexedElements()->begin();
+    it0 = indexedElements->begin();
     int nbElementsConsidered;
 
     if (!d_performECSW.getValue())
-        nbElementsConsidered = this->getIndexedElements()->size();
+        nbElementsConsidered = indexedElements->size();
     else
         nbElementsConsidered = m_RIDsize;
 
     for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     {
         if (!d_performECSW.getValue()){
-            hexaId = numElem;
+            e = numElem;
         }
         else
         {
-            hexaId = reducedIntegrationDomain(numElem);
+            e = reducedIntegrationDomain(numElem);
         }
 
 
-        it = it0 + hexaId;
-        const ElementStiffness &Ke = _elementStiffnesses.getValue()[hexaId];
-        Transformation Rot = this->getElementRotation(hexaId);
+        it = it0 + e;
+        const ElementStiffness &Ke = stiffnesses[e];
+        const Transformation& Rot = this->getElementRotation(e);
 
 
-        for ( sofa::Index n1=0; n1<N; n1++)
+        for ( Element::size_type n1=0; n1<N; n1++)
         {
-            for (sofa::Index n2=0; n2<N; n2++)
+            for (Element::size_type n2=0; n2<N; n2++)
             {
                 localMatrix = Rot.multTranspose( Mat33(Coord(Ke[3*n1+0][3*n2+0],Ke[3*n1+0][3*n2+1],Ke[3*n1+0][3*n2+2]),
                         Coord(Ke[3*n1+1][3*n2+0],Ke[3*n1+1][3*n2+1],Ke[3*n1+1][3*n2+2]),
@@ -502,7 +505,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
                 if (!d_performECSW.getValue())
                     dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix;
                 else
-                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(hexaId);
+                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(e);
             }
         }
     }
