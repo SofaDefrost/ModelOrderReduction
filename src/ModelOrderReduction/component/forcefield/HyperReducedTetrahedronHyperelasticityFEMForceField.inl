@@ -577,7 +577,53 @@ template <class DataTypes>
 void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::
 buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
 {
-    core::behavior::ForceField<DataTypes>::buildStiffnessMatrix(matrix);
+    /// if the  matrix needs to be updated
+    if (m_updateMatrix)
+    {
+        this->updateTangentMatrix();
+    }
+
+    const unsigned int nbEdges=m_topology->getNbEdges();
+    const type::vector< Edge> &edgeArray=m_topology->getEdges() ;
+    type::vector<EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
+    EdgeInformation *einfo;
+    unsigned int i,j,N0, N1, l, e, nbEdgesConsidered;
+    Index noeud0, noeud1;
+
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                       .withRespectToPositionsIn(this->mstate);
+
+    if (!d_performECSW.getValue())
+        nbEdgesConsidered = nbEdges;
+    else
+        nbEdgesConsidered = m_RIDedgeSize;
+
+    for(e=0; e<nbEdgesConsidered; e++ )
+    {
+        if (!d_performECSW.getValue())
+            l = e;
+        else
+            l = reducedIntegrationDomainWithEdges(e);
+
+        einfo=&edgeInf[l];
+        noeud0=edgeArray[l][0];
+        noeud1=edgeArray[l][1];
+        N0 = 3*noeud0;
+        N1 = 3*noeud1;
+
+        for (i=0; i<3; i++)
+        {
+            for(j=0; j<3; j++)
+            {
+                dfdx(N0+i, N0+j) +=   einfo->DfDx[j][i];
+                dfdx(N0+i, N1+j) += - einfo->DfDx[j][i];
+                dfdx(N1+i, N0+j) += - einfo->DfDx[i][j];
+                dfdx(N1+i, N1+j) += + einfo->DfDx[i][j];
+            }
+        }
+    }
+
+    m_edgeInfo.endEdit();
 }
 
 
