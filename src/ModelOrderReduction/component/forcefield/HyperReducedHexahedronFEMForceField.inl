@@ -16,6 +16,7 @@
 ******************************************************************************/
 #pragma once
 
+#include "sofa/core/behavior/BaseLocalForceFieldMatrix.h"
 #include <ModelOrderReduction/component/forcefield/HyperReducedHexahedronFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
@@ -455,7 +456,56 @@ template <class DataTypes>
 void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
     core::behavior::StiffnessMatrix* matrix)
 {
-    core::behavior::ForceField<DataTypes>::buildStiffnessMatrix(matrix);
+    sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
+
+    constexpr auto S = DataTypes::deriv_total_size; // size of node blocks
+    constexpr auto N = Element::size();
+
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                       .withRespectToPositionsIn(this->mstate);
+
+    sofa::Size hexaId = 0;
+
+    typename VecElement::const_iterator it;
+
+    auto it0=this->getIndexedElements()->begin();
+    int nbElementsConsidered;
+
+    if (!d_performECSW.getValue())
+        nbElementsConsidered = this->getIndexedElements()->size();
+    else
+        nbElementsConsidered = m_RIDsize;
+
+    for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
+    {
+        if (!d_performECSW.getValue()){
+            hexaId = numElem;
+        }
+        else
+        {
+            hexaId = reducedIntegrationDomain(numElem);
+        }
+
+
+        it = it0 + hexaId;
+        const ElementStiffness &Ke = _elementStiffnesses.getValue()[hexaId];
+        Transformation Rot = this->getElementRotation(hexaId);
+
+
+        for ( sofa::Index n1=0; n1<N; n1++)
+        {
+            for (sofa::Index n2=0; n2<N; n2++)
+            {
+                localMatrix = Rot.multTranspose( Mat33(Coord(Ke[3*n1+0][3*n2+0],Ke[3*n1+0][3*n2+1],Ke[3*n1+0][3*n2+2]),
+                        Coord(Ke[3*n1+1][3*n2+0],Ke[3*n1+1][3*n2+1],Ke[3*n1+1][3*n2+2]),
+                        Coord(Ke[3*n1+2][3*n2+0],Ke[3*n1+2][3*n2+1],Ke[3*n1+2][3*n2+2])) ) * Rot;
+                if (!d_performECSW.getValue())
+                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix;
+                else
+                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(hexaId);
+            }
+        }
+    }
 }
 
 
