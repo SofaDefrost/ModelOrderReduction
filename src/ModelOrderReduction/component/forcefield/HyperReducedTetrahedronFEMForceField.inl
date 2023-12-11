@@ -578,7 +578,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
                 else
                 {
                     helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVM, maxVM);
-                    auto col = sofa::type::RGBAColor::fromVec4(evalColor(vM[reducedIntegrationDomain(i)]));
+                    sofa::type::RGBAColor col = evalColor(vM[reducedIntegrationDomain(i)]);
                     col[3] = 1.0f;
                     color[0] = col;
                     color[1] = col;
