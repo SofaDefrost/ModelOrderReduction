@@ -103,9 +103,6 @@ public:
 
     virtual void addDForce(const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx) override;
 
-    /// Brings ForceField contribution to the global system stiffness matrix.
-    virtual void addKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix ) override;
-
     void buildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
 
     virtual void draw(const core::visual::VisualParams* vparams) override;
