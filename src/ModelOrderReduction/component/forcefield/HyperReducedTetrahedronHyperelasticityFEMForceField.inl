@@ -456,24 +456,17 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
     type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
 
     typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation *einfo;
-    sofa::helper::system::thread::CTime *timer;
-
-    double timeScale, time ;
-    timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
-
-    time = (double)timer->getTime();
 
     /// if the  matrix needs to be updated
     if (m_updateMatrix) {
         msg_info(this) << "Updating Matrix! from addDforce";
         this->updateTangentMatrix();
-    }// end of if
-    msg_info(this) <<" addDforce updateMatrix : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
+    }
 
     /// performs matrix vector computation
     unsigned int v0,v1;
-    Deriv deltax;	Deriv dv0,dv1;
-    time = (double)timer->getTime();
+    Deriv deltax;
+    Deriv dv0,dv1;
     for(l=0; l<nbEdges; l++ )
     {
         einfo=&edgeInf[l];
@@ -492,8 +485,6 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
     }
     m_edgeInfo.endEdit();
     m_tetrahedronInfo.endEdit();
-    msg_info(this) <<" addDforce actualCalc : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-
     d_df.endEdit();
 }
 

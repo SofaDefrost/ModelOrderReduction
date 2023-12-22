@@ -40,7 +40,6 @@ namespace sofa::component::collision::geometry
 {
 
 
-
 template<class TDataTypes>
 class MORPointCollisionModel : public PointCollisionModel<TDataTypes>
 {
@@ -71,15 +70,10 @@ protected:
 };
 
 
-
-
-
 #if  !defined(MOR_POINTCOLLISIONMODEL_CPP)
 extern template class SOFA_MODELORDERREDUCTION_API MORPointCollisionModel<defaulttype::Vec3Types>;
-
 #endif
 
-//bool Point::testLMD(const Vector3 &PQ, double &coneFactor, double &coneExtension);
 } // namespace sofa::component::collision::geometry
 
 #endif

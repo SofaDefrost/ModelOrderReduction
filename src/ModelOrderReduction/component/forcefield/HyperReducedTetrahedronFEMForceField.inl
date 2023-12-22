@@ -39,6 +39,7 @@
 #include <ModelOrderReduction/component/loader/MatrixLoader.h>
 
 // verify timing
+#include <sofa/helper/ScopedAdvancedTimer.h>
 #include <sofa/helper/system/thread/CTime.h>
 
 
@@ -314,7 +315,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
     VecDeriv& f = *d_f.beginEdit();
     const VecCoord& p = d_x.getValue();
 
-    sofa::helper::AdvancedTimer::stepBegin("time in AddForce");
+    SCOPED_TIMER("MORTetra::addForce");
     f.resize(p.size());
 
     if (needUpdateTopology)
@@ -375,20 +376,11 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
 
     updateVonMisesStress = true;
     this->saveGieFile(_indexedElements->size());
-    sofa::helper::AdvancedTimer::stepEnd("time in AddForce");
 }
 
 template<class DataTypes>
 inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addDForce(const core::MechanicalParams* mparams, DataVecDeriv& d_df, const DataVecDeriv& d_dx)
 {
-//    VecDeriv& df = *d_df.beginEdit();
-//    const VecDeriv& dx = d_dx.getValue();
-//    Real kFactor = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
-
-//    sofa::helper::AdvancedTimer::stepBegin("time in AddDDDForce");
-
-//    df.resize(dx.size());
-
     auto dfAccessor = sofa::helper::getWriteAccessor(d_df);
     VecDeriv& df = dfAccessor.wref();
 
@@ -441,7 +433,6 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addDForce(const cor
     }
 
     d_df.endEdit();
-    sofa::helper::AdvancedTimer::stepEnd("time in AddDDDForce");
 }
 
 //////////////////////////////////////////////////////////////////////
