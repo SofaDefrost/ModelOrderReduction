@@ -3,9 +3,10 @@
 <br>
 
 [![Documentation](https://img.shields.io/badge/doc-on_website-green.svg)](https://modelorderreduction.readthedocs.io/en/latest/index.html)
- &ensp; [![Support](https://img.shields.io/badge/support-on_GitHub_Discussions-blue.svg)](https://github.com/sofa-framework/sofa/discussions)
- &ensp; [![Gitter](https://img.shields.io/badge/chat-on_Gitter-ff69b4.svg)](https://app.gitter.im/#/room/#model-order-reduction:gitter.im)
- &ensp; &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp; **stats :** &nbsp; ![download](https://img.shields.io/github/downloads/SofaDefrost/ModelOrderReduction/total.svg)
+[![Support](https://img.shields.io/badge/support-on_GitHub_Discussions-blue.svg)](https://github.com/sofa-framework/sofa/discussions/categories/modelorderreduction)
+[![Gitter](https://img.shields.io/badge/chat-on_Gitter-ff69b4.svg)](https://app.gitter.im/#/room/#model-order-reduction:gitter.im)
+
+![download](https://img.shields.io/github/downloads/SofaDefrost/ModelOrderReduction/total.svg)
 ![forks](https://img.shields.io/github/forks/SofaDefrost/ModelOrderReduction.svg)
 ![stars](https://img.shields.io/github/stars/SofaDefrost/ModelOrderReduction.svg)
 
