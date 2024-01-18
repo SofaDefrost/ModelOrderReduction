@@ -21,7 +21,7 @@
 #include <sofa/defaulttype/RigidTypes.h>
 #include <sofa/component/topology/container/grid/GridTopology.h>
 #include <sofa/defaulttype/VecTypes.h>
-#include <sofa/helper/AdvancedTimer.h>
+#include <sofa/helper/ScopedAdvancedTimer.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -106,14 +106,13 @@ void ModelOrderReductionMapping<TIn, TOut>::applyRotation(const type::Quat<SReal
 template <class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::apply(const core::MechanicalParams * /*mparams*/, Data<VecCoord>& dOut, const Data<InVecCoord>& dIn)
 {
+    SCOPED_TIMER("apply in ModelOrderReductionMapping");
+
     helper::WriteOnlyAccessor< Data<VecCoord> > out = dOut;
     helper::ReadAccessor< Data<InVecCoord> > in = dIn;
-    sofa::helper::AdvancedTimer::stepBegin("apply in OliviersMapping");
+
     const Data<VecCoord>*restPos =  toModel->read(core::VecCoordId::restPosition());
-    double timeScale, time ;
-    sofa::helper::system::thread::CTime *timer;
-    timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
-    time = (double)timer->getTime();
+
     for(unsigned int i=0; i<out.size(); i++)
     {
         out[i]=restPos->getValue()[i];
@@ -123,21 +122,16 @@ void ModelOrderReductionMapping<TIn, TOut>::apply(const core::MechanicalParams *
             out[i] +=Deriv(m_modesEigen(3*i,j),m_modesEigen(3*i+1,j),m_modesEigen(3*i+2,j))*alpha;
         }
     }
-    sofa::helper::AdvancedTimer::stepEnd("apply in OliviersMapping");
-    msg_info(this) <<" apply : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-
 }
 
 template <class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::applyJ(const core::MechanicalParams * /*mparams*/, Data<VecDeriv>& dOut, const Data<InVecDeriv>& dIn)
 {
+    SCOPED_TIMER("applyJ in ModelOrderReductionMapping");
+
     helper::WriteOnlyAccessor< Data<VecDeriv> > out = dOut;
     helper::ReadAccessor< Data<InVecDeriv> > in = dIn;
-    double timeScale, time ;
-    sofa::helper::system::thread::CTime *timer;
-    timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
-    time = (double)timer->getTime();
-    sofa::helper::AdvancedTimer::stepBegin("applyJ in OliviersMapping");
+
     Eigen::VectorXd inEig;
     inEig.resize(in.size());
     Eigen::VectorXd outEig;
@@ -151,20 +145,16 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJ(const core::MechanicalParams 
     {
         out[i] = Deriv(outEig(3*i),outEig(3*i+1),outEig(3*i+2));
     }
-    sofa::helper::AdvancedTimer::stepEnd("applyJ in OliviersMapping");
-    msg_info(this) <<" applyJ : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 }
 
 template<class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::MechanicalParams * /*mparams*/, Data<InVecDeriv>& dOut, const Data<VecDeriv>& dIn)
 {
+    SCOPED_TIMER("applyJT in ModelOrderReductionMapping");
+
     helper::WriteAccessor< Data<InVecDeriv> > out = dOut;
     helper::ReadAccessor< Data<VecDeriv> > in = dIn;
-    double timeScale, time ;
-    sofa::helper::system::thread::CTime *timer;
-    timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
-    time = (double)timer->getTime();
-    sofa::helper::AdvancedTimer::stepBegin("applyJt in ModelOrderReductionMapping");
+
     Eigen::VectorXd inEig;
     inEig.resize(3*in.size());
     Eigen::VectorXd outEig;
@@ -184,27 +174,15 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::MechanicalParams
     {
         out[j][0] += outEig(j);
     }
-
-    sofa::helper::AdvancedTimer::stepEnd("applyJt in ModelOrderReductionMapping");
-    msg_info(this)<<" applyJT : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 }
 
 template <class TIn, class TOut>
 void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams * /*cparams*/, Data<InMatrixDeriv>& dOut, const Data<MatrixDeriv>& dIn)
 {
-    double timeScale, time ;
-    sofa::helper::system::thread::CTime *timer;
-    timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
-    time = (double)timer->getTime();
     InMatrixDeriv& out = *dOut.beginEdit();
     const MatrixDeriv& in = dIn.getValue();
     typename Out::MatrixDeriv::RowConstIterator rowItEnd = in.end();
-    msg_info(this) << "In apply JT constraint";
     size_t nbModes = m_modesEigen.cols();
-
-//    Eigen::SparseMatrix<double> constraintMat, res;
-//    std::vector< Eigen::Triplet<double> > tripletList;
-//    tripletList.reserve(in.size());
 
     for (typename Out::MatrixDeriv::RowConstIterator rowIt = in.begin(); rowIt != rowItEnd; ++rowIt)
     {
@@ -229,33 +207,14 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams
                 ++colIt;
             }
 
-
-//            while (colIt != colItEnd)
-//            {
-//                Deriv colitVal = colIt.index();
-//                tripletList.push_back(Eigen::Triplet<double>(rowIt.index() , 3 * (colIt.index()) , colitVal[0]));
-//                tripletList.push_back(Eigen::Triplet<double>(rowIt.index() , 3 * (colIt.index()) + 1 , colitVal[1]));
-//                tripletList.push_back(Eigen::Triplet<double>(rowIt.index() , 3 * (colIt.index()) + 2 , colitVal[2]));
-//                ++colIt;
-//            }
-
         }
         else
         {
-            std::cout<<"Not implemented #################################"<<std::endl;
+            msg_fatal() << "Not implemented #################################";
         }
-//        constraintMat.setFromTriplets(tripletList.begin(), tripletList.end());
-//        res = m_modesEigen.transpose().sparseView()*constraintMat;
-//        for (typename Out::MatrixDeriv::RowConstIterator rowIt = in.begin(); rowIt != rowItEnd; ++rowIt)
-//        {
-//            typename In::MatrixDeriv::RowIterator o = out.writeLine(rowIt.index());
-//            o.addCol(j,data);
-//        }
     }
 
     dOut.endEdit();
-    msg_info(this) << "OUT apply JT constraint";
-    msg_info(this) <<" applyJT constraint : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 }
 
 
@@ -264,14 +223,12 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams
 template <class TIn, class TOut>
 const sofa::linearalgebra::BaseMatrix* ModelOrderReductionMapping<TIn, TOut>::getJ()
 {
-//    updateJ();
     return &m_J;
 }
 
 template <class TIn, class TOut>
 const typename ModelOrderReductionMapping<TIn, TOut>::js_type* ModelOrderReductionMapping<TIn, TOut>::getJs()
 {
-//    updateJ();
     return &m_Js;
 }
 

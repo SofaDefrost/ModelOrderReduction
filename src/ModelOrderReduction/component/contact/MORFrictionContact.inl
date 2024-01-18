@@ -40,12 +40,6 @@ MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::MORFric
 {
 }
 
-//template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
-//MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::MORFrictionContact(CollisionModel1* model1_, CollisionModel2* model2_, Intersection* intersectionMethod_)
-//    : FrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>(model1_, model2_, intersectionMethod_)
-//{
-//}
-
 template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
 MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::MORFrictionContact(CollisionModel1* model1_, CollisionModel2* model2_, Intersection* intersectionMethod_)
     : FrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>(model1_, model2_, intersectionMethod_)
@@ -81,76 +75,6 @@ void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::cl
     contacts.clear();
     mappedContacts.clear();
 }
-
-//template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
-//void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::createResponse(core::objectmodel::BaseContext* group)
-//{
-
-//    activateMappers();
-//    const double mu_ = this->mu.getValue();
-//    // Checks if friction is considered
-//    if ( mu_ < 0.0 )
-//        serr << sendl << "Error: mu has to take positive values" << sendl;
-
-//    int i=0;
-//    if (m_MORconstraint)
-//    {
-//        for (std::vector<sofa::core::collision::DetectionOutput*>::const_iterator it = contacts.begin(); it!=contacts.end(); it++, i++)
-//        {
-//            sofa::core::collision::DetectionOutput* o = *it;
-//            int index1 = mappedContacts[i].first.first;
-//            int index2 = mappedContacts[i].first.second;
-//            double distance = mappedContacts[i].second;
-
-//            // Polynome de Cantor de NxN sur N bijectif f(x,y)=((x+y)^2+3x+y)/2
-//            long index = cantorPolynomia(o->id /*cantorPolynomia(index1, index2)*/,id);
-
-//            // Add contact in unilateral constraint
-//            m_MORconstraint->addContact(mu_, o->normal, distance, index1, index2, index, o->id);
-//        }
-
-//        if (parent!=NULL)
-//        {
-//            parent->removeObject(this);
-//            parent->removeObject(m_MORconstraint);
-//        }
-
-//        parent = group;
-//        if (parent!=NULL)
-//        {
-//            parent->addObject(this);
-//            parent->addObject(m_MORconstraint);
-//        }
-//    }
-//}
-
-//template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
-//void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::removeResponse()
-//{
-//    if (m_MORconstraint)
-//    {
-//        mapper1.resize(0);
-//        mapper2.resize(0);
-//        if (parent!=NULL)
-//        {
-//            parent->removeObject(this);
-//            parent->removeObject(m_MORconstraint);
-//        }
-//        parent = NULL;
-//    }
-//}
-
-//template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
-//void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::setInteractionTags(MechanicalState1* mstate1, MechanicalState2* mstate2)
-//{
-//    sofa::core::objectmodel::TagSet tagsm1 = mstate1->getTags();
-//    sofa::core::objectmodel::TagSet tagsm2 = mstate2->getTags();
-//    sofa::core::objectmodel::TagSet::iterator it;
-//    for(it=tagsm1.begin(); it != tagsm1.end(); it++)
-//        m_MORconstraint->addTag(*it);
-//    for(it=tagsm2.begin(); it!=tagsm2.end(); it++)
-//        m_MORconstraint->addTag(*it);
-//}
 
 template < class TCollisionModel1, class TCollisionModel2, class ResponseDataTypes  >
 void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::activateMappers()

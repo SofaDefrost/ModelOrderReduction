@@ -51,10 +51,6 @@ namespace mapping
  *      RIDpath: In case perfromECSW is true, path to the text file containing the reduced integration domain indices.
  *  The size of the "position" attribute will fix the number of modes used for the mapping
  */
-
-
-
-
 template <class TIn, class TOut>
 class ModelOrderReductionMapping : public core::Mapping<TIn, TOut>
 {

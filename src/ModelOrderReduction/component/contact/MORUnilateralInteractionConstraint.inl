@@ -53,33 +53,7 @@ MORUnilateralInteractionConstraint<DataTypes>::MORUnilateralInteractionConstrain
 
 template<class DataTypes>
 MORUnilateralInteractionConstraint<DataTypes>::~MORUnilateralInteractionConstraint()
-{
-//    if(contactsStatus)
-//        delete[] contactsStatus;
-//    UnilateralInteractionConstraint<DataTypes>::~UnilateralInteractionConstraint();
-}
-
-template<class DataTypes>
-void MORUnilateralInteractionConstraint<DataTypes>::init()
-{
-//        UnilateralInteractionConstraint<DataTypes>::init();
-//        MatrixLoader<Eigen::MatrixXd>* matLoaderModes = new MatrixLoader<Eigen::MatrixXd>();
-//        matLoaderModes->setFileName("lambdaModesNG2.txt");
-
-//        matLoaderModes->load();
-
-//        matLoaderModes->getMatrix(lambdaModes);
-
-
-//        MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
-//        matLoader->setFileName("lambdaCoeffsReverseNG2.txt");
-
-//        matLoader->load();
-
-//        matLoader->getMatrix(contactIndices);
-
-}
-
+{}
 
 template<class DataTypes>
 void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const core::ConstraintParams *, DataMatrixDeriv &c1_d, DataMatrixDeriv &c2_d, unsigned int &contactId
@@ -323,24 +297,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(lineara
 template<class DataTypes>
 void MORUnilateralInteractionConstraint<DataTypes>::getConstraintResolution(const core::ConstraintParams *, std::vector<core::behavior::ConstraintResolution*>& resTab, unsigned int& offset)
 {
-//    if(contactsStatus)
-//    {
-//        delete[] contactsStatus;
-//        contactsStatus = NULL;
-//    }
-
-//    if (contacts.size() > 0)
-//    {
-//        contactsStatus = new bool[contacts.size()];
-//        memset(contactsStatus, 0, sizeof(bool)*contacts.size());
-//    }
-
-//    for(unsigned int i=0; i<reducedContacts.size(); i++)
-//    {
-
-//            resTab[offset++] = new UnilateralConstraintResolution();
-//    }
-
     if(contactsStatus)
     {
         delete[] contactsStatus;

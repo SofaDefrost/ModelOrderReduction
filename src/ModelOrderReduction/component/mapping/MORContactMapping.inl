@@ -69,49 +69,6 @@ void MORContactMapping<TIn, TOut>::init()
         }
         J.compressedMatrix.finalize();
     }
-//    std::ifstream modesFile;
-//    std::ifstream contactIndicesFile;
-
-//    int m_nbRows;
-//    modesFile.open(d_lambdaModesPath.getValue(),std::ios::in);
-//    if (modesFile.is_open())
-//    {
-//        std::string lineValues;  // déclaration d'une chaîne qui contiendra la ligne lue
-//        unsigned int nbLine = 0;
-//        while (std::getline(modesFile, lineValues))
-//        {
-//            std::stringstream ssin(lineValues);
-//            if (nbLine == 0){
-//                ssin >> m_nbRows;
-//                ssin >> m_nbCols;
-//                m_matrix.resize(m_nbRows,m_nbCols);
-//            }
-//            else
-//            {
-//                for (unsigned j=0; j<m_nbCols; j++)
-//                    ssin >> m_matrix(nbLine-1,j);
-//            }
-//            nbLine++;
-//        }
-
-//        modesFile.close();
-//        if (nbLine-1 != m_nbRows)
-//            msg_warning("MatrixLoader") << "Problem with matrix file : wrong row number !!!";
-//    }
-//    else
-//    {
-//        msg_warning("MatrixLoader") << "Could not open matrix file  !!!";
-//    }
-//    for (int i=0; i<m_nbRows; i++)
-//        for (int j=0; j<m_nbCols; j++)
-//            msg_warning("MatrixLoader") << "Lambda Modes:" << m_matrix(i,j);
-//    MatrixLoader<Eigen::MatrixXd>* matLoader = new MatrixLoader<Eigen::MatrixXd>();
-//    matLoader->setFileName(d_contactIndices.getValue());
-
-//    matLoader->load();
-
-//    matLoader->getMatrix(contactIndices);
-
     std::ofstream myLambdaIndices (d_lambdaIndicesPath.getValue());
     myLambdaIndices.close();
 }
@@ -136,8 +93,7 @@ void MORContactMapping<TIn, TOut>::applyJ(const core::MechanicalParams * /*mpara
 
     for( size_t i=0 ; i<out.size() ; ++i)
     {
-
-            core::eq(out[i], in[i]);
+        core::eq(out[i], in[i]);
     }
 }
 
@@ -149,8 +105,7 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::MechanicalParams * /*mpar
 
     for( size_t i=0 ; i<out.size() ; ++i)
     {
-
-            core::peq(out[i], in[i]);
+        core::peq(out[i], in[i]);
     }
 }
 
