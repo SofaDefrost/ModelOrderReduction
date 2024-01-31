@@ -252,9 +252,20 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
         const Real k0 = k[0];
         unsigned int nbElementsConsidered;
         if (!d_performECSW.getValue())
+        {
             nbElementsConsidered = m_indices.size();
+        }
         else
-            nbElementsConsidered = m_RIDsize;
+        {
+            if (m_RIDsize != 0) {
+                nbElementsConsidered = m_RIDsize;
+            }
+            else
+            {
+                msg_warning() << "RID is empty!!! Taking all the elements...";
+                nbElementsConsidered = m_indices.size();
+            }
+        }
         for (unsigned int point = 0 ; point<nbElementsConsidered ;++point)
         {
             if (!d_performECSW.getValue())
@@ -286,12 +297,21 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
     }
     else
     {
+
         unsigned int nbElementsConsidered;
         if (!d_performECSW.getValue())
             nbElementsConsidered = m_indices.size();
         else
-            nbElementsConsidered = m_RIDsize;
-
+        {
+            if (m_RIDsize != 0) {
+                nbElementsConsidered = m_RIDsize;
+            }
+            else
+            {
+                nbElementsConsidered = m_indices.size();
+                msg_warning("RID is empty! Taking all the elements...");
+            }
+        }
         for (unsigned int point = 0 ; point<nbElementsConsidered ;++point)
         {
             if (!d_performECSW.getValue())
@@ -461,7 +481,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
     for (sofa::Index index = 0; index < nbIndicesConsidered ; index++)
     {
         if (!d_performECSW.getValue())
-            curIndex = index;
+            curIndex = m_indices[index];
         else
             curIndex = m_indices[reducedIntegrationDomain(index)];
 
@@ -497,5 +517,4 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
 }
 
 } // namespace sofa::component::solidmechanics::spring
-
 
