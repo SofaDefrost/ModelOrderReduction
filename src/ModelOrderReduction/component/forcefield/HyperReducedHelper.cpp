@@ -73,6 +73,14 @@ void HyperReducedHelper::initMOR(unsigned nbElements, bool printLog)
         delete RIDMatLoader;
 
         m_RIDsize = reducedIntegrationDomain.rows();
+        if (m_RIDsize == 0) {
+            msg_warning() << "RID is empty! Integrating over all the elements!";
+            m_RIDsize = nbElements;  // the reduced integration contains all the elements in this case.
+            reducedIntegrationDomain.resize(m_RIDsize);
+            for (unsigned int i = 0; i<m_RIDsize; i++)
+                reducedIntegrationDomain(i) = i;
+
+        }
 
     }
     else
