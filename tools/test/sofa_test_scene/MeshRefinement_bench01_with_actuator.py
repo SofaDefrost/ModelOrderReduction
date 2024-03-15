@@ -21,7 +21,7 @@ def main():
 # Function called when the scene graph is being created
 def createScene(root):
 
-    root.gravity=[0, 0, 0]
+    root.gravity=[0, 0, -0.9]
     root.name="root"
     root.dt=0.1
 
@@ -72,7 +72,7 @@ def createScene(root):
     # Adding FEM force field
     childNode1.addObject('TetrahedralCorotationalFEMForceField', name="CFEM", youngModulus="600", poissonRatio="0.3", method="large")
     
-    childNode1.addObject('GenericConstraintCorrection', name="Beam_01_ConstraintCorrection", printLog="0" )
+    childNode1.addObject('GenericConstraintCorrection', name="Beam_01_ConstraintCorrection", linearSolver='@Torus1_SparseLDLSolver', printLog="0" )
 
     # Collision subnode for Beam_01
     collision = childNode1.addChild('collision')
@@ -84,11 +84,16 @@ def createScene(root):
     collision.addObject('PointCollisionModel')
 
     # Adding ROI box for actuation
-    childNode1.addObject('BoxROI', name='ROI_act', box='-1 38 0 10 40 50', drawBoxes='true')
+    childNode1.addObject('BoxROI', name='ROI_act', box='-1 38 0 10 40 50', drawBoxes='false')
 
     # Adding actuator to the root node
     actuator = root.addChild('actuator')
     actuator.addObject('MechanicalObject', name = 'actuatorState', position = '@HexaBeams/Beam_01/ROI_act.pointsInROI', template = 'Vec3d')
+
+    cableNodeTip = childNode1.addChild('cableNodeTip')
+    cableNodeTip.addObject('MechanicalObject', name="actuatedTip", template="Vec3d", position="5 31.6 27.5")
+    cableNodeTip.addObject('CableConstraint', name="tipCable", indices="0", pullPoint="2 45 55", valueType="displacement")
+    cableNodeTip.addObject('BarycentricMapping', mapForces="false", mapMasses="false")
     
     # Beam_02
     childNode2 = HexaBeams.addChild("Beam_02")
@@ -110,7 +115,7 @@ def createScene(root):
     # Adding FEM force field
     childNode2.addObject('TetrahedralCorotationalFEMForceField', name="CFEM", youngModulus="600", poissonRatio="0.3", method="large")
     
-    childNode2.addObject('GenericConstraintCorrection', name="Beam_01_ConstraintCorrection", printLog="0" )
+    childNode2.addObject('GenericConstraintCorrection', name="Beam_01_ConstraintCorrection", linearSolver="@Torus2_SparseLDLSolver" ,printLog="0" )
 
     # Collision subnode for Beam_02
     collision2 = childNode2.addChild('collision')
