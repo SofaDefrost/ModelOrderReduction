@@ -26,8 +26,6 @@ namespace sofa {
         /// Create the context for the scene
         void SetUp()
         {
-            sofa::simulation::setSimulation(simulation = new sofa::simulation::graph::DAGSimulation());
-
             root = simulation::getSimulation()->createNewGraph("root");
         }
 
@@ -41,8 +39,10 @@ namespace sofa {
         /// Unload the scene
         void TearDown()
         {
-            if (root!=NULL)
-                sofa::simulation::getSimulation()->unload(root);
+            if (root != nullptr)
+            {
+                sofa::simulation::node::unload(root);
+            }
         }
     };
 
