@@ -3,7 +3,7 @@ import os
 import Sofa
 
 plugins=["SofaPython3","SoftRobots","ModelOrderReduction","STLIB",
-         # normally plugin Sofa.Component is enough but still warning
+        
          "Sofa.Component.Visual",
          "Sofa.Component.AnimationLoop",
          "Sofa.GL.Component.Rendering3D",
@@ -28,8 +28,7 @@ def createScene(rootNode):
     rootNode.findData('dt').value=0.02
     rootNode.findData('gravity').value=[0, -9810, 0]
     rootNode.addObject('VisualStyle', displayFlags='showBehaviorModels showForceFields')
-    rootNode.addObject('RequiredPlugin', pluginName="ModelOrderReduction SoftRobots")
-   # rootNode.addObject('RequiredPlugin', pluginName='SoftRobots')
+    rootNode.addObject('RequiredPlugin', pluginName=plugins, printLog=False)
     rootNode.addObject('FreeMotionAnimationLoop')
     rootNode.addObject('GenericConstraintSolver', tolerance="1e-12", maxIterations="10000")
 
