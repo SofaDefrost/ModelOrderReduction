@@ -29,6 +29,16 @@ HyperReducedHelper::HyperReducedHelper()
 , d_RIDPath(initData(&d_RIDPath,std::string("reducedIntegrationDomain.txt"),"RIDPath","Path to the Reduced Integration domain when performing the ECSW method"))
 , d_weightsPath(initData(&d_weightsPath,std::string("weights.txt"),"weightsPath","Path to the weights when performing the ECSW method"))
 {
+    static const std::string groupName { "HyperReduction" };
+    d_prepareECSW.setGroup(groupName);
+    d_nbModes.setGroup(groupName);
+    d_modesPath.setGroup(groupName);
+    d_nbTrainingSet.setGroup(groupName);
+    d_periodSaveGIE.setGroup(groupName);
+    d_performECSW.setGroup(groupName);
+    d_RIDPath.setGroup(groupName);
+    d_weightsPath.setGroup(groupName);
+
 }
 
 void HyperReducedHelper::initMOR(unsigned nbElements, bool printLog)
