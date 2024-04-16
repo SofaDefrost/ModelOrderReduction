@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 '''
-Exemple python file to launch the MOR GUI
+Python file to launch the MOR GUI
+
+TO USE:
+    execute it via a terminal
 '''
 import os,sys
 from PyQt5 import QtWidgets
