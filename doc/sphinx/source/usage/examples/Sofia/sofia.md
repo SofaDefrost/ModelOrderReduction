@@ -29,11 +29,11 @@ Here we only reduce the leg of our robot not its core.
 To make a reduced model of one leg of this robot, we had to create a new special function to explore its workspace.
 To create the rotation mouvement we see on the different previous videos we rotate a point that will be followed by the model creating the rotation.
 
-:meth:`mor.animation.defaultShaking` how it was implemented
+:meth:`mor.animation.doingCircle` how it was implemented
 
 We have only one actuator here, so our *listObjToAnimate* contains only one object:
 
-	ObjToAnimate("actuator","shakingSofia",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
+	ObjToAnimate("actuator","doingCircle",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 
 With these different parameters we will after perform the reduction like explained {doc}`here </usage/tutorial/modelOrderReduction>`
 
