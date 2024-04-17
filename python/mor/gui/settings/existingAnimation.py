@@ -43,3 +43,7 @@ existingAnimation['shakingLiver'] = { 'incr':0.4,
                                       'dataToWorkOn':'position',
                                       'angle':0,
                                       'rodRadius':0.4}
+
+existingAnimation['doingNothing'] = {'incr':5.,
+                                'incrPeriod':10.,
+                                'rangeOfAction':40.}
