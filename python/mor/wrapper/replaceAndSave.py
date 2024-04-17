@@ -180,8 +180,8 @@ def MORreplace(node,type,newParam,initialParam):
         save = True
 
     path , param = newParam
-    # print(currentPath,path)
-    if path in currentPath :
+    lastNode = path.split('/')[-1]
+    if path == currentPath or lastNode+'/' in currentPath :
         # print('\n')
         #   Change the initial Forcefield by the HyperReduced one with the new argument
         if "ForceField" in getCategories(type):
@@ -189,7 +189,6 @@ def MORreplace(node,type,newParam,initialParam):
             # print('TYPE : ' + str(type))
             # print(getCategories(type))
             if type in forceFieldImplemented :
-                # print("---------------------------------> here")
                 type , valueType = forceFieldImplemented[type]
                 name = 'reducedFF_'+ node.name.value + '_' + str(tmp)
                 tmp += 1

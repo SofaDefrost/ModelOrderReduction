@@ -131,12 +131,13 @@ class ReduceModel():
         self.activesNodesLists = []
         self.listSofaScene = []
 
-        strInfo = 'periodSaveGIE : '+str(self.reductionParam.periodSaveGIE)+' | '
-        strInfo += 'nbTrainingSet : '+str(self.reductionParam.nbTrainingSet)+' | '
-        strInfo += 'nbIterations : '+str(self.reductionAnimations.nbIterations)+'\n'
-        # strInfo += "List of phase :"+str(self.reductionAnimations.phaseNumClass)+'\n'
-        strInfo += "##################################################"
-        print(strInfo)
+        if (verbose):
+            strInfo = 'periodSaveGIE : '+str(self.reductionParam.periodSaveGIE)+' | '
+            strInfo += 'nbTrainingSet : '+str(self.reductionParam.nbTrainingSet)+' | '
+            strInfo += 'nbIterations : '+str(self.reductionAnimations.nbIterations)+'\n'
+            # strInfo += "List of phase :"+str(self.reductionAnimations.phaseNumClass)+'\n'
+            strInfo += "##################################################"
+            print(strInfo)
 
     def setListSofaScene(self,phasesToExecute=None,phase=None):
         """
@@ -388,13 +389,6 @@ class ReduceModel():
 
         for fileName in self.reductionParam.savedElementsFilesNames :
             u.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+slash+fileName,self.packageBuilder.debugDir+fileName)
-        
-        ### commented out waiting for change in c++ code
-        # optimization done in MMM but now removed
-        # self.reductionParam.massName = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_reduced.txt")[0]
-        # # print("massName -----------------------> ",self.reductionParam.massName)
-        # u.copy(self.reductionParam.massName,self.reductionParam.dataDir)
-        #####
 
         files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_Gie.txt")
         if files: 
@@ -427,7 +421,6 @@ class ReduceModel():
         Final step :
 
             - compute the RID and Weigts with :py:mod:`.ReadGieFileAndComputeRIDandWeights`
-            - compute the Active Nodes with :py:mod:`.ConvertRIDinActiveNodes`
             - finalize the package
             - add it to the plugin library if option activated
 
@@ -475,16 +468,8 @@ class ReduceModel():
                     self.reductionParam.savedElementsFilesNames[j] = self.reductionParam.savedElementsFilesNames[i]
                     self.reductionParam.savedElementsFilesNames[i] = tmp
 
-        ### commented out waiting for change in c++ code
-        # optimization done in MMM but now removed
-        # tmp = glob.glob(self.packageBuilder.dataDir+"*_reduced.txt")[0]
-        # tmp = os.path.normpath(tmp)
-        # self.reductionParam.massName = tmp.split(slash)[-1]
-        ####
-
         self.reductionParam.RIDFilesNames = []
         self.reductionParam.weightsFilesNames = []
-        self.reductionParam.listActiveNodesFilesNames = []
         for fileName in self.reductionParam.gieFilesNames :
             if not os.path.isfile(self.packageBuilder.debugDir+fileName):
                 raise IOError("There is no GIE file at "+self.packageBuilder.debugDir+fileName\
@@ -492,34 +477,15 @@ class ReduceModel():
 
             self.reductionParam.RIDFilesNames.append(fileName.replace('_Gie','_RID'))
             self.reductionParam.weightsFilesNames.append(fileName.replace('_Gie','_weight'))
-            self.reductionParam.listActiveNodesFilesNames.append(fileName.replace('_Gie','_listActiveNodes'))
 
 
-        self.listActiveNodesFilesNames = []
         for i , fileName in enumerate(self.reductionParam.gieFilesNames) :
 
-            # index = self.reductionParam.gieFilesNames.index(fileName)
             script.readGieFileAndComputeRIDandWeights( self.packageBuilder.debugDir+fileName,
                                                 self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[i],
                                                 self.packageBuilder.dataDir+self.reductionParam.weightsFilesNames[i],
                                                 self.reductionParam.tolGIE,
                                                 verbose= self.verbose)
-            # print(index)
-            # print(len(self.reductionParam.savedElementsFilesNames))
-            # if index-1 < len(self.reductionParam.savedElementsFilesNames):
-            self.activesNodesLists.append(  script.convertRIDinActiveNodes(self.packageBuilder.dataDir+self.reductionParam.RIDFilesNames[i],
-                                                                    self.packageBuilder.debugDir+self.reductionParam.savedElementsFilesNames[i],
-                                                                    self.packageBuilder.dataDir+self.reductionParam.listActiveNodesFilesNames[i],
-                                                                    verbose= self.verbose))
-
-        finalListActiveNodes = []
-        for activeNodes in self.activesNodesLists:
-                finalListActiveNodes = list(set().union(finalListActiveNodes,activeNodes))
-        finalListActiveNodes = sorted(finalListActiveNodes)
-        with open(self.packageBuilder.dataDir+'listActiveNodes.txt', "w") as file:
-            for item in finalListActiveNodes:
-              file.write("%i\n" % item)
-        file.close()
 
         filename = "phase3_performECSW.py"
         filesandtemplates = [(open(pathToTemplate+filename).read(), filename)]

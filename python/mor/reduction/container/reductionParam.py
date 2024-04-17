@@ -29,9 +29,6 @@ class ReductionParam():
         self.RIDFilesNames = []
         self.weightsFilesNames = [] 
         self.savedElementsFilesNames = []
-        self.listActiveNodesFilesNames = []
-        self.massName = ''
-
 
         self.nbrOfModes = -1
         self.periodSaveGIE = 6 #10
@@ -50,7 +47,7 @@ class ReductionParam():
 
         self.nbTrainingSet = int(rangeOfAction/incr)
 
-    def addParamWrapper(self ,nodeToReduce ,prepareECSW = True, paramForcefield = None ,paramMappedMatrixMapping = None ,paramMORMapping = None):
+    def addParamWrapper(self ,nodeToReduce ,prepareECSW = True, paramForcefield = None ,paramMORMapping = None):
         '''
         '''
         nodeToReduce = "".join(nodeToReduce)
@@ -67,15 +64,6 @@ class ReductionParam():
                 'paramMORMapping' : {
                     'input': '@../MechanicalObject',
                     'modesPath': self.dataDir+self.modesFileName},
-
-                'paramMappedMatrixMapping' : {
-                    'nodeToParse': nodeToParse,
-                    'template': 'Vec1d,Vec1d',
-                    'object1': '@./MechanicalObject',
-                    'object2': '@./MechanicalObject',
-                    'timeInvariantMapping1': True,
-                    'timeInvariantMapping2': True,
-                    'performECSW': False}
                 }
 
         defaultParamPerform = {
@@ -88,34 +76,20 @@ class ReductionParam():
                 'paramMORMapping' : {
                     'input': '@../MechanicalObject',
                     'modesPath': self.dataFolder+self.modesFileName},
-
-                'paramMappedMatrixMapping' : {
-                    'nodeToParse': nodeToParse,
-                    'template': 'Vec1d,Vec1d',
-                    'object1': '@./MechanicalObject',
-                    'object2': '@./MechanicalObject',
-                    'timeInvariantMapping1': True,
-                    'timeInvariantMapping2': True,
-                    'listActiveNodesPath' : self.dataFolder+'listActiveNodes.txt',
-                    'performECSW': True,
-                    'usePrecomputedMass': True,
-                    'precomputedMassPath': self.dataFolder+self.massName}
                 }
 
-        if paramForcefield and paramMappedMatrixMapping and paramMORMapping :
+        if paramForcefield and paramMORMapping :
             pass
         else:
             if prepareECSW:
                 self.paramWrapper = (   (nodeToReduce ,
                                        {'paramForcefield': defaultParamPrepare['paramForcefield'].copy(),
-                                        'paramMORMapping': defaultParamPrepare['paramMORMapping'].copy(),
-                                        'paramMappedMatrixMapping': defaultParamPrepare['paramMappedMatrixMapping'].copy()} ) )
+                                        'paramMORMapping': defaultParamPrepare['paramMORMapping'].copy()} ) )
 
             else :
                 self.paramWrapper = (   (nodeToReduce ,
                                        {'paramForcefield': defaultParamPerform['paramForcefield'].copy(),
-                                        'paramMORMapping': defaultParamPerform['paramMORMapping'].copy(),
-                                        'paramMappedMatrixMapping': defaultParamPerform['paramMappedMatrixMapping'].copy()} ) )
+                                        'paramMORMapping': defaultParamPerform['paramMORMapping'].copy()} ) )
 
         return self.paramWrapper
 
@@ -129,4 +103,3 @@ class ReductionParam():
         self.RIDFilesNames.append('RID_'+nodeName+'.txt')
         self.weightsFilesNames.append('weight_'+nodeName+'.txt')
         self.savedElementsFilesNames.append('elmts_'+nodeName+'.txt')
-        self.listActiveNodesFilesNames.append('listActiveNodes_'+nodeName+'.txt')

@@ -37,6 +37,9 @@ forceFieldImplemented = {   'HyperReducedTetrahedralCorotationalFEMForceField':'
                             'HyperReducedRestShapeSpringsForceField':'points'
                         }
 
+import Sofa
+import numpy as np
+
 tmp = 0
 
 
@@ -320,17 +323,22 @@ def modifyGraphScene(node,nbrOfModes,newParam):
     try :
         currentNode = get(node,pathTmp[1:])
         solver = getNodeSolver(currentNode)
+        print("SOLVER",solver)
         if currentNode.getPathName() == pathTmp:
-            if 'paramMappedMatrixMapping' in param:
+            if 'prepareECSW' in param['paramForcefield'] or 'performECSW' in param['paramForcefield'] :
                 print('Create new child modelMOR and move node in it')
-                myParent = list(currentNode.parents)
-                modelMOR = myParent[0].addChild(currentNode.name.value+'_MOR')
-                myParent[0].removeChild(currentNode)
+                myParents = list(currentNode.parents)
+                modelMOR = Sofa.Core.Node(currentNode.name.value+'_MOR')
+                for parent in myParents:
+                    parent.removeChild(currentNode)
+                    parent.addChild(modelMOR)
+
                 modelMOR.addChild(currentNode)
 
-                for obj in solver:
-                    currentNode.removeObject(obj)
-                    modelMOR.addObject(obj)
+                if len(solver)>0:
+                    for obj in solver:
+                        currentNode.removeObject(obj)
+                        modelMOR.addObject(obj)
 
                 modelMOR.addObject('MechanicalObject', **argMecha)
 
@@ -348,55 +356,6 @@ def modifyGraphScene(node,nbrOfModes,newParam):
                 # else do error !!
     except :
         print("[ERROR]    In modifyGraphScene , cannot modify scene from path : "+pathTmp[1:])
-
-def saveElements(node,dt,forcefield):
-    '''
-    **Depending on the forcefield will go search for the right kind
-    of elements (tetrahedron/triangles...) to save**
-
-    +------------+---------------------------------+----------------------------------------------------+
-    | argument   | type                            | definition                                         |
-    +============+=================================+====================================================+
-    | node       | :class:`sofaPy3:Sofa.Core.Node` | from which node will search to save elements       |
-    +------------+---------------------------------+----------------------------------------------------+
-    | dt         | sc                              | time step of our SOFA scene                        |
-    +------------+---------------------------------+----------------------------------------------------+
-    | forcefield | list(str)                       || list of path to the forcefield working on the     |
-    |            |                                 || elements we want to save see :py:obj:`.forcefield`|
-    +------------+---------------------------------+----------------------------------------------------+
-
-    After determining what to save we will add an animation with a *duration* of 0 that will
-    be executed only once when the scene is launched saving the elements.
-
-    To do that we use :func:`stlib:splib.animation.animate`
-
-    :return: None
-    '''
-
-    import numpy as np
-    def save(node,container,valueType, **param):
-        global tmp
-        elements = container.findData(valueType).value
-        np.savetxt('reducedFF_'+ node.name.value + '_' + str(tmp)+'_'+valueType+'_elmts.txt', elements,fmt='%i')
-        tmp += 1
-        print('save : '+'elmts_'+node.name.value+' from '+container.name.value+' with value Type '+valueType)
-
-    for objPath in forcefield:
-        nodePath = '/'.join(objPath.split('/')[:-1])
-
-        obj = get(node,objPath[1:])
-        currentNode = get(node,nodePath[1:])
-
-        if obj.getClassName() == 'HyperReducedRestShapeSpringsForceField':
-            container = obj
-        else:
-            container = getContainer(currentNode)
-
-        if obj.getClassName() in forceFieldImplemented and container:
-            valueType = forceFieldImplemented[obj.getClassName()]
-
-            if valueType:
-                animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
 def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     '''
