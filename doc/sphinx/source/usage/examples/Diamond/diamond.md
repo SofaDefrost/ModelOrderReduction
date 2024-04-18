@@ -37,7 +37,7 @@ After that with a raisonnable tolerance (here *0.001*) we will select different 
 
 ![Diamond robot modes](DiamondRobot_modes_5367x1342.png)
 
-With these different parameters we will after perform the reduction like explained {doc}`here </usage/tutorial/modelOrderReduction>`
+With these different parameters we will after perform the reduction like explained {doc}`here </usage/howToUse/howToReduce_script>`
 
 ## Results 
 

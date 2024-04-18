@@ -31,7 +31,7 @@ After that with a raisonnable tolerance (here *0.001*) we will select different 
 
 ![Starfish robot modes](SartfishRobot_modes.png)
 
-With these different parameters we will after perform the reduction like explained {doc}`here </usage/tutorial/modelOrderReduction>`.
+With these different parameters we will after perform the reduction like explained {doc}`here </usage/howToUse/howToReduce_script>`.
 
 ## Results 
 
