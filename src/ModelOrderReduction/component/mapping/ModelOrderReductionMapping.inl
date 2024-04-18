@@ -111,17 +111,15 @@ void ModelOrderReductionMapping<TIn, TOut>::apply(const core::MechanicalParams *
     helper::WriteOnlyAccessor< Data<VecCoord> > out = dOut;
     helper::ReadAccessor< Data<InVecCoord> > in = dIn;
 
-    const Data<VecCoord>*restPos =  toModel->read(core::VecCoordId::restPosition());
+    const Data<VecCoord>* restPosData = toModel->read(core::VecCoordId::restPosition());
+    assert(restPosData != nullptr);
 
-    for(unsigned int i=0; i<out.size(); i++)
-    {
-        out[i]=restPos->getValue()[i];
-        for(unsigned int j=0; j<in.size(); j++)
-        {
-            InReal alpha= in[j][0];
-            out[i] +=Deriv(m_modesEigen(3*i,j),m_modesEigen(3*i+1,j),m_modesEigen(3*i+2,j))*alpha;
-        }
-    }
+    out.wref() = restPosData->getValue();
+
+    Eigen::Map<Eigen::Matrix<OutReal, Eigen::Dynamic, 1> > outMatrix(out.wref()[0].ptr(), out.size() * 3, 1);
+    Eigen::Map<const Eigen::Matrix<InReal, Eigen::Dynamic, 1> > inMatrix(in.ref()[0].ptr(), in.size(), 1);
+
+    outMatrix += m_modesEigen * inMatrix;
 }
 
 template <class TIn, class TOut>
