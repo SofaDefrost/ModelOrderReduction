@@ -35,7 +35,7 @@ We have only one actuator here, so our *listObjToAnimate* contains only one obje
 
 	ObjToAnimate("actuator","doingCircle",'MechanicalObject',incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 
-With these different parameters we will after perform the reduction like explained {doc}`here </usage/tutorial/modelOrderReduction>`
+With these different parameters we will after perform the reduction like explained {doc}`here </usage/howToUse/howToReduce_script>`
 
 
 ## Results 
