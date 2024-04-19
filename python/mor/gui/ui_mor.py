@@ -314,8 +314,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
                         ["/debug/debug_scene.py","/debug/stateFile.state"],
                         ["/data/modes.txt"],
                         ["/debug/reducedFF_*","/debug/*_elmts.txt"], #["/debug/step2_stateFile.state",
-                        ["/data/*_RID.txt","/data/*_weight.txt","/data/*listActiveNodes.txt","/reduced_*"]
-                        # "/data/*_reduced.txt" search for reduced mass, remove it for the moment
+                        ["/data/*_RID.txt","/data/*_weight.txt","/reduced_*"]
                     ]
 
             def check(file,item):
