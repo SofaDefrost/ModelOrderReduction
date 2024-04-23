@@ -8,3 +8,4 @@ Examples
 	Starfish/starfish
 	Sofia/sofia
 	Liver/liver
+	HexaBeam/hexaBeam

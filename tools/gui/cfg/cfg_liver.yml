@@ -9,7 +9,7 @@ grpBox_AnimationParam:
   tab_animation:
     0:
       0: 'True'
-      1: shakingLiver
+      1: doingCircle
       2:
         angle: '0'
         dataToWorkOn: position

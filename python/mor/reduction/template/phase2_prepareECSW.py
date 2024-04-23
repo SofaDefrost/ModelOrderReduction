@@ -27,7 +27,6 @@ phase.append($item)
 nbrOfModes = $NBROFMODES
 periodSaveGIE = $PERIODSAVEGIE
 paramWrapper = $PARAMWRAPPER
-phaseToSave = $PHASETOSAVE
 
 path, param = paramWrapper
 param['nbrOfModes'] = $NBROFMODES
@@ -47,12 +46,6 @@ def createScene(rootNode):
 
     # Add MOR plugin if not found
     #u.addPlugin(rootNode,"ModelOrderReduction")
-
-    # Save connectivity list that will allow us after work only on the necessary elements
-
-    if phase == phaseToSave:
-        u.saveElements(rootNode,rootNode.dt,replaceAndSave.forcefield)
-        param['paramMappedMatrixMapping']['saveReducedMass'] = True
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper

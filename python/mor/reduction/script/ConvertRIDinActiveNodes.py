@@ -47,11 +47,6 @@ def convertRIDinActiveNodes(RIDFileName,connectivityFileName,listActiveNodesFile
     dimension = len(lineSplit)
     listActiveNodes = []
     for i in RIDlist:
-        #if verbose :
-            # print "#######################"
-            # print "elem number: ", i
-            # for coordIndex in range(dimension):
-            #     print connecList[i][coordIndex]
         lenStart = len(listActiveNodes)
         for coordIndex in range(dimension):
             if connecList[i][coordIndex] not in listActiveNodes:
