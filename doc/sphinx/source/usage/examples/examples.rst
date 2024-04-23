@@ -7,3 +7,5 @@ Examples
 	Diamond/diamond
 	Starfish/starfish
 	Sofia/sofia
+
+	HexaBeam/hexaBeam
