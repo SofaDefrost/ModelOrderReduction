@@ -64,6 +64,7 @@ def Reduced_test(
     modelRoot = attachedTo.addChild(name)
 
     model_MOR = modelRoot.addChild('model_MOR')
+    model_MOR.addObject('EulerImplicitSolver', name='odesolver', rayleighStiffness='0.1', rayleighMass='0.1')
     model_MOR.addObject('SparseLDLSolver' , name = 'preconditioner', template = 'CompressedRowSparseMatrixMat3x3d')
     model_MOR.addObject('GenericConstraintCorrection' , linearSolver = '@preconditioner')
     model_MOR.addObject('MechanicalObject' , template = 'Vec1d', position = [0]*nbrOfModes)
@@ -71,7 +72,7 @@ def Reduced_test(
 
     model = model_MOR.addChild('model')
     model.addObject('MeshVTKLoader' , name = 'loader', filename = pathMesh + r'/mesh/full_quadriped_SMALL.vtk', translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    model.addObject('TetrahedronSetTopologyContainer' , src = '@loader', name = 'container')
+    model.addObject('TetrahedronSetTopologyContainer' , position = '@loader.position', tetrahedra = '@loader.tetrahedra', name = 'container')
     model.addObject('MechanicalObject' , name = 'tetras', template = 'Vec3d', showIndices = 'false', showIndicesScale = '4e-5', rx = '0')
     model.addObject('UniformMass' , totalMass = '0.035')
     model.addObject('HyperReducedTetrahedronFEMForceField' , template = 'Vec3d', name = 'reducedFF_model_0', method = 'large', poissonRatio = '0.05', youngModulus = '70', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_model_0_RID.txt', weightsPath = path + r'/data/reducedFF_model_0_weight.txt')
@@ -87,7 +88,7 @@ def Reduced_test(
 
     centerCavity = model.addChild('centerCavity')
     centerCavity.addObject('MeshSTLLoader' , name = 'loader', filename = pathMesh + r'/mesh/quadriped_Center-cavityREMESHEDlighter.stl', translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    centerCavity.addObject('Mesh' , src = '@loader', name = 'topo')
+    centerCavity.addObject('MeshTopology' , src = '@loader', name = 'topo')
     centerCavity.addObject('MechanicalObject' , name = 'centerCavity')
     centerCavity.addObject('SurfacePressureConstraint' , name = 'SurfacePressureConstraint', template = 'Vec3d', value = '0.00', triangles = '@topo.triangles', drawPressure = '0', drawScale = '0.0002', valueType = 'volumeGrowth')
     centerCavity.addObject('BarycentricMapping' , name = 'mapping', mapForces = 'false', mapMasses = 'false')
@@ -95,7 +96,7 @@ def Reduced_test(
 
     rearLeftCavity = model.addChild('rearLeftCavity')
     rearLeftCavity.addObject('MeshSTLLoader' , name = 'loader', filename = pathMesh + r'/mesh/quadriped_Rear-Left-cavity_collis.stl', translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    rearLeftCavity.addObject('Mesh' , src = '@loader', name = 'topo')
+    rearLeftCavity.addObject('MeshTopology' , src = '@loader', name = 'topo')
     rearLeftCavity.addObject('MechanicalObject' , name = 'rearLeftCavity')
     rearLeftCavity.addObject('SurfacePressureConstraint' , name = 'SurfacePressureConstraint', template = 'Vec3d', valueType = 'volumeGrowth', value = '0.000', triangles = '@topo.triangles', drawPressure = '0', drawScale = '0.0002')
     rearLeftCavity.addObject('BarycentricMapping' , name = 'mapping', mapForces = 'false', mapMasses = 'false')
@@ -103,7 +104,7 @@ def Reduced_test(
 
     rearRightCavity = model.addChild('rearRightCavity')
     rearRightCavity.addObject('MeshSTLLoader' , name = 'loader', filename = pathMesh + r'/mesh/quadriped_Rear-Right-cavity_collis.stl', translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    rearRightCavity.addObject('Mesh' , src = '@loader', name = 'topo')
+    rearRightCavity.addObject('MeshTopology' , src = '@loader', name = 'topo')
     rearRightCavity.addObject('MechanicalObject' , name = 'rearRightCavity')
     rearRightCavity.addObject('SurfacePressureConstraint' , name = 'SurfacePressureConstraint', template = 'Vec3d', value = '0.00', triangles = '@topo.triangles', drawPressure = '0', drawScale = '0.0002', valueType = 'volumeGrowth')
     rearRightCavity.addObject('BarycentricMapping' , name = 'mapping', mapForces = 'false', mapMasses = 'false')
@@ -111,7 +112,7 @@ def Reduced_test(
 
     frontLeftCavity = model.addChild('frontLeftCavity')
     frontLeftCavity.addObject('MeshSTLLoader' , name = 'loader', filename = pathMesh + r'/mesh/quadriped_Front-Left-cavity_collis.stl', translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    frontLeftCavity.addObject('Mesh' , src = '@loader', name = 'topo')
+    frontLeftCavity.addObject('MeshTopology' , src = '@loader', name = 'topo')
     frontLeftCavity.addObject('MechanicalObject' , name = 'frontLeftCavity')
     frontLeftCavity.addObject('SurfacePressureConstraint' , name = 'SurfacePressureConstraint', template = 'Vec3d', value = '0.000', triangles = '@topo.triangles', drawPressure = '0', drawScale = '0.0002', valueType = 'volumeGrowth')
     frontLeftCavity.addObject('BarycentricMapping' , name = 'mapping', mapForces = 'false', mapMasses = 'false')
@@ -119,7 +120,7 @@ def Reduced_test(
 
     frontRightCavity = model.addChild('frontRightCavity')
     frontRightCavity.addObject('MeshSTLLoader' , name = 'loader', filename = pathMesh + r'/mesh/quadriped_Front-Right-cavity_collis.stl', translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    frontRightCavity.addObject('Mesh' , src = '@loader', name = 'topo')
+    frontRightCavity.addObject('MeshTopology' , src = '@loader', name = 'topo')
     frontRightCavity.addObject('MechanicalObject' , name = 'frontRightCavity')
     frontRightCavity.addObject('SurfacePressureConstraint' , name = 'SurfacePressureConstraint', template = 'Vec3d', value = '0.000', triangles = '@topo.triangles', drawPressure = '0', drawScale = '0.0002', valueType = 'volumeGrowth')
     frontRightCavity.addObject('BarycentricMapping' , name = 'mapping', mapForces = 'false', mapMasses = 'false')
@@ -127,7 +128,7 @@ def Reduced_test(
 
     modelCollis = model.addChild('modelCollis')
     modelCollis.addObject('MeshSTLLoader' , name = 'loader', filename = pathMesh + r'/mesh/quadriped_collision.stl', rotation = '0 0 0', translation = '0 0 0', scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    modelCollis.addObject('TriangleSetTopologyContainer' , src = '@loader', name = 'container')
+    modelCollis.addObject('TriangleSetTopologyContainer' , position = '@loader.position', triangles = '@loader.triangles', name = 'container')
     modelCollis.addObject('MechanicalObject' , name = 'collisMO', template = 'Vec3d')
     modelCollis.addObject('TriangleCollisionModel' , group = '0')
     modelCollis.addObject('LineCollisionModel' , group = '0')
@@ -148,11 +149,27 @@ from stlib3.scene import MainHeader
 def createScene(rootNode):
     surfaceMeshFileName = False
 
-    MainHeader(rootNode,plugins=["SoftRobots","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=['SoftRobots',
+                                'ModelOrderReduction',
+                                'Sofa.Component.Collision.Geometry', 
+                                'Sofa.Component.Constraint.Lagrangian.Correction', 
+                                'Sofa.Component.Engine.Select', 
+                                'Sofa.Component.IO.Mesh', 
+                                'Sofa.Component.LinearSolver.Direct', 
+                                'Sofa.Component.Mapping.Linear', 
+                                'Sofa.Component.Mass', 
+                                'Sofa.Component.StateContainer', 
+                                'Sofa.Component.Topology.Container.Constant', 
+                                'Sofa.Component.Topology.Container.Dynamic', 
+                                'Sofa.Component.Visual', 
+                                'Sofa.GL.Component.Rendering3D'], 
+
                         dt=0.01,
                         gravity=[0.0, -9.81, 0.0])
     rootNode.VisualStyle.displayFlags="showForceFields"
     
+
+
     Reduced_test(rootNode,
                         name="Reduced_test",
                         surfaceMeshFileName=surfaceMeshFileName)

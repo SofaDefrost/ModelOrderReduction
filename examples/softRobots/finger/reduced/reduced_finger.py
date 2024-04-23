@@ -72,7 +72,7 @@ def Reduced_test(
 
     finger = finger_MOR.addChild('finger')
     finger.addObject('MeshVTKLoader' , name = 'loader', filename = pathMesh + r'/mesh/finger.vtk', translation = add(translation,[0.0, 0.0, 0.0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    finger.addObject('TetrahedronSetTopologyContainer' , src = '@loader')
+    finger.addObject('TetrahedronSetTopologyContainer' , position = '@loader.position', tetrahedra = '@loader.tetrahedra')
     finger.addObject('MechanicalObject')
     finger.addObject('UniformMass' , totalMass = 0.05)
     finger.addObject('HyperReducedTetrahedronFEMForceField' , poissonRatio = '0.45', youngModulus = '600', name = 'reducedFF_finger_0', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_finger_0_RID.txt', weightsPath = path + r'/data/reducedFF_finger_0_weight.txt')

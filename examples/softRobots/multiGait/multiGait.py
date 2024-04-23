@@ -8,9 +8,32 @@ path = os.path.dirname(os.path.abspath(__file__)) + '/mesh/'
 # Units: mm, kg, s.     Pressure in kPa = k (kg/(m.s^2)) = k (g/(mm.s^2) =  kg/(mm.s^2)
 
 def createScene(rootNode):
-    rootNode.addObject('RequiredPlugin', pluginName='SoftRobots')
+    rootNode.addObject('RequiredPlugin', name='SoftRobots')
     # rootNode.addObject('RequiredPlugin', pluginName='SofaPython3')
-    rootNode.addObject('RequiredPlugin', pluginName='ModelOrderReduction')
+    rootNode.addObject('RequiredPlugin', name='ModelOrderReduction')
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.AnimationLoop') # Needed to use components [FreeMotionAnimationLoop]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Algorithm') # Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,CollisionPipeline]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Intersection') # Needed to use components [LocalMinDistance]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Geometry') # Needed to use components [LineCollisionModel,PointCollisionModel,TriangleCollisionModel]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Response.Contact') # Needed to use components [CollisionResponse,RuleBasedContactManager]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Correction') # Needed to use components [GenericConstraintCorrection,UncoupledConstraintCorrection]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Solver') # Needed to use components [GenericConstraintSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Engine.Select') # Needed to use components [BoxROI]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.IO.Mesh') # Needed to use components [MeshOBJLoader,MeshSTLLoader,MeshVTKLoader]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct') # Needed to use components [SparseLDLSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mapping.Linear') # Needed to use components [BarycentricMapping]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass') # Needed to use components [UniformMass]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward') # Needed to use components [EulerImplicitSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Setting') # Needed to use components [BackgroundSetting]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.SolidMechanics.FEM.Elastic') # Needed to use components [TetrahedronFEMForceField,TriangleFEMForceField]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.StateContainer') # Needed to use components [MechanicalObject]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Topology.Container.Constant') # Needed to use components [MeshTopology]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Topology.Container.Dynamic') # Needed to use components [TetrahedronSetTopologyContainer,TriangleSetTopologyContainer]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual') # Needed to use components [VisualStyle]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D') # Needed to use components [OglModel,OglSceneFrame]  
+
+
+
     rootNode.gravity = [0, 0, -9810]
     rootNode.addObject('VisualStyle',
                           displayFlags='showVisualModels showBehaviorModels hideCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
@@ -52,7 +75,7 @@ def createScene(rootNode):
     print(model)
 
     model.addObject('MeshVTKLoader', name='loader', filename=path + quadrupedMesh)
-    model.addObject('TetrahedronSetTopologyContainer', src='@loader', name='container')
+    model.addObject('TetrahedronSetTopologyContainer', position='@loader.position', tetrahedra='@loader.tetrahedra', name='container')
     model.addObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false',
                        showIndicesScale='4e-5', rx='0')
     model.addObject('UniformMass', totalMass='0.035')
@@ -69,7 +92,7 @@ def createScene(rootNode):
     modelSubTopo = model.addChild('modelSubTopo')
 
     modelSubTopo.addObject('TriangleSetTopologyContainer', position='@../membraneROISubTopo.pointsInROI',
-                              triangles='@../membraneROISubTopo.trianglesInROI', name='container')
+                              triangles='@../membraneROISubTopo.trianglesInROI', edges='@../membraneROISubTopo.edgesInROI', name='container_modelSubTopo')
     modelSubTopo.addObject('TriangleFEMForceField', template='Vec3d', name='FEM', method='large',
                               poissonRatio='0.49', youngModulus='5000')
 
@@ -77,7 +100,7 @@ def createScene(rootNode):
     # Constraint
     centerCavity = model.addChild('centerCavity')
     centerCavity.addObject('MeshSTLLoader', name='loader', filename=path + centerCavityMesh)
-    centerCavity.addObject('Mesh', src='@loader', name='topo')
+    centerCavity.addObject('MeshTopology', src='@loader', name='topo')
     centerCavity.addObject('MechanicalObject', name='centerCavity')
     centerCavity.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d',
                               value="0.00", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002',
@@ -86,7 +109,7 @@ def createScene(rootNode):
 
     rearLeftCavity = model.addChild('rearLeftCavity')
     rearLeftCavity.addObject('MeshSTLLoader', name='loader', filename=path + rearLeftCavityMesh)
-    rearLeftCavity.addObject('Mesh', src='@loader', name='topo')
+    rearLeftCavity.addObject('MeshTopology', src='@loader', name='topo')
     rearLeftCavity.addObject('MechanicalObject', name='rearLeftCavity')
     rearLeftCavity.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d',
                                 valueType="volumeGrowth", value="0.000", triangles='@topo.triangles', drawPressure='0',
@@ -95,7 +118,7 @@ def createScene(rootNode):
 
     rearRightCavity = model.addChild('rearRightCavity')
     rearRightCavity.addObject('MeshSTLLoader', name='loader', filename=path + rearRightCavityMesh)
-    rearRightCavity.addObject('Mesh', src='@loader', name='topo')
+    rearRightCavity.addObject('MeshTopology', src='@loader', name='topo')
     rearRightCavity.addObject('MechanicalObject', name='rearRightCavity')
     rearRightCavity.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d',
                                  value="0.00", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002',
@@ -104,7 +127,7 @@ def createScene(rootNode):
 
     frontLeftCavity = model.addChild('frontLeftCavity')
     frontLeftCavity.addObject('MeshSTLLoader', name='loader', filename=path + frontLeftCavityMesh)
-    frontLeftCavity.addObject('Mesh', src='@loader', name='topo')
+    frontLeftCavity.addObject('MeshTopology', src='@loader', name='topo')
     frontLeftCavity.addObject('MechanicalObject', name='frontLeftCavity')
     frontLeftCavity.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d',
                                  value="0.000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002',
@@ -113,7 +136,7 @@ def createScene(rootNode):
 
     frontRightCavity = model.addChild('frontRightCavity')
     frontRightCavity.addObject('MeshSTLLoader', name='loader', filename=path + frontRightCavityMesh)
-    frontRightCavity.addObject('Mesh', src='@loader', name='topo')
+    frontRightCavity.addObject('MeshTopology', src='@loader', name='topo')
     frontRightCavity.addObject('MechanicalObject', name='frontRightCavity')
     frontRightCavity.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d',
                                   value="0.000", triangles='@topo.triangles', drawPressure='0', drawScale='0.0002',
@@ -123,7 +146,7 @@ def createScene(rootNode):
     modelCollis = model.addChild('modelCollis')
     modelCollis.addObject('MeshSTLLoader', name='loader', filename=path + 'quadriped_collision.stl',
                              rotation="0 0 0", translation="0 0 0")
-    modelCollis.addObject('TriangleSetTopologyContainer', src='@loader', name='container')
+    modelCollis.addObject('TriangleSetTopologyContainer', position='@loader.position', triangles='@loader.triangles', name='container_quadriped')
     modelCollis.addObject('MechanicalObject', name='collisMO', template='Vec3d')
     modelCollis.addObject('TriangleCollisionModel', group="0")
     modelCollis.addObject('LineCollisionModel', group="0")
@@ -144,7 +167,7 @@ def createScene(rootNode):
 
     planeNode = rootNode.addChild('Plane')
     planeNode.addObject('MeshOBJLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true")
-    planeNode.addObject('Mesh', src="@loader")
+    planeNode.addObject('MeshTopology', src="@loader")
     planeNode.addObject('MechanicalObject', src="@loader", rotation="90 0 0", translation="0 35 -1", scale="15")
     planeNode.addObject('TriangleCollisionModel', simulated="0", moving="0", group="1")
     planeNode.addObject('LineCollisionModel', simulated="0", moving="0", group="1")
