@@ -13,7 +13,24 @@ from stlib3.visuals import VisualModel
 
 def createScene(rootNode):
     rootNode.addObject("RequiredPlugin",
-                       pluginName=["SoftRobots", 'SofaConstraint', 'SofaEngine', 'SofaLoader', 'SofaDeformable', 'ModelOrderReduction'])
+                       pluginName=["SoftRobots", 
+                        'Sofa.Component.AnimationLoop',
+                        'Sofa.Component.Constraint.Lagrangian.Correction',
+                        'Sofa.Component.Constraint.Lagrangian.Solver',
+                        'Sofa.Component.Engine.Select',
+                        'Sofa.Component.IO.Mesh',
+                        'Sofa.Component.LinearSolver.Direct',
+                        'Sofa.Component.Mapping.Linear',
+                        'Sofa.Component.Mass',
+                        'Sofa.Component.ODESolver.Backward',
+                        'Sofa.Component.SolidMechanics.FEM.Elastic',
+                        'Sofa.Component.SolidMechanics.Spring',
+                        'Sofa.Component.StateContainer',
+                        'Sofa.Component.Topology.Container.Dynamic',
+                        'Sofa.Component.Visual',
+                        'ModelOrderReduction'])
+
+
     scene = Scene(rootNode, gravity=[0.0, -9810.0, 0.0], dt=0.01)
     scene.VisualStyle.displayFlags='showBehavior'
 
@@ -30,7 +47,7 @@ def createScene(rootNode):
     finger.addObject('EulerImplicitSolver', rayleighStiffness = 0.0, rayleighMass = 0.0)
     finger.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
     finger.addObject('MeshVTKLoader', name="loader", filename=path+'finger.vtk')
-    finger.addObject('TetrahedronSetTopologyContainer', src="@loader")
+    finger.addObject('TetrahedronSetTopologyContainer', position="@loader.position", tetrahedra="@loader.tetrahedra")
     finger.addObject('MechanicalObject')
     finger.addObject('UniformMass', totalMass=0.05)
     finger.addObject('TetrahedronFEMForceField', poissonRatio="0.45", youngModulus="600")

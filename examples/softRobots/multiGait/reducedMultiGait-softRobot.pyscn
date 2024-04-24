@@ -202,6 +202,17 @@ class waveController(Sofa.Core.Controller):
 def createScene(rootNode):
                 rootNode.addObject('RequiredPlugin', name='SoftRobots', pluginName='SoftRobots')
                 rootNode.addObject('RequiredPlugin', name='ModelOrderReduction', pluginName='ModelOrderReduction')
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.AnimationLoop') # Needed to use components [FreeMotionAnimationLoop]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Algorithm') # Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,BruteForceDetection,CollisionPipeline]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Intersection') # Needed to use components [LocalMinDistance]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Response.Contact') # Needed to use components [CollisionResponse]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Correction') # Needed to use components [GenericConstraintCorrection]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Solver') # Needed to use components [GenericConstraintSolver]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct') # Needed to use components [SparseLDLSolver]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward') # Needed to use components [EulerImplicitSolver]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.Setting') # Needed to use components [BackgroundSetting]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual') # Needed to use components [VisualStyle]  
+                rootNode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D') # Needed to use components [OglSceneFrame] 
                 rootNode.dt.value = 0.05
 
                 rootNode.gravity.value=[0, 0, -9810]
@@ -210,15 +221,16 @@ def createScene(rootNode):
                 rootNode.addObject('FreeMotionAnimationLoop')
                 rootNode.addObject('GenericConstraintSolver', printLog=False, tolerance="1e-4", maxIterations="1000")
                 rootNode.addObject('CollisionPipeline')
-                rootNode.addObject('BruteForceDetection', name="N2")
-                rootNode.addObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.7")
+                rootNode.addObject('BruteForceBroadPhase', name="N2")
+                rootNode.addObject('BVHNarrowPhase')
+                rootNode.addObject('CollisionResponse', response="FrictionContactConstraint", responseParams="mu=0.7")
                 rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.5", angleCone="0.01")
                 rootNode.addObject('BackgroundSetting', color='0 0.168627 0.211765')
                 rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
                 solverNode = rootNode.addChild('solverNode')
                 solverNode.addObject('EulerImplicitSolver', name='odesolver',firstOrder="false", rayleighStiffness='0.01', rayleighMass='0.01', printLog=False)
                 solverNode.addObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrixMat3x3d")
-                solverNode.addObject('GenericConstraintCorrection', solverName='preconditioner')
+                solverNode.addObject('GenericConstraintCorrection', linearSolver='@preconditioner')
                 solverNode.addObject('MechanicalMatrixMapperMOR', template='Vec1d,Vec1d', object1='@./reducedModel/alpha', object2='@./reducedModel/alpha', nodeToParse='@./reducedModel/model', performECSW=performECSWBoolMappedMatrix, listActiveNodesPath=listActiveNodesFile,timeInvariantMapping1 = True,timeInvariantMapping2 = True, saveReducedMass=False, usePrecomputedMass=False, precomputedMassPath='ROM_data/quadrupedMass_reduced63modes.txt', fastMatrixProduct=False, printLog=False)
 
 

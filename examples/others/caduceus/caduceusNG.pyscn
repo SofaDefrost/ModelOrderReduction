@@ -9,8 +9,29 @@ def createScene(rootNode):
     rootNode.findData('dt').value=0.02
     rootNode.findData('gravity').value=[0, -981.0, 0]
     rootNode.addObject('VisualStyle', displayFlags='showBehaviorModels showForceFields')
-    rootNode.addObject('RequiredPlugin', pluginName='ModelOrderReduction')
-    rootNode.addObject('RequiredPlugin', pluginName='SoftRobots')
+
+    rootNode.addObject('RequiredPlugin', name='ModelOrderReduction')
+    rootNode.addObject('RequiredPlugin', name='SoftRobots')
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.AnimationLoop') # Needed to use components [FreeMotionAnimationLoop]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Algorithm') # Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,CollisionPipeline]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Intersection') # Needed to use components [LocalMinDistance]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Geometry') # Needed to use components [LineCollisionModel,PointCollisionModel,TriangleCollisionModel]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Response.Contact') # Needed to use components [CollisionResponse]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Correction') # Needed to use components [GenericConstraintCorrection]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Solver') # Needed to use components [GenericConstraintSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.IO.Mesh') # Needed to use components [MeshOBJLoader,MeshVTKLoader]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct') # Needed to use components [SparseLDLSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mapping.Linear') # Needed to use components [BarycentricMapping]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass') # Needed to use components [UniformMass]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward') # Needed to use components [EulerImplicitSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.SolidMechanics.FEM.Elastic') # Needed to use components [TetrahedronFEMForceField]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.StateContainer') # Needed to use components [MechanicalObject]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Topology.Container.Constant') # Needed to use components [MeshTopology]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Topology.Container.Dynamic') # Needed to use components [TetrahedronSetTopologyContainer]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual') # Needed to use components [Camera,VisualStyle]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D') # Needed to use components [OglModel]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.GL.Component.Shader') # Needed to use components [LightManager,SpotLight]  
+
 
 
     rootNode.addObject('FreeMotionAnimationLoop')
@@ -47,7 +68,7 @@ def createScene(rootNode):
     
     collis = Snake.addChild('collis')
     collis.addObject('MeshOBJLoader', name='loader', filename=meshPath+"meca_snake_900tri.obj",translation=[0,5,0])
-    collis.addObject('Mesh', src='@loader', name='topo')
+    collis.addObject('MeshTopology', src='@loader', name='topo')
     collis.addObject('MechanicalObject', name='CollisModel')
     collis.addObject('TriangleCollisionModel', selfCollision=False)
     collis.addObject('LineCollisionModel', selfCollision=False)
@@ -73,14 +94,14 @@ def createScene(rootNode):
 
     stick = base.addChild("stick")
     stick.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_batons.obj")
-    stick.addObject('Mesh', src='@loader', name='topo')
+    stick.addObject('MeshTopology', src='@loader', name='topo')
     stick.addObject('MechanicalObject', name='stickCollisModel')
     stick.addObject('LineCollisionModel',simulated="false", moving="false")
     stick.addObject('PointCollisionModel',simulated="false", moving="false")
     
     blobs = base.addChild("blobs")
     blobs.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_boules_V3.obj")
-    blobs.addObject('Mesh', src='@loader', name='topo')
+    blobs.addObject('MeshTopology', src='@loader', name='topo')
     blobs.addObject('MechanicalObject', name='blobsCollisModel')
     blobs.addObject('TriangleCollisionModel',simulated="false", moving="false")
     blobs.addObject('LineCollisionModel',simulated="false", moving="false")
@@ -88,7 +109,7 @@ def createScene(rootNode):
 
     foot = base.addChild("foot")
     foot.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_pied.obj")
-    foot.addObject('Mesh', src='@loader', name='topo')
+    foot.addObject('MeshTopology', src='@loader', name='topo')
     foot.addObject('MechanicalObject', name='footCollisModel')
     foot.addObject('TriangleCollisionModel',simulated="false", moving="false")
     foot.addObject('LineCollisionModel',simulated="false", moving="false")
