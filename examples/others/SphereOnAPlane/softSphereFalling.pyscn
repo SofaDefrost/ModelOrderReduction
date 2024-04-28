@@ -112,9 +112,5 @@ def createScene(rootNode):
     planeNode.addObject('Mesh', src="@loader")
     planeNode.addObject('MechanicalObject', src="@loader", rotation="0 0 0", translation="0 0 0", scale="1")
     planeNode.addObject('TriangleCollisionModel',simulated="0", moving="0",group="1",name='TriPlane')
-    #planeNode.addObject('LineCollisionModel',simulated="0", moving="0",group="1")
-    #planeNode.addObject('PointCollisionModel',simulated="0", moving="0",group="1")
-    #planeNode.addObject('OglModel',name="Visual", fileMesh="mesh/floorFlat.obj", color="1 0 0 1",rotation=rotation, translation="0 0 0", scale="1")
-    planeNode.addObject('UncoupledConstraintCorrection')
 
     return rootNode
