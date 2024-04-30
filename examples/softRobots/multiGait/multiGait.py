@@ -174,6 +174,5 @@ def createScene(rootNode):
     planeNode.addObject('PointCollisionModel', simulated="0", moving="0", group="1")
     planeNode.addObject('OglModel', name="Visual", fileMesh="mesh/floorFlat.obj", color="1 0 0 1", rotation="90 0 0",
                            translation="0 35 -1", scale="15")
-    planeNode.addObject('UncoupledConstraintCorrection')
 
     return rootNode
