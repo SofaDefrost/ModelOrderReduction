@@ -21,5 +21,8 @@ timeout "others/caduceus/caduceusNG.pyscn" "120"
 iterations "softRobots/multiGait/multiGait.py" "20"
 timeout "softRobots/multiGait/multiGait.py" "120"
 
+iterations "softRobots/multiGait/reduced/reduced_multiGait.py" "20"
+timeout "softRobots/multiGait/reduced/reduced_multiGait.py" "120"
+
 ignore "softRobots/multiGait/reducedMultiGait-softRobot.pyscn" # TODO fix: MechanicalMatrixMapperMOR is missing 
 ignore "softRobots/multiGait/reduced/debug/debug_scene.py" # TODO fix: ODE solver is not copied during reduction process
