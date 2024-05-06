@@ -32,3 +32,4 @@ __all__=["shakingAnimations"]
 from mor.animation.shakingAnimations import defaultShaking
 from mor.animation.shakingAnimations import doingCircle
 from mor.animation.shakingAnimations import shakingInverse
+from mor.animation.shakingAnimations import doingNothing
