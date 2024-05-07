@@ -31,9 +31,12 @@ import sys
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path+'/../python') # TO CHANGE
 
+useGui = True
 
 # MOR IMPORT
-from mor.gui import utility
+if useGui:
+    from mor.gui import utility
+
 from mor.reduction import ReduceModel
 from mor.reduction.container import ObjToAnimate
 
@@ -41,14 +44,14 @@ from mor.reduction.container import ObjToAnimate
 ####################       PARAMETERS       ###########################
 
 # Select Output Dir and original scene name & path
-from PyQt5 import QtWidgets
-app = QtWidgets.QApplication(sys.argv)
-
-originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-outputDir = utility.openDirName('Select the directory that will contain all the results')
-
-# originalScene = "/home/felix_v/SOFA/plugins/ModelOrderReduction/tools/test/sofa_test_scene/diamondRobot.py"
-# outputDir = "/home/felix_v/SOFA/plugins/ModelOrderReduction/tools/test/test_diamond"
+if useGui:
+    from PyQt5 import QtWidgets
+    app = QtWidgets.QApplication(sys.argv)
+    originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+    outputDir = utility.openDirName('Select the directory that will contain all the results')
+else:
+    originalScene = "/home/felix_v/SOFA/plugins/ModelOrderReduction/tools/test/sofa_test_scene/diamondRobot.py"
+    outputDir = "/home/felix_v/SOFA/plugins/ModelOrderReduction/tools/test/test_diamond"
 
 phasesToExecute = None
 

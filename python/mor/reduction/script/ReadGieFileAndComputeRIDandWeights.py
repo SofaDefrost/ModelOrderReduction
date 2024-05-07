@@ -12,7 +12,8 @@ from sys import argv
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path+'/../../gui')
 
-import utility as u
+from mor.utility import utility as util
+
 
 def errDif(G, xi, b):
     return np.linalg.norm(G.dot(xi) - b)
@@ -33,7 +34,7 @@ def selectECSW(G,b,tau,verbose):
         if verbose :
             print ("Current Error: ", currentValue,"Target Error:", valTarget)
         else :
-            u.update_progress( round( ( 100 - ((currentValue - valTarget)*100) / marge) / 100 , 4) )
+            util.update_progress( round( ( 100 - ((currentValue - valTarget)*100) / marge) / 100 , 4) )
 
         vecDiff = b - G.dot(xi)
         GT = np.transpose(G)
