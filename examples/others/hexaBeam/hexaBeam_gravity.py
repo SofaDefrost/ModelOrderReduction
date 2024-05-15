@@ -32,28 +32,28 @@ def createScene(rootNode):
     rootNode.addObject('VisualStyle', displayFlags='showBehaviorModels showForceFields')
     rootNode.addObject('RequiredPlugin', pluginName=plugins, printLog=False)
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('GenericConstraintSolver', tolerance="1e-12", maxIterations="10000")
+    rootNode.addObject('GenericConstraintSolver', tolerance=1e-12, maxIterations=10000)
 
 
-    M1 = rootNode.addChild("M1")
-    M1.addObject('EulerImplicitSolver',rayleighStiffness="0.1", rayleighMass="0.1")
-    M1.addObject('SparseLDLSolver',name='preconditioner')
+    M1 = rootNode.addChild('M1')
+    M1.addObject('EulerImplicitSolver',rayleighStiffness=0.1, rayleighMass=0.1)
+    M1.addObject('SparseLDLSolver',name='solver')
     M1.addObject('MechanicalObject', name='MO')
-    M1.addObject('UniformMass', totalMass="0.1")
-    M1.addObject('RegularGridTopology', nx="4", ny="4", nz="20", xmin="-9", xmax="-6", ymin="0", ymax="3", zmin="0", zmax="19")
+    M1.addObject('UniformMass', totalMass=0.1)
+    M1.addObject('RegularGridTopology', nx=4, ny=4, nz=20, xmin=-9, xmax=-6, ymin=0, ymax=3, zmin=0, zmax=19)
     M1.addObject('BoxROI', name='ROI1', box='-9 -2 -1 -3 4 5', drawBoxes='true')
     
-    M1.addObject('HexahedronFEMForceField', name="FEM", youngModulus="4000", poissonRatio="0.3", method="large")
-    M1.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
-    M1.addObject('GenericConstraintCorrection', linearSolver='@preconditioner')
+    M1.addObject('HexahedronFEMForceField', name='FEM', youngModulus=4000, poissonRatio=0.3, method='large')
+    M1.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = 1e8)
+    M1.addObject('GenericConstraintCorrection', linearSolver='@solver')
 
     # Add a visual model 
     visualModel = M1.addChild('visualModel')
-    visualModel.addObject('OglModel', name="visu", color="green")
-    visualModel.addObject('IdentityMapping', input="@..", output="@visu")
+    visualModel.addObject('OglModel', name='visu', color='green')
+    visualModel.addObject('IdentityMapping', input='@..', output='@visu')
     
     actuator = rootNode.addChild('actuator')
-    actuator.addObject('MechanicalObject', name="actuatedState", template="Vec3d", position="@M1/MO.position")
+    actuator.addObject('MechanicalObject', name='actuatedState', template='Vec3d', position='@M1/MO.position')
     
     
     
