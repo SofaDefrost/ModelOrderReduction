@@ -9,9 +9,6 @@ import numpy as np
 import os , sys
 from sys import argv
 
-path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path+'/../../gui')
-
 from mor.utility import utility as util
 
 
