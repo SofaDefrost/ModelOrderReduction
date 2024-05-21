@@ -50,8 +50,8 @@ if useGui:
     originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
     outputDir = utility.openDirName('Select the directory that will contain all the results')
 else:
-    originalScene = "/home/felix_v/SOFA/plugins/ModelOrderReduction/tools/test/sofa_test_scene/diamondRobot.py"
-    outputDir = "/home/felix_v/SOFA/plugins/ModelOrderReduction/tools/test/test_diamond"
+    originalScene = None # replace with absolute path to your python SOFA scene
+    outputDir = None # replace with path to folder where results will be exported
 
 phasesToExecute = None
 
