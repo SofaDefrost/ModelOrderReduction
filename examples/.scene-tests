@@ -7,11 +7,11 @@ timeout "organs/liver/liverFine.pyscn" "120"
 iterations "organs/liver/liverFineHyperElastic.pyscn" "10"
 timeout "organs/liver/liverFineHyperElastic.pyscn" "120"
 
-iterations "organs/liver.liverFine_rotationalActuation.py" "10"
-timeout "organs/liver.liverFine_rotationalActuation.py" "120"
+iterations "organs/liver/liverFine_rotationalActuation.py" "10"
+timeout "organs/liver/liverFine_rotationalActuation.py" "120"
 
-iterations "organs/liver.liverFine_gravity.py" "10"
-timeout "organs/liver.liverFine_gravity.py" "120"
+iterations "organs/liver/liverFine_gravity.py" "10"
+timeout "organs/liver/liverFine_gravity.py" "120"
 
 
 # Others
