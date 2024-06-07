@@ -35,7 +35,7 @@ def createScene(rootNode):
 
     M1 = rootNode.addChild('M1')
     M1.addObject('EulerImplicitSolver',rayleighStiffness=0.1, rayleighMass=0.1)
-    M1.addObject('CGLinearSolver', iterations=20, name='solver', tolerance=1.0e-8, threshold=1.0e-8)
+    M1.addObject('SparseLDLSolver',name='solver')
     M1.addObject('MechanicalObject', name='MO')
     M1.addObject('UniformMass', totalMass=0.1)
     M1.addObject('RegularGridTopology', nx=4, ny=4, nz=20, xmin=-9, xmax=-6, ymin=0, ymax=3, zmin=0, zmax=19)
