@@ -5,15 +5,7 @@
 import os,sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Color():
-
-	good = '#c4df9b'
-	bad = '#f6989d'
-	intermediate = '#fff79a'
-	blank = '#f2f1f0'
-
-	wrong = [bad,intermediate]
-	color = [good,bad,intermediate,blank]
+from mor.gui.settings.ui_colors import * 
 
 def setBackground(obj,color):
     obj.setStyleSheet("background-color: "+color+";")
@@ -82,6 +74,26 @@ def greyOut(checkBox,items,checked=True):
 
 shortcut = []
 lastVisited = '.'
+
+def setShortcut(listLineEdit):
+    '''
+    Fill 2 global variables `shortcut` and `lastVisited` to current path of the scene we are working on.
+    This is usefull when we open again the a file the dialogBox will be automatically place in this hierarchy
+
+    :return:
+    '''
+
+    tab = []
+    for lineEdit in listLineEdit:
+        if lineEdit.text():
+            tab.append('/'.join(str(lineEdit.text()).split('/')[:-1]))
+
+    home = os.path.expanduser("~")
+    shortcut.append(QtCore.QUrl.fromLocalFile(home))
+
+    for path in tab :
+        if path not in shortcut:
+            shortcut.append(QtCore.QUrl.fromLocalFile(path))
 
 def openFileName(hdialog,filter="Sofa Scene (*.py *.pyscn)",display=None):
     '''
@@ -190,22 +202,50 @@ def removeLine(tab,rm=False):
         tab.removeRow(row)
         return row
 
-def update_progress(progress):
-    barLength = 50 # Modify this to change the length of the progress bar
-    status = "Compute Weight&RID"
-    if isinstance(progress, int):
-        progress = float(progress)
-    if not isinstance(progress, float):
-        progress = 0
-        status = "error: progress var must be float\r\n"
-    if progress < 0:
-        progress = 0
-        status = "Halt...\r\n"
-    if progress > 1:
-        progress = 1
-    block = int(round(barLength*progress))
-    text = "\r[{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
-    if progress == 1 :
-        text =  text+"\n"
-    sys.stdout.write(text)
-    sys.stdout.flush()
+def left(lineEdit):
+    newTxt = str(lineEdit.text())
+    if newTxt:
+        newTxt = [i for i in newTxt.split('/') if i]
+        if len(newTxt) == 1 :
+            newTxt = ''
+        else:
+            newTxt = '/'.join(newTxt[:-1])+'/'
+            if newTxt[-1] == '/' :
+                newTxt = newTxt[:-1]
+
+    lineEdit.setText(newTxt)
+
+    lineEdit.completer().setCompletionPrefix(newTxt)
+
+def right(lineEdit):
+    newTxt = str(lineEdit.text())
+    if newTxt:
+        newTxt += '/'
+    lineEdit.setText(newTxt)
+
+    lineEdit.completer().setCompletionPrefix(newTxt)
+    lineEdit.completer().complete()
+
+def generatePhaseToExecute(nbrAnimation):
+    return list(range(2**(nbrAnimation)))
+
+def display(completer):
+
+    if completer.asChild:
+        lineEdit = completer.parent()
+        completer.complete()
+
+        # print(type(lineEdit),lineEdit)
+        newTxt = str(lineEdit.text())
+        lineEdit.setText(newTxt)
+
+        if newTxt:
+            if newTxt[-1] != '/':
+                newTxt += '/'
+
+        lineEdit.completer().setCompletionPrefix(newTxt)
+        lineEdit.completer().complete()
+
+import webbrowser
+def openLink(url):
+    webbrowser.open(url)

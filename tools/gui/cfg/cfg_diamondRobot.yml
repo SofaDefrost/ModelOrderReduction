@@ -1,0 +1,53 @@
+grpBox_AdvancedParam:
+  checkBox_addToLib: 'False'
+  checkBox_auto: 'True'
+  lineEdit_phasesToExecute: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]'
+  lineEdit_tolGIE: '0.05'
+  lineEdit_tolModes: '0.001'
+grpBox_AnimationParam:
+  tab_animation:
+    0:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
+      3: modelNode/est
+    1:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
+      3: modelNode/nord
+    2:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
+      3: modelNode/ouest
+    3:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '5.0'
+        incrPeriod: '10.0'
+        rangeOfAction: '40.0'
+      3: modelNode/sud
+grpBox_Execution:
+  Phase 1:
+    checkBox: 'False'
+  Phase 2:
+    checkBox: 'False'
+  Phase 3:
+    checkBox: 'False'
+  Phase 4:
+    checkBox: 'False'
+grpBox_ReductionParam:
+  checkBox_AddTranslation: 'False'
+  lineEdit_NodeToReduce: modelNode
+  lineEdit_moduleName: myReducedModel

@@ -81,24 +81,11 @@ protected:
     MORFrictionContact(CollisionModel1* model1_, CollisionModel2* model2_, Intersection* intersectionMethod_);
     ~MORFrictionContact() override;
 
-//    void setInteractionTags(MechanicalState1* mstate1, MechanicalState2* mstate2);
-
-//    FrictionContact();
-//    FrictionContact(CollisionModel1* model1, CollisionModel2* model2, Intersection* intersectionMethod);
-
-//    ~FrictionContact() override;
 public:
     sofa::core::objectmodel::DataFileName d_lambdaModesPath;
     sofa::core::objectmodel::DataFileName d_lambdaModesCoeffsPath;
     void cleanup() override;
 
-//    std::pair<core::CollisionModel*,core::CollisionModel*> getCollisionModels() override { return std::make_pair(model1,model2); }
-
-//    void setDetectionOutputs(OutputVector* outputs) override;
-
-//    void createResponse(core::objectmodel::BaseContext* group) override;
-
-//    void removeResponse() override;
 };
 } // namespace sofa::component::collision::response::contact
 

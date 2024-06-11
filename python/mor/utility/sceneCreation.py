@@ -35,8 +35,11 @@ forceFieldImplemented = {   'HyperReducedTetrahedralCorotationalFEMForceField':'
                             'HyperReducedRestShapeSpringsForceField':'points'
                         }
 
+import Sofa
+import numpy as np
 
 tmp = 0
+
 
 def removeObject(obj):
     '''
@@ -114,10 +117,13 @@ def getNodeSolver(node):
     solver = []
     for obj in node.objects:
         className = obj.getClassName()
-        categories = obj.getCategories()
-        solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
-        if any(x in solverCategories for x in categories):
-            solver.append(obj)
+        if(className !="MeshTopology"):
+            categories = obj.getCategories()
+
+            solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
+            if any(x in solverCategories for x in categories):
+                solver.append(obj)
+
     return solver
 
 def getContainer(node):
@@ -136,10 +142,11 @@ def getContainer(node):
     for obj in node.objects:
         className = obj.getClassName()
         if className.find('TopologyContainer') != -1:
-            # print obj.getName()
-            container = obj
-    print(container)
-    return container
+            return obj
+        if className.find('MeshTopology') != -1:
+            return obj
+        if className.find('RegularGridTopology') != -1:
+            return obj
 
 def searchObjectClassInGraphScene(node,toFind):
     '''
@@ -192,7 +199,6 @@ def searchPlugin(rootNode,pluginName):
     '''
     found = False
     plugins = searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
-    print(plugins)
     for plugin in plugins:
         for name in plugin.pluginName.value:
             if name == pluginName:
@@ -249,7 +255,6 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     toAnimate = []
     for obj in listObjToAnimate:
         nodeFound = get(node,obj.location)
-        # print(nodeFound.name)
         toAnimate.append(nodeFound)
 
     if len(toAnimate) != len(listObjToAnimate):
@@ -258,11 +263,9 @@ def addAnimation(node,phase,timeExe,dt,listObjToAnimate):
     tmp = 0
     for objToAnimate in listObjToAnimate:
         if phase[tmp] :
-            # print("----------------------------------> ",objToAnimate)
             if type(toAnimate[tmp]).__name__ == "Node":
                 objToAnimate.item = toAnimate[tmp]
                 for obj in objToAnimate.item.objects:
-                    # print(obj.getClassName())
                     if obj.getClassName() ==  'CableConstraint' or obj.getClassName() ==  'SurfacePressureConstraint':
                         objToAnimate.item = obj
                         objToAnimate.params["dataToWorkOn"] = 'value'
@@ -314,26 +317,29 @@ def modifyGraphScene(node,nbrOfModes,newParam):
         save = True
 
     pathTmp , param = newParam
-    # print('pathTmp -----------------> '+pathTmp)
+
     try :
         currentNode = get(node,pathTmp[1:])
         solver = getNodeSolver(currentNode)
-        print("node.getPathName()",currentNode.getPathName())
-        print(solver)
+        print("SOLVER",solver)
         if currentNode.getPathName() == pathTmp:
-            if 'paramMappedMatrixMapping' in param:
+            if 'prepareECSW' in param['paramForcefield'] or 'performECSW' in param['paramForcefield'] :
                 print('Create new child modelMOR and move node in it')
-                myParent = list(currentNode.parents)
-                modelMOR = myParent[0].addChild(currentNode.name.value+'_MOR')
-                myParent[0].removeChild(currentNode)
+                myParents = list(currentNode.parents)
+                modelMOR = Sofa.Core.Node(currentNode.name.value+'_MOR')
+                for parent in myParents:
+                    parent.removeChild(currentNode)
+                    parent.addChild(modelMOR)
+
                 modelMOR.addChild(currentNode)
-                for obj in solver:
-                    # print('To move!')
-                    # print(obj.name.value)
-                    currentNode.removeObject(obj)
-                    modelMOR.addObject(obj)
+
+                if len(solver)>0:
+                    for obj in solver:
+                        currentNode.removeObject(obj)
+                        modelMOR.addObject(obj)
+
                 modelMOR.addObject('MechanicalObject', **argMecha)
-                # print param['paramMappedMatrixMapping']
+
                 if save:
                     # replaceAndSave.myMORModel.append(('MechanicalObject',argMecha))
                     print("tata")
@@ -349,61 +355,6 @@ def modifyGraphScene(node,nbrOfModes,newParam):
                 # else do error !!
     except :
         print("[ERROR]    In modifyGraphScene , cannot modify scene from path : "+pathTmp[1:])
-
-def saveElements(node,dt,forcefield):
-    '''
-    **Depending on the forcefield will go search for the right kind
-    of elements (tetrahedron/triangles...) to save**
-
-    +------------+---------------------------------+----------------------------------------------------+
-    | argument   | type                            | definition                                         |
-    +============+=================================+====================================================+
-    | node       | :class:`sofaPy3:Sofa.Core.Node` | from which node will search to save elements       |
-    +------------+---------------------------------+----------------------------------------------------+
-    | dt         | sc                              | time step of our SOFA scene                        |
-    +------------+---------------------------------+----------------------------------------------------+
-    | forcefield | list(str)                       || list of path to the forcefield working on the     |
-    |            |                                 || elements we want to save see :py:obj:`.forcefield`|
-    +------------+---------------------------------+----------------------------------------------------+
-
-    After determining what to save we will add an animation with a *duration* of 0 that will
-    be executed only once when the scene is launched saving the elements.
-
-    To do that we use :func:`stlib:splib.animation.animate`
-
-    :return: None
-    '''
-
-    import numpy as np
-    #print('--------------------->  Gonna Try to Save the Elements')
-    def save(node,container,valueType, **param):
-        global tmp
-        elements = container.findData(valueType).value
-        np.savetxt('reducedFF_'+ node.name.value + '_' + str(tmp)+'_'+valueType+'_elmts.txt', elements,fmt='%i')
-        tmp += 1
-        print('save : '+'elmts_'+node.name.value+' from '+container.name.value+' with value Type '+valueType)
-
-    # print('--------------------->  ',forcefield)
-    for objPath in forcefield:
-        nodePath = '/'.join(objPath.split('/')[:-1])
-        # print(nodePath,objPath)
-        #print("----------->", type(node))
-        obj = get(node,objPath[1:])
-        currentNode = get(node,nodePath[1:])
-
-        if obj.getClassName() == 'HyperReducedRestShapeSpringsForceField':
-            container = obj
-        elif obj.getClassName() == 'HyperReducedHexahedronFEMForceField':
-            container = searchObjectClassInGraphScene(currentNode,'RegularGridTopology')[0]
-        else:
-            container = getContainer(currentNode)
-        # print(container)
-        if obj.getClassName() in forceFieldImplemented and container:
-            valueType = forceFieldImplemented[obj.getClassName()]
-
-            # print('--------------------->  ',valueType)
-            if valueType:
-                animate(save, {"node" : currentNode ,'container' : container, 'valueType' : valueType, 'startTime' : 0}, 0)
 
 def createDebug(rootNode,pathToNode,stateFile="stateFile.state"):
     '''

@@ -31,12 +31,9 @@ namespace sofa::component::constraint::lagrangian::model
 using namespace sofa::defaulttype;
 using namespace sofa::helper;
 
-//TODO(dmarchal) What does this TODO mean ?
-int MORUnilateralInteractionConstraintClass = core::RegisterObject("TODO-MORUnilateralInteractionConstraint")
+int MORUnilateralInteractionConstraintClass = core::RegisterObject("Unilateral constraint in a reduced model")
         .add< MORUnilateralInteractionConstraint<Vec3Types> >()
-
         ;
-
 
 template class SOFA_MODELORDERREDUCTION_API MORUnilateralInteractionConstraint<Vec3Types>;
 } // namespace sofa::component::constraint::lagrangian::model

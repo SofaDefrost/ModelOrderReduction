@@ -1,0 +1,63 @@
+grpBox_AdvancedParam:
+  checkBox_addToLib: 'False'
+  checkBox_auto: 'True'
+  lineEdit_animationPath: ''
+  lineEdit_phasesToExecute: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]'
+  lineEdit_tolGIE: '0.05'
+  lineEdit_tolModes: '0.001'
+grpBox_AnimationParam:
+  tab_animation:
+    0:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '350.0'
+        incrPeriod: '2.0'
+        rangeOfAction: '3500.0'
+      3: model/centerCavity
+    1:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '200.0'
+        incrPeriod: '2.0'
+        rangeOfAction: '2000.0'
+      3: model/frontLeftCavity
+    2:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '200.0'
+        incrPeriod: '2.0'
+        rangeOfAction: '2000.0'
+      3: model/frontRightCavity
+    3:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '200.0'
+        incrPeriod: '2.0'
+        rangeOfAction: '2000.0'
+      3: model/rearLeftCavity
+    4:
+      0: 'True'
+      1: defaultShaking
+      2:
+        incr: '200.0'
+        incrPeriod: '2.0'
+        rangeOfAction: '2000.0'
+      3: model/rearRightCavity
+grpBox_Execution:
+  Phase 1:
+    checkBox: 'False'
+  Phase 2:
+    checkBox: 'False'
+  Phase 3:
+    checkBox: 'False'
+  Phase 4:
+    checkBox: 'False'
+grpBox_ReductionParam:
+  checkBox_AddTranslation: 'True'
+  lineEdit_NodeToReduce: model
+  lineEdit_moduleName: myReducedModel

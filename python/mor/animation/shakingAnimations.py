@@ -34,14 +34,14 @@ def rotationPoint(Pos0, angle, brasLevier):
     """
     print ("In rotation POint")
     size0 = len(Pos0);
-    posOut = [0.0]*3*size0;
+    posOut = []
 
     for i in range(size0):
-        
-        posOut[3*i] = Pos0[i][0]- brasLevier*cos(angle);
-        posOut[3*i+1] = Pos0[i][1] - brasLevier*sin(angle);
-        posOut[3*i+2] = Pos0[i][2]
+        posOut.append([Pos0[i][0]- brasLevier*cos(angle),
+                       Pos0[i][1] - brasLevier*sin(angle),
+                       Pos0[i][2]])
 
+    print(posOut)
     return posOut
 
 lastTime = 0
@@ -100,7 +100,7 @@ def defaultShaking( objToAnimate, dt, factor, **param):
 
             print ("Updated Value :"+str(actualValue)+'\n')
 
-def shakingLiver( objToAnimate, dt, factor, **param):
+def doingCircle( objToAnimate, dt, factor, **param):
     """
     **Animation function made specifically to apply deformation on the liver scene.**
     
@@ -138,51 +138,9 @@ def shakingLiver( objToAnimate, dt, factor, **param):
         
         with objToAnimate.item.position.writeable() as positions:
             newPositions = rotationPoint(positions, -objToAnimate.params['angle'], objToAnimate.params['rodRadius'])
-            for i in range(11):
-                positions[i] = newPositions[3*i:3*i+3]            
+            for i in range(len(positions)):
+                positions[i] = newPositions[i]            
 
-def shakingSofia( objToAnimate, dt, factor, **param):
-    """
-    **Animation function made specifically to shake the leg of 
-    the** :doc:`6-legged Robot </usage/examples/Sofia/sofia>`.
-    
-    It's an example of what can be a custom shaking animation.
-    The animation consist on taking a position in entry, rotate it, and then update it in the component.
-
-    To use it the **params** parameters of :py:class:`.ObjToAnimate` which is a dictionnary will need 6 keys:
-
-    **Keys:**
-
-    +---------------+-------+-----------------------------------------------------------------------+
-    | argument      | type  | definition                                                            |
-    +===============+=======+=======================================================================+
-    | dataToWorkOn  | str   | Name of the Sofa datafield we will work on here it will be *position* |
-    +---------------+-------+-----------------------------------------------------------------------+
-    | incrPeriod    | float | Period between each increment                                         |
-    +---------------+-------+-----------------------------------------------------------------------+
-    | incr          | float | Value of each increment                                               |
-    +---------------+-------+-----------------------------------------------------------------------+
-    | rangeOfAction | float | Until which value the data will increase                              |
-    +---------------+-------+-----------------------------------------------------------------------+
-    | angle         | float | Initial angle value in radian                                         |
-    +---------------+-------+-----------------------------------------------------------------------+
-    | rodRadius     | float | Radius Lenght of the circle                                           |
-    +---------------+-------+-----------------------------------------------------------------------+
-    """
-    moduloResult = int( round( (factor * objToAnimate.duration)*1000 ) ) % int(  dt * objToAnimate.params['incrPeriod']*1000  )
-    # print("currentTime - startTime : "+str(factor * objToAnimate.duration))
-    if moduloResult == 0:
-        print("For Actuator : "+objToAnimate.location)
-        actualValue = objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value
-
-        objToAnimate.params['angle'] = upDateValue( objToAnimate.params['angle'],
-                                                    objToAnimate.params['rangeOfAction'],
-                                                    objToAnimate.params['incr'])
-
-        newPos = rotationPoint(actualValue, -objToAnimate.params['angle'], objToAnimate.params['rodRadius'])
-        objToAnimate.item.findData(objToAnimate.params["dataToWorkOn"]).value = newPos
-
-        print ("Updated Value :"+str(actualValue)+'\n')
 
 def shakingInverse( objToAnimate, dt, factor, **param):
     """
@@ -198,3 +156,44 @@ def shakingInverse( objToAnimate, dt, factor, **param):
         objToAnimate.obj.findData(objToAnimate.params["dataToWorkOn"]).value[objToAnimate.params["goalNbr"]] = actualValue
 
         print ("Updated Value :"+str(actualValue)+'\n')
+
+def doingNothing( objToAnimate, dt, factor, **param):
+    """
+    **Default animation function** 
+
+    The animation consist on *increasing* a value of a Sofa object until it reach its *maximum*
+
+    To use it the **params** parameters of :py:class:`.ObjToAnimate` which is a dictionnary will need 4 keys:
+
+    **Keys:**
+
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | argument      | type  | definition                                                                      |
+    +===============+=======+=================================================================================+
+    | dataToWorkOn  | str   | Name of the Sofa datafield we will work on by default it will be set to *value* |
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | incrPeriod    | float | Period between each increment                                                   |
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | incr          | float | Value of each increment                                                         |
+    +---------------+-------+---------------------------------------------------------------------------------+
+    | rangeOfAction | float | Until which value the data will increase                                        |
+    +---------------+-------+---------------------------------------------------------------------------------+
+
+    :return: None
+    """
+    global lastTime
+    writeCurrent = False
+    time = factor * objToAnimate.duration
+    period = dt * objToAnimate.params['incrPeriod']
+
+    if (time == dt):
+        writeCurrent = True
+
+    if (time-(lastTime + period + dt) >= 0.000001): # (time > (lastTime + period + dt)):
+        lastTime += period
+
+    if ( abs(time-(lastTime + period + dt)) <= 0.000001 ):
+        writeCurrent = True
+
+    if (writeCurrent):
+        print ("Doing Nothing")

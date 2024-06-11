@@ -27,6 +27,10 @@ import numpy as np
 import shutil
 import errno
 
+from subprocess import Popen, PIPE, call
+import tempfile
+import time
+
 
 def update_progress(progress):
     barLength = 50 # Modify this to change the length of the progress bar
@@ -87,3 +91,54 @@ def copyFileIntoAnother(fileToCopy,fileToPasteInto):
 
     except:
         raise
+
+from Cheetah.Template import Template
+def customLauncher(filesandtemplates,param,resultDir):
+
+    files=[]
+    for (content,filename) in filesandtemplates:
+        files.append( resultDir+filename )
+        param["FILE"+str(len(files)-1)] = files[-1]
+
+    if not os.path.exists(resultDir):
+        os.makedirs(resultDir)
+
+    i=0
+    for (content,filename) in filesandtemplates:
+        theFile = open(files[i], "w+")
+        t = Template(content, searchList=param)
+        theFile.write(str(t))
+        theFile.close()
+        i+=1
+
+def executeSofaScene(sofaScene,param=["-g", "batch", "-l", "SofaPython3", "-n", "5"],verbose=False):
+
+    if os.path.isfile(sofaScene):
+
+        arg = ["runSofa"]+param+[sofaScene]
+
+        # print(arg)
+        # print(os.path.dirname(sofaScene))
+        begin = time.time()
+        try:
+            a = Popen(arg, stdout=PIPE, stderr=PIPE,universal_newlines=True)
+        except:
+            print("Unable to find runSofa, please add the runSofa location to your PATH and restart sofa-launcher.")
+            sys.exit(-1)
+
+        astdout, astderr = a.communicate()
+        a.stdout.close()
+        a.stderr.close()
+        end = time.time()
+        logfile = open(os.path.dirname(sofaScene)+"/reduction-log", "w+")
+        logfile.write("========= STDOUT-LOG============\n")
+        logfile.write(astdout)
+        logfile.write("========= STDERR-LOG============\n")
+        logfile.write(astderr)
+        logfile.close()
+        if '[ERROR]' in astderr:
+            return False
+        return True
+
+    else:
+        print("ERROR    the file you try to launch doesn't exist, you have to execute the phase first")

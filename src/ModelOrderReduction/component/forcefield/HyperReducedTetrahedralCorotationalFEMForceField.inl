@@ -17,6 +17,7 @@
 #pragma once
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.h>
+#include <sofa/core/behavior/BaseLocalForceFieldMatrix.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/component/topology/container/grid/GridTopology.h>
@@ -686,74 +687,62 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
     vparams->drawTool()->restoreLastState();
 }
 
-
-template<class DataTypes>
-void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
+template <class DataTypes>
+void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::
+buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
 {
-    // Build Matrix Block for this ForceField
-    unsigned int i,j,n1, n2, row, column, ROW, COLUMN;
-
-    Transformation Rot;
-    StiffnessMatrix JKJt,tmp;
+    StiffnessMatrix JKJt, RJKJtRt;
+    sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
 
     const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
-
-    Index noeud1, noeud2;
-
-    Rot[0][0]=Rot[1][1]=Rot[2][2]=1;
-    Rot[0][1]=Rot[0][2]=0;
-    Rot[1][0]=Rot[1][2]=0;
-    Rot[2][0]=Rot[2][1]=0;
-    const sofa::core::topology::BaseMeshTopology::SeqTetrahedra& tetras = _topology->getTetrahedra();
+    const sofa::core::topology::BaseMeshTopology::SeqTetrahedra& tetrahedra = _topology->getTetrahedra();
 
     unsigned int nbElementsConsidered;
+
     if (!d_performECSW.getValue())
         nbElementsConsidered = _topology->getNbTetrahedra();
     else
         nbElementsConsidered = m_RIDsize;
-    SReal kTimesWeight;
 
-    unsigned int IT;
-    for(unsigned int tetNum=0 ; tetNum < nbElementsConsidered ; ++tetNum)
+
+    static constexpr Transformation identity = []
+    {
+        Transformation i;
+        i.identity();
+        return i;
+    }();
+
+
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                    .withRespectToPositionsIn(this->mstate);
+
+    std::size_t IT;
+    for(std::size_t tetNum=0 ; tetNum < nbElementsConsidered ; ++tetNum)
     {
         if (!d_performECSW.getValue())
             IT = tetNum;
         else
             IT = reducedIntegrationDomain(tetNum);
 
-        if (method == SMALL)
-            this->computeStiffnessMatrix(JKJt,tmp,tetrahedronInf[IT].materialMatrix,tetrahedronInf[IT].strainDisplacementTransposedMatrix,Rot);
-        else
-            this->computeStiffnessMatrix(JKJt,tmp,tetrahedronInf[IT].materialMatrix,tetrahedronInf[IT].strainDisplacementTransposedMatrix,tetrahedronInf[IT].rotation);
-        const core::topology::BaseMeshTopology::Tetrahedron t=tetras[IT];
-        if (!d_performECSW.getValue())
-            kTimesWeight = k;
-        else
-            kTimesWeight = k*weights(IT);
+        const auto& rotation = method == SMALL ? identity : tetrahedronInf[IT].rotation;
+        this->computeStiffnessMatrix(JKJt, RJKJtRt, tetrahedronInf[IT].materialMatrix,
+                               tetrahedronInf[IT].strainDisplacementTransposedMatrix, rotation);
 
-        // find index of node 1
-        for (n1=0; n1<4; n1++)
+        const core::topology::BaseMeshTopology::Tetrahedron tetra = tetrahedra[IT];
+
+        static constexpr auto S = DataTypes::deriv_total_size; // size of node blocks
+        for (sofa::Size n1 = 0; n1 < core::topology::BaseMeshTopology::Tetrahedron::size(); ++n1)
         {
-            noeud1 = t[n1];
-
-            for(i=0; i<3; i++)
+            for (sofa::Size n2 = 0; n2 < core::topology::BaseMeshTopology::Tetrahedron::size(); ++n2)
             {
-                ROW = offset+3*noeud1+i;
-                row = 3*n1+i;
-                // find index of node 2
-                for (n2=0; n2<4; n2++)
-                {
-                    noeud2 = t[n2];
-
-                    for (j=0; j<3; j++)
-                    {
-                        COLUMN = offset+3*noeud2+j;
-                        column = 3*n2+j;
-                        mat->add(ROW, COLUMN, - tmp[row][column]*kTimesWeight);
-                    }
-                }
+                RJKJtRt.getsub(S * n1, S * n2, localMatrix); //extract the submatrix corresponding to the coupling of nodes n1 and n2
+                if (!d_performECSW.getValue())
+                    dfdx(S * tetra[n1], S * tetra[n2]) += -localMatrix;
+                else
+                    dfdx(S * tetra[n1], S * tetra[n2]) += -localMatrix*weights(IT);
             }
         }
     }
 }
+
 } // namespace sofa::component::solidmechanics::fem::elastic

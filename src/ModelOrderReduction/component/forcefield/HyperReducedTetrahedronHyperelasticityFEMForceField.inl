@@ -40,6 +40,7 @@
 
 #include <sofa/helper/system/thread/CTime.h>
 #include <ModelOrderReduction/component/loader/MatrixLoader.h>
+#include <sofa/component/solidmechanics/fem/hyperelastic/TetrahedronHyperelasticityFEMDrawing.h>
 
 
 namespace sofa::component::forcefield
@@ -456,24 +457,17 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
     type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
 
     typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation *einfo;
-    sofa::helper::system::thread::CTime *timer;
-
-    double timeScale, time ;
-    timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
-
-    time = (double)timer->getTime();
 
     /// if the  matrix needs to be updated
     if (m_updateMatrix) {
         msg_info(this) << "Updating Matrix! from addDforce";
         this->updateTangentMatrix();
-    }// end of if
-    msg_info(this) <<" addDforce updateMatrix : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
+    }
 
     /// performs matrix vector computation
     unsigned int v0,v1;
-    Deriv deltax;	Deriv dv0,dv1;
-    time = (double)timer->getTime();
+    Deriv deltax;
+    Deriv dv0,dv1;
     for(l=0; l<nbEdges; l++ )
     {
         einfo=&edgeInf[l];
@@ -492,199 +486,83 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
     }
     m_edgeInfo.endEdit();
     m_tetrahedronInfo.endEdit();
-    msg_info(this) <<" addDforce actualCalc : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
-
     d_df.endEdit();
 }
 
 template <class DataTypes>
-void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addKToMatrix(sofa::linearalgebra::BaseMatrix *mat, SReal k, unsigned int &offset)
+void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::
+buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
 {
-
     /// if the  matrix needs to be updated
     if (m_updateMatrix)
     {
-        msg_info(this) << "Updating Matrix! from addKtoMatrix";
-
         this->updateTangentMatrix();
     }
-    sofa::helper::system::thread::CTime *timer;
 
-    double timeScale, time ;
-    timeScale = 1000.0 / (double)sofa::helper::system::thread::CTime::getTicksPerSec();
-
-    time = (double)timer->getTime();
-
-    unsigned int nbEdges=m_topology->getNbEdges();
-    const vector< Edge> &edgeArray=m_topology->getEdges() ;
-    type::vector<typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
-    typename TetrahedronHyperelasticityFEMForceField<DataTypes>::EdgeInformation *einfo;
-    unsigned int i,j,N0, N1, l, lECSW;
+    const unsigned int nbEdges=m_topology->getNbEdges();
+    const type::vector< Edge> &edgeArray=m_topology->getEdges() ;
+    type::vector<EdgeInformation>& edgeInf = *(m_edgeInfo.beginEdit());
+    EdgeInformation *einfo;
+    unsigned int i,j,N0, N1, l, e, nbEdgesConsidered;
     Index noeud0, noeud1;
 
-    if (d_performECSW.getValue())
-    {
-        for(lECSW=0; lECSW<m_RIDedgeSize; lECSW++ )
-        {
-            l = reducedIntegrationDomainWithEdges(lECSW);
-            einfo=&edgeInf[l];
-            noeud0=edgeArray[l][0];
-            noeud1=edgeArray[l][1];
-            N0 = offset+3*noeud0;
-            N1 = offset+3*noeud1;
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                       .withRespectToPositionsIn(this->mstate);
 
-            for (i=0; i<3; i++)
-            {
-                for(j=0; j<3; j++)
-                {
-                    mat->add(N0+i, N0+j,  einfo->DfDx[j][i]*k);
-                    mat->add(N0+i, N1+j, - einfo->DfDx[j][i]*k);
-                    mat->add(N1+i, N0+j, - einfo->DfDx[i][j]*k);
-                    mat->add(N1+i, N1+j, + einfo->DfDx[i][j]*k);
-                }
-            }
-        }
-    }
+    if (!d_performECSW.getValue())
+        nbEdgesConsidered = nbEdges;
     else
-    {
-        for(l=0; l<nbEdges; l++ )
-        {
-            einfo=&edgeInf[l];
-            noeud0=edgeArray[l][0];
-            noeud1=edgeArray[l][1];
-            N0 = offset+3*noeud0;
-            N1 = offset+3*noeud1;
+        nbEdgesConsidered = m_RIDedgeSize;
 
-            for (i=0; i<3; i++)
+    for(e=0; e<nbEdgesConsidered; e++ )
+    {
+        if (!d_performECSW.getValue())
+            l = e;
+        else
+            l = reducedIntegrationDomainWithEdges(e);
+
+        einfo=&edgeInf[l];
+        noeud0=edgeArray[l][0];
+        noeud1=edgeArray[l][1];
+        N0 = 3*noeud0;
+        N1 = 3*noeud1;
+
+        for (i=0; i<3; i++)
+        {
+            for(j=0; j<3; j++)
             {
-                for(j=0; j<3; j++)
-                {
-                    mat->add(N0+i, N0+j,  einfo->DfDx[j][i]*k);
-                    mat->add(N0+i, N1+j, - einfo->DfDx[j][i]*k);
-                    mat->add(N1+i, N0+j, - einfo->DfDx[i][j]*k);
-                    mat->add(N1+i, N1+j, + einfo->DfDx[i][j]*k);
-                }
+                dfdx(N0+i, N0+j) +=   einfo->DfDx[j][i];
+                dfdx(N0+i, N1+j) += - einfo->DfDx[j][i];
+                dfdx(N1+i, N0+j) += - einfo->DfDx[i][j];
+                dfdx(N1+i, N1+j) += + einfo->DfDx[i][j];
             }
         }
     }
-
-    msg_info(this) <<" addKtoMatrix : "<<( (double)timer->getTime() - time)*timeScale<<" ms";
 
     m_edgeInfo.endEdit();
 }
 
 
-
 template<class DataTypes>
 void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::draw(const core::visual::VisualParams* vparams)
 {
-    //	unsigned int i;
     if (!vparams->displayFlags().getShowForceFields()) return;
     if (!this->mstate) return;
+
+    const auto stateLifeCycle = vparams->drawTool()->makeStateLifeCycle();
 
     const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
 
     if (vparams->displayFlags().getShowWireFrame())
           vparams->drawTool()->setPolygonMode(0,true);
 
-
-    std::vector< sofa::type::Vec3 > points[4];
-    int i;
+    sofa::type::vector<core::topology::Topology::TetrahedronID> tetrahedronToDraw;
     for(unsigned int iECSW = 0 ; iECSW<m_RIDsize ;++iECSW)
     {
-        i = reducedIntegrationDomain(iECSW);
-
-//    for(int i = 0 ; i<m_topology->getNbTetrahedra();++i)
-//    {
-        const Tetrahedron t=m_topology->getTetrahedron(i);
-
-        Index a = t[0];
-        Index b = t[1];
-        Index c = t[2];
-        Index d = t[3];
-        Coord center = (x[a]+x[b]+x[c]+x[d])*0.125;
-        Coord pa = (x[a]+center)*(Real)0.666667;
-        Coord pb = (x[b]+center)*(Real)0.666667;
-        Coord pc = (x[c]+center)*(Real)0.666667;
-        Coord pd = (x[d]+center)*(Real)0.666667;
-
-        points[0].push_back(pa);
-        points[0].push_back(pb);
-        points[0].push_back(pc);
-
-        points[1].push_back(pb);
-        points[1].push_back(pc);
-        points[1].push_back(pd);
-
-        points[2].push_back(pc);
-        points[2].push_back(pd);
-        points[2].push_back(pa);
-
-        points[3].push_back(pd);
-        points[3].push_back(pa);
-        points[3].push_back(pb);
+        tetrahedronToDraw.push_back(reducedIntegrationDomain(iECSW));
     }
 
-    type::RGBAColor color1;
-    type::RGBAColor color2;
-    type::RGBAColor color3;
-    type::RGBAColor color4;
-
-    std::string material = d_materialName.getValue();
-    if (material=="ArrudaBoyce") {
-        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
-        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
-        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
-        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
-    }
-    else if (material=="StVenantKirchhoff"){
-        color1 = type::RGBAColor(1.0,0.0,0.0,1.0);
-        color2 = type::RGBAColor(1.0,0.0,0.5,1.0);
-        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
-        color4 = type::RGBAColor(1.0,0.5,1.0,1.0);
-    }
-    else if (material=="NeoHookean"){
-        color1 = type::RGBAColor(0.0,1.0,1.0,1.0);
-        color2 = type::RGBAColor(0.5,0.0,1.0,1.0);
-        color3 = type::RGBAColor(1.0,0.0,1.0,1.0);
-        color4 = type::RGBAColor(1.0,0.5,1.0,1.0);
-    }
-    else if (material=="MooneyRivlin"){
-        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
-        color2 = type::RGBAColor(0.0,1.0,0.5,1.0);
-        color3 = type::RGBAColor(0.0,1.0,1.0,1.0);
-        color4 = type::RGBAColor(0.5,1.0,1.0,1.0);
-    }
-    else if (material=="VerondaWestman"){
-        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
-        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
-        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
-        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
-    }
-    else if (material=="Costa"){
-        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
-        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
-        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
-        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
-    }
-    else if (material=="Ogden"){
-        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
-        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
-        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
-        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
-    }
-    else {
-        color1 = type::RGBAColor(0.0,1.0,0.0,1.0);
-        color2 = type::RGBAColor(0.5,1.0,0.0,1.0);
-        color3 = type::RGBAColor(1.0,1.0,0.0,1.0);
-        color4 = type::RGBAColor(1.0,1.0,0.5,1.0);
-    }
-
-
-    vparams->drawTool()->drawTriangles(points[0], color1);
-    vparams->drawTool()->drawTriangles(points[1], color2);
-    vparams->drawTool()->drawTriangles(points[2], color3);
-    vparams->drawTool()->drawTriangles(points[3], color4);
+    drawHyperelasticTets<DataTypes>(vparams, x, m_topology, d_materialName.getValue().getSelectedItem(), tetrahedronToDraw);
 
     if (vparams->displayFlags().getShowWireFrame())
           vparams->drawTool()->setPolygonMode(0,false);

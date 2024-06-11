@@ -39,7 +39,7 @@ class GenericDialogForm(QDialog):
         self.heightMargin = heightMargin
         self.maxWidth = maxWidth
 
-        self.resize(self.maxWidth/3,self.heightFields+self.heightMargin)
+        self.resize(int(self.maxWidth/3),self.heightFields+self.heightMargin)
 
         self.setWindowTitle(self.animation)
         self.setupUi(self)
@@ -52,12 +52,14 @@ class GenericDialogForm(QDialog):
 
         i = 0
         for attribute , value in self.param.items():
+            # print(attribute,value,value[1][1])
             label = QtWidgets.QLabel(self)
             label.setObjectName(_fromUtf8("label_"+str(i)))
             label.setText(attribute)
-            if value[1] == bool:
+            if value[1][1] == bool:
                 widget = QtWidgets.QCheckBox(self)
                 widget.setObjectName(_fromUtf8("checkBox_"+(str(i))))
+                widget.setCheckState(value[0])
             else:
                 widget = QtWidgets.QLineEdit(self)
                 widget.setObjectName(_fromUtf8("lineEdit_"+(str(i))))
@@ -65,12 +67,15 @@ class GenericDialogForm(QDialog):
                 widget.textChanged.emit(widget.text())
                 widget.textChanged.connect(lambda: u.check_state(self.sender()))
 
-                if type(value[0]) == str:
-                    widget.setValidator(QtWidgets.QRegExpValidator(QRegExp("^("+value[0]+")$")))
+                if type(value[1][0]) == str:
+                    widget.setValidator(QtGui.QRegExpValidator(QRegExp("^("+value[1][0]+")$")))
                 else:
-                    widget.setValidator(value[0])
+                    widget.setValidator(value[1][0])
 
-            u.setBackColor(widget)
+                # Default value
+                widget.setText(str(value[0]))
+
+                u.check_state(widget)
 
             self.row[label] = widget
             self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.LabelRole, label)
@@ -87,6 +92,8 @@ class GenericDialogForm(QDialog):
         self.setMinimumWidth(self.width())
 
 
+        self.setCurrentValues()
+
     def submitclose(self):
         #do whatever you need with self.roiGroups
         self.setCurrentValues()
@@ -96,7 +103,7 @@ class GenericDialogForm(QDialog):
         if data:
             for label,widget in self.row.items():
                 labelTitle = str(label.text())
-                dataType = self.param[labelTitle][1]
+                dataType = self.param[labelTitle][1][1]
 
                 if dataType == bool:
                     if data[str(label.text())]:
@@ -108,19 +115,12 @@ class GenericDialogForm(QDialog):
                         widget.setText(str(data[labelTitle]))
                     else:
                         widget.setText('')
-        else:
-            for label,widget in self.row.items():
-                if dataType == bool:
-                    widget.setCheckState(False)
-                else:
-                    widget.setText('')
-
-        self.setCurrentValues()
+            self.setCurrentValues()
 
     def setCurrentValues(self):
         for label,widget in self.row.items():
             labelTitle = str(label.text())
-            dataType = self.param[labelTitle][1]
+            dataType = self.param[labelTitle][1][1]
 
             if dataType == bool:
                 if widget.isChecked():

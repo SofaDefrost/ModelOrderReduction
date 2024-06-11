@@ -21,14 +21,11 @@
 #include <sofa/config.h>
 
 #ifdef SOFA_BUILD_MODELORDERREDUCTION
+#define SOFA_TARGET @PROJECT_NAME@
 #define SOFA_MODELORDERREDUCTION_API SOFA_EXPORT_DYNAMIC_LIBRARY
 #else
 #define SOFA_MODELORDERREDUCTION_API SOFA_IMPORT_DYNAMIC_LIBRARY
 #endif
-
-/** \mainpage
-  This is a the starting page of the plugin documentation, defined in file initModelOrderReduction.h
-  */
 
 #endif // INITINITMODELORDERREDUCTION_H
 

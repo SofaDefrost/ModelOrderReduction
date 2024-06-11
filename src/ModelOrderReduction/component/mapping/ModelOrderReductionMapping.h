@@ -25,6 +25,7 @@
 #include <sofa/core/topology/BaseMeshTopology.h>
 
 #include <boost/scoped_ptr.hpp>
+#include <sofa/component/mapping/linear/LinearMapping.h>
 
 #include <sofa/linearalgebra/EigenSparseMatrix.h>
 #include <sofa/core/objectmodel/BaseObject.h>
@@ -51,17 +52,13 @@ namespace mapping
  *      RIDpath: In case perfromECSW is true, path to the text file containing the reduced integration domain indices.
  *  The size of the "position" attribute will fix the number of modes used for the mapping
  */
-
-
-
-
 template <class TIn, class TOut>
-class ModelOrderReductionMapping : public core::Mapping<TIn, TOut>
+class ModelOrderReductionMapping : public linear::LinearMapping<TIn, TOut>
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE2(ModelOrderReductionMapping,TIn,TOut), SOFA_TEMPLATE2(core::Mapping,TIn,TOut));
+    SOFA_CLASS(SOFA_TEMPLATE2(ModelOrderReductionMapping,TIn,TOut), SOFA_TEMPLATE2(linear::LinearMapping,TIn,TOut));
 
-    typedef core::Mapping<TIn, TOut> Inherit;
+    typedef linear::LinearMapping<TIn, TOut> Inherit;
     typedef TIn In;
     typedef TOut Out;
 

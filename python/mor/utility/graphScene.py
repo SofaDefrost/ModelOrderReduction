@@ -148,6 +148,6 @@ def importScene(filePath):
     results = startSofa(listSofaScene, filesandtemplates, launcher=SerialLauncher())
 
     with open(results[0]["directory"]+'/graphScene.yml', 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
+        cfg = yaml.load(ymlfile,Loader=yaml.FullLoader)
 
     return cfg

@@ -1,0 +1,6 @@
+# WARNING: 
+# REGRESSION_TEST DOES NOT SUPPORT DASHES ("-") IN SCENE NAMES.
+# USE UNDERSCORES ("_") INSTEAD.
+
+### Demo scenes ###
+diamondRobot.py 10 1e-3 0 1

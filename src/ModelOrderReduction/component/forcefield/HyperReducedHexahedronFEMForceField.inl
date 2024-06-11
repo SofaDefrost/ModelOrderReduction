@@ -16,6 +16,7 @@
 ******************************************************************************/
 #pragma once
 
+#include "sofa/core/behavior/BaseLocalForceFieldMatrix.h"
 #include <ModelOrderReduction/component/forcefield/HyperReducedHexahedronFEMForceField.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
@@ -387,28 +388,34 @@ template<class DataTypes>
 /////////////////////////////////////////////////
 
 
-template<class DataTypes>
-void HyperReducedHexahedronFEMForceField<DataTypes>::addKToMatrix(const core::MechanicalParams* mparams, const sofa::core::behavior::MultiMatrixAccessor* matrix)
-{
-    // Build Matrix Block for this ForceField
-    int i,j,n1, n2, e;
+template <class DataTypes>
+void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
+    core::behavior::StiffnessMatrix* matrix)
+{    
+    sofa::Index e { 0 }; //index of the element in the topology
+
+    constexpr auto S = DataTypes::deriv_total_size; // size of node blocks
+    constexpr auto N = Element::size();
+
+    const auto& stiffnesses = _elementStiffnesses.getValue();
+    const auto* indexedElements = this->getIndexedElements();
+    sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
+
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                       .withRespectToPositionsIn(this->mstate);
+
 
     typename VecElement::const_iterator it, it0;
 
-    Index node1, node2;
+    it0 = indexedElements->begin();
+    std::size_t nbElementsConsidered;
 
-    sofa::core::behavior::MultiMatrixAccessor::MatrixRef r = matrix->getMatrix(this->mstate);
-
-    it0=this->getIndexedElements()->begin();
-    size_t nbElementsConsidered;
-    if (!d_performECSW.getValue()){
-        nbElementsConsidered = this->getIndexedElements()->size();
-    }
+    if (!d_performECSW.getValue())
+        nbElementsConsidered = indexedElements->size();
     else
-    {
         nbElementsConsidered = m_RIDsize;
-    }
-    for( unsigned int numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
+
+    for(std::size_t numElem = 0 ; numElem<nbElementsConsidered ;++numElem)
     {
         if (!d_performECSW.getValue()){
             e = numElem;
@@ -417,35 +424,24 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addKToMatrix(const core::Me
         {
             e = reducedIntegrationDomain(numElem);
         }
+
+
         it = it0 + e;
-
-        const ElementStiffness &Ke = _elementStiffnesses.getValue()[e];
-//         const Transformation& Rt = _rotations[e];
-//         Transformation R; R.transpose(Rt);
-
-        Transformation Rot = this->getElementRotation(e);
-        Real kFactorTimesWeight;
-        if (!d_performECSW.getValue())
-            kFactorTimesWeight = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
-        else
-            kFactorTimesWeight = weights(e)*(Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
+        const ElementStiffness &Ke = stiffnesses[e];
+        const Transformation& Rot = this->getElementRotation(e);
 
 
-        // find index of node 1
-        for (n1=0; n1<8; n1++)
+        for ( Element::size_type n1=0; n1<N; n1++)
         {
-            node1 = (*it)[n1];
-            // find index of node 2
-            for (n2=0; n2<8; n2++)
+            for (Element::size_type n2=0; n2<N; n2++)
             {
-                node2 = (*it)[n2];
-
-                Mat33 tmp = Rot.multTranspose( Mat33(Coord(Ke[3*n1+0][3*n2+0],Ke[3*n1+0][3*n2+1],Ke[3*n1+0][3*n2+2]),
+                localMatrix = Rot.multTranspose( Mat33(Coord(Ke[3*n1+0][3*n2+0],Ke[3*n1+0][3*n2+1],Ke[3*n1+0][3*n2+2]),
                         Coord(Ke[3*n1+1][3*n2+0],Ke[3*n1+1][3*n2+1],Ke[3*n1+1][3*n2+2]),
                         Coord(Ke[3*n1+2][3*n2+0],Ke[3*n1+2][3*n2+1],Ke[3*n1+2][3*n2+2])) ) * Rot;
-                for(i=0; i<3; i++)
-                    for (j=0; j<3; j++)
-                        r.matrix->add(r.offset+3*node1+i, r.offset+3*node2+j, - tmp[i][j]*kFactorTimesWeight);
+                if (!d_performECSW.getValue())
+                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix;
+                else
+                    dfdx((*it)[n1] * S, (*it)[n2] * S) += -localMatrix*weights(e);
             }
         }
     }

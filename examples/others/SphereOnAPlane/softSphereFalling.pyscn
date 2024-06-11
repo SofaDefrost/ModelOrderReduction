@@ -1,0 +1,116 @@
+import Sofa
+import os
+pathSceneFile = os.path.dirname(os.path.abspath(__file__))
+pathMesh = os.path.dirname(os.path.abspath(__file__))+'/'
+# Units: mm, kg, s.     Pressure in kPa = k (kg/(m.s^2)) = k (g/(mm.s^2) =  kg/(mm.s^2)
+
+
+
+def createScene(rootNode):
+    rootNode.addObject('RequiredPlugin', name='SoftRobots', pluginName='SoftRobots')
+    rootNode.addObject('RequiredPlugin', name='SofaPython3', pluginName='SofaPython3')
+    rootNode.addObject('RequiredPlugin', name='ModelOrderReduction', pluginName='ModelOrderReduction')
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.AnimationLoop') # Needed to use components [FreeMotionAnimationLoop]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Algorithm') # Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,CollisionPipeline]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Intersection') # Needed to use components [LocalMinDistance]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Response.Contact') # Needed to use components [CollisionResponse]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Solver') # Needed to use components [GenericConstraintSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward') # Needed to use components [EulerImplicitSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual') # Needed to use components [VisualStyle]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Correction') # Needed to use components [GenericConstraintCorrection]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct') # Needed to use components [SparseLDLSolver] 
+
+
+    rootNode.findData('dt').value=0.005
+
+    rootNode.findData('gravity').value=[0, -9810, 0]
+    #rootNode.findData('gravity').value='0 0 0';
+    rootNode.addObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
+
+    reductionOn = True
+    lambdaModes = "lambdaModesSphereFine6.txt"
+    lambdaCoeffs = "lambdaCoeffsSphereFine6.txt"
+
+    rootNode.addObject('FreeMotionAnimationLoop')
+    #rootNode.addObject('GenericConstraintSolver', printLog=True, tolerance="1e-6", maxIterations="500", storeLambdas=True)
+    if reductionOn:
+        rootNode.addObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15')
+    else:
+        #rootNode.addObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',storeLambdas=True, lambdaPath="lambdaStored.txt",computeConstraintForces=True)
+        rootNode.addObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',computeConstraintForces=True)
+        rootNode.addObject('PythonScriptController', filename="lambdaDumper.py", classname="storeLambda", variables="Zetest.txt")
+
+
+    rootNode.addObject('CollisionPipeline', verbose="0")
+    rootNode.addObject('BruteForceBroadPhase', name="N2")
+    rootNode.addObject('BVHNarrowPhase')
+    #rootNode.addObject('CollisionResponse', response="StickContactConstraint", responseParams="mu=0.5")
+    if not reductionOn:
+        rootNode.addObject('CollisionResponse', response="FrictionContact", responseParams="mu=0.0")
+    else:
+        rootNode.addObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath="+lambdaModes+"?lambdaModesCoeffsPath="+lambdaCoeffs)
+    #rootNode.addObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0", name='Colcol')
+    #rootNode.addObject('CollisionResponse', response="MORFrictionContact", responseParams="mu=0.0?lambdaModesPath=lambdaModesVLONG7.txt?lambdaModesCoeffsPath=lambdaCoeffsVLONG7.txt")
+
+    rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="1.0", contactDistance="0.5", angleCone="0.01")
+
+    solverNode = rootNode.addChild('solverNode')
+    solverNode.addObject('EulerImplicitSolver', name='odesolver',firstOrder="false", rayleighStiffness='0.1', rayleighMass='0.1', printLog="0")
+    solverNode.addObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrixMat3x3d")
+    solverNode.addObject('GenericConstraintCorrection', printLog=True, name='ResReso')
+
+
+    ##########################################
+    # FEM Model                              #
+    ##########################################
+
+    sphereTranslation = [0,7,0]
+    model = solverNode.addChild('model')
+    model.addObject('MeshVTKLoader', name='loader', filename=pathMesh+'sphere.vtk', translation=sphereTranslation)
+    model.addObject('Mesh',src = '@loader')
+    model.addObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0',printLog="0")
+    model.addObject('UniformMass', totalMass='0.1', printLog='0')
+    model.addObject('TetrahedronFEMForceField', template='Vec3d',youngModulus=30)
+
+
+
+                    
+    modelCollis = model.addChild('modelCollis')
+    #modelCollis.addObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+    modelCollis.addObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+    modelCollis.addObject('TriangleSetTopologyContainer', src='@loader', name='container')
+    modelCollis.addObject('MechanicalObject', name='collisMO', template='Vec3d')
+    #modelCollis.addObject('TriangleCollisionModel',group="0")
+    #modelCollis.addObject('LineCollisionModel',group="0")
+    #modelCollis.addObject('PointCollisionModel',group="0")
+    modelCollis.addObject('BarycentricMapping')
+
+    subModelCollis = modelCollis.addChild('subModelCollis')
+    #subModelCollis.addObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
+    subModelCollis.addObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphereFine.stl', rotation="0 0 0", translation=sphereTranslation)
+    subModelCollis.addObject('TriangleSetTopologyContainer', src='@loader', name='container')
+    subModelCollis.addObject('MechanicalObject', name='subModelCollisMO', template='Vec3d')
+    #subModelCollis.addObject('TriangleCollisionModel',group="0",name='TriSPhere')
+    #subModelCollis.addObject('LineCollisionModel',group="0",name='LineSPhere')
+    if reductionOn:
+        subModelCollis.addObject('MORPoint',group="0",name='PointSphere',computeNormals=True, lambdaModesPath=lambdaModes,lambdaModesCoeffsPath=lambdaCoeffs ,displayContactModes=True)
+    else:
+        subModelCollis.addObject('PointCollisionModel',group="0",name='PointSphere', displayContactModes=False,computeNormals=True)
+    #subModelCollis.addObject('MORContactMapping',modesPath='lambdaModes.txt',contactIndicesPath = 'lambdaCoeffs.txt',storeLambda=True)
+    ##subModelCollis.addObject('IdentityMapping')
+    if not reductionOn:
+        subModelCollis.addObject('MORContactMapping',lambdaIndicesPath="lambdaIndices.txt",storeLambda=True)
+    else:
+        subModelCollis.addObject('IdentityMapping')
+
+
+
+    rotation=[20,0,0]
+    #rotation=[30,0,0]
+    planeNode = rootNode.addChild('Plane')
+    planeNode.addObject('MeshOBJLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true",rotation=rotation)
+    planeNode.addObject('Mesh', src="@loader")
+    planeNode.addObject('MechanicalObject', src="@loader", rotation="0 0 0", translation="0 0 0", scale="1")
+    planeNode.addObject('TriangleCollisionModel',simulated="0", moving="0",group="1",name='TriPlane')
+
+    return rootNode

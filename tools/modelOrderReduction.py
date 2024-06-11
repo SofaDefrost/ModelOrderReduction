@@ -1,9 +1,27 @@
 # -*- coding: utf-8 -*-
 '''
-    README
-    to use this python script you need :
-        - bla
-        - & blabla
+    From this file you can launch the reduction of the different examples
+    present inside the plugin:
+        - diamond
+        - multiGait
+        - finger
+        - hexaBeam
+        - liver
+        - caduceus
+        - sofiaLeg
+
+    You will find here presets parameters and it can serve you has a little tutorial
+    by launching the different examples by yourself to understand the reduction process.
+
+    To do that comment/uncomment the different phases to perform them in succession or 
+    if your sure of your process you can uncomment reduceMyModel.performReduction and do 
+    them all in one go.
+
+    You can then add your new reduction parameters for your particular case in the same manner.
+
+
+    TO USE:
+        execute it via a terminal
 '''
 
 #######################################################################
@@ -13,9 +31,12 @@ import sys
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path+'/../python') # TO CHANGE
 
+useGui = True
 
 # MOR IMPORT
-from mor.gui import utility
+if useGui:
+    from mor.gui import utility
+
 from mor.reduction import ReduceModel
 from mor.reduction.container import ObjToAnimate
 
@@ -23,28 +44,37 @@ from mor.reduction.container import ObjToAnimate
 ####################       PARAMETERS       ###########################
 
 # Select Output Dir and original scene name & path
-from PyQt5 import QtWidgets
-app = QtWidgets.QApplication(sys.argv)
+if useGui:
+    from PyQt5 import QtWidgets
+    app = QtWidgets.QApplication(sys.argv)
+    originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
+    outputDir = utility.openDirName('Select the directory that will contain all the results')
+else:
+    originalScene = None # replace with absolute path to your python SOFA scene
+    outputDir = None # replace with path to folder where results will be exported
 
-originalScene = utility.openFileName('Select the SOFA scene you want to reduce')
-outputDir = utility.openDirName('Select the directory tha will contain all the results')
+phasesToExecute = None
 
 ### DIAMOND ROBOT PARAM
-nodeToReduce = '/modelNode'
-nord = ObjToAnimate("modelNode/nord", incr=5,incrPeriod=10,rangeOfAction=40)
-sud = ObjToAnimate("modelNode/sud", incr=5,incrPeriod=10,rangeOfAction=40)
-est = ObjToAnimate("modelNode/est", incr=5,incrPeriod=10,rangeOfAction=40)
-ouest = ObjToAnimate("modelNode/ouest", incr=5,incrPeriod=10,rangeOfAction=40)
-listObjToAnimate = [nord,ouest,sud,est]
-addRigidBodyModes = [0,0,0]
+# nodeToReduce = '/modelNode'
+# # north = ObjToAnimate("modelNode/north", incr=5,incrPeriod=10,rangeOfAction=40)
+# # south = ObjToAnimate("modelNode/south", incr=5,incrPeriod=10,rangeOfAction=40)
+# # east = ObjToAnimate("modelNode/east", incr=5,incrPeriod=10,rangeOfAction=40)
+# # west = ObjToAnimate("modelNode/west", incr=5,incrPeriod=10,rangeOfAction=40)
+# north = ObjToAnimate("modelNode/north", incr=5,incrPeriod=10,rangeOfAction=10)
+# south = ObjToAnimate("modelNode/south", incr=5,incrPeriod=10,rangeOfAction=10)
+# east = ObjToAnimate("modelNode/east", incr=5,incrPeriod=10,rangeOfAction=10)
+# west = ObjToAnimate("modelNode/west", incr=5,incrPeriod=10,rangeOfAction=10)
+# listObjToAnimate = [north,west,south,east]
+# addRigidBodyModes = [0,0,0]
 
 ## FINGER PARAM
-#nodeToReduce = '/finger'
-#cable = ObjToAnimate("finger/cable/cable", incr=5,incrPeriod=10,rangeOfAction=40)
-#listObjToAnimate = [cable]
-#addRigidBodyModes = [0,0,0]
+# nodeToReduce = '/finger'
+# cable = ObjToAnimate("finger/cable/cable", incr=5,incrPeriod=10,rangeOfAction=40)
+# listObjToAnimate = [cable]
+# addRigidBodyModes = [0,0,0]
 
-### STARFISH ROBOT PARAM
+### MULTIGAIT ROBOT PARAM
 # nodeToReduce ='/model'
 # centerCavity = ObjToAnimate("model/centerCavity", incr=350,incrPeriod=2,rangeOfAction=3500)
 # rearLeftCavity = ObjToAnimate("model/rearLeftCavity", incr=200,incrPeriod=2,rangeOfAction=2000)
@@ -56,13 +86,13 @@ addRigidBodyModes = [0,0,0]
 
 ### SOFIA
 # nodeToReduce ='/SofiaLeg'
-# actuator = ObjToAnimate("SofiaLeg_actuator/actuatorState","shakingSofia",incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
+# actuator = ObjToAnimate("SofiaLeg_actuator/actuatorState","doingCircle",incr=0.05,incrPeriod=3,rangeOfAction=6.4,dataToWorkOn="position",angle=0,rodRadius=0.7)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
 
 ### LIVER
 # nodeToReduce ='/liver'
-# actuator = ObjToAnimate("actuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.4)
+# actuator = ObjToAnimate("actuator/actuatorState","doingCircle",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.4)
 # listObjToAnimate = [actuator]
 # addRigidBodyModes = [0,0,0]
 
@@ -73,11 +103,12 @@ addRigidBodyModes = [0,0,0]
 #listObjToAnimate = [actuator, actuator2]
 #addRigidBodyModes = [0,0,0]
 
-### SNAKE
-#nodeToReduce ='/Snake'
-#actuator = ObjToAnimate("actuatorDummy/actuatorState","shakingSofia",incr=0.4,incrPeriod=3,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.7)
-#listObjToAnimate = [actuator]
-#addRigidBodyModes = [0,0,0]
+## SNAKE
+# nodeToReduce ='/Snake'
+# actuator = ObjToAnimate("Snake/MechanicalObject","doingNothing",incr=1,incrPeriod=1,rangeOfAction=50)
+# listObjToAnimate = [actuator]
+# addRigidBodyModes = [0,0,0]
+# phasesToExecute = [0]
 
 
 # Tolerance
@@ -107,7 +138,7 @@ reduceMyModel = ReduceModel(    originalScene,
 #######################################################################
 ####################       EXECUTION        ###########################
 ### TO PERFORM THE REDUCTION ALL AT ONCE:
-reduceMyModel.performReduction()
+# reduceMyModel.performReduction(phasesToExecute=phasesToExecute)
 
 ### TO PERFORM THE REDUCTION STEP BY STEP:
 ####################    SOFA LAUNCHER       ##########################
@@ -119,7 +150,7 @@ reduceMyModel.performReduction()
 #   add a writeState componant to save the shaking resulting states  #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase1()
+# reduceMyModel.phase1(phasesToExecute=phasesToExecute)
 
 
 ####################    PYTHON SCRIPT       ##########################
@@ -149,7 +180,7 @@ reduceMyModel.performReduction()
 #       and produce an Hyper Reduced description of the model        #
 #                                                                    #
 ######################################################################
-# reduceMyModel.phase3()
+# reduceMyModel.phase3(phasesToExecute=phasesToExecute)
 
 
 ####################    PYTHON SCRIPT       ##########################

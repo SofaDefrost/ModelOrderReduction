@@ -114,11 +114,6 @@ protected:
 //    /// @param v Global resolution vector
     virtual void getPositionViolation(linearalgebra::BaseVector *v) override;
 
-//    ///Computes constraint violation in velocity and stores it into resolution global vector
-//    ///
-//    /// @param v Global resolution vector
-//    virtual void getVelocityViolation(linearalgebra::BaseVector *v);
-
 public:
 
     using UnilateralInteractionConstraint<DataTypes>::constraintId;
@@ -127,15 +122,6 @@ protected:
     ~MORUnilateralInteractionConstraint();
 
 public:
-//    void setCustomTolerance(double tol) { customTolerance = tol; }
-
-//    void clear(int reserve = 0);
-
-//    virtual void addContact(double mu, Deriv norm, Coord P, Coord Q, Real contactDistance, int m1, int m2, Coord Pfree, Coord Qfree, long id=0, PersistentID localid=0);
-
-//    void addContact(double mu, Deriv norm, Coord P, Coord Q, Real contactDistance, int m1, int m2, long id=0, PersistentID localid=0);
-//    void addContact(double mu, Deriv norm, Real contactDistance, int m1, int m2, long id=0, PersistentID localid=0);
-    void init() override;
     void buildConstraintMatrix(const core::ConstraintParams* cParams, DataMatrixDeriv &c1, DataMatrixDeriv &c2, unsigned int &cIndex
             , const DataVecCoord &x1, const DataVecCoord &x2) override;
 

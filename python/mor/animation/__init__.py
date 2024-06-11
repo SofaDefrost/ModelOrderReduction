@@ -30,5 +30,6 @@ to the templated scene thanks to the :func:`stlib:splib.animation.animate`
 """
 __all__=["shakingAnimations"]
 from mor.animation.shakingAnimations import defaultShaking
-from mor.animation.shakingAnimations import shakingSofia
+from mor.animation.shakingAnimations import doingCircle
 from mor.animation.shakingAnimations import shakingInverse
+from mor.animation.shakingAnimations import doingNothing

@@ -1,0 +1,33 @@
+# Scenes to reduce are too heavy and slow to be simulated, so compute only a few iterations
+
+# Organs
+iterations "organs/liver/liverFine.pyscn" "10"
+timeout "organs/liver/liverFine.pyscn" "120"
+
+iterations "organs/liver/liverFineHyperElastic.pyscn" "10"
+timeout "organs/liver/liverFineHyperElastic.pyscn" "120"
+
+iterations "organs/liver.liverFine_rotationalActuation.py" "10"
+timeout "organs/liver.liverFine_rotationalActuation.py" "120"
+
+iterations "organs/liver.liverFine_gravity.py" "10"
+timeout "organs/liver.liverFine_gravity.py" "120"
+
+
+# Others
+iterations "others/caduceus/SphereOnAPlane.softSphereFalling.pyscn" "10"
+timeout "others/caduceus/SphereOnAPlane.softSphereFalling.pyscn" "120"
+
+iterations "others/caduceus/caduceusNG.pyscn" "10"
+timeout "others/caduceus/caduceusNG.pyscn" "120"
+
+ 
+# SoftRobot
+iterations "softRobots/multiGait/multiGait.py" "20"
+timeout "softRobots/multiGait/multiGait.py" "120"
+
+iterations "softRobots/multiGait/reduced/reduced_multiGait.py" "20"
+timeout "softRobots/multiGait/reduced/reduced_multiGait.py" "120"
+
+ignore "softRobots/multiGait/reducedMultiGait-softRobot.pyscn" # TODO fix: MechanicalMatrixMapperMOR is missing 
+ignore "softRobots/multiGait/reduced/debug/debug_scene.py" # TODO fix: ODE solver is not copied during reduction process

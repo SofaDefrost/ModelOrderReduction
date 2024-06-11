@@ -24,9 +24,35 @@
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/defaulttype/RigidTypes.h>
 #include <sofa/type/RGBAColor.h>
+#include <sofa/core/behavior/BaseLocalForceFieldMatrix.h>
+
 
 #include <assert.h>
 #include <iostream>
+
+namespace // anonymous
+{
+    // Boiler-plate code to test if a type implements a method
+    // explanation https://stackoverflow.com/a/30848101
+
+    template <typename...>
+    using void_t = void;
+
+    // Primary template handles all types not supporting the operation.
+    template <typename, template <typename> class, typename = void_t<>>
+    struct detect : std::false_type {};
+
+    // Specialization recognizes/validates only types supporting the archetype.
+    template <typename T, template <typename> class Op>
+    struct detect<T, Op, void_t<Op<T>>> : std::true_type {};
+
+    // Actual test if DataType::Coord implements getOrientation() (hence is a RigidType)
+    template <typename T>
+    using isRigid_t = decltype(std::declval<typename T::Coord>().getOrientation());
+
+    template <typename T>
+    using isRigidType = detect<T, isRigid_t>;
+} // anonymous
 
 namespace sofa::component::solidmechanics::spring
 {
@@ -226,9 +252,20 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
         const Real k0 = k[0];
         unsigned int nbElementsConsidered;
         if (!d_performECSW.getValue())
+        {
             nbElementsConsidered = m_indices.size();
+        }
         else
-            nbElementsConsidered = m_RIDsize;
+        {
+            if (m_RIDsize != 0) {
+                nbElementsConsidered = m_RIDsize;
+            }
+            else
+            {
+                msg_warning() << "RID is empty!!! Taking all the elements...";
+                nbElementsConsidered = m_indices.size();
+            }
+        }
         for (unsigned int point = 0 ; point<nbElementsConsidered ;++point)
         {
             if (!d_performECSW.getValue())
@@ -260,12 +297,21 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
     }
     else
     {
+
         unsigned int nbElementsConsidered;
         if (!d_performECSW.getValue())
             nbElementsConsidered = m_indices.size();
         else
-            nbElementsConsidered = m_RIDsize;
-
+        {
+            if (m_RIDsize != 0) {
+                nbElementsConsidered = m_RIDsize;
+            }
+            else
+            {
+                nbElementsConsidered = m_indices.size();
+                msg_warning("RID is empty! Taking all the elements...");
+            }
+        }
         for (unsigned int point = 0 ; point<nbElementsConsidered ;++point)
         {
             if (!d_performECSW.getValue())
@@ -411,83 +457,64 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
     vparams->drawTool()->restoreLastState();
 }
 
-template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::addKToMatrix(const MechanicalParams* mparams, const MultiMatrixAccessor* matrix )
+template <class DataTypes>
+void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
+    core::behavior::StiffnessMatrix* matrix)
 {
-    //  remove to be able to build in parallel
-    // 	const VecIndex& indices = points.getValue();
-    // 	const VecReal& k = stiffness.getValue();
-    MultiMatrixAccessor::MatrixRef mref = matrix->getMatrix(this->mstate);
-    BaseMatrix* mat = mref.matrix;
-    unsigned int offset = mref.offset;
-    Real kFact = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
+    const VecReal& k = d_stiffness.getValue();
+    const VecReal& k_a = d_angularStiffness.getValue();
+    const auto activeDirections = d_activeDirections.getValue();
 
-    const int N = Coord::total_size;
+    constexpr sofa::Size space_size = Deriv::spatial_dimensions; // == total_size if DataTypes = VecTypes
+    constexpr sofa::Size total_size = Deriv::total_size;
 
-    unsigned int curIndex = 0;
+    auto dfdx = matrix->getForceDerivativeIn(this->mstate)
+                       .withRespectToPositionsIn(this->mstate);
+    unsigned int nbIndicesConsidered;
+    sofa::Index curIndex;
 
-    const VecReal &k = d_stiffness.getValue();
-    if (k.size()!= m_indices.size() )
-    {
-        const Real k0 = k[0];
-        if (d_performECSW.getValue()){
-            for(unsigned int index = 0 ; index <m_RIDsize ; index++)
-            {
-                curIndex = m_indices[reducedIntegrationDomain(index)];
-
-                for(int i = 0; i < N; i++)
-                {
-                    mat->add(offset + N * curIndex + i, offset + N * curIndex + i, -kFact * k0 * weights(reducedIntegrationDomain(index)));
-                }
-
-            }
-        }
-        else
-        {
-            for (unsigned int index = 0; index < m_indices.size(); index++)
-            {
-                curIndex = m_indices[index];
-
-                for(int i = 0; i < N; i++)
-                {
-                    mat->add(offset + N * curIndex + i, offset + N * curIndex + i, -kFact * k0);
-                }
-                msg_info() << "1st: kfact is :" << kFact << ". Contrib is: " << -kFact * k0;
-            }
-        }
-
-    }
+    if (d_performECSW.getValue())
+        nbIndicesConsidered = m_RIDsize;
     else
+        nbIndicesConsidered = m_indices.size();
+
+    for (sofa::Index index = 0; index < nbIndicesConsidered ; index++)
     {
-        if (d_performECSW.getValue()){
-            for(unsigned int index = 0 ; index <m_RIDsize ; index++)
-            {
-                curIndex = m_indices[reducedIntegrationDomain(index)];
-
-                for(int i = 0; i < N; i++)
-                {
-                    mat->add(offset + N * curIndex + i, offset + N * curIndex + i, -kFact * k[reducedIntegrationDomain(index)] * weights(reducedIntegrationDomain(index)));
-                }
-
-            }
-        }
+        if (!d_performECSW.getValue())
+            curIndex = m_indices[index];
         else
-        {
-            for (unsigned int index = 0; index < m_indices.size(); index++)
-            {
-                curIndex = m_indices[index];
+            curIndex = m_indices[reducedIntegrationDomain(index)];
 
-                for(int i = 0; i < N; i++)
-                {
-                    mat->add(offset + N * curIndex + i, offset + N * curIndex + i, -kFact * k[index]);
-                }
-                msg_info() << "2nd: kfact is :" << kFact << ". Contrib is " << -kFact * k[index];
-            }
+        // translation
+        const auto vt = -k[(curIndex < k.size()) * curIndex];
+        for(sofa::Index i = 0; i < space_size; i++)
+        {
+            if (!d_performECSW.getValue())
+                dfdx(total_size * curIndex + i, total_size * curIndex + i) += vt;
+            else
+                dfdx(total_size * curIndex + i, total_size * curIndex + i) += vt*weights(reducedIntegrationDomain(index));
+
         }
 
+        // rotation (if applicable)
+        if constexpr (isRigidType<DataTypes>())
+        {
+            const auto vr = -k_a[(curIndex < k_a.size()) * curIndex];
+            for (sofa::Size i = space_size; i < total_size; ++i)
+            {
+                // Contribution to the stiffness matrix are only taken into
+                // account for 1 values in d_activeDirections
+                if (activeDirections[i])
+                {
+                    if (!d_performECSW.getValue())
+                        dfdx(total_size * index + i, total_size * index + i) += vr;
+                    else
+                        dfdx(total_size * index + i, total_size * index + i) += vr*weights(reducedIntegrationDomain(index));
+                }
+            }
+        }
     }
 }
 
 } // namespace sofa::component::solidmechanics::spring
-
 

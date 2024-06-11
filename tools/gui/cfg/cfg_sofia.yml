@@ -1,0 +1,33 @@
+grpBox_AdvancedParam:
+  checkBox_addToLib: 'False'
+  checkBox_auto: 'True'
+  lineEdit_animationPath: ''
+  lineEdit_phasesToExecute: '[0, 1]'
+  lineEdit_tolGIE: '0.05'
+  lineEdit_tolModes: '0.001'
+grpBox_AnimationParam:
+  tab_animation:
+    0:
+      0: 'True'
+      1: doingCircle
+      2:
+        angle: '0'
+        dataToWorkOn: position
+        incr: '0.05'
+        incrPeriod: '3'
+        rangeOfAction: '6.4'
+        rodRadius: '0.7'
+      3: SofiaLeg_actuator/actuatorState
+grpBox_Execution:
+  Phase 1:
+    checkBox: 'False'
+  Phase 2:
+    checkBox: 'False'
+  Phase 3:
+    checkBox: 'False'
+  Phase 4:
+    checkBox: 'False'
+grpBox_ReductionParam:
+  checkBox_AddTranslation: 'False'
+  lineEdit_NodeToReduce: SofiaLeg
+  lineEdit_moduleName: myReducedModel

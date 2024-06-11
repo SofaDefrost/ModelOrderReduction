@@ -12,28 +12,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-11]  
+        os: [ubuntu-22.04, windows-2022, macos-12]
         sofa_branch: [master]
 
     steps:
-      - name: (Mac) Workaround for homebrew
-        shell: bash
-        if: runner.os == 'macOS'
-        run: |
-            rm -f /usr/local/bin/2to3
-            rm -f /usr/local/bin/idle3
-            rm -f /usr/local/bin/pydoc3
-            rm -f /usr/local/bin/python3
-            rm -f /usr/local/bin/python3-config
-            rm -f /usr/local/bin/2to3-3.11
-            rm -f /usr/local/bin/idle3.11
-            rm -f /usr/local/bin/pydoc3.11
-            rm -f /usr/local/bin/python3.11
-            rm -f /usr/local/bin/python3.11-config
             
       - name: Setup SOFA and environment
         id: sofa
-        uses: sofa-framework/sofa-setup-action@v4
+        uses: sofa-framework/sofa-setup-action@v5
         with:
           sofa_root: ${{ github.workspace }}/sofa
           sofa_version: ${{ matrix.sofa_branch }}
@@ -103,7 +89,7 @@ jobs:
 
   deploy:
     name: Deploy artifacts
-    if: always() && startsWith(github.ref, 'refs/heads/') # we are on a branch (not a PR)
+    if: always() && startsWith(github.repository, 'SofaDefrost') && (startsWith(github.ref, 'refs/heads/') || startsWith(github.ref, 'refs/tags/')) # we are not on a fork and on a branch or a tag (not a PR)
     needs: [build-and-test]
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -126,7 +112,7 @@ jobs:
           name: ${{ github.ref_name }}
           tag_name: release-${{ github.ref_name }}
           fail_on_unmatched_files: false
-          target_commitish: ${{ github.ref_name }}
+          target_commitish: ${{ github.sha }}
           files: |
             artifacts/ModelOrderReduction_*_Linux.zip
             artifacts/ModelOrderReduction_*_Windows.zip

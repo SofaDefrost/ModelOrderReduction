@@ -1,0 +1,59 @@
+import Sofa
+import Sofa.Core
+import os
+
+meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
+# Units: cm, kg, s.     Pressure in kg/(cm.s^2) = 10*kg/(mm.s^2) = 10*k (kg/(m.s^2)) = 10*kPa 
+
+def createScene(rootNode):
+    
+    rootNode.addObject('RequiredPlugin', name='ModelOrderReduction', pluginName='ModelOrderReduction')
+    rootNode.addObject('RequiredPlugin', name='SofaPython3', pluginName='SofaPython3')
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Engine.Select') # Needed to use components [BoxROI]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.IO.Mesh') # Needed to use components [MeshOBJLoader,MeshVTKLoader]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct') # Needed to use components [SparseLDLSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mapping.Linear') # Needed to use components [BarycentricMapping]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass') # Needed to use components [UniformMass]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward') # Needed to use components [EulerImplicitSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.SolidMechanics.FEM.HyperElastic') # Needed to use components [TetrahedronHyperelasticityFEMForceField]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.SolidMechanics.Spring') # Needed to use components [RestShapeSpringsForceField]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.StateContainer') # Needed to use components [MechanicalObject]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Topology.Container.Dynamic') # Needed to use components [TetrahedronSetTopologyContainer]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual') # Needed to use components [VisualStyle]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D') # Needed to use components [OglModel]  
+
+
+    rootNode.addObject('VisualStyle', displayFlags='showCollision showVisualModels showForceFields showInteractionForceFields hideCollisionModels hideBoundingCollisionModels hideWireframe')
+    rootNode.findData('dt').value=0.01
+    rootNode.findData('gravity').value=[0, -981, 0]
+    rootNode.addObject('DefaultAnimationLoop')
+
+    liver = rootNode.addChild('liver')
+    liver.addObject('EulerImplicitSolver', rayleighStiffness = 0.0, rayleighMass = 0.0)
+    liver.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
+    liver.addObject('MeshVTKLoader', name="loader", filename=meshPath+'liverFine.vtu')
+    liver.addObject('TetrahedronSetTopologyContainer', src="@loader")
+    liver.addObject('MechanicalObject')
+    liver.addObject('BoxROI', name='ROI1', box='0 3 -1 2 5 2', drawBoxes='true')
+    liver.addObject('BoxROI', name='boxROIactuation', box='-5 0 -0.5 -4 0.5 0.5', drawBoxes='true')
+    liver.addObject('UniformMass', totalMass=0.3)
+    poissonRatio = 0.3
+    youngModulus = 5000
+    mu_ = youngModulus/(2*(1+poissonRatio))
+    lambda_ = youngModulus*poissonRatio/((1-2*poissonRatio)*(1+poissonRatio))
+    k0_ = youngModulus/(3*(1-2*poissonRatio))
+    liver.addObject('TetrahedronHyperelasticityFEMForceField',materialName="NeoHookean", ParameterSet=str(mu_) + " " + str(k0_), AnisotropyDirections="")        	 
+
+    
+    liver.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
+    liver.addObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
+    
+    visu = liver.addChild('visu')
+    visu.addObject(  'MeshOBJLoader', name= 'loader', filename=meshPath+'liver-smoothUV.obj')
+    visu.addObject('OglModel', src="@loader")
+    visu.addObject('BarycentricMapping')
+
+    
+
+    actuator = rootNode.addChild('actuator')
+    actuator.addObject('MechanicalObject', name = 'actuatorState', position = '@../liver/boxROIactuation.pointsInROI', template = 'Vec3d')
