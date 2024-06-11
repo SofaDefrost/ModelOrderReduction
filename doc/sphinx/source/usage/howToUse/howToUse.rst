@@ -27,6 +27,4 @@ Tutorial video how to
 
 .. raw:: html
 
-    <embed>
-    <iframe width="560" height="315" src="https://www.youtube.com/watch?v=0IhF03w6m0M" frameborder="0" allowfullscreen="allowfullscreen"></iframe><br/><br/>
-    </embed>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/0IhF03w6m0M?si=C2Q5cBb5Vd-bNiGv" frameborder="0"  allowfullscreen="allowfullscreen"></iframe><br/><br/>
