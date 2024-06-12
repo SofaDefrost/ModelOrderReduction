@@ -206,7 +206,7 @@ autodoc_mock_imports = ['Sofa',
                         'PythonScriptController', 'Sofa.PythonScriptController',
                         'launcher',
                         # 'yaml',
-                        'numpy','scipy',
+                        'numpy','scipy','Cheetah',
                         'PyQt5',"PyQt5.QtCore","PyQt5.QtGui","PyQt5.QtWidgets"]
 
 # MOCK_CLASSES = [
