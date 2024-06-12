@@ -5,6 +5,6 @@
 **Content:**
 
 """
-__all__=["reduceModel","script","container"]
+__all__=["template","script","container","reduceModel"]
 
 from mor.reduction.reduceModel import ReduceModel
