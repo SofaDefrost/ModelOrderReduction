@@ -25,9 +25,6 @@ import os
 import sys
 import platform
 
-slash = '/'
-if "Windows" in platform.platform():
-    slash ='\\'
 
 path = os.path.dirname(os.path.abspath(__file__))+'/template/'
 
@@ -229,9 +226,9 @@ def writeGraphScene(packageName,nodeName,myMORModel,myModel):
                                 filesName.append(arg['filename'])
 
                             filename = os.path.normpath(arg['filename'])
-                            filename = filename.split(slash)[-1]
+                            filename = filename.split(os.sep)[-1]
 
-                            arg['filename'] = slash+'mesh'+slash+filename
+                            arg['filename'] = os.sep+'mesh'+os.sep+filename
 
                             if 'translation' not in arg:
                                 arg['translation'] = [0.0,0.0,0.0]

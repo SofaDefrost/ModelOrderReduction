@@ -18,14 +18,11 @@ except:
 from mor.reduction.container import ObjToAnimate
 from mor.utility import sceneCreation
 
-slash = '/'
-if "Windows" in platform.platform():
-    slash = "\\"
 
 # Import animation
 #for $file in $LISTANIMATIONTOIMPORT:
 fileToImport = os.path.normpath(r'$file')
-scene = fileToImport.split(slash)[-1].split('.')[0]
+scene = fileToImport.split(os.sep)[-1].split('.')[0]
 os.sys.path.insert(0,os.path.dirname(os.path.abspath(fileToImport)))
 animationFct = importlib.import_module(scene)
 
@@ -42,7 +39,7 @@ globals().update({k: getattr(animationFct, k) for k in names})
 
 # Our Original Scene IMPORT
 pathScene = r'$ORIGINALSCENE'
-scene = pathScene.split(slash)[-1]
+scene = pathScene.split(os.sep)[-1]
 spec = spec_from_loader(scene, SourceFileLoader(scene, pathScene))
 originalScene = module_from_spec(spec)
 spec.loader.exec_module(originalScene)
