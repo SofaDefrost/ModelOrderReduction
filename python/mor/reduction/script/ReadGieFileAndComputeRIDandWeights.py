@@ -87,7 +87,7 @@ def selectECSW(G,b,tau,verbose):
     if verbose :
         print ("Final Error: ", errDif(G,xi,b) ," Target Error: ", valTarget)
     else :
-        u.update_progress( 1 )
+        util.update_progress( 1 )
 
     return (ECSWindex,xi)
 

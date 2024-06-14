@@ -379,17 +379,6 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")
 
-        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_elmts.txt")
-        if files:
-            for i,file in enumerate(files):
-                file = os.path.normpath(file)
-                files[i] = file.split(slash)[-1]
-            # print("FILES ----------->",files)
-            self.reductionParam.savedElementsFilesNames = files
-
-        for fileName in self.reductionParam.savedElementsFilesNames :
-            u.copyFileIntoAnother(results[self.phaseToSaveIndex]["directory"]+slash+fileName,self.packageBuilder.debugDir+fileName)
-
         files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_Gie.txt")
         if files: 
             for i,file in enumerate(files):
@@ -442,31 +431,14 @@ class ReduceModel():
             raise ValueError("nbrOfModes incorrect\n"\
                 +"  nbrOfModes given :"+str(nbrOfModes)+" | nbrOfModes max possible : "+str(nbrOfModesPossible))
 
-        # print(files)
-        files = glob.glob(self.packageBuilder.debugDir+"*_elmts.txt")
-        if files:
-            for i,file in enumerate(files):
-                file = os.path.normpath(file)
-                files[i] = file.split(slash)[-1]
-            # print("FILES ----------->",files)
-            self.reductionParam.savedElementsFilesNames = files
 
         files = glob.glob(self.packageBuilder.debugDir+"*_Gie.txt")
         if files: 
             for i,file in enumerate(files):
                 file = os.path.normpath(file)
                 files[i] = file.split(slash)[-1]
-            # print("FILES ----------->",files)
             self.reductionParam.gieFilesNames = files
 
-
-        for i , gie in enumerate(self.reductionParam.gieFilesNames):
-            tmp = gie.replace('_Gie.txt','')
-            for j , elmts in enumerate(self.reductionParam.savedElementsFilesNames):
-                if tmp in elmts:
-                    tmp = self.reductionParam.savedElementsFilesNames[j]
-                    self.reductionParam.savedElementsFilesNames[j] = self.reductionParam.savedElementsFilesNames[i]
-                    self.reductionParam.savedElementsFilesNames[i] = tmp
 
         self.reductionParam.RIDFilesNames = []
         self.reductionParam.weightsFilesNames = []
