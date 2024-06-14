@@ -44,9 +44,6 @@ from mor.reduction.container import PackageBuilder
 from mor.reduction.container import ReductionParam
 from mor.reduction import script
 
-slash = '/'
-if "Windows" in platform.platform():
-    slash ='\\'
 
 class ReduceModel():
     """
@@ -282,7 +279,7 @@ class ReduceModel():
                 print("     duration: "+str(res["duration"])+" sec")  
 
         self.packageBuilder.copyAndCleanState(results,self.reductionParam.periodSaveGIE,self.reductionParam.stateFileName,self.reductionParam.velocityFileName)
-        u.copy(results[self.phaseToSaveIndex]["directory"]+slash+"debug_scene.py", self.packageBuilder.debugDir)
+        u.copy(os.sep.join([results[self.phaseToSaveIndex]["directory"],"debug_scene.py"]), self.packageBuilder.debugDir)
 
         print("PHASE 1 --- %s seconds ---" % (time.time() - start_time))
 
@@ -379,11 +376,11 @@ class ReduceModel():
                 print("        scene: "+res["scene"])
                 print("     duration: "+str(res["duration"])+" sec")
 
-        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+slash+"*_Gie.txt")
+        files = glob.glob(results[self.phaseToSaveIndex]["directory"]+os.sep+"*_Gie.txt")
         if files: 
             for i,file in enumerate(files):
                 file = os.path.normpath(file)
-                files[i] = file.split(slash)[-1]
+                files[i] = file.split(os.sep)[-1]
             # print("FILES ----------->",files)
             self.reductionParam.gieFilesNames = files
         else:
@@ -436,7 +433,7 @@ class ReduceModel():
         if files: 
             for i,file in enumerate(files):
                 file = os.path.normpath(file)
-                files[i] = file.split(slash)[-1]
+                files[i] = file.split(os.sep)[-1]
             self.reductionParam.gieFilesNames = files
 
 

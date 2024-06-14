@@ -10,10 +10,6 @@ import platform
 
 from sys import argv
 
-slash = '/'
-if "Windows" in platform.platform():
-    slash = "\\"
-
 
 def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName, addRigidBodyModes=None, verbose=False):
     print("###################################################")
@@ -100,7 +96,7 @@ def readStateFilesAndComputeModes(stateFilePath, tol, modesFileName, addRigidBod
         sumSVD = np.sum(sSquare)
 
         stateFilePath = os.path.normpath(stateFilePath)
-        outputDir = slash.join(stateFilePath.split(slash)[:-1]) + slash
+        outputDir = os.sep.join(stateFilePath.split(os.sep)[:-1]) + os.sep
         np.savetxt(outputDir + "Sdata.txt", s)
 
         i = 0

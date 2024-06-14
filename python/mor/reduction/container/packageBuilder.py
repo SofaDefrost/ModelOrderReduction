@@ -12,10 +12,6 @@ sys.path.insert(0,path+'/../../../')
 
 from mor.utility import utility as u
 
-slash = '/'
-if "Windows" in platform.platform():
-    slash ='\\'
-
 
 class PackageBuilder():
     """
@@ -34,9 +30,9 @@ class PackageBuilder():
             if os.path.isdir(pathToReducedModel+self.packageName) and addToLib:
                 raise Exception('A Package named %s already exist in the MOR lib !\nPlease choose another name for this new package' % packageName)
 
-        self.dataDir = self.outputDir+slash+'data'+slash
-        self.debugDir = self.outputDir+slash+'debug'+slash
-        self.meshDir = self.outputDir+slash+'mesh'+slash
+        self.dataDir = self.outputDir+os.sep+'data'+os.sep
+        self.debugDir = self.outputDir+os.sep+'debug'+os.sep
+        self.meshDir = self.outputDir+os.sep+'mesh'+os.sep
 
     def checkNodeNbr(self,modeFileName):
         '''
@@ -86,13 +82,13 @@ class PackageBuilder():
 
 
         for res in results:
-            u.copyFileIntoAnother(res["directory"]+slash+"stateFile.state",self.debugDir+stateFileName)
+            u.copyFileIntoAnother(os.sep.join([res["directory"],"stateFile.state"]),self.debugDir+stateFileName)
 
             if velocityFileName is not None:
                 u.copyFileIntoAnother(res["directory"]+"/stateFileVelocity.state",self.debugDir+velocityFileName)
             if gie:
                 for fileName in gie :
-                    u.copyFileIntoAnother(res["directory"]+slash+fileName,self.debugDir+fileName)
+                    u.copyFileIntoAnother(os.sep.join([res["directory"],fileName]),self.debugDir+fileName)
 
 
         self.cleanStateFile(periodSaveGIE,stateFileName)
@@ -101,9 +97,10 @@ class PackageBuilder():
         '''
         '''
 
-        shutil.move(result['directory']+slash+self.packageName+'.py', self.outputDir+slash+self.packageName+'.py')
+        shutil.move(os.sep.join([result['directory'],self.packageName+'.py']), 
+                    os.sep.join([self.outputDir,self.packageName+'.py']))
 
-        with open(result['directory']+slash+'meshFiles.txt', "r") as meshFiles:
+        with open(os.sep.join([result['directory'],'meshFiles.txt']), "r") as meshFiles:
             self.meshes = meshFiles.read().splitlines()
 
         u.checkExistance(self.meshDir)
@@ -120,7 +117,7 @@ class PackageBuilder():
         '''
         '''
 
-        u.copy(self.outputDir, pathToReducedModel+self.packageName+slash)
+        u.copy(self.outputDir, pathToReducedModel+self.packageName+os.sep)
 
         try:
             with open(pathToTemplate+'myInit.txt', "r") as myfile:
@@ -129,7 +126,7 @@ class PackageBuilder():
                 myInit = myInit.replace('MyReducedModel',self.packageName[0].upper()+self.packageName[1:])
                 myInit = myInit.replace('myReducedModel',self.packageName)
 
-                with open(pathToReducedModel+self.packageName+slash+'__init__.py', "a") as logFile:
+                with open(pathToReducedModel+os.sep.join([self.packageName,'__init__.py']), "a") as logFile:
                     logFile.write(myInit)
 
                 # print(myInit)

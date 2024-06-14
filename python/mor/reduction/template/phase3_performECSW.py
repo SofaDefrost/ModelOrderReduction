@@ -16,14 +16,11 @@ from mor.utility import utility as u
 from mor.utility import writeScene
 from mor.wrapper import replaceAndSave
 
-slash = '/'
-if "Windows" in platform.platform():
-    slash = "\\"
 
 # Our Original Scene IMPORT
 originalScene = r'$ORIGINALSCENE'
 originalScene = os.path.normpath(originalScene)
-originalScene = u.load_source(originalScene.split(slash)[-1], originalScene)
+originalScene = u.load_source(originalScene.split(os.sep)[-1], originalScene)
 
 # Scene parameters
 nbrOfModes = $NBROFMODES

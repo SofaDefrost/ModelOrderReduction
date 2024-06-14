@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import platform
-
-slash = '/'
-if "Windows" in platform.platform():
-    slash ='\\'
+import os
 
 
 class ReductionParam():
@@ -20,7 +17,7 @@ class ReductionParam():
 
         self.addRigidBodyModes = addRigidBodyModes
         self.dataDir = dataDir
-        self.dataFolder = slash+dataDir.split(slash)[-2]+slash
+        self.dataFolder = os.sep+dataDir.split(os.sep)[-2]+os.sep
 
         self.stateFileName = "stateFile.state"
         self.modesFileName = "modes.txt"
@@ -51,7 +48,7 @@ class ReductionParam():
         '''
         '''
         nodeToReduce = "".join(nodeToReduce)
-        ndtSplit = nodeToReduce.split(slash)
+        ndtSplit = nodeToReduce.split(os.sep)
         nodeToParse = '@./' + ndtSplit[-1]
 
         defaultParamPrepare = {
@@ -98,7 +95,7 @@ class ReductionParam():
         '''
 
         path , param = self.paramWrapper
-        nodeName = path.split(slash)[-1]
+        nodeName = path.split(os.sep)[-1]
         self.gieFilesNames.append('HyperReducedFEMForceField_'+nodeName+'_Gie.txt')
         self.RIDFilesNames.append('RID_'+nodeName+'.txt')
         self.weightsFilesNames.append('weight_'+nodeName+'.txt')
