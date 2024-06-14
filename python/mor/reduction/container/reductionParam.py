@@ -102,4 +102,3 @@ class ReductionParam():
         self.gieFilesNames.append('HyperReducedFEMForceField_'+nodeName+'_Gie.txt')
         self.RIDFilesNames.append('RID_'+nodeName+'.txt')
         self.weightsFilesNames.append('weight_'+nodeName+'.txt')
-        self.savedElementsFilesNames.append('elmts_'+nodeName+'.txt')

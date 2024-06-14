@@ -16,7 +16,7 @@ except:
 
 # MOR IMPORT
 from mor.reduction.container import ObjToAnimate
-from mor.utility import sceneCreation as u
+from mor.utility import sceneCreation
 
 slash = '/'
 if "Windows" in platform.platform():
@@ -84,7 +84,7 @@ def createScene(rootNode):
     # Now that we have the AnimationManager & a list of the nodes we want to animate
     # we can add an animation to then according to the arguments in listObjToAnimate
 
-    u.addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate)
+    sceneCreation.addAnimation(rootNode,phase,timeExe,dt,listObjToAnimate)
 
     # Now that all the animations are defined we need to record their results
     # for that we take the parent node normally given as an argument in paramWrapper
