@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import imp
 import platform
 from sys import argv
 
@@ -12,7 +11,8 @@ except:
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
-from mor.utility import sceneCreation as u
+from mor.utility import sceneCreation
+from mor.utility import utility as u 
 
 slash = '/'
 if "Windows" in platform.platform():
@@ -21,7 +21,7 @@ if "Windows" in platform.platform():
 # Our Original Scene IMPORT
 originalScene = r'$ORIGINALSCENE'
 originalScene = os.path.normpath(originalScene)
-originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
+originalScene = u.load_source(originalScene.split(slash)[-1], originalScene)
 
 paramWrapper = $PARAMWRAPPER
 
@@ -36,4 +36,4 @@ def createScene(rootNode):
     path , param = paramWrapper
     pathToNode = path[1:]
 
-    u.createDebug(rootNode,pathToNode,stateFileName)
+    sceneCreation.createDebug(rootNode,pathToNode,stateFileName)

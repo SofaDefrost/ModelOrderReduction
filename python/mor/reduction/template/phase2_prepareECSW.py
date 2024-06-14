@@ -13,7 +13,7 @@ except:
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
-from mor.utility import sceneCreation as u
+from mor.utility import sceneCreation
 from mor.wrapper import replaceAndSave
 
 # Our Phase1 Scene IMPORT
@@ -50,7 +50,7 @@ def createScene(rootNode):
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
 
-    u.modifyGraphScene(rootNode,nbrOfModes,paramWrapper)
+    sceneCreation.modifyGraphScene(rootNode,nbrOfModes,paramWrapper)
 
 
     # We Update the link 

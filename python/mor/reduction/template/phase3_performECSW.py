@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import imp
 import platform
 
 #   STLIB IMPORT
@@ -12,7 +11,8 @@ except:
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
-from mor.utility import sceneCreation as u
+from mor.utility import sceneCreation
+from mor.utility import utility as u 
 from mor.utility import writeScene
 from mor.wrapper import replaceAndSave
 
@@ -23,7 +23,7 @@ if "Windows" in platform.platform():
 # Our Original Scene IMPORT
 originalScene = r'$ORIGINALSCENE'
 originalScene = os.path.normpath(originalScene)
-originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
+originalScene = u.load_source(originalScene.split(slash)[-1], originalScene)
 
 # Scene parameters
 nbrOfModes = $NBROFMODES
@@ -52,16 +52,16 @@ def createScene(rootNode):
     originalScene.createScene(Wrapper(rootNode, replaceAndSave.MORreplace, paramWrapper))  # 1
 
     # Add MOR plugin if not found
-    u.addPlugin(rootNode,"ModelOrderReduction")
+    sceneCreation.addPlugin(rootNode,"ModelOrderReduction")
     pluginName = []
-    plugins = u.searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
+    plugins = sceneCreation.searchObjectClassInGraphScene(rootNode,"RequiredPlugin")
     for plugin in plugins:
         pluginName.append(plugin.pluginName)
 
     # Modify the scene to perform hyper-reduction according
     # to the informations collected by the wrapper
 
-    u.modifyGraphScene(rootNode,nbrOfModes,paramWrapper)
+    sceneCreation.modifyGraphScene(rootNode,nbrOfModes,paramWrapper)
 
     # We collect all the informations during 1 & 2 to be able to create with
     # writeGraphScene a SOFA scene containing only our reduced model that we can instanciate
