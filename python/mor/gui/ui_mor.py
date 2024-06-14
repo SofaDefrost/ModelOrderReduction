@@ -38,14 +38,15 @@ from PyQt5.QtWidgets import QMainWindow
 path = os.path.dirname(os.path.abspath(__file__))
 
 try:
-    import imp
-    imp.find_module('mor')
-except:
-    sys.path.append(path+'/../../') # TEMPORARY
-    # raise ImportError("You need to give to PYTHONPATH the path to the python folder\n"\
-    #                  +"of the modelorderreduction plugin in order to use this utility\n"\
-    #                  +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
-    #                  +"export PYTHONPATH=/PathToYourMOR/python")
+    import mor
+except ModuleNotFoundError as err:
+    sys.path.append(path+'/../../')
+    print(err)
+    print("mor added automatically to sys.path")
+    # print("You need to give to PYTHONPATH the path to the python folder\n"\
+    #      +"of the modelorderreduction plugin in order to use this utility\n"\
+    #      +"Enter this command in your terminal (for temporary use) or in your .bashrc to resolve this:\n"\
+    #      +"export PYTHONPATH=/PathToYourMOR/python")
 
 #### MOR IMPORT ####
 # This file holds our MainWindow and all design related things
@@ -313,7 +314,7 @@ class UI_mor(QMainWindow, ui_design.Ui_MainWindow):
             phasesFile = [
                         ["/debug/debug_scene.py","/debug/stateFile.state"],
                         ["/data/modes.txt"],
-                        ["/debug/reducedFF_*","/debug/*_elmts.txt"], #["/debug/step2_stateFile.state",
+                        ["/debug/reducedFF_*"], #["/debug/step2_stateFile.state",
                         ["/data/*_RID.txt","/data/*_weight.txt","/reduced_*"]
                     ]
 
