@@ -37,10 +37,6 @@ template< class DataTypes>
 HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::HyperReducedTetrahedralCorotationalFEMForceField()
 {
     this->addAlias(&_assembling, "assembling");
-    _poissonRatio.setWidget("poissonRatio");
-
-    _poissonRatio.setRequired(true);
-    _youngModulus.setRequired(true);
 }
 
 template <class DataTypes>
