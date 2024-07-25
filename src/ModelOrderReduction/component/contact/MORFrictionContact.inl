@@ -97,7 +97,7 @@ void MORFrictionContact<TCollisionModel1,TCollisionModel2,ResponseDataTypes>::ac
         m_constraint = sofa::core::objectmodel::New<sofa::component::constraint::lagrangian::model::MORUnilateralInteractionConstraint<defaulttype::Vec3Types> >(mmodel1, mmodel2, d_lambdaModesPath.getValue(), d_lambdaModesCoeffsPath.getValue());
         m_constraint->setName( this->getName() );
         this->setInteractionTags(mmodel1, mmodel2);
-        m_constraint->setCustomTolerance( tol.getValue() );
+        m_constraint->setCustomTolerance( this->d_tol.getValue() );
     }
 
     int size = contacts.size();

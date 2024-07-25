@@ -32,13 +32,6 @@
 namespace sofa::component::solidmechanics::fem::elastic
 {
 
-
-template< class DataTypes>
-HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::HyperReducedTetrahedralCorotationalFEMForceField()
-{
-    this->addAlias(&_assembling, "assembling");
-}
-
 template <class DataTypes>
 void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::init()
 {
@@ -208,9 +201,9 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     // compute force on element
     Displacement F;
 
-    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = this->d_tetrahedronInfo.getValue();
 
-    if(!_assembling.getValue())
+    if(!this->d_assembling.getValue())
     {
         this->computeForce( F, D,tetrahedronInf[elementIndex].materialMatrix,tetrahedronInf[elementIndex].strainDisplacementTransposedMatrix );
     }
@@ -297,7 +290,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::applyStiffness
 
     Displacement F;
 
-    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = this->d_tetrahedronInfo.getValue();
 
     this->computeForce( F, X,tetrahedronInf[i].materialMatrix,tetrahedronInf[i].strainDisplacementTransposedMatrix, fact);
 
@@ -317,7 +310,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
 {
     const core::topology::BaseMeshTopology::Tetrahedron t=_topology->getTetrahedron(elementIndex);
 
-    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(this->d_tetrahedronInfo.beginEdit());
 
     // Rotation matrix (deformed and displaced Tetrahedron/world)
     Transformation R_0_2;
@@ -352,7 +345,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     //serr<<"D : "<<D<<sendl;
 
     Displacement F;
-    if(_updateStiffnessMatrix.getValue())
+    if(this->d_updateStiffnessMatrix.getValue())
     {
         StrainDisplacementTransposed& J = tetrahedronInf[elementIndex].strainDisplacementTransposedMatrix;
         J[0][0] = J[1][3] = J[2][5]   = ( - deforme[2][1]*deforme[3][2] );
@@ -373,7 +366,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     contrib.resize(4);
     indexList.resize(4);
 
-    if(!_assembling.getValue())
+    if(!this->d_assembling.getValue())
     {
         // compute force on element
         this->computeForce( F, D, tetrahedronInf[elementIndex].materialMatrix, tetrahedronInf[elementIndex].strainDisplacementTransposedMatrix);
@@ -449,13 +442,13 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     }
     this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
 
-    tetrahedronInfo.endEdit();
+    this->d_tetrahedronInfo.endEdit();
 }
 
 template<class DataTypes>
 void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::applyStiffnessLarge( Vector& f, const Vector& x, int i, Index a, Index b, Index c, Index d, SReal fact)
 {
-    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = this->d_tetrahedronInfo.getValue();
 
     Transformation R_0_2;
     R_0_2.transpose(tetrahedronInf[i].rotation);
@@ -521,7 +514,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     type::MatNoInit<3,3,Real> S;
     helper::Decompose<Real>::polarDecomposition(A, R_0_2);
 
-    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(this->d_tetrahedronInfo.beginEdit());
 
     tetrahedronInf[elementIndex].rotation.transpose( R_0_2 );
 
@@ -547,13 +540,13 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
     //serr<<"D : "<<D<<sendl;
 
     Displacement F;
-    if(_updateStiffnessMatrix.getValue())
+    if(this->d_updateStiffnessMatrix.getValue())
     {
         // shape functions matrix
         this->computeStrainDisplacement( tetrahedronInf[elementIndex].strainDisplacementTransposedMatrix, deforme[0],deforme[1],deforme[2],deforme[3]  );
     }
 
-    if(!_assembling.getValue())
+    if(!this->d_assembling.getValue())
     {
         this->computeForce( F, D, tetrahedronInf[elementIndex].materialMatrix, tetrahedronInf[elementIndex].strainDisplacementTransposedMatrix );
         for(int i=0; i<12; i+=3)
@@ -565,13 +558,13 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
         msg_error() << this->getClassName() << " does not support assembling system matrix when using polar method.";
     }
 
-    tetrahedronInfo.endEdit();
+    this->d_tetrahedronInfo.endEdit();
 }
 
 template<class DataTypes>
 void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::applyStiffnessPolar( Vector& f, const Vector& x, int i, Index a, Index b, Index c, Index d, SReal fact )
 {
-    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(tetrahedronInfo.beginEdit());
+    type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = *(this->d_tetrahedronInfo.beginEdit());
 
     Transformation R_0_2;
     R_0_2.transpose( tetrahedronInf[i].rotation );
@@ -612,7 +605,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::applyStiffness
     f[c] -= tetrahedronInf[i].rotation * Deriv( F[6], F[7],  F[8] );
     f[d] -= tetrahedronInf[i].rotation * Deriv( F[9], F[10], F[11] );
 
-    tetrahedronInfo.endEdit();
+    this->d_tetrahedronInfo.endEdit();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -625,7 +618,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
 {
     if (!vparams->displayFlags().getShowForceFields()) return;
     if (!this->mstate) return;
-    if (!f_drawing.getValue()) return;
+    if (!this->d_drawing.getValue()) return;
 
     vparams->drawTool()->saveLastState();
 
@@ -671,10 +664,10 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
         points[3].push_back(pb);
     }
 
-    vparams->drawTool()->drawTriangles(points[0], drawColor1.getValue());
-    vparams->drawTool()->drawTriangles(points[1], drawColor2.getValue());
-    vparams->drawTool()->drawTriangles(points[2], drawColor3.getValue());
-    vparams->drawTool()->drawTriangles(points[3], drawColor4.getValue());
+    vparams->drawTool()->drawTriangles(points[0], this->d_drawColor1.getValue());
+    vparams->drawTool()->drawTriangles(points[1], this->d_drawColor2.getValue());
+    vparams->drawTool()->drawTriangles(points[2], this->d_drawColor3.getValue());
+    vparams->drawTool()->drawTriangles(points[3], this->d_drawColor4.getValue());
 
     if (vparams->displayFlags().getShowWireFrame())
         vparams->drawTool()->setPolygonMode(0,false);
@@ -690,7 +683,7 @@ buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
     StiffnessMatrix JKJt, RJKJtRt;
     sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
 
-    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = tetrahedronInfo.getValue();
+    const type::vector<typename TetrahedralCorotationalFEMForceField<DataTypes>::TetrahedronInformation>& tetrahedronInf = this->d_tetrahedronInfo.getValue();
     const sofa::core::topology::BaseMeshTopology::SeqTetrahedra& tetrahedra = _topology->getTetrahedra();
 
     unsigned int nbElementsConsidered;

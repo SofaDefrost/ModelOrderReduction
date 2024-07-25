@@ -56,7 +56,7 @@ using sofa::core::objectmodel::ComponentState ;
 //////////////////////////////////////////////////////////////////////
 
 template<class DataTypes>
-inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceSmall( Vector& f, const Vector & p, typename VecElement::const_iterator elementIt, Index elementIndex )
+inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceSmall( Vector& f, const Vector & p, VecElement::const_iterator elementIt, Index elementIndex )
 {
     TetrahedronFEMForceField<DataTypes>::accumulateForceSmall( f,  p, elementIt, elementIndex );
 }
@@ -73,7 +73,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::applyStiffnessSmall
 //////////////////////////////////////////////////////////////////////
 
 template<class DataTypes>
-inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarge( Vector& f, const Vector & p, typename VecElement::const_iterator elementIt, Index elementIndex )
+inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarge( Vector& f, const Vector & p, VecElement::const_iterator elementIt, Index elementIndex )
 {
     Element index = *elementIt;
 
@@ -109,7 +109,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
     D[11] =_rotatedInitialElements[elementIndex][3][2] - deforme[3][2];
 
     Displacement F;
-    if(_updateStiffnessMatrix.getValue())
+    if (this->d_updateStiffnessMatrix.getValue())
     {
         strainDisplacements[elementIndex][0][0]   = ( - deforme[2][1]*deforme[3][2] );
         strainDisplacements[elementIndex][1][1] = ( deforme[2][0]*deforme[3][2] - deforme[1][0]*deforme[3][2] );
@@ -125,7 +125,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
         strainDisplacements[elementIndex][11][2] = ( deforme[1][0]*deforme[2][1] );
     }
 
-    if(!_assembling.getValue())
+    if(!this->d_assembling.getValue())
     {
         // compute force on element
         this->computeForce( F, D, _plasticStrains[elementIndex], materialsStiffnesses[elementIndex], strainDisplacements[elementIndex] );
@@ -143,7 +143,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
         }
         this->template updateGie<DataTypes>(indexList, contrib, elementIndex);
     }
-    else if( _plasticMaxThreshold.getValue() <= 0 )
+    else if(this->d_plasticMaxThreshold.getValue() <= 0 )
     {
         strainDisplacements[elementIndex][6][0] = 0;
         strainDisplacements[elementIndex][9][0] = 0;
@@ -156,9 +156,9 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
         //erase the stiffness matrix at each time step
         if(elementIndex==0)
         {
-            for(unsigned int i=0; i<_stiffnesses.size(); ++i)
+            for(unsigned int i=0; i<this->_stiffnesses.size(); ++i)
             {
-                _stiffnesses[i].resize(0);
+                this->_stiffnesses[i].resize(0);
             }
         }
 
@@ -170,8 +170,9 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
                 index_type col = index[j/3]*3+j%3;
 
                 // search if the vertex is already take into account by another element
-                typename CompressedValue::iterator result = _stiffnesses[row].end();
-                for(typename CompressedValue::iterator it=_stiffnesses[row].begin(); it!=_stiffnesses[row].end()&&result==_stiffnesses[row].end(); ++it)
+                typename CompressedValue::iterator result = this->_stiffnesses[row].end();
+                for (auto it = this->_stiffnesses[row].begin();
+                    it != this->_stiffnesses[row].end() && result == this->_stiffnesses[row].end(); ++it)
                 {
                     if( (*it).first == col )
                     {
@@ -179,9 +180,9 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
                     }
                 }
 
-                if( result==_stiffnesses[row].end() )
+                if( result==this->_stiffnesses[row].end() )
                 {
-                    _stiffnesses[row].push_back( Col_Value(col,RJKJtRt[i][j] )  );
+                    this->_stiffnesses[row].push_back( Col_Value(col,RJKJtRt[i][j] )  );
                 }
                 else
                 {
@@ -206,7 +207,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceLarg
 
 
 template<class DataTypes>
-inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForcePolar( Vector& f, const Vector & p, typename VecElement::const_iterator elementIt, Index elementIndex )
+inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForcePolar( Vector& f, const Vector & p, VecElement::const_iterator elementIt, Index elementIndex )
 {
     TetrahedronFEMForceField<DataTypes>::accumulateForcePolar(  f,  p,   elementIt,  elementIndex );
 }
@@ -218,7 +219,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForcePola
 //////////////////////////////////////////////////////////////////////
 
 template<class DataTypes>
-inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceSVD( Vector& f, const Vector & p, typename VecElement::const_iterator elementIt, Index elementIndex )
+inline void HyperReducedTetrahedronFEMForceField<DataTypes>::accumulateForceSVD( Vector& f, const Vector & p, VecElement::const_iterator elementIt, Index elementIndex )
 {
    TetrahedronFEMForceField<DataTypes>::accumulateForceSVD(  f,  p,  elementIt,  elementIndex );
 }
@@ -304,7 +305,7 @@ template <class DataTypes>
 void HyperReducedTetrahedronFEMForceField<DataTypes>::init()
 {
     TetrahedronFEMForceField<DataTypes>::init();
-    this->initMOR(_indexedElements->size(),notMuted());
+    this->initMOR(this->_indexedElements->size(),notMuted());
 }
 
 
@@ -318,19 +319,19 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
     SCOPED_TIMER("MORTetra::addForce");
     f.resize(p.size());
 
-    if (needUpdateTopology)
+    if (this->needUpdateTopology)
     {
         reinit();
-        needUpdateTopology = false;
+        this->needUpdateTopology = false;
     }
 
     unsigned int i;
     typename VecElement::const_iterator it, it0;
-    switch(method)
+    switch(this->method)
     {
     case SMALL :
     {
-        for(it=_indexedElements->begin(), i = 0 ; it!=_indexedElements->end(); ++it,++i)
+        for(it=this->_indexedElements->begin(), i = 0 ; it!=this->_indexedElements->end(); ++it,++i)
         {
             accumulateForceSmall( f, p, it, i );
         }
@@ -339,7 +340,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
     case LARGE :
     {
         if (d_performECSW.getValue()){
-            it0=_indexedElements->begin();
+            it0=this->_indexedElements->begin();
             for( i = 0 ; i<m_RIDsize ;++i)
             {
                 it = it0 + reducedIntegrationDomain(i);
@@ -348,7 +349,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
         }
         else
         {
-            for(it=_indexedElements->begin(), i = 0 ; it!=_indexedElements->end(); ++it,++i)
+            for(it=this->_indexedElements->begin(), i = 0 ; it!=this->_indexedElements->end(); ++it,++i)
             {
                 accumulateForceLarge( f, p, it, i );
             }
@@ -357,7 +358,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
     }
     case POLAR :
     {
-        for(it=_indexedElements->begin(), i = 0 ; it!=_indexedElements->end(); ++it,++i)
+        for(it=this->_indexedElements->begin(), i = 0 ; it!=this->_indexedElements->end(); ++it,++i)
         {
             accumulateForcePolar( f, p, it, i );
         }
@@ -365,7 +366,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
     }
     case SVD :
     {
-        for(it=_indexedElements->begin(), i = 0 ; it!=_indexedElements->end(); ++it,++i)
+        for(it=this->_indexedElements->begin(), i = 0 ; it!=this->_indexedElements->end(); ++it,++i)
         {
             accumulateForceSVD( f, p, it, i );
         }
@@ -374,8 +375,8 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addForce (const cor
     }
     d_f.endEdit();
 
-    updateVonMisesStress = true;
-    this->saveGieFile(_indexedElements->size());
+    this->updateVonMisesStress = true;
+    this->saveGieFile(this->_indexedElements->size());
 }
 
 template<class DataTypes>
@@ -390,10 +391,10 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addDForce(const cor
     const Real kFactor = (Real)sofa::core::mechanicalparams::kFactorIncludingRayleighDamping(mparams, this->rayleighStiffness.getValue());
 
     unsigned int i;
-    typename VecElement::const_iterator it,it0;
-    if( method == SMALL )
+    VecElement::const_iterator it, it0;
+    if( this->method == SMALL )
     {
-        for(it = _indexedElements->begin(), i = 0 ; it != _indexedElements->end() ; ++it, ++i)
+        for(it = this->_indexedElements->begin(), i = 0 ; it != this->_indexedElements->end() ; ++it, ++i)
         {
             Index a = (*it)[0];
             Index b = (*it)[1];
@@ -407,7 +408,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addDForce(const cor
     {
         if (d_performECSW.getValue())
         {
-            it0=_indexedElements->begin();
+            it0=this->_indexedElements->begin();
             for( i = 0 ; i<m_RIDsize ;++i)
             {
                 it = it0 + reducedIntegrationDomain(i);
@@ -420,7 +421,7 @@ inline void HyperReducedTetrahedronFEMForceField<DataTypes>::addDForce(const cor
         }
         else
         {
-            for(it = _indexedElements->begin(), i = 0 ; it != _indexedElements->end() ; ++it, ++i)
+            for(it = this->_indexedElements->begin(), i = 0 ; it != this->_indexedElements->end() ; ++it, ++i)
             {
                 Index a = (*it)[0];
                 Index b = (*it)[1];
@@ -449,13 +450,13 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
         if (!vparams->displayFlags().getShowForceFields()) return;
         if (!this->mstate) return;
 
-        if(needUpdateTopology)
+        if(this->needUpdateTopology)
         {
             reinit();
-            needUpdateTopology = false;
+            this->needUpdateTopology = false;
         }
 
-        bool drawVonMisesStress = (_showVonMisesStressPerNode.getValue() || _showVonMisesStressPerElement.getValue()) && TetrahedronFEMForceField<DataTypes>::isComputeVonMisesStressMethodSet();
+        bool drawVonMisesStress = (this->d_showVonMisesStressPerNode.getValue() || this->d_showVonMisesStressPerElement.getValue()) && TetrahedronFEMForceField<DataTypes>::isComputeVonMisesStressMethodSet();
 
         vparams->drawTool()->saveLastState();
 
@@ -467,26 +468,26 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
         vparams->drawTool()->disableLighting();
 
         const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
-        const VecReal& youngModulus = _youngModulus.getValue();
+        const VecReal& youngModulus = this->d_youngModulus.getValue();
 
         bool heterogeneous = false;
-        if (drawHeterogeneousTetra.getValue() && drawVonMisesStress)
+        if (this->d_drawHeterogeneousTetra.getValue() && drawVonMisesStress)
         {
-            minYoung=youngModulus[0];
-            maxYoung=youngModulus[0];
+            this->minYoung=youngModulus[0];
+            this->maxYoung=youngModulus[0];
             for (unsigned i=0; i<youngModulus.size(); i++)
             {
-                if (youngModulus[i]<minYoung) minYoung=youngModulus[i];
-                if (youngModulus[i]>maxYoung) maxYoung=youngModulus[i];
+                if (youngModulus[i]<this->minYoung) this->minYoung=youngModulus[i];
+                if (youngModulus[i]>this->maxYoung) this->maxYoung=youngModulus[i];
             }
-            heterogeneous = (fabs(minYoung-maxYoung) > 1e-8);
+            heterogeneous = (fabs(this->minYoung-this->maxYoung) > 1e-8);
         }
 
 
         Real minVM = (Real)1e20, maxVM = (Real)-1e20;
         Real minVMN = (Real)1e20, maxVMN = (Real)-1e20;
-        helper::ReadAccessor<Data<type::vector<Real> > > vM =  _vonMisesPerElement;
-        helper::ReadAccessor<Data<type::vector<Real> > > vMN =  _vonMisesPerNode;
+        helper::ReadAccessor<Data<type::vector<Real> > > vM =  this->d_vonMisesPerElement;
+        helper::ReadAccessor<Data<type::vector<Real> > > vMN =  this->d_vonMisesPerNode;
 
         // vonMises stress
         if (drawVonMisesStress)
@@ -496,25 +497,25 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
                 minVM = (vM[i] < minVM) ? vM[i] : minVM;
                 maxVM = (vM[i] > maxVM) ? vM[i] : maxVM;
             }
-            if (maxVM < prevMaxStress)
+            if (maxVM < this->prevMaxStress)
             {
-                maxVM = prevMaxStress;
+                maxVM = this->prevMaxStress;
             }
             for (size_t i = 0; i < vMN.size(); i++)
             {
                 minVMN = (vMN[i] < minVMN) ? vMN[i] : minVMN;
                 maxVMN = (vMN[i] > maxVMN) ? vMN[i] : maxVMN;
             }
-            maxVM *= _showStressAlpha.getValue();
-            maxVMN *= _showStressAlpha.getValue();
+            maxVM *= this->d_showStressAlpha.getValue();
+            maxVMN *= this->d_showStressAlpha.getValue();
 
 
-            if (_showVonMisesStressPerNode.getValue())
+            if (this->d_showVonMisesStressPerNode.getValue())
             {
                 // Draw nodes (if node option enabled)
                 std::vector<sofa::type::RGBAColor> nodeColors(x.size());
                 std::vector<type::Vec3> pts(x.size());
-                helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVMN, maxVMN);
+                helper::ColorMap::evaluator<Real> evalColor = this->m_VonMisesColorMap->getEvaluator(minVMN, maxVMN);
                 for (size_t nd = 0; nd < x.size(); nd++) {
                     pts[nd] = x[nd];
                     nodeColors[nd] = evalColor(vMN[nd]);
@@ -529,7 +530,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
         std::vector< sofa::type::RGBAColor > colorVector;
         typename VecElement::const_iterator it, it0;
 
-        it0=_indexedElements->begin();
+        it0=this->_indexedElements->begin();
         for(int i = 0 ; i<m_RIDsize ;++i)
         {
             it = it0 + reducedIntegrationDomain(i);
@@ -555,11 +556,11 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 
             // create corresponding colors
             sofa::type::RGBAColor color[4];
-            if (drawVonMisesStress && _showVonMisesStressPerElement.getValue())
+            if (drawVonMisesStress && this->d_showVonMisesStressPerElement.getValue())
             {
                 if(heterogeneous)
                 {
-                    float col = (float)((youngModulus[reducedIntegrationDomain(i)] - minYoung) / (maxYoung - minYoung));
+                    float col = (float)((youngModulus[reducedIntegrationDomain(i)] - this->minYoung) / (this->maxYoung - this->minYoung));
                     float fac = col * 0.5f;
                     color[0] = sofa::type::RGBAColor(col       , 0.0f - fac, 1.0f - col, 1.0f);
                     color[1] = sofa::type::RGBAColor(col       , 0.5f - fac, 1.0f - col, 1.0f);
@@ -568,7 +569,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
                 }
                 else
                 {
-                    helper::ColorMap::evaluator<Real> evalColor = m_VonMisesColorMap->getEvaluator(minVM, maxVM);
+                    helper::ColorMap::evaluator<Real> evalColor = this->m_VonMisesColorMap->getEvaluator(minVM, maxVM);
                     sofa::type::RGBAColor col = evalColor(vM[reducedIntegrationDomain(i)]);
                     col[3] = 1.0f;
                     color[0] = col;
@@ -660,10 +661,10 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::buildStiffnessMatrix(core:
     sofa::Size tetraId = 0;
 
     typename VecElement::const_iterator it;
-    auto it0=_indexedElements->begin();
+    auto it0=this->_indexedElements->begin();
     int nbElementsConsidered;
     if (!d_performECSW.getValue())
-        nbElementsConsidered = _indexedElements->size();
+        nbElementsConsidered = this->_indexedElements->size();
     else
         nbElementsConsidered = m_RIDsize;
 
@@ -678,7 +679,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::buildStiffnessMatrix(core:
         }
         it = it0 + tetraId;
 
-        const auto& rotation = method == SMALL ? identity : rotations[tetraId];
+        const auto& rotation = this->method == SMALL ? identity : rotations[tetraId];
         this->computeStiffnessMatrix(JKJt, RJKJtRt, materialsStiffnesses[tetraId], strainDisplacements[tetraId], rotation);
 
         for (sofa::Index n1 = 0; n1 < N; n1++)

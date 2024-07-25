@@ -23,7 +23,7 @@
 #define MOR_MORUNILATERALINTERACTIONCONSTRAINT_INL
 
 #include "MORUnilateralInteractionConstraint.h"
-#include <sofa/component/constraint/lagrangian/model/UnilateralInteractionConstraint.inl>
+#include <sofa/component/constraint/lagrangian/model/UnilateralLagrangianConstraint.inl>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/type/Vec.h>
 #include <sofa/type/RGBAColor.h>
@@ -36,7 +36,7 @@ namespace sofa::component::constraint::lagrangian::model
 using sofa::component::loader::MatrixLoader;
 template<class DataTypes>
 MORUnilateralInteractionConstraint<DataTypes>::MORUnilateralInteractionConstraint(MechanicalState* object1, MechanicalState* object2, std::string lambdaModesPath, std::string lambdaModesCoeffsPath)
-    : UnilateralInteractionConstraint<DataTypes>(object1,object2)
+    : UnilateralLagrangianConstraint<DataTypes>(object1,object2)
 {
     m_lambdaModesPath = lambdaModesPath;
     m_lambdaModesCoeffsPath = lambdaModesCoeffsPath;
@@ -61,7 +61,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
 {
     assert(this->mstate1);
     assert(this->mstate2);
-    double myMuForAllContacts;
+    double myMuForAllContacts {};
     reducedContacts.resize(0);
     if (this->mstate1 == this->mstate2)
     {
@@ -189,7 +189,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::getConstraintViolation(const
 
     case core::ConstraintParams::ACC :
     case core::ConstraintParams::VEL :
-        UnilateralInteractionConstraint<DataTypes>::getVelocityViolation(v);
+        UnilateralLagrangianConstraint<DataTypes>::getVelocityViolation(v);
         break;
 
     default :
@@ -315,7 +315,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::getConstraintResolution(cons
         if(c.mu > 0.0)
         {
             i = i+2;
-            UnilateralConstraintResolutionWithFriction* ucrwf = new UnilateralConstraintResolutionWithFriction(c.mu, NULL, &contactsStatus[i]);
+            UnilateralConstraintResolutionWithFriction* ucrwf = new UnilateralConstraintResolutionWithFriction(c.mu, nullptr, &contactsStatus[i]);
             ucrwf->setTolerance(customTolerance);
             resTab[offset] = ucrwf;
             // TODO : cette méthode de stockage des forces peu mal fonctionner avec 2 threads quand on utilise l'haptique

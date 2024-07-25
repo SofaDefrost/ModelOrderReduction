@@ -121,7 +121,7 @@ void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* v
         vparams->drawTool()->drawPoints(pointsP, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
         vparams->drawTool()->drawLines(pointsL, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
 
-        if (m_displayFreePosition.getValue())
+        if (this->d_displayFreePosition.getValue())
         {
             std::vector< type::Vec3 > pointsPFree;
 

@@ -108,21 +108,20 @@ public:
 
 
     using TetrahedralCorotationalFEMForceField<DataTypes>::method;
-    using TetrahedralCorotationalFEMForceField<DataTypes>::f_method; ///< the computation method of the displacements
-    using TetrahedralCorotationalFEMForceField<DataTypes>::_poissonRatio; ///< FEM Poisson Ratio
-    using TetrahedralCorotationalFEMForceField<DataTypes>::_youngModulus; ///< FEM Young Modulus
-    using TetrahedralCorotationalFEMForceField<DataTypes>::_localStiffnessFactor; ///< Allow specification of different stiffness per element. If there are N element and M values are specified, the youngModulus factor for element i would be localStiffnessFactor[i*M/N]
-    using TetrahedralCorotationalFEMForceField<DataTypes>::_updateStiffnessMatrix;
-    using TetrahedralCorotationalFEMForceField<DataTypes>::_assembling;
-    using TetrahedralCorotationalFEMForceField<DataTypes>::f_drawing; ///<  draw the forcefield if true
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_method; ///< the computation method of the displacements
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_poissonRatio; ///< FEM Poisson Ratio
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_youngModulus; ///< FEM Young Modulus
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_localStiffnessFactor; ///< Allow specification of different stiffness per element. If there are N element and M values are specified, the youngModulus factor for element i would be localStiffnessFactor[i*M/N]
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_updateStiffnessMatrix;
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_assembling;
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_drawing; ///<  draw the forcefield if true
     using TetrahedralCorotationalFEMForceField<DataTypes>::_displayWholeVolume;
-    using TetrahedralCorotationalFEMForceField<DataTypes>::drawColor1; ///<  draw color for faces 1
-    using TetrahedralCorotationalFEMForceField<DataTypes>::drawColor2; ///<  draw color for faces 2
-    using TetrahedralCorotationalFEMForceField<DataTypes>::drawColor3; ///<  draw color for faces 3
-    using TetrahedralCorotationalFEMForceField<DataTypes>::drawColor4; ///<  draw color for faces 4
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_drawColor1; ///<  draw color for faces 1
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_drawColor2; ///<  draw color for faces 2
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_drawColor3; ///<  draw color for faces 3
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_drawColor4; ///<  draw color for faces 4
     using TetrahedralCorotationalFEMForceField<DataTypes>::_volumeGraph;
-protected:
-    HyperReducedTetrahedralCorotationalFEMForceField();
+
 public:
 
     virtual void init() override;
