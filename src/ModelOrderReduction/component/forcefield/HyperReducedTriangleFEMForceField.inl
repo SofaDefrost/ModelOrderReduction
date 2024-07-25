@@ -41,11 +41,7 @@ HyperReducedTriangleFEMForceField()
 {}
 
 template <class DataTypes>
-HyperReducedTriangleFEMForceField<DataTypes>::~HyperReducedTriangleFEMForceField()
-{
-    f_poisson.setRequired(true);
-    f_young.setRequired(true);
-}
+HyperReducedTriangleFEMForceField<DataTypes>::~HyperReducedTriangleFEMForceField() = default;
 
 template <class DataTypes>
 void HyperReducedTriangleFEMForceField<DataTypes>::init()

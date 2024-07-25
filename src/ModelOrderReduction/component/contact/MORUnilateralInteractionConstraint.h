@@ -28,7 +28,7 @@
 #include <iostream>
 #include <map>
 #include <deque>
-#include <sofa/component/constraint/lagrangian/model/UnilateralInteractionConstraint.h>
+#include <sofa/component/constraint/lagrangian/model/UnilateralLagrangianConstraint.h>
 #include <Eigen/Sparse>
 
 namespace sofa::component::constraint::lagrangian::model
@@ -56,10 +56,10 @@ public:
 
 
 template<class DataTypes>
-class MORUnilateralInteractionConstraint : public UnilateralInteractionConstraint<DataTypes>
+class MORUnilateralInteractionConstraint : public UnilateralLagrangianConstraint<DataTypes>
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE(MORUnilateralInteractionConstraint,DataTypes), SOFA_TEMPLATE(UnilateralInteractionConstraint,DataTypes));
+    SOFA_CLASS(SOFA_TEMPLATE(MORUnilateralInteractionConstraint,DataTypes), SOFA_TEMPLATE(UnilateralLagrangianConstraint,DataTypes));
 
     typedef typename DataTypes::VecCoord VecCoord;
     typedef typename DataTypes::VecDeriv VecDeriv;
@@ -100,13 +100,13 @@ public:
 
 protected:
 
-    using UnilateralInteractionConstraint<DataTypes>::contacts;
-    using UnilateralInteractionConstraint<DataTypes>::epsilon;
-    using UnilateralInteractionConstraint<DataTypes>::yetIntegrated;
-    using UnilateralInteractionConstraint<DataTypes>::customTolerance;
+    using UnilateralLagrangianConstraint<DataTypes>::contacts;
+    using UnilateralLagrangianConstraint<DataTypes>::epsilon;
+    using UnilateralLagrangianConstraint<DataTypes>::yetIntegrated;
+    using UnilateralLagrangianConstraint<DataTypes>::customTolerance;
 
-    using UnilateralInteractionConstraint<DataTypes>::prevForces;
-    using UnilateralInteractionConstraint<DataTypes>::contactsStatus;
+    using UnilateralLagrangianConstraint<DataTypes>::prevForces;
+    using UnilateralLagrangianConstraint<DataTypes>::contactsStatus;
 
 //    /// Computes constraint violation
 //    in position and stores it into resolution global vector
@@ -116,7 +116,7 @@ protected:
 
 public:
 
-    using UnilateralInteractionConstraint<DataTypes>::constraintId;
+    using UnilateralLagrangianConstraint<DataTypes>::constraintId;
 protected:
     MORUnilateralInteractionConstraint(MechanicalState* object1=nullptr, MechanicalState* object2=nullptr, std::string lambdaModesPath=nullptr,std::string lambdaModesCoeffsPath=nullptr);
     ~MORUnilateralInteractionConstraint();

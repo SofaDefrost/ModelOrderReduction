@@ -17,16 +17,10 @@
 #include <ModelOrderReduction/config.h>
 #include <sofa/core/ObjectFactory.h>
 
-#include <sofa/helper/system/PluginManager.h>
-using sofa::helper::system::PluginManager;
-
 #include <fstream>
 
-namespace sofa
+namespace modelorderreduction
 {
-namespace component
-{
-
 //Here are just several convenient functions to help user to know what contains the plugin
 
 extern "C" {
@@ -68,13 +62,4 @@ const char* getModuleDescription()
     return "The ModelOrderReduction plugin builds reduced models by reducing the computational complexity of the system";
 }
 
-const char* getModuleComponentList()
-{
-  /// string containing the names of the classes provided by the plugin
-  return "";
-  //return "MyMappingPendulumInPlane, MyBehaviorModel, MyProjectiveConstraintSet";
 }
-
-
-} // namespace component
-} // namespace sofa

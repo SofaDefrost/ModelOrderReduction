@@ -172,7 +172,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::addDForce (const core::Mech
         }
 
         Displacement F;
-        this->computeForce( F, X, _elementStiffnesses.getValue()[i] );
+        this->computeForce( F, X, this->d_elementStiffnesses.getValue()[i] );
         for(int w=0; w<8; ++w)
         {
             Deriv contrib = _rotations[i].multTranspose(Deriv(F[w*3], F[w*3+1], F[w*3+2])) * kFactor;
@@ -219,12 +219,12 @@ template<class DataTypes>
     }
 
 
-    if(f_updateStiffnessMatrix.getValue())
-        this->computeElementStiffness( (*_elementStiffnesses.beginEdit())[i], _materialsStiffnesses[i], deformed, i, _sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0 );
+    if(this->d_updateStiffnessMatrix.getValue())
+        this->computeElementStiffness( (*this->d_elementStiffnesses.beginEdit())[i], _materialsStiffnesses[i], deformed, i, _sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0 );
 
 
     Displacement F; //forces
-    this->computeForce( F, D, _elementStiffnesses.getValue()[i] ); // compute force on element
+    this->computeForce( F, D, this->d_elementStiffnesses.getValue()[i] ); // compute force on element
 
     for(int w=0; w<8; ++w)
         f[elem[w]] += Deriv( F[w*3],  F[w*3+1],   F[w*3+2]  ) ;
@@ -279,12 +279,12 @@ template<class DataTypes>
     }
 
 
-    if(f_updateStiffnessMatrix.getValue())
-        this->computeElementStiffness( (*_elementStiffnesses.beginEdit())[i], _materialsStiffnesses[i], deformed, i, _sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0 );
+    if(this->d_updateStiffnessMatrix.getValue())
+        this->computeElementStiffness( (*this->d_elementStiffnesses.beginEdit())[i], _materialsStiffnesses[i], deformed, i, _sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0 );
 
 
     Displacement F; //forces
-    this->computeForce( F, D, _elementStiffnesses.getValue()[i] ); // compute force on element
+    this->computeForce( F, D, this->d_elementStiffnesses.getValue()[i] ); // compute force on element
     std::vector<Deriv> contrib;
     std::vector<unsigned int> indexList;
     contrib.resize(8);
@@ -359,13 +359,13 @@ template<class DataTypes>
     //forces
     Displacement F;
 
-    if(f_updateStiffnessMatrix.getValue())
+    if(this->d_updateStiffnessMatrix.getValue())
 // 		this->computeElementStiffness( _elementStiffnesses[i], _materialsStiffnesses[i], deformed );
-        this->computeElementStiffness( (*_elementStiffnesses.beginEdit())[i], _materialsStiffnesses[i], deformed, i, _sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0);
+        this->computeElementStiffness( (*this->d_elementStiffnesses.beginEdit())[i], _materialsStiffnesses[i], deformed, i, _sparseGrid?_sparseGrid->getStiffnessCoef(i):1.0);
 
 
     // compute force on element
-    this->computeForce( F, D, _elementStiffnesses.getValue()[i] );
+    this->computeForce( F, D, this->d_elementStiffnesses.getValue()[i] );
 
 
     for(int j=0; j<8; ++j)
@@ -397,7 +397,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
     constexpr auto S = DataTypes::deriv_total_size; // size of node blocks
     constexpr auto N = Element::size();
 
-    const auto& stiffnesses = _elementStiffnesses.getValue();
+    const auto& stiffnesses = this->d_elementStiffnesses.getValue();
     const auto* indexedElements = this->getIndexedElements();
     sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
 
@@ -405,7 +405,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
                        .withRespectToPositionsIn(this->mstate);
 
 
-    typename VecElement::const_iterator it, it0;
+    VecElement::const_iterator it, it0;
 
     it0 = indexedElements->begin();
     std::size_t nbElementsConsidered;
@@ -453,7 +453,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
 {
     if (!vparams->displayFlags().getShowForceFields()) return;
     if (!this->mstate) return;
-    if (!f_drawing.getValue()) return;
+    if (!this->d_drawing.getValue()) return;
 
 
     const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
@@ -495,7 +495,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
         Index g = (*it)[6];
 
         Coord center = (x[a]+x[b]+x[c]+x[d]+x[e]+x[g]+x[f]+x[h])*0.125;
-        Real percentage = f_drawPercentageOffset.getValue();
+        Real percentage = this->d_drawPercentageOffset.getValue();
         Coord pa = x[a]-(x[a]-center)*percentage;
         Coord pb = x[b]-(x[b]-center)*percentage;
         Coord pc = x[c]-(x[c]-center)*percentage;
