@@ -27,7 +27,7 @@
 #include <sofa/core/collision/Contact.h>
 #include <sofa/core/collision/Intersection.h>
 #include <sofa/component/mapping/linear/BarycentricMapping.h>
-#include <sofa/component/constraint/lagrangian/model/UnilateralInteractionConstraint.h>
+#include <sofa/component/constraint/lagrangian/model/UnilateralLagrangianConstraint.h>
 #include <ModelOrderReduction/component/contact/MORUnilateralInteractionConstraint.h>
 #include <sofa/helper/Factory.h>
 #include <sofa/component/collision/response/mapper/BaseContactMapper.h>
