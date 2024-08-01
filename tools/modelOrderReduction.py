@@ -55,6 +55,12 @@ else:
 
 phasesToExecute = None
 
+### BOUNCING BALL PARAM
+# nodeToReduce = 'solverNode/model'
+# dummyActuator = ObjToAnimate("dummyActuator/actuatorState","shakingLiver",incr=0.4,incrPeriod=2.5,rangeOfAction=6.2,dataToWorkOn="position",angle=0,rodRadius=0.4)
+# listObjToAnimate = [dummyActuator]
+# addRigidBodyModes = [1,1,1]
+
 ### DIAMOND ROBOT PARAM
 # nodeToReduce = '/modelNode'
 # # north = ObjToAnimate("modelNode/north", incr=5,incrPeriod=10,rangeOfAction=40)
