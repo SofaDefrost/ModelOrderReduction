@@ -3,15 +3,11 @@
 :code:`python readLambdaFilesAndComputeNNMF.py stateFilename tol modesFilename addRigidBodyModesBOOL`
 """
 
+from sys import argv
 import numpy as np
 from scipy.linalg import solve
 import platform
 
-from sys import argv
-
-slash = '/'
-if "Windows" in platform.platform():
-    slash = "\\"
 
 def readLambdaFilesAndComputeNNMF(lambdaIndicesPath, lambdaValsPath, dim, withFriction, nbOtherConstraints, NNMFfileName, NonZerosCoeffTable, nbModes):# , verbose=False ):
 
