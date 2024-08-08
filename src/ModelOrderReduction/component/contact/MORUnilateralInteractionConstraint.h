@@ -118,7 +118,7 @@ public:
 
     using UnilateralLagrangianConstraint<DataTypes>::constraintId;
 protected:
-    MORUnilateralInteractionConstraint(MechanicalState* object1=nullptr, MechanicalState* object2=nullptr, std::string lambdaModesPath=nullptr,std::string lambdaModesCoeffsPath=nullptr);
+    MORUnilateralInteractionConstraint(MechanicalState* object1=nullptr, MechanicalState* object2=nullptr, std::string lambdaModesPath="",std::string lambdaModesCoeffsPath="");
     ~MORUnilateralInteractionConstraint();
 
 public:
