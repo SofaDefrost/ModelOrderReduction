@@ -24,9 +24,9 @@ def newBox(positions,modelPosition,translation,rotation,offset,scale=[1.0,1.0,1.
     offset =transformPositions([offset],eulerRotation=rotation,scale=scale)[0]
     return add(pos,offset).tolist()
 
-def Reduced_test(
+def Reduced_SofiaLeg(
                   attachedTo=None,
-                  name="Reduced_test",
+                  name="Reduced_SofiaLeg",
                   rotation=[0.0, 0.0, 0.0],
                   translation=[0.0, 0.0, 0.0],
                   scale=[1.0, 1.0, 1.0],
@@ -105,8 +105,8 @@ def createScene(rootNode):
                         gravity=[0.0, -9810.0, 0.0])
     rootNode.VisualStyle.displayFlags="showForceFields"
     
-    Reduced_test(rootNode,
-                        name="Reduced_test",
+    Reduced_SofiaLeg(rootNode,
+                        name="Reduced_SofiaLeg",
                         surfaceMeshFileName=surfaceMeshFileName)
 
     # translate = 300
@@ -116,7 +116,7 @@ def createScene(rootNode):
 
     # for i in range(3):
 
-    #     Reduced_test(rootNode,
+    #     Reduced_SofiaLeg(rootNode,
     #                    name="Reduced_test_blue_"+str(i),
     #                    rotation=[rotationBlue*i, 0.0, 0.0],
     #                    translation=[i*translate, 0.0, 0.0],
@@ -124,7 +124,7 @@ def createScene(rootNode):
     #                    surfaceMeshFileName=surfaceMeshFileName)
     # for i in range(3):
 
-    #     Reduced_test(rootNode,
+    #     Reduced_SofiaLeg(rootNode,
     #                    name="Reduced_test_white_"+str(i),
     #                    rotation=[0.0, rotationWhite*i, 0.0],
     #                    translation=[i*translate, translate, -translate],
@@ -133,7 +133,7 @@ def createScene(rootNode):
 
     # for i in range(3):
 
-    #     Reduced_test(rootNode,
+    #     Reduced_SofiaLeg(rootNode,
     #                    name="Reduced_test_red_"+str(i),
     #                    rotation=[0.0, 0.0, i*rotationRed],
     #                    translation=[i*translate, 2*translate, -2*translate],

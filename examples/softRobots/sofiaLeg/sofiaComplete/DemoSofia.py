@@ -1,5 +1,6 @@
 import Sofa
 import os
+import sys
 
 #   STLIB IMPORT
 from stlib3.scene import MainHeader
@@ -7,9 +8,10 @@ from stlib3.scene import ContactHeader
 from stlib3.physics.rigid import Floor
 
 # SOFIA IMPORT
-from sofia.sofiaLeg import SofiaLeg
-from sofia.reduced_sofiaLeg import Reduced_SofiaLeg
-from sofia.sofiaComplete import SofiaSixLegs
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from sofiaLeg import SofiaLeg
+from reduced.reduced_sofiaLeg import Reduced_SofiaLeg
+from sofiaSixLegs import SofiaSixLegs
 
 path = os.path.dirname(os.path.abspath(__file__))
 
