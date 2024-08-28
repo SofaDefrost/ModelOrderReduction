@@ -19,7 +19,7 @@ if "Windows" in platform.platform():
     slash = "\\"
 
 # Our Original Scene IMPORT
-originalScene = os.path.dirname(os.path.abspath(__file__)) + "/../../../liverFine_gravity.pyscn"
+originalScene = os.path.dirname(os.path.abspath(__file__)) + "/../../../liverFine_gravity.py"
 originalScene = os.path.normpath(originalScene)
 originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
 

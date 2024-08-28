@@ -4,7 +4,7 @@ import os
 
 meshPath = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
 
-plugins=["SofaPython3","SoftRobots","ModelOrderReduction","STLIB",
+plugins=["SofaPython3","ModelOrderReduction","STLIB",
         
          "Sofa.Component.Visual",
          "Sofa.Component.AnimationLoop",
