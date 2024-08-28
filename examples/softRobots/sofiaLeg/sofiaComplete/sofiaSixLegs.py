@@ -106,7 +106,7 @@ def SofiaSixLegs(
     # Body of the robot: rigid !
     BodyNode = sofia.addChild('rigidBody')
     BodyNode.addObject('EulerImplicitSolver', name='odesolver', firstOrder=0);
-    BodyNode.addObject('PCGLinearSolver', name='linearSolver',iterations=2,tolerance=1.0e-18,threshold=1.0e-30, preconditioners="preconditioner")
+    BodyNode.addObject('ShewchukPCGLinearSolver', name='linearSolver',iterations=2,tolerance=1.0e-18, preconditioner="@preconditioner")
     BodyNode.addObject('SparseLDLSolver', name='preconditioner')
     BodyNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=rigidBodyPosition) # , showObject='1', showObjectScale=15)
     BodyNode.addObject('UniformMass', showAxisSizeFactor='0.01',totalMass=0.5) #mass=rigidBodyMass) #
@@ -214,7 +214,7 @@ def createScene(rootNode):
     rootNode.addObject('CollisionPipeline', verbose="0");
     rootNode.addObject('BruteForceBroadPhase', name="N2")
     rootNode.addObject('BVHNarrowPhase')
-    rootNode.addObject('CollisionResponse', response="FrictionContact");
+    rootNode.addObject('CollisionResponse', response="FrictionContactConstraint");
     rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance=10, contactDistance=1.5);
 
 
