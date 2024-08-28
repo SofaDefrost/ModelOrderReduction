@@ -12,8 +12,6 @@ iterations "organs/liver/liverFine_rotationalActuation.py" "10"
 timeout "organs/liver/liverFine_rotationalActuation.py" "120"
 
 
-
-
 # Others
 iterations "others/caduceus/SphereOnAPlane.softSphereFalling.pyscn" "10"
 timeout "others/caduceus/SphereOnAPlane.softSphereFalling.pyscn" "120"

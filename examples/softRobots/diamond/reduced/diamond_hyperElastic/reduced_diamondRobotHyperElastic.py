@@ -85,25 +85,25 @@ def Reduced_test(
 
 
     north = modelNode.addChild('north')
-    north.addObject('MechanicalObject' , position = TRSinOrigin([[0, 97, 45]] , [0, 0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
-    north.addObject('CableConstraint' , indices = [0], pullPoint = TRSinOrigin([0, 10, 30] , [0, 0, 35],translation,rotation,scale), value = 0.0, valueType = 'displacement', hasPullPoint = True)
+    north.addObject('MechanicalObject' , position = TRSinOrigin([[0, 97, 45]] , [0.0, 0.0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
+    north.addObject('CableConstraint' , indices = [0], pullPoint = TRSinOrigin([0, 10, 30] , [0.0, 0.0, 35],translation,rotation,scale), value = 0.0, valueType = 'displacement', hasPullPoint = True)
     north.addObject('BarycentricMapping' , name = 'Mapping', mapForces = False, mapMasses = False)
 
 
     west = modelNode.addChild('west')
-    west.addObject('MechanicalObject' , position = TRSinOrigin([[-97, 0, 45]] , [0, 0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
+    west.addObject('MechanicalObject' , position = TRSinOrigin([[-97, 0, 45]] , [0.0, 0.0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
     west.addObject('CableConstraint' , indices = [0], pullPoint = TRSinOrigin([-10, 0, 30] , [0, 0, 35],translation,rotation,scale), value = 0.0, valueType = 'displacement', hasPullPoint = True)
     west.addObject('BarycentricMapping' , name = 'Mapping', mapForces = False, mapMasses = False)
 
 
     south = modelNode.addChild('south')
-    south.addObject('MechanicalObject' , position = TRSinOrigin([[0, -97, 45]] , [0, 0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
+    south.addObject('MechanicalObject' , position = TRSinOrigin([[0, -97, 45]] , [0.0, 0.0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
     south.addObject('CableConstraint' , indices = [0], pullPoint = TRSinOrigin([0, -10, 30] , [0, 0, 35],translation,rotation,scale), value = 0.0, valueType = 'displacement', hasPullPoint = True)
     south.addObject('BarycentricMapping' , name = 'Mapping', mapForces = False, mapMasses = False)
 
 
     east = modelNode.addChild('east')
-    east.addObject('MechanicalObject' , position = TRSinOrigin([[97, 0, 45]] , [0, 0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
+    east.addObject('MechanicalObject' , position = TRSinOrigin([[97, 0, 45]] , [0.0, 0.0, 35],translation,rotation,scale), rotation = [0.0, 0.0, 0.0], translation = [0.0, 0.0, 0.0], scale = 1.0)
     east.addObject('CableConstraint' , indices = [0], pullPoint = TRSinOrigin([10, 0, 30] , [0, 0, 35],translation,rotation,scale), value = 0.0, valueType = 'displacement', hasPullPoint = True)
     east.addObject('BarycentricMapping' , name = 'Mapping', mapForces = False, mapMasses = False)
 

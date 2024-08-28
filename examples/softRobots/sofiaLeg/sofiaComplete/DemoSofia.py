@@ -19,7 +19,7 @@ surfaceMeshFileName = 'sofia_leg.stl'
 
 
 def createScene(rootNode):
-    MainHeader(rootNode,plugins=["SofaPython","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=["ModelOrderReduction"],
                         dt=0.01,
                         gravity=[0, -9810, 0])
     rootNode.VisualStyle.displayFlags='showVisualModels'

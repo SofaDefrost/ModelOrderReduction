@@ -5,12 +5,15 @@ import sys
 from numpy import add,multiply
 from splib3.numerics import *
 
+
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sofiaLeg import SofiaLeg
-from reduced_sofiaLeg import Reduced_SofiaLeg
+from reduced.reduced_sofiaLeg import Reduced_SofiaLeg
 
-from controller import SofiaController
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './controller')))
+from sofiaController import *
 
 path = os.path.dirname(os.path.abspath(__file__))
 meshPath = path + '/mesh/'
