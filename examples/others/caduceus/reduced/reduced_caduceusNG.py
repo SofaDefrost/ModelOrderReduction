@@ -106,6 +106,36 @@ def Reduced_test(
     VisualEye.addObject('OglModel' , name = 'VisualEye', src = '@loader', translation = [0, 5, 0])
     VisualEye.addObject('BarycentricMapping')
 
+
+    base = modelRoot.addChild("base")
+
+    stick = base.addChild("stick")
+    stick.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_batons.obj")
+    stick.addObject('MeshTopology', src='@loader', name='topo')
+    stick.addObject('MechanicalObject', name='stickCollisModel')
+    stick.addObject('LineCollisionModel',simulated="false", moving="false")
+    stick.addObject('PointCollisionModel',simulated="false", moving="false")
+    
+    blobs = base.addChild("blobs")
+    blobs.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_boules_V3.obj")
+    blobs.addObject('MeshTopology', src='@loader', name='topo')
+    blobs.addObject('MechanicalObject', name='blobsCollisModel')
+    blobs.addObject('TriangleCollisionModel',simulated="false", moving="false")
+    blobs.addObject('LineCollisionModel',simulated="false", moving="false")
+    blobs.addObject('PointCollisionModel',simulated="false", moving="false")
+
+    foot = base.addChild("foot")
+    foot.addObject('MeshOBJLoader',name="loader", filename="mesh/collision_pied.obj")
+    foot.addObject('MeshTopology', src='@loader', name='topo')
+    foot.addObject('MechanicalObject', name='footCollisModel')
+    foot.addObject('TriangleCollisionModel',simulated="false", moving="false")
+    foot.addObject('LineCollisionModel',simulated="false", moving="false")
+    foot.addObject('PointCollisionModel',simulated="false", moving="false")
+    
+    visu = base.addChild("visu")
+    visu.addObject('MeshOBJLoader', name="SOFA_pod", filename="mesh/SOFA_pod.obj", handleSeams="1" )
+    visu.addObject('OglModel' , src = '@SOFA_pod', name = 'VisuPOD',color=[1,69.0/255.0,0])
+
     return Snake
 
 
@@ -114,10 +144,18 @@ from stlib3.scene import MainHeader
 def createScene(rootNode):
     surfaceMeshFileName = False
 
-    MainHeader(rootNode,plugins=["SoftRobots","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=["ModelOrderReduction"],
                         dt=0.02,
                         gravity=[0.0, -981.0, 0.0])
     rootNode.VisualStyle.displayFlags="showForceFields"
+    
+    rootNode.addObject('FreeMotionAnimationLoop')
+    rootNode.addObject('GenericConstraintSolver', printLog='0', tolerance="1e-6", maxIterations="500")
+    rootNode.addObject('CollisionPipeline', verbose="0")
+    rootNode.addObject('BruteForceBroadPhase', name="N2")
+    rootNode.addObject('BVHNarrowPhase')
+    rootNode.addObject('CollisionResponse', response="FrictionContactConstraint", responseParams="mu=0.7")
+    rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.1", angleCone="0.05")
     
     Reduced_test(rootNode,
                         name="Reduced_test",
