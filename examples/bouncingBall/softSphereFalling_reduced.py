@@ -66,9 +66,9 @@ def createScene(rootNode):
                 model.addObject('UniformMass', totalMass='0.2', printLog='0')
 #                model.addObject('TetrahedronFEMForceField', template='Vec3d',youngModulus=1.0e3,poissonRatio=0.45)
 #                model.addObject('HyperReducedTetrahedronFEMForceField' , template = 'Vec3', method = 'large', name = 'reducedFF_modelNode_0', poissonRatio = 0.45, youngModulus = 1.0e3, nbModes = nbrOfModes, prepareECSW = True, performECSW = False, modesPath = 'modes.txt',nbTrainingSet=100,periodSaveGIE=10)
-                model.addObject('HyperReducedTetrahedronFEMForceField' , template = 'Vec3', method = 'large', name = 'reducedFF_modelNode_0', poissonRatio = 0.45, youngModulus = 1.0e3, nbModes = nbrOfModes, prepareECSW = False, performECSW = True, modesPath = 'modes.txt', RIDPath='RID.txt',weightsPath='weights.txt')
+                model.addObject('HyperReducedTetrahedronFEMForceField' , template = 'Vec3', method = 'large', name = 'reducedFF_modelNode_0', poissonRatio = 0.45, youngModulus = 1.0e3, nbModes = nbrOfModes, prepareECSW = False, performECSW = True, modesPath = pathMesh + 'modes.txt', RIDPath = pathMesh + 'RID.txt', weightsPath = pathMesh + 'weights.txt')
 
-                model.addObject('ModelOrderReductionMapping' , input = '@../modes', modesPath = './modes.txt', output = '@./tetras')
+                model.addObject('ModelOrderReductionMapping' , input = '@../modes', modesPath = pathMesh + 'modes.txt', output = '@./tetras')
 
                 modelCollis = model.addChild('modelCollis')
                 modelCollis.addObject('MeshSTLLoader', name='loader', filename=pathMesh+'sphere.stl', rotation="0 0 0", translation=sphereTranslation)
