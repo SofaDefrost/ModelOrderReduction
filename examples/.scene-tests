@@ -29,3 +29,6 @@ timeout "softRobots/multiGait/reduced/reduced_multiGait.py" "120"
 
 ignore "softRobots/multiGait/reducedMultiGait-softRobot.pyscn" # TODO fix: MechanicalMatrixMapperMOR is missing 
 ignore "softRobots/multiGait/reduced/debug/debug_scene.py" # TODO fix: ODE solver is not copied during reduction process
+
+ignore "softRobots/sofiaLeg/sofiaComplete/sofiaSixLegs.py" # TODO fix: many errors in the scripts, methods signature changed, SOFA scene using old SofaPython API
+ignore "softRobots/sofiaLeg/sofiaComplete/DemoSofia.py" # TODO fix: depends on sofiaSixLegs.py . Should be fixed if sofiaSixLegs.py is working

@@ -111,14 +111,14 @@ def SofiaSixLegs(
     BodyNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=rigidBodyPosition) # , showObject='1', showObjectScale=15)
     BodyNode.addObject('UniformMass', showAxisSizeFactor='0.01',totalMass=0.5) #mass=rigidBodyMass) #
 
-    BodyNode.addObject('LinearSolverConstraintCorrection', solverName='preconditioner');
-    # BodyNode.addObject('GenericConstraintCorrection', solverName='preconditioner')
+    BodyNode.addObject('LinearSolverConstraintCorrection', linearSolver='@preconditioner');
+    # BodyNode.addObject('GenericConstraintCorrection', linearSolver='preconditioner')
 
     # Frame
     FramesNode= BodyNode.addChild('frames')
     FramesNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=framePosition, showObject='1', showObjectScale=15)
     # FramesNode.addObject('UniformMass', totalMass=0.05, showAxisSizeFactor=0.010) # we comment it because we don't see its use
-    FramesNode.addObject('RigidRigidMapping', mapMasses=0, mapForces=0)
+    FramesNode.addObject('RigidMapping', mapMasses=0, mapForces=0)
 
 
     # RigidMappedBody
