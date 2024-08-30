@@ -13,12 +13,12 @@ def rotationPoint(Pos0, angle, brasLevier):
 
     return posOut
 
-class SofiaController(Sofa.PythonScriptController):
+class SofiaController(Sofa.Core.Controller):
 
     def initGraph(self, node):
 
         self.node = node
-        print self.node.name
+        print (self.node.name)
         self.name = "SofiaControlManager"
 
     def init(self,actuators,auto=True):

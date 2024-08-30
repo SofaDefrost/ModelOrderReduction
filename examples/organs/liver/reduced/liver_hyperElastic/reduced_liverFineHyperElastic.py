@@ -99,7 +99,7 @@ from stlib3.scene import MainHeader
 def createScene(rootNode):
     surfaceMeshFileName = False
 
-    MainHeader(rootNode,plugins=["SoftRobots","ModelOrderReduction"],
+    MainHeader(rootNode,plugins=["ModelOrderReduction"],
                         dt=0.01,
                         gravity=[0.0, -981.0, 0.0])
     rootNode.VisualStyle.displayFlags="showForceFields"

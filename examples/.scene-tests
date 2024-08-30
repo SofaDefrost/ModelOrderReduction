@@ -1,17 +1,15 @@
 # Scenes to reduce are too heavy and slow to be simulated, so compute only a few iterations
 
-# Organs
-iterations "organs/liver/liverFine.pyscn" "10"
-timeout "organs/liver/liverFine.pyscn" "120"
-
+# Organs/liver
+# Original scenes are tested with timout. Reduced versions and debug scenes are tested
 iterations "organs/liver/liverFineHyperElastic.pyscn" "10"
 timeout "organs/liver/liverFineHyperElastic.pyscn" "120"
 
-iterations "organs/liver/liverFine_rotationalActuation.py" "10"
-timeout "organs/liver/liverFine_rotationalActuation.py" "120"
-
 iterations "organs/liver/liverFine_gravity.py" "10"
 timeout "organs/liver/liverFine_gravity.py" "120"
+
+iterations "organs/liver/liverFine_rotationalActuation.py" "10"
+timeout "organs/liver/liverFine_rotationalActuation.py" "120"
 
 
 # Others
@@ -31,3 +29,6 @@ timeout "softRobots/multiGait/reduced/reduced_multiGait.py" "120"
 
 ignore "softRobots/multiGait/reducedMultiGait-softRobot.pyscn" # TODO fix: MechanicalMatrixMapperMOR is missing 
 ignore "softRobots/multiGait/reduced/debug/debug_scene.py" # TODO fix: ODE solver is not copied during reduction process
+
+ignore "softRobots/sofiaLeg/sofiaComplete/sofiaSixLegs.py" # TODO fix: many errors in the scripts, methods signature changed, SOFA scene using old SofaPython API
+ignore "softRobots/sofiaLeg/sofiaComplete/DemoSofia.py" # TODO fix: depends on sofiaSixLegs.py . Should be fixed if sofiaSixLegs.py is working

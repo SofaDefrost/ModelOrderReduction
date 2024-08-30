@@ -11,7 +11,6 @@ def createScene(rootNode):
     rootNode.addObject('VisualStyle', displayFlags='showBehaviorModels showForceFields')
 
     rootNode.addObject('RequiredPlugin', name='ModelOrderReduction')
-    rootNode.addObject('RequiredPlugin', name='SoftRobots')
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.AnimationLoop') # Needed to use components [FreeMotionAnimationLoop]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Algorithm') # Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,CollisionPipeline]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Collision.Detection.Intersection') # Needed to use components [LocalMinDistance]  

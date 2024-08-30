@@ -5,12 +5,15 @@ import sys
 from numpy import add,multiply
 from splib3.numerics import *
 
+
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sofiaLeg import SofiaLeg
-from reduced_sofiaLeg import Reduced_SofiaLeg
+from reduced.reduced_sofiaLeg import Reduced_SofiaLeg
 
-from controller import SofiaController
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './controller')))
+from sofiaController import *
 
 path = os.path.dirname(os.path.abspath(__file__))
 meshPath = path + '/mesh/'
@@ -103,19 +106,19 @@ def SofiaSixLegs(
     # Body of the robot: rigid !
     BodyNode = sofia.addChild('rigidBody')
     BodyNode.addObject('EulerImplicitSolver', name='odesolver', firstOrder=0);
-    BodyNode.addObject('PCGLinearSolver', name='linearSolver',iterations=2,tolerance=1.0e-18,threshold=1.0e-30, preconditioners="preconditioner")
+    BodyNode.addObject('ShewchukPCGLinearSolver', name='linearSolver',iterations=2,tolerance=1.0e-18, preconditioner="@preconditioner")
     BodyNode.addObject('SparseLDLSolver', name='preconditioner')
     BodyNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=rigidBodyPosition) # , showObject='1', showObjectScale=15)
     BodyNode.addObject('UniformMass', showAxisSizeFactor='0.01',totalMass=0.5) #mass=rigidBodyMass) #
 
-    BodyNode.addObject('LinearSolverConstraintCorrection', solverName='preconditioner');
-    # BodyNode.addObject('GenericConstraintCorrection', solverName='preconditioner')
+    BodyNode.addObject('LinearSolverConstraintCorrection', linearSolver='@preconditioner');
+    # BodyNode.addObject('GenericConstraintCorrection', linearSolver='preconditioner')
 
     # Frame
     FramesNode= BodyNode.addChild('frames')
     FramesNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=framePosition, showObject='1', showObjectScale=15)
     # FramesNode.addObject('UniformMass', totalMass=0.05, showAxisSizeFactor=0.010) # we comment it because we don't see its use
-    FramesNode.addObject('RigidRigidMapping', mapMasses=0, mapForces=0)
+    FramesNode.addObject('RigidMapping', mapMasses=0, mapForces=0)
 
 
     # RigidMappedBody
@@ -211,7 +214,7 @@ def createScene(rootNode):
     rootNode.addObject('CollisionPipeline', verbose="0");
     rootNode.addObject('BruteForceBroadPhase', name="N2")
     rootNode.addObject('BVHNarrowPhase')
-    rootNode.addObject('CollisionResponse', response="FrictionContact");
+    rootNode.addObject('CollisionResponse', response="FrictionContactConstraint");
     rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance=10, contactDistance=1.5);
 
 
