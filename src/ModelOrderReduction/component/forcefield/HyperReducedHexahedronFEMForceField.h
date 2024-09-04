@@ -81,7 +81,6 @@ protected:
     using HexahedronFEMForceField<DataTypes>::m_potentialEnergy;
 
 
-    using HexahedronFEMForceField<DataTypes>::m_topology;
     using HexahedronFEMForceField<DataTypes>::_sparseGrid;
     using HexahedronFEMForceField<DataTypes>::_initialPoints; ///< the intial positions of the points
 
@@ -152,7 +151,7 @@ protected:
 
     inline const VecElement *getIndexedElements()
     {
-        return & (m_topology->getHexahedra());
+        return & (this->l_topology->getHexahedra());
     }
 
 
