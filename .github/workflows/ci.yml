@@ -65,10 +65,11 @@ jobs:
         # Characters removed: " : < > | * ? \r \n \ /
         # Spaces are replaced with underscores
         # This sanitization prevents errors in artifact creation and retrieval
+        shell: pwsh
         run: |
-          original_name="ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}"
-          artifact_name="${original_name//[\":;<>|*?\\\/]}"
-          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
+          $originalName = "ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}"
+          $artifact_name = $originalName -replace '[":;<>|*?\r\n\\/]', '' -replace ' ', '_'
+          echo "artifact_name=$artifact_name" >> $env:GITHUB_OUTPUT
  
       - name: Create artifact
         uses: actions/upload-artifact@v4.4.0
