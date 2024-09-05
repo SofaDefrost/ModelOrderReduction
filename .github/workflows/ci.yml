@@ -61,10 +61,13 @@ jobs:
 
       - name: Sanitize artifact name
         id: sanitize
+        # This step removes special characters from the artifact name to ensure compatibility with upload-artifact
+        # Characters removed: " : < > | * ? \r \n \ /
+        # Spaces are replaced with underscores
+        # This sanitization prevents errors in artifact creation and retrieval
         run: |
-          artifact_name=$(echo "ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}" | \
-            tr -d '":;<>|*?\r\n\\/' | \
-            tr ' ' '_')
+          original_name="ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}"
+          artifact_name="${original_name//[\":;<>|*?\\\/]}"
           echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
  
       - name: Create artifact
