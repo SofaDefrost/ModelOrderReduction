@@ -58,17 +58,25 @@ jobs:
             echo ${CCACHE_BASEDIR}
             ccache -s
           fi
+
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          artifact_name=$(echo "ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}" | \
+            tr -d '":;<>|*?\r\n\\/' | \
+            tr ' ' '_')
+          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
  
       - name: Create artifact
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}
+          name: ${{ steps.sanitize.outputs.artifact_name }}
           path: ${{ env.WORKSPACE_INSTALL_PATH }}
 
       - name: Install artifact
         uses: actions/download-artifact@v4.1.7
         with:
-          name: ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}
+          name: ${{ steps.sanitize.outputs.artifact_name }}
           path: ${{ env.WORKSPACE_ARTIFACT_PATH }}
            
       - name: Check environment for tests
