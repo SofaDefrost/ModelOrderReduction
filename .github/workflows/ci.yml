@@ -58,17 +58,29 @@ jobs:
             echo ${CCACHE_BASEDIR}
             ccache -s
           fi
+
+      - name: Sanitize artifact name
+        id: sanitize
+        # This step removes special characters from the artifact name to ensure compatibility with upload-artifact
+        # Characters removed: " : < > | * ? \r \n \ /
+        # Spaces are replaced with underscores
+        # This sanitization prevents errors in artifact creation and retrieval
+        shell: pwsh
+        run: |
+          $originalName = "ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}"
+          $artifact_name = $originalName -replace '[":;<>|*?\r\n\\/]', '' -replace ' ', '_'
+          echo "artifact_name=$artifact_name" >> $env:GITHUB_OUTPUT
  
       - name: Create artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.4.0
         with:
-          name: ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}
+          name: ${{ steps.sanitize.outputs.artifact_name }}
           path: ${{ env.WORKSPACE_INSTALL_PATH }}
 
       - name: Install artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
-          name: ModelOrderReduction_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}
+          name: ${{ steps.sanitize.outputs.artifact_name }}
           path: ${{ env.WORKSPACE_ARTIFACT_PATH }}
            
       - name: Check environment for tests
@@ -95,7 +107,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Get artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           path: artifacts
 
