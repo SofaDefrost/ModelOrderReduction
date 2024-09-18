@@ -101,11 +101,9 @@ public:
 protected:
 
     using UnilateralLagrangianConstraint<DataTypes>::contacts;
-    using UnilateralLagrangianConstraint<DataTypes>::epsilon;
     using UnilateralLagrangianConstraint<DataTypes>::yetIntegrated;
     using UnilateralLagrangianConstraint<DataTypes>::customTolerance;
 
-    using UnilateralLagrangianConstraint<DataTypes>::prevForces;
     using UnilateralLagrangianConstraint<DataTypes>::contactsStatus;
 
 //    /// Computes constraint violation
