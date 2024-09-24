@@ -67,7 +67,7 @@ def createScene(rootNode):
     sphereTranslation = [0,7,0]
     model = solverNode.addChild('model')
     model.addObject('MeshVTKLoader', name='loader', filename=pathMesh+'sphere.vtk', translation=sphereTranslation)
-    model.addObject('Mesh',src = '@loader')
+    model.addObject('MeshTopology',src = '@loader')
     model.addObject('MechanicalObject', name='tetras', template='Vec3d', showIndices='false', showIndicesScale='4e-5', rx='0',printLog="0")
     model.addObject('UniformMass', totalMass='0.1', printLog='0')
     model.addObject('TetrahedronFEMForceField', template='Vec3d',youngModulus=30)
@@ -109,7 +109,7 @@ def createScene(rootNode):
     #rotation=[30,0,0]
     planeNode = rootNode.addChild('Plane')
     planeNode.addObject('MeshOBJLoader', name='loader', filename="mesh/floorFlat.obj", triangulate="true",rotation=rotation)
-    planeNode.addObject('Mesh', src="@loader")
+    planeNode.addObject('MeshTopology', src="@loader")
     planeNode.addObject('MechanicalObject', src="@loader", rotation="0 0 0", translation="0 0 0", scale="1")
     planeNode.addObject('TriangleCollisionModel',simulated="0", moving="0",group="1",name='TriPlane')
 
