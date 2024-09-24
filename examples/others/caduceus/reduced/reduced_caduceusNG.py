@@ -81,7 +81,7 @@ def Reduced_test(
 
     collis = Snake.addChild('collis')
     collis.addObject('MeshOBJLoader' , name = 'loader', filename = pathMesh + r'/mesh/meca_snake_900tri.obj', translation = add(translation,[0, 5, 0]), rotation = add(rotation,[0.0, 0.0, 0.0]), scale3d = multiply(scale,[1.0, 1.0, 1.0]))
-    collis.addObject('Mesh' , src = '@loader', name = 'topo')
+    collis.addObject('MeshTopology' , src = '@loader', name = 'topo')
     collis.addObject('MechanicalObject' , name = 'CollisModel')
     collis.addObject('TriangleCollisionModel' , selfCollision = False)
     collis.addObject('LineCollisionModel' , selfCollision = False)
