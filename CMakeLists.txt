@@ -8,7 +8,6 @@ include(cmake/environment.cmake)
 # Specify all required packages
 find_package(Sofa.Core REQUIRED)
 sofa_find_package(Sofa.Component.Collision.Response.Contact REQUIRED)
-sofa_find_package(Sofa.Component.Mapping.MappedMatrix REQUIRED)
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.HyperElastic REQUIRED)
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic REQUIRED)
 sofa_find_package(Sofa.GL REQUIRED)
@@ -88,7 +87,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_MOD
 target_link_libraries(${PROJECT_NAME}
     Sofa.Core
     Sofa.Component.Collision.Response.Contact
-    Sofa.Component.Mapping.MappedMatrix
     Sofa.Component.SolidMechanics.FEM.HyperElastic
     Sofa.Component.SolidMechanics.FEM.Elastic
     Sofa.GL

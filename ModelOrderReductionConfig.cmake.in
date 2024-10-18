@@ -4,7 +4,6 @@
 
 find_package(Sofa.Core REQUIRED)
 find_package(Sofa.Component.Collision.Response.Contact REQUIRED)
-find_package(Sofa.Component.Mapping.MappedMatrix REQUIRED)
 find_package(Sofa.Component.SolidMechanics.FEM.HyperElastic REQUIRED)
 find_package(Sofa.Component.SolidMechanics.FEM.Elastic REQUIRED)
 find_package(Sofa.GL REQUIRED)
