@@ -77,7 +77,7 @@ def Reduced_test(
     finger.addObject('UniformMass' , totalMass = 0.05)
     finger.addObject('HyperReducedTetrahedronFEMForceField' , poissonRatio = '0.45', youngModulus = '600', name = 'reducedFF_finger_0', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_finger_0_RID.txt', weightsPath = path + r'/data/reducedFF_finger_0_weight.txt')
     finger.addObject('BoxROI' , name= 'ROI1' , orientedBox= newBox([[-15, 10, 0], [-15, 0, 0], [5, 0, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 7.5],scale) + multiply(scale[2],[15]).tolist(),drawBoxes=True)
-    finger.addObject('HyperReducedRestShapeSpringsForceField' , points = '@ROI1.indices', stiffness = 1000000000000.0, name = 'reducedFF_finger_1', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_finger_1_RID.txt', weightsPath = path + r'/data/reducedFF_finger_1_weight.txt')
+    finger.addObject('HyperReducedRestShapeSpringsForceField' , indices = '@ROI1.indices', stiffness = 1000000000000.0, name = 'reducedFF_finger_1', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_finger_1_RID.txt', weightsPath = path + r'/data/reducedFF_finger_1_weight.txt')
     finger.addObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + r'/data/modes.txt', output = '@./MechanicalObject')
 
 
