@@ -77,17 +77,14 @@ public:
     using HyperReducedHelper::m_RIDsize;
 
 
-    using RestShapeSpringsForceField<DataTypes>::d_points;
+    using RestShapeSpringsForceField<DataTypes>::d_indices;
     using RestShapeSpringsForceField<DataTypes>::d_stiffness;
     using RestShapeSpringsForceField<DataTypes>::d_angularStiffness;
-    using RestShapeSpringsForceField<DataTypes>::d_pivotPoints;
-    using RestShapeSpringsForceField<DataTypes>::d_external_points;
-    using RestShapeSpringsForceField<DataTypes>::d_recompute_indices;
+    using RestShapeSpringsForceField<DataTypes>::d_externalIndices;
     using RestShapeSpringsForceField<DataTypes>::d_drawSpring;
     using RestShapeSpringsForceField<DataTypes>::d_springColor;
     using RestShapeSpringsForceField<DataTypes>::l_restMState;
     using RestShapeSpringsForceField<DataTypes>::d_activeDirections;
-    using RestShapeSpringsForceField<DataTypes>::matS;
 
 protected:
     HyperReducedRestShapeSpringsForceField();
@@ -106,19 +103,6 @@ public:
     void buildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
 
     virtual void draw(const core::visual::VisualParams* vparams) override;
-
-    const DataVecCoord* getExtPosition() const;
-    const VecIndex& getExtIndices() const { return (useRestMState ? m_ext_indices : m_indices); }
-
-protected :
-    void recomputeIndices();
-    bool checkOutOfBoundsIndices();
-
-    using RestShapeSpringsForceField<DataTypes>::m_indices;
-    using RestShapeSpringsForceField<DataTypes>::m_ext_indices;
-    using RestShapeSpringsForceField<DataTypes>::m_pivots;
-
-    using RestShapeSpringsForceField<DataTypes>::lastUpdatedStep;
 
 private :
 

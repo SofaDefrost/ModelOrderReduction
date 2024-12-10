@@ -73,159 +73,17 @@ using core::visual::VisualParams;
 template<class DataTypes>
 HyperReducedRestShapeSpringsForceField<DataTypes>::HyperReducedRestShapeSpringsForceField()
 {
-}
 
-template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::parse(core::objectmodel::BaseObjectDescription *arg)
-{
-    const char* attr = arg->getAttribute("external_rest_shape") ;
-    if( attr != nullptr && attr[0] != '@')
-    {
-            msg_error() << "HyperReducedRestShapeSpringsForceField have changed since 17.06. The parameter 'external_rest_shape' is now a Link. To fix your scene you need to add and '@' in front of the provided path. See PR#315" ;
-    }
-
-    Inherit::parse(arg) ;
 }
 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
 {
-    ForceField<DataTypes>::init();
-
-    if (d_stiffness.getValue().empty())
-    {
-        msg_info() << "No stiffness is defined, assuming equal stiffness on each node, k = 100.0 ";
-
-        VecReal stiffs;
-        stiffs.push_back(100.0);
-        d_stiffness.setValue(stiffs);
-    }
-
-    if (l_restMState.get() == NULL)
-    {
-        useRestMState = false;
-        msg_info() << "no external rest shape used";
-
-        if(!l_restMState.empty())
-        {
-            msg_warning() << "external_rest_shape in node " << this->getContext()->getName() << " not found";
-        }
-    }
-    else
-    {
-        msg_info() << "external rest shape used";
-        useRestMState = true;
-    }
-
-    recomputeIndices();
-
-    BaseMechanicalState* state = this->getContext()->getMechanicalState();
-    if(!state)
-    {
-        msg_warning() << "MechanicalState of the current context returns null pointer";
-    }
-    else
-    {
-        assert(state);
-        matS.resize(state->getMatrixSize(),state->getMatrixSize());
-    }
-    lastUpdatedStep = -1.0;
-    this->initMOR(d_points.getValue().size(),notMuted());
+    RestShapeSpringsForceField<DataTypes>::init();
+    this->initMOR(d_indices.getValue().size(),notMuted());
 }
 
-template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::reinit()
-{
-    if (d_stiffness.getValue().empty())
-    {
-        msg_info() << "No stiffness is defined, assuming equal stiffness on each node, k = 100.0 " ;
 
-        VecReal stiffs;
-        stiffs.push_back(100.0);
-        d_stiffness.setValue(stiffs);
-    }
-}
-
-template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::recomputeIndices()
-{
-    m_indices.clear();
-    m_ext_indices.clear();
-
-    for (unsigned int i = 0; i < d_points.getValue().size(); i++)
-    {
-        m_indices.push_back(d_points.getValue()[i]);
-    }
-
-    for (unsigned int i = 0; i < d_external_points.getValue().size(); i++)
-    {
-        m_ext_indices.push_back(d_external_points.getValue()[i]);
-    }
-
-    if (m_indices.empty())
-    {
-        // no point are defined, default case: points = all points
-        for (unsigned int i = 0; i < (unsigned)this->mstate->getSize(); i++)
-        {
-            m_indices.push_back(i);
-        }
-    }
-
-    if (m_ext_indices.empty())
-    {
-        if (useRestMState)
-        {
-            for (unsigned int i = 0; i < getExtPosition()->getValue().size(); i++)
-            {
-                m_ext_indices.push_back(i);
-            }
-        }
-        else
-        {
-            for (unsigned int i = 0; i < m_indices.size(); i++)
-            {
-                m_ext_indices.push_back(m_indices[i]);
-            }
-        }
-    }
-
-    if (!checkOutOfBoundsIndices())
-    {
-        msg_error() << "The dimension of the source and the targeted points are different ";
-        m_indices.clear();
-    }
-    else
-    {
-        msg_info() << "Indices successfully checked";
-    }
-}
-
-template<class DataTypes>
-bool HyperReducedRestShapeSpringsForceField<DataTypes>::checkOutOfBoundsIndices()
-{
-    if (!RestShapeSpringsForceField<DataTypes>::checkOutOfBoundsIndices(m_indices, this->mstate->getSize()))
-    {
-        msg_error() << "Out of Bounds m_indices detected. ForceField is not activated.";
-        return false;
-    }
-    if (!RestShapeSpringsForceField<DataTypes>::checkOutOfBoundsIndices(m_ext_indices, getExtPosition()->getValue().size()))
-    {
-        msg_error() << "Out of Bounds m_ext_indices detected. ForceField is not activated.";
-        return false;
-    }
-    if (m_indices.size() != m_ext_indices.size())
-    {
-        msg_error() << "Dimensions of the source and the targeted points are different. ForceField is not activated.";
-        return false;
-    }
-    return true;
-}
-
-template<class DataTypes>
-const typename HyperReducedRestShapeSpringsForceField<DataTypes>::DataVecCoord* HyperReducedRestShapeSpringsForceField<DataTypes>::getExtPosition() const
-{
-    return (useRestMState ? l_restMState->read(VecCoordId::position()) : this->mstate->read(VecCoordId::restPosition()));
-}
 
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const MechanicalParams*  mparams , DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv&  v )
@@ -240,20 +98,18 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
 
     f1.resize(p1.size());
 
-    if (d_recompute_indices.getValue())
-    {
-        this->recomputeIndices();
-    }
+    const auto & indices = this->getIndices();
+    const auto & extIndices = this->getExtIndices();
 
     unsigned int i;
     const VecReal &k = d_stiffness.getValue();
-    if ( k.size()!= m_indices.size() )
+    if ( k.size()!= indices.size() )
     {
         const Real k0 = k[0];
         unsigned int nbElementsConsidered;
         if (!d_performECSW.getValue())
         {
-            nbElementsConsidered = m_indices.size();
+            nbElementsConsidered = indices.size();
         }
         else
         {
@@ -263,7 +119,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
             else
             {
                 msg_warning() << "RID is empty!!! Taking all the elements...";
-                nbElementsConsidered = m_indices.size();
+                nbElementsConsidered = indices.size();
             }
         }
         for (unsigned int point = 0 ; point<nbElementsConsidered ;++point)
@@ -273,12 +129,12 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
             else
                 i = reducedIntegrationDomain(point);
 
-            const unsigned int index = m_indices[i];
+            const unsigned int index = indices[i];
 
-            unsigned int ext_index = m_indices[i];
+            unsigned int ext_index = indices[i];
 
             if(useRestMState)
-                ext_index= m_ext_indices[i];
+                ext_index= extIndices[i];
 
             Deriv dx = p1[index] - p0[ext_index];
             std::vector<Deriv> contrib;
@@ -300,7 +156,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
 
         unsigned int nbElementsConsidered;
         if (!d_performECSW.getValue())
-            nbElementsConsidered = m_indices.size();
+            nbElementsConsidered = indices.size();
         else
         {
             if (m_RIDsize != 0) {
@@ -308,7 +164,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
             }
             else
             {
-                nbElementsConsidered = m_indices.size();
+                nbElementsConsidered = indices.size();
                 msg_warning("RID is empty! Taking all the elements...");
             }
         }
@@ -319,11 +175,11 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
             else
                 i = reducedIntegrationDomain(point);
 
-            const unsigned int index = m_indices[i];
+            const unsigned int index = indices[i];
 
-            unsigned int ext_index = m_indices[i];
+            unsigned int ext_index = indices[i];
             if(useRestMState)
-                ext_index= m_ext_indices[i];
+                ext_index= extIndices[i];
 
             Deriv dx = p1[index] - p0[ext_index];
             std::vector<Deriv> contrib;
@@ -339,7 +195,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
             this->template updateGie<DataTypes>(indexList, contrib, i);
         }
     }
-    this->saveGieFile(m_indices.size());
+    this->saveGieFile(indices.size());
 }
 
 template<class DataTypes>
@@ -351,23 +207,25 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const Mechanic
     ReadAccessor< DataVecDeriv > dx1 = dx;
     Real kFactor = (Real)mparams->kFactorIncludingRayleighDamping(this->rayleighStiffness.getValue());
 
+    const auto & indices = this->getIndices();
+
     const VecReal &k = d_stiffness.getValue();
-    if (k.size()!= m_indices.size() )
+    if (k.size()!= indices.size() )
     {
         const Real k0 = k[0];
         if (d_performECSW.getValue()){
             for(unsigned int i = 0 ; i<m_RIDsize ;++i)
             {
-                df1[m_indices[reducedIntegrationDomain(i)]] -=  weights(reducedIntegrationDomain(i)) * dx1[m_indices[reducedIntegrationDomain(i)]] * k0 * kFactor;
+                df1[indices[reducedIntegrationDomain(i)]] -=  weights(reducedIntegrationDomain(i)) * dx1[indices[reducedIntegrationDomain(i)]] * k0 * kFactor;
             }
         }
         else
         {
-            for (unsigned int i=0; i<m_indices.size(); i++)
+            for (unsigned int i=0; i<indices.size(); i++)
             {
-                df1[m_indices[i]] -=  dx1[m_indices[i]] * k0 * kFactor;
-                msg_info() << "1st addDForce: kFactor is :" << kFactor << ". Contrib is: " <<  dx1[m_indices[i]] * k0 * kFactor;
-                msg_info() << "1st addDForce: k0 is :" << k0 << ". m_indices[i] is: " <<  m_indices[i] << "dx1[m_indices[i]] is " << dx1[m_indices[i]];
+                df1[indices[i]] -=  dx1[indices[i]] * k0 * kFactor;
+                msg_info() << "1st addDForce: kFactor is :" << kFactor << ". Contrib is: " <<  dx1[indices[i]] * k0 * kFactor;
+                msg_info() << "1st addDForce: k0 is :" << k0 << ". m_indices[i] is: " <<  indices[i] << "dx1[m_indices[i]] is " << dx1[indices[i]];
 
             }
         }
@@ -377,15 +235,15 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const Mechanic
         if (d_performECSW.getValue()){
             for(unsigned int i = 0 ; i<m_RIDsize ;++i)
             {
-                df1[m_indices[reducedIntegrationDomain[i]]] -=  weights(reducedIntegrationDomain(i)) * dx1[m_indices[reducedIntegrationDomain(i)]] * k[reducedIntegrationDomain(i)] * kFactor;
+                df1[indices[reducedIntegrationDomain[i]]] -=  weights(reducedIntegrationDomain(i)) * dx1[indices[reducedIntegrationDomain(i)]] * k[reducedIntegrationDomain(i)] * kFactor;
             }
         }
         else
         {
 
-            for (unsigned int i=0; i<m_indices.size(); i++)
+            for (unsigned int i=0; i<indices.size(); i++)
             {
-                df1[m_indices[i]] -=  dx1[m_indices[i]] * k[i] * kFactor ;
+                df1[indices[i]] -=  dx1[indices[i]] * k[i] * kFactor ;
             }
         }
 
@@ -411,8 +269,8 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
     ReadAccessor< DataVecCoord > p0 = *this->getExtPosition();
     ReadAccessor< DataVecCoord > p  = this->mstate->read(VecCoordId::position());
 
-    const VecIndex& indices = m_indices;
-    const VecIndex& ext_indices = (useRestMState ? m_ext_indices : m_indices);
+    const VecIndex& indices = this->getIndices();
+    const VecIndex& ext_indices = this->getExtIndices();
 
     vector<type::Vec3> vertices;
     if (d_performECSW.getValue()){
@@ -472,18 +330,19 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
                        .withRespectToPositionsIn(this->mstate);
     unsigned int nbIndicesConsidered;
     sofa::Index curIndex;
+    const VecIndex& indices = this->getIndices();
 
     if (d_performECSW.getValue())
         nbIndicesConsidered = m_RIDsize;
     else
-        nbIndicesConsidered = m_indices.size();
+        nbIndicesConsidered = indices.size();
 
     for (sofa::Index index = 0; index < nbIndicesConsidered ; index++)
     {
         if (!d_performECSW.getValue())
-            curIndex = m_indices[index];
+            curIndex = indices[index];
         else
-            curIndex = m_indices[reducedIntegrationDomain(index)];
+            curIndex = indices[reducedIntegrationDomain(index)];
 
         // translation
         const auto vt = -k[(curIndex < k.size()) * curIndex];
