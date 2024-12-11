@@ -73,7 +73,7 @@ def SofiaLeg(
 
     #To fix the Top part of the leg
     leg.addObject('BoxROI' , name= 'boxROITop' , orientedBox= newBox([[-12.0, 53.0, 0], [12.0, 53.0, 0], [12.0, 64.0, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[16.0]).tolist(),drawBoxes=True)
-    leg.addObject('RestShapeSpringsForceField', name = 'fixedTopForceField', points = '@boxROITop.indices', stiffness = '1e8')
+    leg.addObject('RestShapeSpringsForceField', name = 'fixedTopForceField', indices = '@boxROITop.indices', stiffness = '1e8')
     
     #Box to add collisions only on the tip of the leg
     leg.addObject('BoxROI', name='boxROICollision', orientedBox= newBox(
@@ -87,7 +87,7 @@ def SofiaLeg(
 
     #To Actuate our leg we select some elements in the middle of our leg, add a Spring to them, then add an external_rest_shape that will allow us 
     leg.addObject('BoxROI' , name= 'boxROIMiddle' , orientedBox= newBox([[-2.5, -8.5, 0], [2.5, -8.5, 0], [2.5, -3.5, 0]] , [0.0, 0.0, 0.0],translation,rotation,[0, 0, 0.0],scale) + multiply(scale[2],[18.0]).tolist(),drawBoxes=True)
-    leg.addObject('RestShapeSpringsForceField' , external_points =[i for i in range(3)], points = '@boxROIMiddle.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@../'+name+'_actuator/actuatorState')
+    leg.addObject('RestShapeSpringsForceField' , externalIndices =[i for i in range(3)], indices = '@boxROIMiddle.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@../'+name+'_actuator/actuatorState')
 
     SofiaLeg_actuator = attachedTo.addChild(name+'_actuator')
     SofiaLeg_actuator.addObject('MechanicalObject' , name = 'actuatorState', position = '@../'+name+'/boxROIMiddle.pointsInROI', template = 'Vec3d', showObject = True, showObjectScale=5)
