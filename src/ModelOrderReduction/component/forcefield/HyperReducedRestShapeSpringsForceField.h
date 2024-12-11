@@ -92,8 +92,6 @@ protected:
 public:
     /// BaseObject initialization method.
     void bwdInit() override ;
-    virtual void parse(core::objectmodel::BaseObjectDescription *arg) override ;
-    virtual void reinit() override ;
 
     /// Add the forces.
     virtual void addForce(const core::MechanicalParams* mparams, DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv& v) override;
@@ -103,10 +101,6 @@ public:
     void buildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
 
     virtual void draw(const core::visual::VisualParams* vparams) override;
-
-private :
-
-    bool useRestMState; /// An external MechanicalState is used as rest reference.
 };
 
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGSFORCEFIELD_CPP)
