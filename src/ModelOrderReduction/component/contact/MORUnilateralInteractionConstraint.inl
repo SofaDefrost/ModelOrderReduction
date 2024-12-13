@@ -76,7 +76,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
             c1_it.addCol(c.m1, -c.norm);
             c1_it.addCol(c.m2, c.norm);
 
-            if (c.mu > 0.0)
+            if (c.parameters.hasTangentialComponent())
             {
                 c1_it = c1.writeLine(c.id + 1);
                 c1_it.setCol(c.m1, -c.t);
@@ -108,16 +108,16 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
             for (unsigned int i = 0; i < contacts.size(); i++)
             {
                 auto& c = contacts[i];
-                myMuForAllContacts = c.mu;
+                myMuForAllContacts = c.parameters.mu;
                 c.id = i;
-                if (c.mu == 0.0)
+                if (!c.parameters.hasTangentialComponent())
                     if (contactIndices(c.m2) != -1 && lambdaModes(contactIndices(c.m2),numMode)!=0.0){
                         c1_it.addCol(c.m1, -lambdaModes(contactIndices(c.m2),numMode)*c.norm);
                         c2_it.addCol(c.m2, lambdaModes(contactIndices(c.m2),numMode)*c.norm);
                         somethingAdded = true;
                     }
 
-                if (c.mu > 0.0)
+                if (c.parameters.hasTangentialComponent())
                 {
                     if (contactIndices(3*c.m2) != -1 && lambdaModes(contactIndices(3*c.m2),numMode)!=0.0){
                         c1_it.addCol(c.m1, -lambdaModes(contactIndices(3*c.m2),numMode)*c.norm);
@@ -176,27 +176,6 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
 //       contactId = contactId - 3;
 }
 
-template<class DataTypes>
-void MORUnilateralInteractionConstraint<DataTypes>::getConstraintViolation(const core::ConstraintParams *cparams, linearalgebra::BaseVector *v, const DataVecCoord &, const DataVecCoord &
-        , const DataVecDeriv &, const DataVecDeriv &)
-{
-    switch (cparams->constOrder())
-    {
-    case core::ConstraintParams::POS_AND_VEL :
-    case core::ConstraintParams::POS :
-        getPositionViolation(v);
-        break;
-
-    case core::ConstraintParams::ACC :
-    case core::ConstraintParams::VEL :
-        UnilateralLagrangianConstraint<DataTypes>::getVelocityViolation(v);
-        break;
-
-    default :
-        msg_error() << this->getClassName() << " doesn't implement " << cparams->getName() << " constraint violation";
-        break;
-    }
-}
 
 template<class DataTypes>
 void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(linearalgebra::BaseVector *v)
@@ -265,7 +244,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(lineara
         }
 
         // Sets dfree in global violation vector
-        if (c.mu == 0.0){
+        if (!c.parameters.hasTangentialComponent()){
 
             for (int k=0;k<reducedContacts.size();k++){
                 if (contactIndices(c.m2) != -1)
@@ -312,10 +291,10 @@ void MORUnilateralInteractionConstraint<DataTypes>::getConstraintResolution(cons
     for(unsigned int i=0; i<reducedContacts.size(); i++)
     {
         auto& c = contacts[0];
-        if(c.mu > 0.0)
+        if(c.parameters.hasTangentialComponent())
         {
             i = i+2;
-            UnilateralConstraintResolutionWithFriction* ucrwf = new UnilateralConstraintResolutionWithFriction(c.mu, nullptr, &contactsStatus[i]);
+            UnilateralConstraintResolutionWithFriction* ucrwf = new UnilateralConstraintResolutionWithFriction(c.parameters.mu, nullptr, &contactsStatus[i]);
             ucrwf->setTolerance(customTolerance);
             resTab[offset] = ucrwf;
             // TODO : cette méthode de stockage des forces peu mal fonctionner avec 2 threads quand on utilise l'haptique
