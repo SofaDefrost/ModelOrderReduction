@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-2022, macos-13]
-        sofa_branch: [master]
+        sofa_branch: [v24.12]
 
     steps:
             
