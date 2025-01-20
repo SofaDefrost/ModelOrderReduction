@@ -122,6 +122,23 @@ if(SofaPython3Tools OR SofaPython3_FOUND)
     )
 endif()
 
+#Install examples without copying debug files
+FILE(GLOB_RECURSE all_ressources ${CMAKE_CURRENT_SOURCE_DIR}/examples/*)
+FOREACH(file_path ${all_ressources})
+    if( NOT file_path MATCHES ".*/debug/.*" )
+        string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/examples/" "" install_file_path "${file_path}")
+        if( install_file_path MATCHES ".*/.*" )
+            string(FIND "${install_file_path}" "/" last_slash_idx REVERSE)
+            string(SUBSTRING "${install_file_path}" 0 ${last_slash_idx} install_file_path)
+        else()
+            set(install_file_path "")
+        endif()
+        install(FILES "${file_path}"
+                DESTINATION "share/sofa/examples/ModelOrderReduction/${install_file_path}"
+                COMPONENT resources)
+    endif()
+ENDFOREACH ()
+
 # Move all resources when install: examples, doc and python files
 install(FILES "README.md" "LICENSE" DESTINATION .)
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc")
@@ -142,6 +159,7 @@ sofa_create_package_with_targets(
     INCLUDE_SOURCE_DIR "src"
     INCLUDE_INSTALL_DIR "ModelOrderReduction"
     RELOCATABLE "plugins"
+    NO_AUTO_RESOURCES_INSTALL
     )
 
 # If SOFA_BUILD_TESTS exists and is OFF, then these tests will be auto-disabled
