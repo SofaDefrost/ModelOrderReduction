@@ -120,10 +120,27 @@ if(SofaPython3Tools OR SofaPython3_FOUND)
     )
 endif()
 
-#Install examples without copying debug files
+##############################
+#### EXAMPLE INSTALLATION ####
+##############################
+# Install examples without copying debug files by default except those listed in example_debug_folder_to_install
+
+set(example_debug_folder_to_install "others/caduceus" "others/hexaBeam" "softRobots/finger" "softRobots/sofiaLeg")
+
+set(regex_example_debug_folder_to_install "")
+FOREACH(folder ${example_debug_folder_to_install})
+    if(NOT "${regex_example_debug_folder_to_install}" STREQUAL "")
+        string(APPEND regex_example_debug_folder_to_install "|")
+    endif ()
+    string(APPEND regex_example_debug_folder_to_install ".*/${folder}/reduced/debug/.*")
+ENDFOREACH ()
+
 FILE(GLOB_RECURSE all_ressources ${CMAKE_CURRENT_SOURCE_DIR}/examples/*)
 FOREACH(file_path ${all_ressources})
-    if( NOT file_path MATCHES ".*/debug/.*" )
+    if( file_path MATCHES "${regex_example_debug_folder_to_install}" OR NOT file_path MATCHES ".*/debug/.*" )
+        message(${file_path})
+    endif ()
+    if( file_path MATCHES "${regex_example_debug_folder_to_install}" OR NOT file_path MATCHES ".*/debug/.*" )
         string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/examples/" "" install_file_path "${file_path}")
         if( install_file_path MATCHES ".*/.*" )
             string(FIND "${install_file_path}" "/" last_slash_idx REVERSE)
@@ -136,6 +153,8 @@ FOREACH(file_path ${all_ressources})
                 COMPONENT resources)
     endif()
 ENDFOREACH ()
+##############################
+
 
 # Move all resources when install: examples, doc and python files
 install(FILES "README.md" "LICENSE" DESTINATION .)
