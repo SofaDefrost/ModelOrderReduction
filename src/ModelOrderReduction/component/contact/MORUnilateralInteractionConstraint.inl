@@ -180,8 +180,8 @@ void MORUnilateralInteractionConstraint<DataTypes>::buildConstraintMatrix(const 
 template<class DataTypes>
 void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(linearalgebra::BaseVector *v)
 {
-    const VecCoord &PfreeVec = this->getMState2()->read(core::ConstVecCoordId::freePosition())->getValue();
-    const VecCoord &QfreeVec = this->getMState1()->read(core::ConstVecCoordId::freePosition())->getValue();
+    const VecCoord &PfreeVec = this->getMState2()->read(core::vec_id::read_access::freePosition)->getValue();
+    const VecCoord &QfreeVec = this->getMState1()->read(core::vec_id::read_access::freePosition)->getValue();
     Real dfree = (Real)0.0;
     Real dfree_t = (Real)0.0;
     Real dfree_s = (Real)0.0;

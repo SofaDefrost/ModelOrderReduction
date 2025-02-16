@@ -84,7 +84,7 @@ protected:
 
 
     using TriangleFEMForceField<DataTypes>::_indexedElements;
-    using TriangleFEMForceField<DataTypes>::_initialPoints; ///< the intial positions of the points
+    using TriangleFEMForceField<DataTypes>::d_initialPoints; ///< the intial positions of the points
     using TriangleFEMForceField<DataTypes>::_rotatedInitialElements;   ///< The initials positions in its frame
     using TriangleFEMForceField<DataTypes>::_rotations;
 
@@ -127,11 +127,11 @@ public:
     void draw(const core::visual::VisualParams* vparams) override;
 
     using TriangleFEMForceField<DataTypes>::method;
-    using TriangleFEMForceField<DataTypes>::f_method; ///< Choice of method: 0 for small, 1 for large displacements
-    using TriangleFEMForceField<DataTypes>::f_poisson;       ///< Poisson ratio of the material
-    using TriangleFEMForceField<DataTypes>::f_young;         ///< Young modulus of the material
-    using TriangleFEMForceField<DataTypes>::f_thickness;     ///< Thickness of the elements
-    using TriangleFEMForceField<DataTypes>::f_planeStrain; ///< compute material stiffness corresponding to the plane strain assumption, or to the plane stress otherwise.
+    using TriangleFEMForceField<DataTypes>::d_method; ///< Choice of method: 0 for small, 1 for large displacements
+    using TriangleFEMForceField<DataTypes>::d_poissonRatio;       ///< Poisson ratio of the material
+    using TriangleFEMForceField<DataTypes>::d_youngModulus;         ///< Young modulus of the material
+    using TriangleFEMForceField<DataTypes>::d_thickness;     ///< Thickness of the elements
+    using TriangleFEMForceField<DataTypes>::d_planeStrain; ///< compute material stiffness corresponding to the plane strain assumption, or to the plane stress otherwise.
 
 protected :
 

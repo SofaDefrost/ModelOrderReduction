@@ -456,7 +456,7 @@ void HyperReducedHexahedronFEMForceField<DataTypes>::draw(const core::visual::Vi
     if (!this->d_drawing.getValue()) return;
 
 
-    const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
+    const VecCoord& x = this->mstate->read(core::vec_id::read_access::position)->getValue();
 
     if (vparams->displayFlags().getShowWireFrame())
         vparams->drawTool()->setPolygonMode(0,true);
