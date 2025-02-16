@@ -551,7 +551,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::draw(const 
 
     const auto stateLifeCycle = vparams->drawTool()->makeStateLifeCycle();
 
-    const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
+    const VecCoord& x = this->mstate->read(core::vec_id::read_access::position)->getValue();
 
     if (vparams->displayFlags().getShowWireFrame())
           vparams->drawTool()->setPolygonMode(0,true);

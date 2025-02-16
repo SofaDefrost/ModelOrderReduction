@@ -175,7 +175,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::accumulateForc
 {
 
     const core::topology::BaseMeshTopology::Tetrahedron t=_topology->getTetrahedron(elementIndex);
-    const VecCoord& X0=this->mstate->read(core::ConstVecCoordId::restPosition())->getValue();
+    const VecCoord& X0=this->mstate->read(core::vec_id::read_access::restPosition)->getValue();
 
 
     Index a = t[0];
@@ -622,7 +622,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
 
     vparams->drawTool()->saveLastState();
 
-    const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
+    const VecCoord& x = this->mstate->read(core::vec_id::read_access::position)->getValue();
 
     if (vparams->displayFlags().getShowWireFrame())
         vparams->drawTool()->setPolygonMode(0,true);

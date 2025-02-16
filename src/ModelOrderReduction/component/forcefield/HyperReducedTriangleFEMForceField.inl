@@ -258,7 +258,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::hyperReducedApplyStiffnessLar
     unsigned int i;
     typename VecElement::const_iterator it, it0;
 
-    it0=_indexedElements->begin();
+    it0 = _indexedElements->begin();
     unsigned int nbElementsConsidered;
     const bool performECSW = d_performECSW.getValue();
     if (!performECSW)
@@ -343,7 +343,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::draw(const core::visual::Visu
     if (vparams->displayFlags().getShowWireFrame())
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
+    const VecCoord& x = this->mstate->read(core::vec_id::read_access::position)->getValue();
 
     glDisable(GL_LIGHTING);
 
@@ -386,7 +386,7 @@ void HyperReducedTriangleFEMForceField<DataTypes>::buildStiffnessMatrix(core::be
     sofa::Size triangleId = 0;
 
     typename VecElement::const_iterator it;
-    auto it0=_indexedElements->begin();
+    auto it0 = _indexedElements->begin();
     int nbElementsConsidered;
 
     const bool performECSW = d_performECSW.getValue();

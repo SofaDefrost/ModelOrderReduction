@@ -71,8 +71,8 @@ protected:
 
     using FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>::parent;
 
-    using FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>::mu; ///< friction coefficient (0 for frictionless contacts)
-    using FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>::tol; ///< tolerance for the constraints resolution (0 for default tolerance)
+    using FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>::d_mu; ///< friction coefficient (0 for frictionless contacts)
+    using FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>::d_tol; ///< tolerance for the constraints resolution (0 for default tolerance)
     using FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>::contacts;
     using FrictionContact<TCollisionModel1, TCollisionModel2, ResponseDataTypes>::mappedContacts;
 

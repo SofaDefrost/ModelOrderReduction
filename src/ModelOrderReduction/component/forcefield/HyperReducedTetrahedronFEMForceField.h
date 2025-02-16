@@ -112,7 +112,7 @@ protected:
 
     using TetrahedronFEMForceField<DataTypes>::_plasticStrains; ///< one plastic strain per element
 
-    using TetrahedronFEMForceField<DataTypes>::_showVonMisesStressPerElement;
+    using TetrahedronFEMForceField<DataTypes>::d_showVonMisesStressPerElement;
     /// @name Full system matrix assembly support
     /// @{
 
