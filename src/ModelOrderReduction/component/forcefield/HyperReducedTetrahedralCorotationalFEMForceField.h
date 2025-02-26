@@ -69,7 +69,7 @@ protected:
     /// @}
 
     /// container that stotes all requires information for each tetrahedron
-    using TetrahedralCorotationalFEMForceField<DataTypes>::tetrahedronInfo;
+    using TetrahedralCorotationalFEMForceField<DataTypes>::d_tetrahedronInfo;
 
     /// @name Full system matrix assembly support
     /// @{

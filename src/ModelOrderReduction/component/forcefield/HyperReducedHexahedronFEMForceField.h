@@ -69,7 +69,7 @@ protected:
 
     typedef type::Mat<24, 24, Real> ElementStiffness;
     typedef type::vector<ElementStiffness> VecElementStiffness;
-    using HexahedronFEMForceField<DataTypes>::_elementStiffnesses; ///< Stiffness matrices per element (K_i)
+    using HexahedronFEMForceField<DataTypes>::d_elementStiffnesses; ///< Stiffness matrices per element (K_i)
 
     typedef type::Mat<3, 3, Real> Mat33;
 
@@ -82,7 +82,7 @@ protected:
 
 
     using HexahedronFEMForceField<DataTypes>::_sparseGrid;
-    using HexahedronFEMForceField<DataTypes>::_initialPoints; ///< the intial positions of the points
+    using HexahedronFEMForceField<DataTypes>::d_initialPoints; ///< the intial positions of the points
 
 
     using HexahedronFEMForceField<DataTypes>::_coef; ///< coef of each vertices to compute the strain stress matrix
@@ -96,14 +96,14 @@ public:
     // Inherited ForceField Variables
 
     using HexahedronFEMForceField<DataTypes>::method;
-    using HexahedronFEMForceField<DataTypes>::f_method; ///< the computation method of the displacements
-    using HexahedronFEMForceField<DataTypes>::f_poissonRatio;
-    using HexahedronFEMForceField<DataTypes>::f_youngModulus;
-    using HexahedronFEMForceField<DataTypes>::f_updateStiffnessMatrix;
-    using HexahedronFEMForceField<DataTypes>::_gatherPt; ///< use in GPU version
-    using HexahedronFEMForceField<DataTypes>::_gatherBsize; ///< use in GPU version
-    using HexahedronFEMForceField<DataTypes>::f_drawing; ///<  draw the forcefield if true
-    using HexahedronFEMForceField<DataTypes>::f_drawPercentageOffset; ///< size of the hexa
+    using HexahedronFEMForceField<DataTypes>::d_method; ///< the computation method of the displacements
+    using HexahedronFEMForceField<DataTypes>::d_poissonRatio;
+    using HexahedronFEMForceField<DataTypes>::d_youngModulus;
+    using HexahedronFEMForceField<DataTypes>::d_updateStiffnessMatrix;
+    using HexahedronFEMForceField<DataTypes>::d_gatherPt; ///< use in GPU version
+    using HexahedronFEMForceField<DataTypes>::d_gatherBsize; ///< use in GPU version
+    using HexahedronFEMForceField<DataTypes>::d_drawing; ///<  draw the forcefield if true
+    using HexahedronFEMForceField<DataTypes>::d_drawPercentageOffset; ///< size of the hexa
     using HexahedronFEMForceField<DataTypes>::needUpdateTopology;
 
     // Reduced Order Variables
@@ -127,8 +127,7 @@ public:
 
 
 protected:
-    HyperReducedHexahedronFEMForceField()
-        : HexahedronFEMForceField<DataTypes>()
+    HyperReducedHexahedronFEMForceField() : HexahedronFEMForceField<DataTypes>()
     {
     }
 public:

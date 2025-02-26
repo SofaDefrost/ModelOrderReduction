@@ -224,7 +224,7 @@ bool HyperReducedRestShapeSpringsForceField<DataTypes>::checkOutOfBoundsIndices(
 template<class DataTypes>
 const typename HyperReducedRestShapeSpringsForceField<DataTypes>::DataVecCoord* HyperReducedRestShapeSpringsForceField<DataTypes>::getExtPosition() const
 {
-    return (useRestMState ? l_restMState->read(VecCoordId::position()) : this->mstate->read(VecCoordId::restPosition()));
+    return (useRestMState ? l_restMState->read(sofa::core::vec_id::read_access::position) : this->mstate->read(sofa::core::vec_id::read_access::restPosition));
 }
 
 template<class DataTypes>
@@ -409,7 +409,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
     vparams->drawTool()->setLightingEnabled(false);
 
     ReadAccessor< DataVecCoord > p0 = *this->getExtPosition();
-    ReadAccessor< DataVecCoord > p  = this->mstate->read(VecCoordId::position());
+    ReadAccessor< DataVecCoord > p  = this->mstate->read(sofa::core::vec_id::read_access::position);
 
     const VecIndex& indices = m_indices;
     const VecIndex& ext_indices = (useRestMState ? m_ext_indices : m_indices);
