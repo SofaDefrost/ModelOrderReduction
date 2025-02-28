@@ -45,8 +45,8 @@ def createScene(rootNode):
     liver.addObject('TetrahedronHyperelasticityFEMForceField',materialName="NeoHookean", ParameterSet=str(mu_) + " " + str(k0_), AnisotropyDirections="")        	 
 
     
-    liver.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
-    liver.addObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
+    liver.addObject('RestShapeSpringsForceField', indices='@ROI1.indices', stiffness = '1e8')
+    liver.addObject('RestShapeSpringsForceField' , externalIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
     
     visu = liver.addChild('visu')
     visu.addObject(  'MeshOBJLoader', name= 'loader', filename=meshPath+'liver-smoothUV.obj')
