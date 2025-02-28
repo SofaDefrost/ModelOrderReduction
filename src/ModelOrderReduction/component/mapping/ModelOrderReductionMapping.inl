@@ -111,7 +111,7 @@ void ModelOrderReductionMapping<TIn, TOut>::apply(const core::MechanicalParams *
     helper::WriteOnlyAccessor< Data<VecCoord> > out = dOut;
     helper::ReadAccessor< Data<InVecCoord> > in = dIn;
 
-    const Data<VecCoord>* restPosData = toModel->read(core::VecCoordId::restPosition());
+    const Data<VecCoord>* restPosData = toModel->read(core::vec_id::read_access::restPosition);
     assert(restPosData != nullptr);
 
     out.wref() = restPosData->getValue();

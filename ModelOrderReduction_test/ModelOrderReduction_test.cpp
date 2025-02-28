@@ -24,7 +24,7 @@ namespace sofa {
         simulation::Simulation* simulation;
 
         /// Create the context for the scene
-        void SetUp()
+        void doSetUp() override
         {
             root = simulation::getSimulation()->createNewGraph("root");
         }
@@ -37,7 +37,7 @@ namespace sofa {
         }
 
         /// Unload the scene
-        void TearDown()
+        void doTearDown() override
         {
             if (root != nullptr)
             {

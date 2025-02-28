@@ -467,7 +467,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 
         vparams->drawTool()->disableLighting();
 
-        const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
+        const VecCoord& x = this->mstate->read(core::vec_id::read_access::position)->getValue();
         const VecReal& youngModulus = this->d_youngModulus.getValue();
 
         bool heterogeneous = false;
@@ -605,7 +605,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
         ////////////// DRAW ROTATIONS //////////////
         if (vparams->displayFlags().getShowNormals())
         {
-            const VecCoord& x = this->mstate->read(core::ConstVecCoordId::position())->getValue();
+            const VecCoord& x = this->mstate->read(core::vec_id::read_access::position)->getValue();
             std::vector< type::Vec3 > points[3];
             for(unsigned ii = 0; ii<  x.size() ; ii++)
             {

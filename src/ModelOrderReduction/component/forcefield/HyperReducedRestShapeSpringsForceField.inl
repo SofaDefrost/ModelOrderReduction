@@ -84,7 +84,6 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
 }
 
 
-
 template<class DataTypes>
 void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const MechanicalParams*  mparams , DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv&  v )
 {
@@ -310,7 +309,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
     vparams->drawTool()->setLightingEnabled(false);
 
     ReadAccessor< DataVecCoord > p0 = *this->getExtPosition();
-    ReadAccessor< DataVecCoord > p  = this->mstate->read(VecCoordId::position());
+    ReadAccessor< DataVecCoord > p  = this->mstate->read(sofa::core::vec_id::read_access::position);
 
     const VecIndex& indices = this->getIndices();
     const VecIndex& ext_indices = this->getExtIndices();

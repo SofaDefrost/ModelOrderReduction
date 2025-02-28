@@ -54,7 +54,7 @@ protected:
     using PointCollisionModel<TDataTypes>::mstate;
     using PointCollisionModel<TDataTypes>::size;
     using PointCollisionModel<TDataTypes>::normals;
-    using PointCollisionModel<TDataTypes>::m_displayFreePosition;
+    using PointCollisionModel<TDataTypes>::d_displayFreePosition;
     void init() override;
 
     // -- CollisionModel interface
