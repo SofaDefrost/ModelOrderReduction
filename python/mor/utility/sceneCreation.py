@@ -34,7 +34,7 @@ forceFieldImplemented = {   'HyperReducedTetrahedralCorotationalFEMForceField':'
                             'HyperReducedHexahedronFEMForceField':'hexahedra',
                             'HyperReducedTetrahedronFEMForceField':'tetrahedra',
                             'HyperReducedTriangleFEMForceField':'triangles',
-                            'HyperReducedRestShapeSpringsForceField':'points'
+                            'HyperReducedRestShapeSpringsForceField':'indices'
                         }
 
 import Sofa

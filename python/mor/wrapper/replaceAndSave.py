@@ -37,7 +37,7 @@ forceFieldImplemented = {   'TetrahedralCorotationalFEMForceField':('HyperReduce
                             'HexahedronFEMForceField':('HyperReducedHexahedronFEMForceField','hexahedra'),
                             'TetrahedronFEMForceField':('HyperReducedTetrahedronFEMForceField','tetrahedra'),
                             'TriangleFEMForceField':('HyperReducedTriangleFEMForceField','triangles'),
-                            'RestShapeSpringsForceField':('HyperReducedRestShapeSpringsForceField','points')
+                            'RestShapeSpringsForceField':('HyperReducedRestShapeSpringsForceField','indices')
 
                         }
 
