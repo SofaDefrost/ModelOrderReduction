@@ -75,15 +75,9 @@ public:
 
     typedef core::behavior::BaseConstraint::ConstraintBlockInfo ConstraintBlockInfo;
     typedef core::behavior::BaseConstraint::PersistentID PersistentID;
-    typedef core::behavior::BaseConstraint::ConstCoord ConstCoord;
-    typedef core::behavior::BaseConstraint::ConstDeriv ConstDeriv;
-    typedef core::behavior::BaseConstraint::ConstArea ConstArea;
 
     typedef core::behavior::BaseConstraint::VecConstraintBlockInfo VecConstraintBlockInfo;
     typedef core::behavior::BaseConstraint::VecPersistentID VecPersistentID;
-    typedef core::behavior::BaseConstraint::VecConstCoord VecConstCoord;
-    typedef core::behavior::BaseConstraint::VecConstDeriv VecConstDeriv;
-    typedef core::behavior::BaseConstraint::VecConstArea VecConstArea;
 
     typedef core::objectmodel::Data<VecCoord>		DataVecCoord;
     typedef core::objectmodel::Data<VecDeriv>		DataVecDeriv;
