@@ -73,7 +73,7 @@ def Reduced_test(
     M1.addObject('MechanicalObject')
     M1.addObject('UniformMass' , totalMass = '0.1')
     M1.addObject('RegularGridTopology' , nx = '4', ny = '4', nz = '20', xmin = '-9', xmax = '-6', ymin = '0', ymax = '3', zmin = '0', zmax = '19')
-    M1.addObject('HyperReducedRestShapeSpringsForceField' , indices = '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15', stiffness = 1000000000000.0, name = 'reducedFF_M1_0', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_M1_0_RID.txt', weightsPath = path + r'/data/reducedFF_M1_0_weight.txt')
+    M1.addObject('HyperReducedFixedWeakConstraint' , indices = '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15', stiffness = 1000000000000.0, name = 'reducedFF_M1_0', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_M1_0_RID.txt', weightsPath = path + r'/data/reducedFF_M1_0_weight.txt')
     M1.addObject('HyperReducedHexahedronFEMForceField' , name = 'reducedFF_M1_1', youngModulus = '4000', poissonRatio = '0.3', method = 'large', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_M1_1_RID.txt', weightsPath = path + r'/data/reducedFF_M1_1_weight.txt')
     M1.addObject('ModelOrderReductionMapping' , input = '@../MechanicalObject', modesPath = path + r'/data/modes.txt', output = '@./MechanicalObject')
 

@@ -16,7 +16,7 @@
 ******************************************************************************/
 #pragma once
 
-#include <ModelOrderReduction/component/forcefield/HyperReducedRestShapeSpringsForceField.h>
+#include <ModelOrderReduction/component/forcefield/HyperReducedFixedWeakConstraint.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/MechanicalParams.h>
 #include <sofa/core/behavior/MultiMatrixAccessor.h>
@@ -71,21 +71,21 @@ using type::vector;
 using core::visual::VisualParams;
 
 template<class DataTypes>
-HyperReducedRestShapeSpringsForceField<DataTypes>::HyperReducedRestShapeSpringsForceField()
+HyperReducedFixedWeakConstraint<DataTypes>::HyperReducedFixedWeakConstraint()
 {
 
 }
 
 template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::bwdInit()
+void HyperReducedFixedWeakConstraint<DataTypes>::bwdInit()
 {
-    RestShapeSpringsForceField<DataTypes>::init();
+    FixedWeakConstraint<DataTypes>::init();
     this->initMOR(d_indices.getValue().size(),notMuted());
 }
 
 
 template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const MechanicalParams*  mparams , DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv&  v )
+void HyperReducedFixedWeakConstraint<DataTypes>::addForce(const MechanicalParams*  mparams , DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv&  v )
 {
     msg_info() << "--------------------------------> addForce";
 
@@ -206,7 +206,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addForce(const Mechanica
 }
 
 template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx)
+void HyperReducedFixedWeakConstraint<DataTypes>::addDForce(const MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx)
 {
     msg_info() << "--------------------------------> addDForce";
 
@@ -294,7 +294,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::addDForce(const Mechanic
 
 // draw for standard types (i.e Vec<1,2,3>)
 template<class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams *vparams)
+void HyperReducedFixedWeakConstraint<DataTypes>::draw(const VisualParams *vparams)
 {
     if (!vparams->displayFlags().getShowForceFields() || !d_drawSpring.getValue())
         return;  /// \todo put this in the parent class
@@ -379,12 +379,12 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
 }
 
 template <class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
+void HyperReducedFixedWeakConstraint<DataTypes>::buildStiffnessMatrix(
     core::behavior::StiffnessMatrix* matrix)
 {
     const VecReal& k = d_stiffness.getValue();
     const VecReal& k_a = d_angularStiffness.getValue();
-    const auto activeDirections = d_activeDirections.getValue();
+    const auto activeDirections = this->getActiveDirections();
 
     constexpr sofa::Size space_size = Deriv::spatial_dimensions; // == total_size if DataTypes = VecTypes
     constexpr sofa::Size total_size = Deriv::total_size;
