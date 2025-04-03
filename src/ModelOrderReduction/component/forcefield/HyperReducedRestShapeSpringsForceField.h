@@ -15,9 +15,12 @@
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
 #pragma once
+#include "HyperReducedFixedWeakConstraint.h"
+
 #include <ModelOrderReduction/config.h>
 
 #include <ModelOrderReduction/component/forcefield/HyperReducedHelper.h>
+#include <ModelOrderReduction/component/forcefield/HyperReducedFixedWeakConstraint.h>
 #include <sofa/component/solidmechanics/spring/RestShapeSpringsForceField.h>
 
 namespace sofa::core::behavior
@@ -35,94 +38,23 @@ namespace sofa::component::solidmechanics::spring
 * An external MechanicalState reference can also be passed to the ForceField as rest shape position.
 */
 template<class DataTypes>
-class HyperReducedRestShapeSpringsForceField : public virtual RestShapeSpringsForceField<DataTypes>, public modelorderreduction::HyperReducedHelper
+class HyperReducedRestShapeSpringsForceField : public virtual RestShapeSpringsForceField<DataTypes>, public virtual modelorderreduction::HyperReducedHelper,  public  HyperReducedFixedWeakConstraint<DataTypes>
 {
 public:
-    SOFA_CLASS2(SOFA_TEMPLATE(HyperReducedRestShapeSpringsForceField, DataTypes), SOFA_TEMPLATE(RestShapeSpringsForceField, DataTypes), HyperReducedHelper);
-
-    typedef HyperReducedHelper Inherit;
-    typedef typename DataTypes::VecCoord VecCoord;
-    typedef typename DataTypes::VecDeriv VecDeriv;
-    typedef typename DataTypes::Coord Coord;
-    typedef typename DataTypes::CPos CPos;
-    typedef typename DataTypes::Deriv Deriv;
-    typedef typename DataTypes::Real Real;
-    typedef type::vector< sofa::Index > VecIndex;
-    typedef type::vector< Real >	 VecReal;
-
-    typedef core::objectmodel::Data<VecCoord> DataVecCoord;
-    typedef core::objectmodel::Data<VecDeriv> DataVecDeriv;
-
-    ////////////////////////// Inherited attributes ////////////////////////////
-    /// https://gcc.gnu.org/onlinedocs/gcc/Name-lookup.html
-    /// Bring inherited attributes and function in the current lookup context.
-    /// otherwise any access to the base::attribute would require
-    /// the "this->" approach.
-
-    using HyperReducedHelper::d_prepareECSW;
-    using HyperReducedHelper::d_nbModes;
-    using HyperReducedHelper::d_modesPath;
-    using HyperReducedHelper::d_nbTrainingSet;
-    using HyperReducedHelper::d_periodSaveGIE;
-
-    using HyperReducedHelper::d_performECSW;
-    using HyperReducedHelper::d_RIDPath;
-    using HyperReducedHelper::d_weightsPath;
-
-    using HyperReducedHelper::Gie;
-    using HyperReducedHelper::weights;
-    using HyperReducedHelper::reducedIntegrationDomain;
-
-    using HyperReducedHelper::m_modes;
-    using HyperReducedHelper::m_RIDsize;
-
-
-    using RestShapeSpringsForceField<DataTypes>::d_points;
-    using RestShapeSpringsForceField<DataTypes>::d_stiffness;
-    using RestShapeSpringsForceField<DataTypes>::d_angularStiffness;
-    using RestShapeSpringsForceField<DataTypes>::d_pivotPoints;
-    using RestShapeSpringsForceField<DataTypes>::d_external_points;
-    using RestShapeSpringsForceField<DataTypes>::d_recompute_indices;
-    using RestShapeSpringsForceField<DataTypes>::d_drawSpring;
-    using RestShapeSpringsForceField<DataTypes>::d_springColor;
-    using RestShapeSpringsForceField<DataTypes>::l_restMState;
-    using RestShapeSpringsForceField<DataTypes>::d_activeDirections;
-    using RestShapeSpringsForceField<DataTypes>::matS;
+    SOFA_CLASS3(SOFA_TEMPLATE(HyperReducedRestShapeSpringsForceField, DataTypes), SOFA_TEMPLATE(HyperReducedFixedWeakConstraint, DataTypes), SOFA_TEMPLATE(RestShapeSpringsForceField, DataTypes), HyperReducedHelper);
 
 protected:
-    HyperReducedRestShapeSpringsForceField();
-
+    HyperReducedRestShapeSpringsForceField() = default;
 public:
-    /// BaseObject initialization method.
-    void bwdInit() override ;
-    virtual void parse(core::objectmodel::BaseObjectDescription *arg) override ;
-    virtual void reinit() override ;
+    virtual void init(){ RestShapeSpringsForceField<DataTypes>::init(); }
+    virtual void bwdInit(){ RestShapeSpringsForceField<DataTypes>::bwdInit(); }
+    virtual void reinit(){ RestShapeSpringsForceField<DataTypes>::reinit(); }
+    virtual void draw(const sofa::core::visual::VisualParams* vps){ RestShapeSpringsForceField<DataTypes>::draw(vps); }
+    virtual bool insertInNode(sofa::core::objectmodel::BaseNode* node){ RestShapeSpringsForceField<DataTypes>::insertInNode(node); }
+    virtual bool removeInNode(sofa::core::objectmodel::BaseNode* node){ RestShapeSpringsForceField<DataTypes>::removeInNode(node); }
+    virtual sofa::core::behavior::BaseForceField* toBaseForceField(){return RestShapeSpringsForceField<DataTypes>::toBaseForceField();}
+    virtual const sofa::core::behavior::BaseForceField* toBaseForceField() const {return RestShapeSpringsForceField<DataTypes>::toBaseForceField();}
 
-    /// Add the forces.
-    virtual void addForce(const core::MechanicalParams* mparams, DataVecDeriv& f, const DataVecCoord& x, const DataVecDeriv& v) override;
-
-    virtual void addDForce(const core::MechanicalParams* mparams, DataVecDeriv& df, const DataVecDeriv& dx) override;
-
-    void buildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
-
-    virtual void draw(const core::visual::VisualParams* vparams) override;
-
-    const DataVecCoord* getExtPosition() const;
-    const VecIndex& getExtIndices() const { return (useRestMState ? m_ext_indices : m_indices); }
-
-protected :
-    void recomputeIndices();
-    bool checkOutOfBoundsIndices();
-
-    using RestShapeSpringsForceField<DataTypes>::m_indices;
-    using RestShapeSpringsForceField<DataTypes>::m_ext_indices;
-    using RestShapeSpringsForceField<DataTypes>::m_pivots;
-
-    using RestShapeSpringsForceField<DataTypes>::lastUpdatedStep;
-
-private :
-
-    bool useRestMState; /// An external MechanicalState is used as rest reference.
 };
 
 #if !defined(SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGSFORCEFIELD_CPP)
