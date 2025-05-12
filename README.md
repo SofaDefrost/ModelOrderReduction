@@ -3,7 +3,7 @@
 <br>
 
 [![Documentation](https://img.shields.io/badge/doc-on_website-green.svg)](https://modelorderreduction.readthedocs.io/en/latest/index.html)
-[![Gitter](https://img.shields.io/badge/chat-on_Gitter-ff69b4.svg)](https://app.gitter.im/#/room/#model-order-reduction:gitter.im)
+[![Discord](https://img.shields.io/badge/chat-on_Discord-darkred.svg)](https://discord.com/channels/1196920567614419024/1196922978731049020)
 [![Support](https://img.shields.io/badge/support-on_GitHub_Discussions-blue.svg)](https://github.com/sofa-framework/sofa/discussions/categories/modelorderreduction)
 
 ![download](https://img.shields.io/github/downloads/SofaDefrost/ModelOrderReduction/total.svg)
