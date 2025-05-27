@@ -640,7 +640,7 @@ void HyperReducedTetrahedronFEMForceField<DataTypes>::draw(const core::visual::V
 }
 
 template <class DataTypes>
-void HyperReducedTetrahedronFEMForceField<DataTypes>::buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
+void HyperReducedTetrahedronFEMForceField<DataTypes>::doBuildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
 {
     StiffnessMatrix JKJt, RJKJtRt;
     sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
