@@ -74,75 +74,69 @@ void MORPointCollisionModel<DataTypes>::init()
 
 
 template<class DataTypes>
-void MORPointCollisionModel<DataTypes>::draw(const core::visual::VisualParams* vparams)
+void MORPointCollisionModel<DataTypes>::drawCollisionModel(const core::visual::VisualParams* vparams)
 {
-    if (vparams->displayFlags().getShowCollisionModels())
+    if (vparams->displayFlags().getShowWireFrame())
+        vparams->drawTool()->setPolygonMode(0, true);
+
+    // Check topological modifications
+    if (mstate->getSize() != size)
+        return;
+
+    std::vector< type::Vec3 > pointsP;
+    std::vector< type::Vec3 > pointsL;
+    int numMode;
+    double val;
+    double step =  this->getContext()->getTime()/this->getContext()->getDt();
+    numMode = (int) step - 1;
+    for (int i = 0; i < size; i++)
     {
-        if (vparams->displayFlags().getShowWireFrame())
-            vparams->drawTool()->setPolygonMode(0, true);
+        TPoint<DataTypes> p(this, i);
+        if (p.isActive())
+        {
+            pointsP.push_back(p.p());
+            if (displayContactModes.getValue() && numMode >= 0 && numMode < lambdaModes.cols()){
+                if (contactIndices(i) != -1)
+                    val = lambdaModes(contactIndices(i),numMode);
+                else
+                    val = 0;
+                if (val != 0){
+                }
+//                    pointsL.push_back(p.p());
+//                    pointsL.push_back(p.p() + normals[i] * 1000.1f*val);
+//                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 20.1f*val, 0.06, 0.4, 0.3, {0.25f, 0.75f, 0.75f, 1});
+                vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 60.1f*val, 0.4, 2.0, 1.8, type::RGBAColor(0.25f, 0.75f, 0.75f, 1));
+            }
+            if ((unsigned)i < normals.size())
+            {
+//                    pointsL.push_back(p.p());
+//                    pointsL.push_back(p.p() + normals[i] * 1.1f);
+            }
+        }
+    }
 
-        // Check topological modifications
-        if (mstate->getSize() != size)
-            return;
+    const auto* color = this->getColor4f();
+    vparams->drawTool()->drawPoints(pointsP, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
+    vparams->drawTool()->drawLines(pointsL, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
 
-        std::vector< type::Vec3 > pointsP;
-        std::vector< type::Vec3 > pointsL;
-        int numMode;
-        double val;
-        double step =  this->getContext()->getTime()/this->getContext()->getDt();
-        numMode = (int) step - 1;
+    if (this->d_displayFreePosition.getValue())
+    {
+        std::vector< type::Vec3 > pointsPFree;
+
         for (int i = 0; i < size; i++)
         {
             TPoint<DataTypes> p(this, i);
             if (p.isActive())
             {
-                pointsP.push_back(p.p());
-                if (displayContactModes.getValue() && numMode >= 0 && numMode < lambdaModes.cols()){
-                    if (contactIndices(i) != -1)
-                        val = lambdaModes(contactIndices(i),numMode);
-                    else
-                        val = 0;
-                    if (val != 0){
-                    }
-//                    pointsL.push_back(p.p());
-//                    pointsL.push_back(p.p() + normals[i] * 1000.1f*val);
-//                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 20.1f*val, 0.06, 0.4, 0.3, {0.25f, 0.75f, 0.75f, 1});
-                    vparams->drawTool()->drawArrow(p.p(), p.p() + normals[i] * 60.1f*val, 0.4, 2.0, 1.8, type::RGBAColor(0.25f, 0.75f, 0.75f, 1));
-                }
-                if ((unsigned)i < normals.size())
-                {
-//                    pointsL.push_back(p.p());
-//                    pointsL.push_back(p.p() + normals[i] * 1.1f);
-                }
+                pointsPFree.push_back(p.pFree());
             }
         }
 
-        const auto* color = this->getColor4f();
-        vparams->drawTool()->drawPoints(pointsP, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
-        vparams->drawTool()->drawLines(pointsL, 3, type::RGBAColor(color[0], color[1], color[2], color[3]));
-
-        if (this->d_displayFreePosition.getValue())
-        {
-            std::vector< type::Vec3 > pointsPFree;
-
-            for (int i = 0; i < size; i++)
-            {
-                TPoint<DataTypes> p(this, i);
-                if (p.isActive())
-                {
-                    pointsPFree.push_back(p.pFree());
-                }
-            }
-
-            vparams->drawTool()->drawPoints(pointsPFree, 3, type::RGBAColor(0.0f, 1.0f, 0.2f, 1.0f));
-        }
-
-        if (vparams->displayFlags().getShowWireFrame())
-            vparams->drawTool()->setPolygonMode(0, false);
+        vparams->drawTool()->drawPoints(pointsPFree, 3, type::RGBAColor(0.0f, 1.0f, 0.2f, 1.0f));
     }
 
-    if (this->getPrevious() != nullptr && vparams->displayFlags().getShowBoundingCollisionModels())
-        this->getPrevious()->draw(vparams);
+    if (vparams->displayFlags().getShowWireFrame())
+        vparams->drawTool()->setPolygonMode(0, false);
 }
 } // namespace sofa::component::collision::geometry
 

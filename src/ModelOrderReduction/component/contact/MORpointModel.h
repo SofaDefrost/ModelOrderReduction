@@ -59,7 +59,7 @@ protected:
 
     // -- CollisionModel interface
 
-    void draw(const core::visual::VisualParams* vparams) override;
+    void drawCollisionModel(const core::visual::VisualParams* vparams) override;
 
     Data<bool> displayContactModes;
     Data<std::string> d_lambdaModesPath;
