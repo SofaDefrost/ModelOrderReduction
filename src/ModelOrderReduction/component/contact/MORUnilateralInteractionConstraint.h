@@ -75,15 +75,10 @@ public:
 
     typedef core::behavior::BaseLagrangianConstraint::ConstraintBlockInfo ConstraintBlockInfo;
     typedef core::behavior::BaseLagrangianConstraint::PersistentID PersistentID;
-    typedef core::behavior::BaseLagrangianConstraint::ConstCoord ConstCoord;
-    typedef core::behavior::BaseLagrangianConstraint::ConstDeriv ConstDeriv;
-    typedef core::behavior::BaseLagrangianConstraint::ConstArea ConstArea;
 
     typedef core::behavior::BaseLagrangianConstraint::VecConstraintBlockInfo VecConstraintBlockInfo;
     typedef core::behavior::BaseLagrangianConstraint::VecPersistentID VecPersistentID;
-    typedef core::behavior::BaseLagrangianConstraint::VecConstCoord VecConstCoord;
-    typedef core::behavior::BaseLagrangianConstraint::VecConstDeriv VecConstDeriv;
-    typedef core::behavior::BaseLagrangianConstraint::VecConstArea VecConstArea;
+
 
     typedef core::objectmodel::Data<VecCoord>		DataVecCoord;
     typedef core::objectmodel::Data<VecDeriv>		DataVecDeriv;
