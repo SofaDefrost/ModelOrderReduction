@@ -14,9 +14,8 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGSFORCEFIELD_CPP
+#define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDFIXEDWEAKCONSTRAINT_CPP
 
-#include <ModelOrderReduction/component/forcefield/HyperReducedRestShapeSpringsForceField.h>
 #include <ModelOrderReduction/component/forcefield/HyperReducedFixedWeakConstraint.inl>
 
 #include <sofa/helper/visual/DrawTool.h>
@@ -28,12 +27,12 @@ namespace sofa::component::solidmechanics::spring
 using namespace sofa::defaulttype;
 
 
-SOFA_DECL_CLASS(HyperReducedRestShapeSpringsForceField)
+SOFA_DECL_CLASS(HyperReducedFixedWeakConstraint)
 
 
-int HyperReducedRestShapeSpringsForceFieldClass = core::RegisterObject("Simple elastic springs applied to given degrees of freedom between their current and rest shape position")
-        .add< HyperReducedRestShapeSpringsForceField<Vec3Types> >()
+int HyperReducedFixedWeakConstraintClass = core::RegisterObject("Simple elastic springs applied to given degrees of freedom between their current and rest shape position")
+        .add< HyperReducedFixedWeakConstraint<Vec3Types> >()
         ;
 
-template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<Vec3Types>;
+template class SOFA_MODELORDERREDUCTION_API HyperReducedFixedWeakConstraint<Vec3Types>;
 } // namespace sofa::component::solidmechanics::spring
