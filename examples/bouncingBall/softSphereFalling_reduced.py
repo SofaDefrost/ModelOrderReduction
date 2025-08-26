@@ -38,7 +38,7 @@ def createScene(rootNode):
                 rootNode.gravity=[0,-9810, 0]
                 rootNode.dt = 0.0001
                 rootNode.addObject('FreeMotionAnimationLoop')
-                rootNode.addObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15')
+                rootNode.addObject('ProjectedGaussSeidelConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15')
                 rootNode.addObject('CollisionPipeline', verbose="0")
                 rootNode.addObject('BruteForceBroadPhase', name="N2")
                 rootNode.addObject('BVHNarrowPhase')

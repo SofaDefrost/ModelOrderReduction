@@ -64,7 +64,7 @@ def createScene(rootNode):
     rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
 
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('GenericConstraintSolver', tolerance="1e-6", maxIterations="1000")
+    rootNode.addObject('ProjectedGaussSeidelConstraintSolver', tolerance="1e-6", maxIterations="1000")
 
     modelNode = rootNode.addChild('modelNode')
     modelNode.addObject('EulerImplicitSolver', rayleighStiffness='0.1', rayleighMass='0.1')

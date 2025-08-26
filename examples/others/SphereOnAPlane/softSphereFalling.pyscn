@@ -32,12 +32,12 @@ def createScene(rootNode):
     lambdaCoeffs = "lambdaCoeffsSphereFine6.txt"
 
     rootNode.addObject('FreeMotionAnimationLoop')
-    #rootNode.addObject('GenericConstraintSolver', printLog=True, tolerance="1e-6", maxIterations="500", storeLambdas=True)
+    #rootNode.addObject('ProjectedGaussSeidelConstraintSolver', printLog=True, tolerance="1e-6", maxIterations="500", storeLambdas=True)
     if reductionOn:
-        rootNode.addObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15')
+        rootNode.addObject('ProjectedGaussSeidelConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15')
     else:
-        #rootNode.addObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',storeLambdas=True, lambdaPath="lambdaStored.txt",computeConstraintForces=True)
-        rootNode.addObject('GenericConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',computeConstraintForces=True)
+        #rootNode.addObject('ProjectedGaussSeidelConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',storeLambdas=True, lambdaPath="lambdaStored.txt",computeConstraintForces=True)
+        rootNode.addObject('ProjectedGaussSeidelConstraintSolver', name='GSSolver', maxIterations='10000', tolerance='1e-15',computeConstraintForces=True)
         rootNode.addObject('PythonScriptController', filename="lambdaDumper.py", classname="storeLambda", variables="Zetest.txt")
 
 
