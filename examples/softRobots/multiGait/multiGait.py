@@ -41,7 +41,7 @@ def createScene(rootNode):
     rootNode.addObject('FreeMotionAnimationLoop')
     rootNode.addObject('EulerImplicitSolver', name='odesolver', firstOrder="false", rayleighStiffness='0.1',
                        rayleighMass='0.1')
-    rootNode.addObject('GenericConstraintSolver', printLog='0', tolerance="1e-15", maxIterations="5000")
+    rootNode.addObject('ProjectedGaussSeidelConstraintSolver', printLog='0', tolerance="1e-15", maxIterations="5000")
     rootNode.addObject('CollisionPipeline', verbose="0")
     rootNode.addObject('BruteForceBroadPhase', name="N2")
     rootNode.addObject('BVHNarrowPhase')

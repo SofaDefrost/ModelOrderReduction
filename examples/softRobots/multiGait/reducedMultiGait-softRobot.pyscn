@@ -219,7 +219,7 @@ def createScene(rootNode):
                 rootNode.addObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels hideCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
 
                 rootNode.addObject('FreeMotionAnimationLoop')
-                rootNode.addObject('GenericConstraintSolver', printLog=False, tolerance="1e-4", maxIterations="1000")
+                rootNode.addObject('ProjectedGaussSeidelConstraintSolver', printLog=False, tolerance="1e-4", maxIterations="1000")
                 rootNode.addObject('CollisionPipeline')
                 rootNode.addObject('BruteForceBroadPhase', name="N2")
                 rootNode.addObject('BVHNarrowPhase')
