@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import imp
 import platform
 from sys import argv
 
@@ -12,7 +11,8 @@ except:
                      +"Please install it : https://github.com/SofaDefrost/STLIB")
 
 # MOR IMPORT
-from mor.utility import sceneCreation as u
+from mor.utility import sceneCreation as sc
+from mor.utility import utility as u
 
 slash = '/'
 if "Windows" in platform.platform():
@@ -21,7 +21,7 @@ if "Windows" in platform.platform():
 # Our Original Scene IMPORT
 originalScene = os.path.dirname(os.path.abspath(__file__)) + "/../../sofiaLeg.py"
 originalScene = os.path.normpath(originalScene)
-originalScene = imp.load_source(originalScene.split(slash)[-1], originalScene)
+originalScene = u.load_source(originalScene.split(slash)[-1], originalScene)
 
 def createScene(rootNode):
 
@@ -33,4 +33,4 @@ def createScene(rootNode):
 
     pathToNode = 'SofiaLeg'
 
-    u.createDebug(rootNode,pathToNode,stateFileName)
+    sc.createDebug(rootNode,pathToNode,stateFileName)
