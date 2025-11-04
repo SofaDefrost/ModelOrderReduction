@@ -133,7 +133,7 @@ void MORContactMapping<TIn, TOut>::applyJT(const core::ConstraintParams * /*cpar
                 while (colIt != colItEnd)
                 {
                     InDeriv data;
-                    for(unsigned int j=0 ; j<m_nbCols ; j++)
+                    for(unsigned int j=0 ; j<(unsigned int)m_nbCols ; j++)
                     {
                         typename In::MatrixDeriv::RowIterator o = out.writeLine(j);
                         data = colIt.val()*m_matrix(contactIndices(rowIt.index()),j);
