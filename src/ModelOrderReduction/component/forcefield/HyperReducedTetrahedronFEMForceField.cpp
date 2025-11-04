@@ -30,9 +30,11 @@ using namespace sofa::defaulttype;
 SOFA_DECL_CLASS(HyperReducedTetrahedronFEMForceField)
 
 // Register in the Factory
-int HyperReducedTetrahedronFEMForceFieldClass = core::RegisterObject("Tetrahedral finite elements")
-        .add< HyperReducedTetrahedronFEMForceField<Vec3Types> >()
-        ;
+void registerHyperReducedTetrahedronFEMForceField(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Tetrahedral finite elements")
+    .add< HyperReducedTetrahedronFEMForceField<Vec3Types> >());
+}
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedronFEMForceField<Vec3Types>;
 } // namespace sofa::component::forcefield
