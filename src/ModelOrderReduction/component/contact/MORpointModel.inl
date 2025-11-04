@@ -89,7 +89,7 @@ void MORPointCollisionModel<DataTypes>::drawCollisionModel(const core::visual::V
     double val;
     double step =  this->getContext()->getTime()/this->getContext()->getDt();
     numMode = (int) step - 1;
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         TPoint<DataTypes> p(this, i);
         if (p.isActive())
@@ -123,7 +123,7 @@ void MORPointCollisionModel<DataTypes>::drawCollisionModel(const core::visual::V
     {
         std::vector< type::Vec3 > pointsPFree;
 
-        for (int i = 0; i < size; i++)
+        for (size_t i = 0; i < size; i++)
         {
             TPoint<DataTypes> p(this, i);
             if (p.isActive())
