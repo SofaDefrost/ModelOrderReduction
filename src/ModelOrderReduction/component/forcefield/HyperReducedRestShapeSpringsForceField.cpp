@@ -29,10 +29,11 @@ using namespace sofa::defaulttype;
 
 SOFA_DECL_CLASS(HyperReducedRestShapeSpringsForceField)
 
-
-int HyperReducedRestShapeSpringsForceFieldClass = core::RegisterObject("Simple elastic springs applied to given degrees of freedom between their current and rest shape position")
-        .add< HyperReducedRestShapeSpringsForceField<Vec3Types> >()
-        ;
+void registerHyperReducedRestShapeSpringsForceField(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Simple elastic springs applied to given degrees of freedom between their current and rest shape position")
+    .add< HyperReducedRestShapeSpringsForceField<Vec3Types> >());
+}
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedRestShapeSpringsForceField<Vec3Types>;
 } // namespace sofa::component::solidmechanics::spring

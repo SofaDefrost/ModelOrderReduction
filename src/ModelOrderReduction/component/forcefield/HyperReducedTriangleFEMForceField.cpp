@@ -30,9 +30,11 @@ SOFA_DECL_CLASS(HyperReducedTriangleFEMForceField)
 using namespace sofa::defaulttype;
 
 // Register in the Factory
-int HyperReducedTriangleFEMForceFieldClass = core::RegisterObject("Triangular finite elements")
-        .add< HyperReducedTriangleFEMForceField<Vec3Types> >()
-        ;
+void registerHyperReducedTriangleFEMForceField(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Triangular finite elements")
+    .add< HyperReducedTriangleFEMForceField<Vec3Types> >());
+}
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedTriangleFEMForceField<Vec3Types>;
 } // namespace sofa::component::solidmechanics::fem::elastic

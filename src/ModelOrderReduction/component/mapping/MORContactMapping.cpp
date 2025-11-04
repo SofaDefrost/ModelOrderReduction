@@ -40,19 +40,17 @@ using namespace core::behavior;
 
 
 // Register in the Factory
-int MORContactMappingClass = core::RegisterObject("Special case of mapping where the child points are the same as the parent points")
-        .add< MORContactMapping< Vec3dTypes, Vec3dTypes > >()
-        .add< MORContactMapping< Vec2Types, Vec2Types > >()
-        .add< MORContactMapping< Vec1Types, Vec1Types > >()
-
-        ;
-
+void registerMORContactMapping(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Special case of mapping where the child points are the same as the parent points")
+    .add< MORContactMapping< Vec3dTypes, Vec3dTypes > >()
+    .add< MORContactMapping< Vec2Types, Vec2Types > >()
+    .add< MORContactMapping< Vec1Types, Vec1Types > >());
+}
 
 template class  MORContactMapping< Vec3dTypes, Vec3dTypes >;
 template class  MORContactMapping< Vec2Types, Vec2Types >;
 template class  MORContactMapping< Vec1Types, Vec1Types >;
-
-
 
 
 

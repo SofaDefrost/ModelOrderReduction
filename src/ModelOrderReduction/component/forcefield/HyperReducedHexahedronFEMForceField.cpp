@@ -29,9 +29,11 @@ using namespace sofa::defaulttype;
 //SOFA_DECL_CLASS(HyperReducedHexahedronFEMForceField)
 
 // Register in the Factory
-int HyperReducedHexahedronFEMForceFieldClass = core::RegisterObject("Hexahedral finite elements")
-        .add< HyperReducedHexahedronFEMForceField<Vec3Types> >()
-        ;
+void registerHyperReducedHexahedronFEMForceField(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Hexahedral finite elements")
+    .add< HyperReducedHexahedronFEMForceField<Vec3Types> >());
+}
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedHexahedronFEMForceField<Vec3Types>;
 
