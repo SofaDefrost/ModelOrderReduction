@@ -678,7 +678,7 @@ void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::draw(const cor
 
 template <class DataTypes>
 void HyperReducedTetrahedralCorotationalFEMForceField<DataTypes>::
-buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
+doBuildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
 {
     StiffnessMatrix JKJt, RJKJtRt;
     sofa::type::Mat<3, 3, Real> localMatrix(type::NOINIT);
