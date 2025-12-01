@@ -150,7 +150,7 @@ def createScene(rootNode):
     rootNode.VisualStyle.displayFlags="showForceFields"
     
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('ProjectedGaussSeidelConstraintSolver', printLog='0', tolerance="1e-6", maxIterations="500")
+    rootNode.addObject('BlockGaussSeidelConstraintSolver', printLog='0', tolerance="1e-6", maxIterations="500")
     rootNode.addObject('CollisionPipeline', verbose="0")
     rootNode.addObject('BruteForceBroadPhase', name="N2")
     rootNode.addObject('BVHNarrowPhase')

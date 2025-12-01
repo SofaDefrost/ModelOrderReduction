@@ -35,7 +35,7 @@ def createScene(rootNode):
     scene.VisualStyle.displayFlags='showBehavior'
 
     rootNode.addObject("FreeMotionAnimationLoop")
-    rootNode.addObject("ProjectedGaussSeidelConstraintSolver", maxIterations=1000, tolerance=0.001)
+    rootNode.addObject("BlockGaussSeidelConstraintSolver", maxIterations=1000, tolerance=0.001)
 
     #finger = ElasticMaterialObject(name="finger",
                                    #volumeMeshFileName="mesh/finger.vtk",
