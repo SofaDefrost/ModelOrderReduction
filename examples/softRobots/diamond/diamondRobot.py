@@ -55,7 +55,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', pluginName=plugins, printLog=False)
     
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('ProjectedGaussSeidelConstraintSolver', tolerance="1e-6", maxIterations="1000")
+    rootNode.addObject('BlockGaussSeidelConstraintSolver', tolerance="1e-6", maxIterations="1000")
     rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
     rootNode.addObject('VisualStyle', displayFlags='showVisualModels showForceFields')
 
