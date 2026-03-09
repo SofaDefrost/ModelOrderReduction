@@ -109,6 +109,9 @@ jobs:
           DASH_AUTH: ${{ secrets.PLUGIN_DASH }}
         shell: bash
         run: |
+          test_status=$([ '${{ steps.tests.outcome }}' == 'success' ] && \
+                        echo 'true' || echo 'false')
+
           build_status=$([ '${{ steps.build-and-install.outcome }}' == 'success' ] && \
                          echo 'true' || echo 'false')
 
@@ -126,6 +129,7 @@ jobs:
            \"url\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\
            \"os\":\"$os\",\
            \"build\":$build_status,\
+           \"tests\":$test_status,\
            \"binary\":$binary_status}"\
            https://sofa-framework.org:5000/api/v1/plugins
 
