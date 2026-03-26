@@ -86,7 +86,7 @@ jobs:
           name: ${{ steps.sanitize.outputs.artifact_name }}
           path: ${{ env.WORKSPACE_ARTIFACT_PATH }}
            
-      - name: Pepare python environement for tests
+      - name: Prepare Python environment for tests
         shell: bash
         run: |
           ${{ steps.sofa.outputs.python_exe }} -m pip install matplotlib Cheetah3
