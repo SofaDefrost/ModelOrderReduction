@@ -48,9 +48,6 @@ public:
 protected:
     MORPointCollisionModel();
 
-public:
-
-protected:
     using PointCollisionModel<TDataTypes>::mstate;
     using PointCollisionModel<TDataTypes>::size;
     using PointCollisionModel<TDataTypes>::normals;
@@ -58,8 +55,7 @@ protected:
     void init() override;
 
     // -- CollisionModel interface
-
-    void draw(const core::visual::VisualParams* vparams) override;
+    void drawCollisionModel(const core::visual::VisualParams* vparams) override;
 
     Data<bool> displayContactModes;
     Data<std::string> d_lambdaModesPath;

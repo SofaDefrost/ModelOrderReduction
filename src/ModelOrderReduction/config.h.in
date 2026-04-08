@@ -14,9 +14,7 @@
 *                                                                             *
 * Contact information: https://project.inria.fr/modelorderreduction/contact   *
 ******************************************************************************/
-#ifndef INITMODELORDERREDUCTION_H
-#define INITMODELORDERREDUCTION_H
-
+#pragma once
 
 #include <sofa/config.h>
 
@@ -27,6 +25,9 @@
 #define SOFA_MODELORDERREDUCTION_API SOFA_IMPORT_DYNAMIC_LIBRARY
 #endif
 
-#endif // INITINITMODELORDERREDUCTION_H
-
+namespace modelorderreduction
+{
+    constexpr const char* MODULE_NAME = "@PROJECT_NAME@";
+    constexpr const char* MODULE_VERSION = "@PROJECT_VERSION@";
+} // namespace modelorderreduction
 

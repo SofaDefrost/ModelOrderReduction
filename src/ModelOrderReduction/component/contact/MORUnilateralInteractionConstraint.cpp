@@ -31,9 +31,11 @@ namespace sofa::component::constraint::lagrangian::model
 using namespace sofa::defaulttype;
 using namespace sofa::helper;
 
-int MORUnilateralInteractionConstraintClass = core::RegisterObject("Unilateral constraint in a reduced model")
-        .add< MORUnilateralInteractionConstraint<Vec3Types> >()
-        ;
+void registerMORUnilateralInteractionConstraint(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Unilateral constraint in a reduced model")
+    .add< MORUnilateralInteractionConstraint<Vec3Types> >());
+}
 
 template class SOFA_MODELORDERREDUCTION_API MORUnilateralInteractionConstraint<Vec3Types>;
 } // namespace sofa::component::constraint::lagrangian::model

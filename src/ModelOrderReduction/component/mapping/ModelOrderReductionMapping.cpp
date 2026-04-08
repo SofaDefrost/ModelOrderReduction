@@ -36,9 +36,11 @@ using namespace core::behavior;
 SOFA_DECL_CLASS(ModelOrderReductionMapping)
 
 // Register in the Factory
-static int ModelOrderReductionMappingClass = core::RegisterObject("Reduced model")
-        .add< ModelOrderReductionMapping< Vec1Types, Vec3Types > >(true)
-        ;
+void registerModelOrderReductionMapping(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Reduced model")
+    .add< ModelOrderReductionMapping< Vec1Types, Vec3Types > >(true));
+}
 
 template class SOFA_MODELORDERREDUCTION_API ModelOrderReductionMapping< Vec1Types, Vec3Types >;
 

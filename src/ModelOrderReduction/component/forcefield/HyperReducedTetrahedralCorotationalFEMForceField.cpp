@@ -31,9 +31,11 @@ using namespace sofa::defaulttype;
 SOFA_DECL_CLASS(HyperReducedTetrahedralCorotationalFEMForceField)
 
 // Register in the Factory
-int HyperReducedTetrahedralCorotationalFEMForceFieldClass = core::RegisterObject("Corotational FEM Tetrahedral finite elements")
-        .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types> >()
-        ;
+void registerHyperReducedTetrahedralCorotationalFEMForceField(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Corotational FEM Tetrahedral finite elements")
+    .add< HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types> >());
+}
 
 template class SOFA_MODELORDERREDUCTION_API HyperReducedTetrahedralCorotationalFEMForceField<Vec3Types>;
 } // namespace sofa::component::solidmechanics::fem::elastic
