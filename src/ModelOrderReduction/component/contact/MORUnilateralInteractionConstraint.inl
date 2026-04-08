@@ -246,14 +246,14 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(lineara
         // Sets dfree in global violation vector
         if (!c.parameters.hasTangentialComponent()){
 
-            for (int k=0;k<reducedContacts.size();k++){
+            for (size_t k=0;k<reducedContacts.size();k++){
                 if (contactIndices(c.m2) != -1)
                     dfreeRed(k) += dfree*lambdaModes(contactIndices(c.m2),reducedContacts[k]);
             }
         }
         else
         {
-            for (int k=0;k<reducedContacts.size()/3;k++){
+            for (size_t k=0;k<reducedContacts.size()/3;k++){
                 if (contactIndices(3*c.m2) != -1){
                     dfreeRed(3*k) += dfree*lambdaModes(contactIndices(3*c.m2),reducedContacts[3*k]);
                     dfreeRed(3*k+1) += dfree_t*lambdaModes(contactIndices(3*c.m2+1),reducedContacts[3*k]);
@@ -267,7 +267,7 @@ void MORUnilateralInteractionConstraint<DataTypes>::getPositionViolation(lineara
 
         c.dfree = dfree; // PJ : For isActive() method. Don't know if it's still usefull.
     }
-    for (int k=0;k<reducedContacts.size();k++){
+    for (size_t k=0;k<reducedContacts.size();k++){
         v->set(k, dfreeRed(k));
     }
 

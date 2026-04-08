@@ -32,11 +32,13 @@ using namespace sofa::defaulttype;
 using namespace sofa::core::collision;
 using namespace helper;
 
-int MORPointCollisionModelClass = core::RegisterObject("Collision model which represents a set of points")
-        .add< MORPointCollisionModel<defaulttype::Vec3Types> >()
-
-        .addAlias("MORPoint")
-        ;
+void registerMORPointCollisionModel(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("Collision model which represents a set of points")
+    .add< MORPointCollisionModel<defaulttype::Vec3Types> >()
+    .addAlias("MORPoint")
+    );
+}
 
 template class SOFA_MODELORDERREDUCTION_API MORPointCollisionModel<defaulttype::Vec3Types>;
 } // namespace sofa::component::collision::geometry
