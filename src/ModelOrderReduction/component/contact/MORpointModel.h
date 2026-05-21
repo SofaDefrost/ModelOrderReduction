@@ -23,8 +23,8 @@
 #define MOR_POINTCOLLISIONMODEL_H
 #include <ModelOrderReduction/config.h>
 
-#include <sofa/component/collision/geometry/PointModel.h>
-#include <sofa/component/collision/geometry/PointModel.inl>
+#include <sofa/component/collision/geometry/PointCollisionModel.h>
+#include <sofa/component/collision/geometry/PointCollisionModel.inl>
 
 #include <sofa/core/CollisionModel.h>
 #include <sofa/component/statecontainer/MechanicalObject.h>

@@ -21,7 +21,7 @@
 ******************************************************************************/
 #define MOR_POINTCOLLISIONMODEL_CPP
 #include <ModelOrderReduction/component/contact/MORpointModel.inl>
-#include <sofa/component/collision/geometry/PointModel.inl>
+#include <sofa/component/collision/geometry/PointCollisionModel.inl>
 
 #include <sofa/core/ObjectFactory.h>
 
