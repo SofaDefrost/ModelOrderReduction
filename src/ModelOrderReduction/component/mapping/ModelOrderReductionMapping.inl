@@ -219,13 +219,13 @@ void ModelOrderReductionMapping<TIn, TOut>::applyJT(const core::ConstraintParams
 
 
 template <class TIn, class TOut>
-const sofa::linearalgebra::BaseMatrix* ModelOrderReductionMapping<TIn, TOut>::getJ()
+const sofa::linearalgebra::BaseMatrix* ModelOrderReductionMapping<TIn, TOut>::doGetJ()
 {
     return &m_J;
 }
 
 template <class TIn, class TOut>
-const typename ModelOrderReductionMapping<TIn, TOut>::js_type* ModelOrderReductionMapping<TIn, TOut>::getJs()
+const typename ModelOrderReductionMapping<TIn, TOut>::js_type* ModelOrderReductionMapping<TIn, TOut>::doGetJs()
 {
     return &m_Js;
 }
