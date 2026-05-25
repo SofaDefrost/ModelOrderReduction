@@ -141,7 +141,7 @@ public:
     using InheritForceField::getPotentialEnergy;
     // getPotentialEnergy is implemented for polar method
 
-    void buildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
+    void doBuildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
 
     void draw(const core::visual::VisualParams* vparams) override;
 
