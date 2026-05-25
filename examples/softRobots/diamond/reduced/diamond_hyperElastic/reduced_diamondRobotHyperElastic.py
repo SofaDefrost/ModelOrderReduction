@@ -81,7 +81,7 @@ def Reduced_test(
 
     FixedBox = modelNode.addChild('FixedBox')
     FixedBox.addObject('BoxROI' , name= 'BoxROI' , orientedBox= newBox([[-15, 15, -40], [-15, -15, -40], [15, -15, -40]] , [0.0, 0.0, 35],translation,rotation,[0, 0, 25.0],scale) + multiply(scale[2],[50]).tolist(),drawBoxes=True)
-    FixedBox.addObject('HyperReducedRestShapeSpringsForceField' , points = '@BoxROI.indices', stiffness = 1000000000000.0, name = 'reducedFF_FixedBox_1', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_FixedBox_1_RID.txt', weightsPath = path + r'/data/reducedFF_FixedBox_1_weight.txt')
+    FixedBox.addObject('HyperReducedFixedWeakConstraint' , indices = '@BoxROI.indices', stiffness = 1000000000000.0, name = 'reducedFF_FixedBox_1', nbModes = nbrOfModes, performECSW = hyperReduction, modesPath = path + r'/data/modes.txt', RIDPath = path + r'/data/reducedFF_FixedBox_1_RID.txt', weightsPath = path + r'/data/reducedFF_FixedBox_1_weight.txt')
 
 
     north = modelNode.addChild('north')
