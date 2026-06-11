@@ -42,7 +42,7 @@ def createScene(rootNode):
                 rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="8.0", contactDistance="0.5", angleCone="0.01")
 
                 solverNode = rootNode.addChild('solverNode')
-                solverNode.addObject('EulerImplicitSolver', name='odesolver',firstOrder="false", rayleighStiffness='0.0', rayleighMass='0.0')
+                solverNode.addObject('EulerImplicitIntegrationScheme', name='odesolver',firstOrder="false", rayleighStiffness='0.0', rayleighMass='0.0')
                 solverNode.addObject('SparseLDLSolver', name="preconditioner", template="CompressedRowSparseMatrixd")
                 solverNode.addObject('GenericConstraintCorrection', linearSolver='@preconditioner',printLog=True, name='ResReso')
 

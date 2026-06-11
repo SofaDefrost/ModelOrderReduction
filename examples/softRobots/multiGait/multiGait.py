@@ -23,7 +23,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct') # Needed to use components [SparseLDLSolver]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mapping.Linear') # Needed to use components [BarycentricMapping]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass') # Needed to use components [UniformMass]  
-    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward') # Needed to use components [EulerImplicitSolver]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward') # Needed to use components [EulerImplicitIntegrationScheme]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Setting') # Needed to use components [BackgroundSetting]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.SolidMechanics.FEM.Elastic') # Needed to use components [TetrahedronFEMForceField,TriangleFEMForceField]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.StateContainer') # Needed to use components [MechanicalObject]  
@@ -39,7 +39,7 @@ def createScene(rootNode):
                           displayFlags='showVisualModels showBehaviorModels hideCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields hideWireframe')
 
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('EulerImplicitSolver', name='odesolver', firstOrder="false", rayleighStiffness='0.1',
+    rootNode.addObject('EulerImplicitIntegrationScheme', name='odesolver', firstOrder="false", rayleighStiffness='0.1',
                        rayleighMass='0.1')
     rootNode.addObject('BlockGaussSeidelConstraintSolver', printLog='0', tolerance="1e-15", maxIterations="5000")
     rootNode.addObject('CollisionPipeline', verbose="0")

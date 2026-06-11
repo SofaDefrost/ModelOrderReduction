@@ -42,7 +42,7 @@ plugins=["SofaPython3","SoftRobots","ModelOrderReduction","STLIB",
          'Sofa.Component.LinearSolver.Direct', # Needed to use components [SparseLDLSolver]
          'Sofa.Component.Mapping.Linear', # Needed to use components [BarycentricMapping]
          'Sofa.Component.Mass', # Needed to use components [UniformMass]
-         'Sofa.Component.ODESolver.Backward', # Needed to use components [EulerImplicitSolver]
+         'Sofa.Component.ODESolver.Backward', # Needed to use components [EulerImplicitIntegrationScheme]
          'Sofa.Component.SolidMechanics.FEM.Elastic', # Needed to use components [TetrahedronFEMForceField]
          'Sofa.Component.SolidMechanics.Spring', # Needed to use components [RestShapeSpringsForceField]
          'Sofa.Component.StateContainer', # Needed to use components [MechanicalObject]
@@ -75,7 +75,7 @@ def createScene(rootNode):
 
 
     modelNode = rootNode.addChild('modelNode')
-    modelNode.addObject('EulerImplicitSolver', name='integration')
+    modelNode.addObject('EulerImplicitIntegrationScheme', name='integration')
     modelNode.addObject('SparseLDLSolver', name="solver", template='CompressedRowSparseMatrixMat3x3d')
     loader = modelNode.addObject('MeshVTKLoader', name='loader', filename=volumeMeshFileName,
                                  rotation=list(rotation), translation=list(translation),

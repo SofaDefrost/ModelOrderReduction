@@ -44,7 +44,7 @@ plugins=["SofaPython3","SoftRobots","ModelOrderReduction","STLIB",
          'Sofa.Component.LinearSolver.Direct', # Needed to use components [SparseLDLSolver]
          'Sofa.Component.Mapping.Linear', # Needed to use components [BarycentricMapping]
          'Sofa.Component.Mass', # Needed to use components [UniformMass]
-         'Sofa.Component.ODESolver.Backward', # Needed to use components [EulerImplicitSolver]
+         'Sofa.Component.ODESolver.Backward', # Needed to use components [EulerImplicitIntegrationScheme]
          'Sofa.Component.SolidMechanics.FEM.Elastic', # Needed to use components [TetrahedronFEMForceField]
          'Sofa.Component.SolidMechanics.Spring', # Needed to use components [RestShapeSpringsForceField]
          'Sofa.Component.StateContainer', # Needed to use components [MechanicalObject]
@@ -67,7 +67,7 @@ def createScene(rootNode):
     rootNode.addObject('BlockGaussSeidelConstraintSolver', tolerance="1e-6", maxIterations="1000")
 
     modelNode = rootNode.addChild('modelNode')
-    modelNode.addObject('EulerImplicitSolver', rayleighStiffness='0.1', rayleighMass='0.1')
+    modelNode.addObject('EulerImplicitIntegrationScheme', rayleighStiffness='0.1', rayleighMass='0.1')
     modelNode.addObject('SparseLDLSolver', name="solver")
     modelNode.addObject('MeshVTKLoader', name="loader", filename=meshPath+'diamond_4k_tet.vtu', rotation=[90,0,0], translation=[0,0,35])
     modelNode.addObject('TetrahedronSetTopologyContainer', src="@loader")
