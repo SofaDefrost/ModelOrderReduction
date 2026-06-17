@@ -23,7 +23,7 @@ plugins=['SofaPython3','ModelOrderReduction','STLIB',
          'Sofa.Component.LinearSolver.Direct', # Needed to use components [SparseLDLSolver]
          'Sofa.Component.Mapping.Linear', # Needed to use components [BarycentricMapping]
          'Sofa.Component.Mass', # Needed to use components [UniformMass]
-         'Sofa.Component.IntegrationSchemes.Backward', # Needed to use components [EulerImplicitIntegrationScheme]
+         'Sofa.Component.IntegrationScheme.Backward', # Needed to use components [EulerImplicitIntegrationScheme]
          'Sofa.Component.SolidMechanics.FEM.Elastic', # Needed to use components [TetrahedronFEMForceField]
          'Sofa.Component.SolidMechanics.Spring', # Needed to use components [RestShapeSpringsForceField]
          'Sofa.Component.StateContainer', # Needed to use components [MechanicalObject]
