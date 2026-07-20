@@ -122,7 +122,7 @@ def getNodeSolver(node):
         if(className !="MeshTopology"):
             categories = obj.getCategories()
 
-            solverCategories = ["ConstraintSolver","LinearSolver","OdeSolver"]
+            solverCategories = ["ConstraintSolver","LinearSolver","IntegrationScheme"]
             if any(x in solverCategories for x in categories):
                 solver.append(obj)
 
