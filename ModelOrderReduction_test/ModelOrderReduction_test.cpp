@@ -26,7 +26,7 @@ namespace sofa {
         /// Create the context for the scene
         void doSetUp() override
         {
-            root = simulation::getSimulation()->createNewGraph("root");
+            root = simulation::MainSimulation::getSimulation()->createNewGraph("root");
         }
 
 
