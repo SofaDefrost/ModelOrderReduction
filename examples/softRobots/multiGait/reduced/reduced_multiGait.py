@@ -64,7 +64,7 @@ def Reduced_test(
     modelRoot = attachedTo.addChild(name)
 
     model_MOR = modelRoot.addChild('model_MOR')
-    model_MOR.addObject('EulerImplicitSolver', name='odesolver', rayleighStiffness='0.1', rayleighMass='0.1')
+    model_MOR.addObject('EulerImplicitIntegrationScheme', name='odesolver', rayleighStiffness='0.1', rayleighMass='0.1')
     model_MOR.addObject('SparseLDLSolver' , name = 'preconditioner', template = 'CompressedRowSparseMatrixMat3x3d')
     model_MOR.addObject('GenericConstraintCorrection' , linearSolver = '@preconditioner')
     model_MOR.addObject('MechanicalObject' , template = 'Vec1d', position = [0]*nbrOfModes)
