@@ -64,7 +64,7 @@ def Reduced_SofiaLeg(
     modelRoot = attachedTo.addChild(name)
 
     SofiaLeg_MOR = modelRoot.addChild('SofiaLeg_MOR')
-    SofiaLeg_MOR.addObject('EulerImplicitSolver' , firstOrder = '0', name = 'odesolver')
+    SofiaLeg_MOR.addObject('EulerImplicitIntegrationScheme' , firstOrder = '0', name = 'odesolver')
     SofiaLeg_MOR.addObject('SparseLDLSolver' , name = 'preconditioner', template = 'CompressedRowSparseMatrixd')
     SofiaLeg_MOR.addObject('MechanicalObject' , template = 'Vec1d', position = [0]*nbrOfModes)
 

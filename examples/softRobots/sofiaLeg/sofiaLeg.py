@@ -61,7 +61,7 @@ def SofiaLeg(
         totalMass (float):   The mass is distributed according to the geometry of the object.
     """
     leg = attachedTo.addChild(name)
-    leg.addObject('EulerImplicitSolver' , firstOrder = '0', name = 'odesolver')
+    leg.addObject('EulerImplicitIntegrationScheme' , firstOrder = '0', name = 'odesolver')
     leg.addObject('SparseLDLSolver' , name = 'preconditioner',template="CompressedRowSparseMatrixd")
 
 

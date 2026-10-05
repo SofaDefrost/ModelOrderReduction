@@ -64,7 +64,7 @@ def Reduced_test(
     modelRoot = attachedTo.addChild(name)
 
     liver_MOR = modelRoot.addChild('liver_MOR')
-    liver_MOR.addObject('EulerImplicitSolver' , rayleighStiffness = 0.0, rayleighMass = 0.0)
+    liver_MOR.addObject('EulerImplicitIntegrationScheme' , rayleighStiffness = 0.0, rayleighMass = 0.0)
     liver_MOR.addObject('SparseLDLSolver' , template = 'CompressedRowSparseMatrixMat3x3d')
     liver_MOR.addObject('MechanicalObject' , template = 'Vec1d', position = [0]*nbrOfModes)
 

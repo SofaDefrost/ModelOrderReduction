@@ -105,7 +105,7 @@ def SofiaSixLegs(
 
     # Body of the robot: rigid !
     BodyNode = sofia.addChild('rigidBody')
-    BodyNode.addObject('EulerImplicitSolver', name='odesolver', firstOrder=0);
+    BodyNode.addObject('EulerImplicitIntegrationScheme', name='odesolver', firstOrder=0);
     BodyNode.addObject('ShewchukPCGLinearSolver', name='linearSolver',iterations=2,tolerance=1.0e-18, preconditioner="@preconditioner")
     BodyNode.addObject('SparseLDLSolver', name='preconditioner')
     BodyNode.addObject('MechanicalObject', template='Rigid',name='frame1', position=rigidBodyPosition) # , showObject='1', showObjectScale=15)

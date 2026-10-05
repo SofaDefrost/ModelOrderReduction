@@ -17,7 +17,7 @@ plugins=["SofaPython3","ModelOrderReduction","STLIB",
          'Sofa.Component.LinearSolver.Direct', # Needed to use components [SparseLDLSolver]
          'Sofa.Component.Mapping.Linear', # Needed to use components [BarycentricMapping]
          'Sofa.Component.Mass', # Needed to use components [UniformMass]
-         'Sofa.Component.ODESolver.Backward', # Needed to use components [EulerImplicitSolver]
+         'Sofa.Component.IntegrationScheme.Backward', # Needed to use components [EulerImplicitIntegrationScheme]
          'Sofa.Component.SolidMechanics.FEM.Elastic', # Needed to use components [TetrahedronFEMForceField]
          'Sofa.Component.SolidMechanics.Spring', # Needed to use components [RestShapeSpringsForceField]
          'Sofa.Component.StateContainer', # Needed to use components [MechanicalObject]
@@ -35,7 +35,7 @@ def createScene(rootNode):
     surfaceColor=[0.7, 0.7, 0.7, 0.7]
 
     liver = rootNode.addChild('liver')
-    liver.addObject('EulerImplicitSolver', rayleighStiffness = 0.0, rayleighMass = 0.0)
+    liver.addObject('EulerImplicitIntegrationScheme', rayleighStiffness = 0.0, rayleighMass = 0.0)
     liver.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
     liver.addObject('MeshVTKLoader', name="loader", filename=meshPath+'liverFine.vtu')
     liver.addObject('TetrahedronSetTopologyContainer', src="@loader")

@@ -22,7 +22,7 @@ def createScene(rootNode):
                         'Sofa.Component.LinearSolver.Direct',
                         'Sofa.Component.Mapping.Linear',
                         'Sofa.Component.Mass',
-                        'Sofa.Component.ODESolver.Backward',
+                        'Sofa.Component.IntegrationScheme.Backward',
                         'Sofa.Component.SolidMechanics.FEM.Elastic',
                         'Sofa.Component.SolidMechanics.Spring',
                         'Sofa.Component.StateContainer',
@@ -44,7 +44,7 @@ def createScene(rootNode):
                                    #totalMass=0.05)
     
     finger = rootNode.addChild('finger')
-    finger.addObject('EulerImplicitSolver', rayleighStiffness = 0.0, rayleighMass = 0.0)
+    finger.addObject('EulerImplicitIntegrationScheme', rayleighStiffness = 0.0, rayleighMass = 0.0)
     finger.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
     finger.addObject('MeshVTKLoader', name="loader", filename=path+'finger.vtk')
     finger.addObject('TetrahedronSetTopologyContainer', position="@loader.position", tetrahedra="@loader.tetrahedra")
