@@ -86,21 +86,22 @@ jobs:
           name: ${{ steps.sanitize.outputs.artifact_name }}
           path: ${{ env.WORKSPACE_ARTIFACT_PATH }}
            
-      - name: Check environment for tests
+      - name: Prepare Python environment for tests
         shell: bash
         run: |
-          echo '------ ls -la "$WORKSPACE_SRC_PATH" ------'
-          ls -la "$WORKSPACE_SRC_PATH"
-          echo '------ ls -la "$WORKSPACE_BUILD_PATH" ------'
-          ls -la "$WORKSPACE_BUILD_PATH"
-          echo '------ ls -la "$WORKSPACE_INSTALL_PATH" ------'
-          ls -la "$WORKSPACE_INSTALL_PATH"
-          echo '------ ls -la "$WORKSPACE_ARTIFACT_PATH" ------'
-          ls -la "$WORKSPACE_ARTIFACT_PATH"
-          echo '----------------------'
-          echo "SOFA_ROOT = $SOFA_ROOT"
-          echo '----------------------'
-          python -c "import sys; print('sys.version = ' + str(sys.version)); print('sys.path = ' + str(sys.path))"
+          ${{ steps.sofa.outputs.python_exe }} -m pip install matplotlib Cheetah3
+
+      - name: Launch test
+        id: tests
+        uses: sofa-framework/sofa-test-action@v1.0
+        with:
+          sofa_root: ${{ github.workspace }}/sofa
+          sofa_version: ${{ steps.sofa.outputs.sofa_version }}
+          src_dir: ${{ env.WORKSPACE_SRC_PATH }}
+          build_dir: ${{ env.WORKSPACE_BUILD_PATH }}
+          python_exe: ${{ steps.sofa.outputs.python_exe }}
+          output_dir: ${{ github.workspace }}/tests-results_dir
+          nb_parallel_threads: '4'
 
       - name: Notify dashboard
         if: always() && startsWith(github.repository, 'SofaDefrost') && startsWith(github.ref, 'refs/heads/master') # we are not on a fork and on master
@@ -108,6 +109,9 @@ jobs:
           DASH_AUTH: ${{ secrets.PLUGIN_DASH }}
         shell: bash
         run: |
+          test_status=$([ '${{ steps.tests.outcome }}' == 'success' ] && \
+                        echo 'true' || echo 'false')
+
           build_status=$([ '${{ steps.build-and-install.outcome }}' == 'success' ] && \
                          echo 'true' || echo 'false')
 
@@ -125,6 +129,7 @@ jobs:
            \"url\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\
            \"os\":\"$os\",\
            \"build\":$build_status,\
+           \"tests\":$test_status,\
            \"binary\":$binary_status}"\
            https://sofa-framework.org:5000/api/v1/plugins
 
