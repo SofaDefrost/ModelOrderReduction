@@ -140,7 +140,7 @@ protected :
     void hyperReducedApplyStiffnessLarge( VecCoord& f, Real h, const VecCoord& x, const SReal &kFactor );
 
     //// stiffness matrix assembly
-    void buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix) override;
+    void doBuildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix) override;
 
 };
 

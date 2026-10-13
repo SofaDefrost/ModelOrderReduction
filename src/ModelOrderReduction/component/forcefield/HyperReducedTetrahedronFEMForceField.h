@@ -132,7 +132,7 @@ public:
     // Make other overloaded version of getPotentialEnergy() to show up in subclass.
     using TetrahedronFEMForceField<DataTypes>::getPotentialEnergy;
 
-    virtual void buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix) override;
+    virtual void doBuildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix) override;
     void draw(const core::visual::VisualParams* vparams) override;
 
 protected:

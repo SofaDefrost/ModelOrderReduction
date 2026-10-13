@@ -389,7 +389,7 @@ template<class DataTypes>
 
 
 template <class DataTypes>
-void HyperReducedHexahedronFEMForceField<DataTypes>::buildStiffnessMatrix(
+void HyperReducedHexahedronFEMForceField<DataTypes>::doBuildStiffnessMatrix(
     core::behavior::StiffnessMatrix* matrix)
 {    
     sofa::Index e { 0 }; //index of the element in the topology

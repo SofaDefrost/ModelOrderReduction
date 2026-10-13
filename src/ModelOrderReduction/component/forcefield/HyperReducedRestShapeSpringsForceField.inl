@@ -458,7 +458,7 @@ void HyperReducedRestShapeSpringsForceField<DataTypes>::draw(const VisualParams 
 }
 
 template <class DataTypes>
-void HyperReducedRestShapeSpringsForceField<DataTypes>::buildStiffnessMatrix(
+void HyperReducedRestShapeSpringsForceField<DataTypes>::doBuildStiffnessMatrix(
     core::behavior::StiffnessMatrix* matrix)
 {
     const VecReal& k = d_stiffness.getValue();
