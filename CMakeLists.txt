@@ -27,7 +27,8 @@ set(HEADER_FILES
     ${MOR_SRC}/component/forcefield/HyperReducedHexahedronFEMForceField.h
     ${MOR_SRC}/component/forcefield/HyperReducedHexahedronFEMForceField.inl
     ${MOR_SRC}/component/forcefield/HyperReducedRestShapeSpringsForceField.h
-    ${MOR_SRC}/component/forcefield/HyperReducedRestShapeSpringsForceField.inl
+    ${MOR_SRC}/component/forcefield/HyperReducedFixedWeakConstraint.h
+    ${MOR_SRC}/component/forcefield/HyperReducedFixedWeakConstraint.inl
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.h
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.inl
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronFEMForceField.h
@@ -58,6 +59,7 @@ set(SOURCE_FILES
     ${MOR_SRC}/component/forcefield/HyperReducedHelper.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedHexahedronFEMForceField.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedRestShapeSpringsForceField.cpp
+    ${MOR_SRC}/component/forcefield/HyperReducedFixedWeakConstraint.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedralCorotationalFEMForceField.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronFEMForceField.cpp
     ${MOR_SRC}/component/forcefield/HyperReducedTetrahedronHyperelasticityFEMForceField.cpp

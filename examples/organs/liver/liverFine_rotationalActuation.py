@@ -47,8 +47,8 @@ def createScene(rootNode):
 
     liver.addObject('UniformMass', totalMass=0.3)
     liver.addObject('TetrahedronFEMForceField', poissonRatio="0.3", youngModulus="5000")
-    liver.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
-    liver.addObject('RestShapeSpringsForceField' , external_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], points = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
+    liver.addObject('RestShapeSpringsForceField', indices='@ROI1.indices', stiffness = '1e8')
+    liver.addObject('RestShapeSpringsForceField' , externalIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], indices = '@boxROIactuation.indices', name = 'actuatorSpring', stiffness = '1e8', external_rest_shape = '@actuator/actuatorState')
     
     visu = liver.addChild('visu')
     visu.addObject(  'MeshOBJLoader', name= 'loader', filename=meshPath+'liver-smoothUV.obj')

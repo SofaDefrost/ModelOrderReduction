@@ -45,7 +45,7 @@ def createScene(rootNode):
 
     liver.addObject('UniformMass', totalMass=0.3)
     liver.addObject('TetrahedronFEMForceField', poissonRatio="0.3", youngModulus="5000")
-    liver.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness = '1e8')
+    liver.addObject('RestShapeSpringsForceField', indices='@ROI1.indices', stiffness = '1e8')
     
     # Add a visual model
     visu = liver.addChild('visu')

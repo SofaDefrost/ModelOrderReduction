@@ -16,7 +16,8 @@
 ******************************************************************************/
 #define SOFA_COMPONENT_FORCEFIELD_HYPERREDUCEDRESTSHAPESPRINGSFORCEFIELD_CPP
 
-#include <ModelOrderReduction/component/forcefield/HyperReducedRestShapeSpringsForceField.inl>
+#include <ModelOrderReduction/component/forcefield/HyperReducedRestShapeSpringsForceField.h>
+#include <ModelOrderReduction/component/forcefield/HyperReducedFixedWeakConstraint.inl>
 
 #include <sofa/helper/visual/DrawTool.h>
 #include <sofa/core/ObjectFactory.h>
