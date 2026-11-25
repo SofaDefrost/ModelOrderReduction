@@ -5,8 +5,7 @@ pathSceneFile = os.path.dirname(os.path.abspath(__file__))
 pathMesh = os.path.dirname(os.path.abspath(__file__))+'/'
 nbrOfModes = 15
 # Units: mm, kg, s.     Pressure in kPa = k (kg/(m.s^2)) = k (g/(mm.s^2) =  kg/(mm.s^2)
-plugins=['SofaPython3','ModelOrderReduction','STLIB',
-         # normally plugin Sofa.Component is enough but still warning
+plugins=['SofaPython3','ModelOrderReduction',
          'Sofa.Component.Visual',
          'Sofa.Component.AnimationLoop',
          'Sofa.GL.Component.Rendering3D',
