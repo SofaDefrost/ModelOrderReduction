@@ -491,7 +491,7 @@ void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::addDForce(c
 
 template <class DataTypes>
 void HyperReducedTetrahedronHyperelasticityFEMForceField<DataTypes>::
-buildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
+doBuildStiffnessMatrix(core::behavior::StiffnessMatrix* matrix)
 {
     /// if the  matrix needs to be updated
     if (m_updateMatrix)

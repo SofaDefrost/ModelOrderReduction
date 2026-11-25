@@ -129,7 +129,7 @@ public:
     virtual void addForce(const core::MechanicalParams* mparams, DataVecDeriv& d_f, const DataVecCoord& d_x, const DataVecDeriv& d_v) override;
     virtual void addDForce(const core::MechanicalParams* mparams, DataVecDeriv& d_df, const DataVecDeriv& d_dx) override;
 
-    void buildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
+    void doBuildStiffnessMatrix(core::behavior::StiffnessMatrix* /* matrix */) override;
 
     void draw(const core::visual::VisualParams* vparams) override;
 
