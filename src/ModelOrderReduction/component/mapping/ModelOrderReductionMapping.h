@@ -141,11 +141,12 @@ public:
 
     void applyJT(const core::ConstraintParams *cparams, Data<InMatrixDeriv>& out, const Data<MatrixDeriv>& in) override;
 
-    const sofa::linearalgebra::BaseMatrix* getJ() override;
 
 
 
 protected:
+    const sofa::linearalgebra::BaseMatrix* doGetJ() override;
+    const js_type* doGetJs() override;
 
     Eigen::MatrixXd m_modesEigen;
     Eigen::MatrixXi m_listActiveNodes;
@@ -167,7 +168,6 @@ protected:
 
 public:
 
-    const js_type* getJs() override;
 
     sofa::core::objectmodel::DataFileName d_modesPath;
 

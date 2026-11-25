@@ -125,7 +125,6 @@ public:
 
     void applyJT(const core::ConstraintParams *cparams, Data<InMatrixDeriv>& out, const Data<MatrixDeriv>& in) override;
 
-    const sofa::linearalgebra::BaseMatrix* getJ() override;
 
     void handleTopologyChange() override;
 
@@ -141,9 +140,8 @@ protected:
     Eigen::MatrixXd m_matrix;
     Eigen::MatrixXi contactIndices;
 
-public:
-
-    const js_type* getJs() override;
+    const sofa::linearalgebra::BaseMatrix* doGetJ() override;
+    const js_type* doGetJs() override;
 
 };
 
